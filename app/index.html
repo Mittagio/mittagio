@@ -232,7 +232,7 @@
       <div class="s5-html-admin-wrap">
         <div class="s5-html-admin-header-row">
           <h1 class="ds-h1 s5-html-margin-0">Admin</h1>
-          <a href="#" onclick="location.hash=''; showDiscover(); return false;" class="s5-html-admin-back"><i data-lucide="chevron-left" class="s5-html-icon-18"></i> Zurück</a>
+          <a href="#" onclick="location.hash=''; if(typeof window.showDiscover==='function') window.showDiscover(); return false;" class="s5-html-admin-back"><i data-lucide="chevron-left" class="s5-html-icon-18"></i> Zurück</a>
         </div>
         <!-- KPI-Sektion -->
         <div id="adminKpis" class="s5-html-admin-kpis">
@@ -299,7 +299,7 @@
           </div>
           <h2 class="ds-empty-title s5-html-tmp-4">Deine Favoriten sind leer</h2>
           <p class="ds-body s5-html-tmp-5">Sichere dir dein Mittagessen! Markiere Gerichte mit ❤️ – sie landen hier bei deinen Favoriten.</p>
-          <button class="btn-cust-primary s5-html-tmp-6" type="button" onclick="showDiscover();">
+          <button class="btn-cust-primary s5-html-tmp-6" type="button" onclick="if(typeof window.showDiscover==='function') window.showDiscover();">
             <i data-lucide="compass" class="s5-html-tmp-7"></i>
             <span>Jetzt entdecken</span>
           </button>

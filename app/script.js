@@ -15,7 +15,7 @@
     if (typeof window === 'undefined') return;
     window.DEMO_MODE = !window.DEMO_MODE;
     var badge = document.getElementById('demoBadge');
-    if (badge) badge.style.display = window.DEMO_MODE ? 'block' : 'none';
+    if (badge) { if (window.DEMO_MODE) show(badge); else hide(badge); }
     if (typeof showToast === 'function') showToast('Demo-Modus: ' + (window.DEMO_MODE ? 'An' : 'Aus'));
   }
   if (typeof window !== 'undefined') {
@@ -23,9 +23,8 @@
     (function initDemoBadge(){
       var b = document.getElementById('demoBadge');
       if (b) {
-        b.style.display = window.DEMO_MODE ? 'block' : 'none';
+        if (window.DEMO_MODE) show(b); else hide(b);
         b.title = 'Demo-Modus (Klick zum Umschalten)';
-        b.style.pointerEvents = 'auto';
         b.onclick = function(){ toggleDemoMode(); };
       }
     })();
@@ -73,6 +72,21 @@
   }
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; window.remove = remove; window.getMode = getMode; window.setMode = setMode; }
   // ========== /STORE ==========
+
+  /** Sprint 5b.31: UI-State Helper – eine Sichtbarkeits-Klasse pro Element (kein Stapeln). hide → aria-hidden="true"; show/setVisible → entfernen. */
+  var VISIBILITY_CLASSES = ['is-hidden','is-visible','is-visible-flex','is-visible-inline-flex'];
+  function clearVisibility(el){ if(!el) return; VISIBILITY_CLASSES.forEach(function(c){ el.classList.remove(c); }); }
+  function show(el){ if(!el) return; clearVisibility(el); el.classList.add('is-visible'); el.removeAttribute('aria-hidden'); }
+  function hide(el){ if(!el) return; clearVisibility(el); el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
+  function setVisible(el, mode){
+    if(!el) return;
+    clearVisibility(el);
+    if(mode === 'hide' || mode === 'none'){ el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
+    else{ el.removeAttribute('aria-hidden'); if(mode === 'flex') el.classList.add('is-visible-flex'); else if(mode === 'inline-flex') el.classList.add('is-visible-inline-flex'); else el.classList.add('is-visible'); }
+  }
+  function setActive(el, on){ if(!el) return; if(on) el.classList.add('is-active'); else el.classList.remove('is-active'); }
+  if(typeof window !== 'undefined'){ window.show = show; window.hide = hide; window.setVisible = setVisible; window.setActive = setActive; window.clearVisibility = clearVisibility; }
+  /* Quick QA nach Visibility-Migration: (1) Orders leer→Treffer→keine Treffer ohne Refresh (2) Swipe Intro→Area→zurück (3) FAB an 3 Stellen nicht doppelt/hängend (4) Favoriten-Preview nicht unsichtbar klickbar (5) Provider Sub Sub1→Sub2→Close: Main nicht hidden, kein Scroll-Lock */
 
   /** Einzige Stelle für History: pushState/replaceState. opts: { replace=false, skipHistory=false, stateExtra=null, url=undefined } */
   function navigate(viewKey, opts){
@@ -130,41 +144,20 @@
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
     // Hochwertige, app-like Icons mit Labels (statt Balken)
-    // Design: Runde Badges mit Icon + Text darunter, horizontal angeordnet
-    
-    const styleBadge = (active, color) => `
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
-      opacity:${active ? '1' : '0.4'}; filter:${active ? 'none' : 'grayscale(100%)'};
-      transition:all 0.2s ease;
-    `;
-    
-    const styleIcon = (color) => `
-      width:36px; height:36px; border-radius:50%; background:${color}15; color:${color};
-      display:flex; align-items:center; justify-content:center; border:1px solid ${color}30;
-    `;
-    
-    const styleText = `font-size:10px; font-weight:600; color:#333; text-align:center; line-height:1.2; max-width:60px;`;
-
+    // Design: Runde Badges mit Icon + Text darunter, horizontal angeordnet (Sprint 5b.5: s5-pillars-*)
     return `
-      <div style="display:flex; justify-content:center; gap:24px; padding:8px 0;">
-        <!-- Vor Ort -->
-        <div style="${styleBadge(vorOrt, '#27AE60')}">
-          <div style="${styleIcon('#27AE60')}"><i data-lucide="utensils" style="width:18px;height:18px;"></i></div>
-          <div style="${styleText}">Vor Ort</div>
+      <div class="s5-pillars-bar">
+        <div class="s5-pillars-segment ${vorOrt ? '' : 's5-pillars-segment-inactive'}">
+          <div class="s5-pillars-iconwrap s5-pillars-iconwrap-green"><i data-lucide="utensils" class="s5-pillars-icon"></i></div>
+          <div class="s5-pillars-label">Vor Ort</div>
         </div>
-        
-        <!-- Abholnummer: Aktiv = gelb #FFD700, Inaktiv = ausgegraut opacity 0.2 -->
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; opacity:${abholnummer ? '1' : '0.2'}; filter:${abholnummer ? 'none' : 'grayscale(100%)'}; transition:all 0.2s ease;">
-          <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
-            <i data-lucide="receipt" style="width:18px;height:18px;"></i>
-          </div>
-          <div style="${styleText}">Abholnummer</div>
+        <div class="s5-pillars-segment ${abholnummer ? '' : 's5-pillars-segment-abhol-inactive'}">
+          <div class="s5-pillars-iconwrap ${abholnummer ? 's5-pillars-iconwrap-yellow' : 's5-pillars-iconwrap-yellow-inactive'}"><i data-lucide="receipt" class="s5-pillars-icon"></i></div>
+          <div class="s5-pillars-label">Abholnummer</div>
         </div>
-        
-        <!-- Mehrweg -->
-        <div style="${styleBadge(mehrweg, '#2980B9')}">
-          <div style="${styleIcon('#2980B9')}"><i data-lucide="leaf" style="width:18px;height:18px;"></i></div>
-          <div style="${styleText}">Mehrweg</div>
+        <div class="s5-pillars-segment ${mehrweg ? '' : 's5-pillars-segment-inactive'}">
+          <div class="s5-pillars-iconwrap s5-pillars-iconwrap-blue"><i data-lucide="leaf" class="s5-pillars-icon"></i></div>
+          <div class="s5-pillars-label">Mehrweg</div>
         </div>
       </div>
     `;
@@ -184,16 +177,11 @@
   }
   /** Silicon-Valley Pills: Drei kompakte Status-Pills (🍴 VOR ORT Grün, 🧾 ABHOLNUMMER Gelb, 🔄 MEHRWEG Blau). Inaktiv: #F5F5F5. */
   function renderPillarBarsDiscovery(vorOrt, abholnummer, mehrweg){
-    const pill = (active, bg, emoji, labelActive, labelInactive) => {
-      const bgColor = active ? bg : '#F5F5F5';
-      const textColor = active ? (bg === '#FFD700' ? '#1a1a1a' : '#fff') : '#94a3b8';
-      return `display:inline-flex; align-items:center; justify-content:center; gap:4px; height:24px; max-height:24px; padding:0 10px; border-radius:12px; font-size:11px; font-weight:800; color:${textColor}; letter-spacing:0.02em; white-space:nowrap; background:${bgColor};`;
-    };
     return `
-      <div class="ocm-pills-row" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-        <span style="${pill(vorOrt, '#27AE60', '🍴', 'VOR ORT', 'Kein Vor Ort')}">🍴 ${vorOrt ? 'VOR ORT' : 'Kein Vor Ort'}</span>
-        <span style="${pill(abholnummer, '#FFD700', '🧾', 'ABHOLNUMMER', 'Keine Abholnummer')}">🧾 ${abholnummer ? 'ABHOLNUMMER' : 'Keine Abholnummer'}</span>
-        <span style="${pill(mehrweg, '#2980B9', '🔄', 'MEHRWEG', 'Kein Mehrweg')}">🔄 ${mehrweg ? 'MEHRWEG' : 'Kein Mehrweg'}</span>
+      <div class="ocm-pills-row s5-pillars-discovery-row">
+        <span class="s5-pillars-pill ${vorOrt ? 's5-pillars-pill-green' : 's5-pillars-pill-green-inactive'}">🍴 ${vorOrt ? 'VOR ORT' : 'Kein Vor Ort'}</span>
+        <span class="s5-pillars-pill ${abholnummer ? 's5-pillars-pill-yellow' : 's5-pillars-pill-yellow-inactive'}">🧾 ${abholnummer ? 'ABHOLNUMMER' : 'Keine Abholnummer'}</span>
+        <span class="s5-pillars-pill ${mehrweg ? 's5-pillars-pill-blue' : 's5-pillars-pill-blue-inactive'}">🔄 ${mehrweg ? 'MEHRWEG' : 'Kein Mehrweg'}</span>
       </div>
     `;
   }
@@ -239,8 +227,8 @@
       const isActive = activeDay === d.id;
       const dateStr = d.date.getDate() + '.' + (d.date.getMonth() + 1) + '.';
       return `<button class="cust-chip ${isActive ? 'active' : ''}" onclick="selectDiscoverDay('${d.id}')">
-        <span style="font-weight:800;">${d.label}</span>
-        <span style="font-size:11px; opacity:0.7; margin-left:4px;">${dateStr}</span>
+        <span class="s5-discover-day-label">${d.label}</span>
+        <span class="s5-discover-day-date">${dateStr}</span>
       </button>`;
     }).join('');
   }
@@ -289,8 +277,8 @@
     if(img.complete) setImgLoaded();
     imgContainer.appendChild(img);
     const likeBtn = document.createElement('button');
-    likeBtn.className = 'discover-card-btn-like';
-    likeBtn.innerHTML = `<i data-lucide="heart" class="s5-card-icon-heart ${isFavorited ? 's5-card-icon-heart-active' : ''}"></i>`;
+    likeBtn.className = 'discover-card-btn-like' + (isFavorited ? ' fav-active' : '');
+    likeBtn.innerHTML = `<i data-lucide="heart" class="s5-card-icon-heart"></i>`;
     likeBtn.onclick = (e) => { e.stopPropagation(); toggleFavorite(data.id, likeBtn); };
     imgContainer.appendChild(likeBtn);
     const shareBtn = document.createElement('button');
@@ -380,11 +368,11 @@
     const isRemoving = dishFavs.has(sid);
     if(isRemoving){
       dishFavs.delete(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
+      if(btn) btn.classList.remove('fav-active');
       showToast('Aus Favoriten entfernt');
     } else {
       dishFavs.add(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
+      if(btn) btn.classList.add('fav-active');
       showToast('Zu Favoriten hinzugefügt! ❤️');
       if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     }
@@ -1070,7 +1058,7 @@
     // type: 'pickup-code' | 'dine-in' | 'reuse'
     if(type === 'pickup-code'){
       // Abholnummer: "A1", Schwarz-Weiß-Kontrast
-      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
+      return `<svg class="s5-svg-sw-25" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" fill="none"/>
         <path d="M4 10h16" stroke="currentColor" stroke-linecap="round"/>
         <text x="12" y="16" font-family="Inter, Montserrat, sans-serif" font-size="8" font-weight="900" text-anchor="middle" fill="currentColor">A1</text>
@@ -1078,20 +1066,20 @@
       </svg>`;
     } else if(type === 'dine-in'){
       // Vor Ort: Gekreuztes Besteck (Gabel und Messer), schlichte, dicke Linienführung
-      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2.5;">
+      return `<svg class="s5-svg-sw-25" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M8 3v18M8 3l4 4M8 3L4 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M16 3v18M16 3l-4 4M16 3l4 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
       </svg>`;
     } else if(type === 'reuse'){
       // Mehrweg: Kreislauf-Symbol (zwei Pfeile im Kreis) mit Blatt in der Mitte, organische Form
-      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke-width:2;">
+      return `<svg class="s5-svg-sw-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 4c-4.4 0-8 3.6-8 8s3.6 8 8 8" stroke="currentColor" stroke-linecap="round" fill="none"/>
         <path d="M12 4l4 4-4 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <path d="M12 20c4.4 0 8-3.6 8-8s-3.6-8-8-8" stroke="currentColor" stroke-linecap="round" fill="none"/>
         <path d="M12 20L8 16l4-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <path d="M12 9c-1.5 1.5-1.5 3.5 0 5" stroke="currentColor" stroke-linecap="round" fill="none" style="stroke-width:1.5;"/>
-        <path d="M12 9l-1 1 1 1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" style="stroke-width:1.5;"/>
+        <path class="s5-svg-sw-15" d="M12 9c-1.5 1.5-1.5 3.5 0 5" stroke="currentColor" stroke-linecap="round" fill="none"/>
+        <path class="s5-svg-sw-15" d="M12 9l-1 1 1 1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
       </svg>`;
     }
     return '';
@@ -1213,6 +1201,7 @@
   };
 
   /* setCustomerNavActive, setProviderNavActive, showView, setMode, showStart, showDiscover, showFav, showOrders, showCart, showProfile, openCodeSheetWithOrder, showPickupCode, showProviderHome, showProviderPickups, showProviderWeek, showProviderCookbook, showProviderProfile, showProviderBilling → js/ui-navigation.js */
+  if(typeof window.showDiscover !== 'function'){ window.showDiscover = function(opts){ if(typeof navigate === 'function') navigate('discover', opts || {}); }; }
   if(typeof window !== 'undefined') window.views = views;
 
   /** FAB nur auf Dashboard: bei true erstellen und an main hängen, bei false aus DOM entfernen (nicht nur ausblenden). */
@@ -1227,7 +1216,7 @@
       btn.id = 'fabProviderAddOffer';
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
-      btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
+      btn.innerHTML = '<span class="plus-char s5-fab-plus-char">+</span>';
       btn.onclick = function(){ createFlowPreselectedDate = null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       mainEl.appendChild(btn);
     } else {
@@ -1332,10 +1321,10 @@
     var contentEl = document.getElementById('providerProfileContent');
     var heroEl = document.getElementById('providerProfileHero');
     var subs = ['providerProfileSubSettings','providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq','providerProfileSubGeld'];
-    if(mainContent) mainContent.style.display = subId ? 'none' : 'flex';
-    if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
-    if(header) header.style.display = subId ? 'none' : 'block';
-    if(heroEl) heroEl.style.display = subId ? 'none' : 'flex';
+    if(mainContent){ if(subId) hide(mainContent); else show(mainContent); }
+    if(mainWrap){ if(subId) hide(mainWrap); else show(mainWrap); }
+    if(header){ if(subId) hide(header); else show(header); }
+    if(heroEl){ if(subId) hide(heroEl); else show(heroEl); }
     var targetId = subId ? 'providerProfileSub' + (subId === 'settings' ? 'Settings' : subId.charAt(0).toUpperCase() + subId.slice(1)) : '';
     if(!subId){
       var visibleSub = contentEl ? contentEl.querySelector('.provider-profile-sub[style*="flex"]') : null;
@@ -1343,11 +1332,11 @@
         visibleSub.style.transition = 'transform 0.28s cubic-bezier(0.32,0.72,0,1)';
         visibleSub.style.transform = 'translateX(100%)';
         setTimeout(function(){
-          subs.forEach(function(id){ var el = document.getElementById(id); if(el) el.style.display = 'none'; });
-          if(mainContent) mainContent.style.display = 'flex';
-          if(mainWrap) mainWrap.style.display = 'block';
-          if(header) header.style.display = 'block';
-          if(heroEl) heroEl.style.display = 'flex';
+          subs.forEach(function(id){ var el = document.getElementById(id); if(el) hide(el); });
+          if(mainContent) show(mainContent);
+          if(mainWrap) show(mainWrap);
+          if(header) show(header);
+          if(heroEl) show(heroEl);
           visibleSub.style.transform = ''; visibleSub.style.transition = '';
           if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }, 280);
@@ -1356,7 +1345,7 @@
     }
     subs.forEach(function(id){
       var el = document.getElementById(id);
-      if(el){ if(subId && id === targetId){ el.style.display = 'flex'; el.style.transform = ''; } else el.style.display = 'none'; }
+      if(el){ if(subId && id === targetId){ setVisible(el, 'flex'); el.style.transform = ''; } else hide(el); }
     });
     var card = document.getElementById('providerBusinessDataCardWrap');
     var slot = document.getElementById('providerBusinessDataCardSlot');
@@ -1385,7 +1374,7 @@
     function setGeldPeriod(label, period){
       window.geldExportPeriod = period;
       if(pdfLabel) pdfLabel.textContent = 'Auszug: ' + label;
-      if(pdfWrap) pdfWrap.style.display = 'block';
+      if(pdfWrap) show(pdfWrap);
       if(quickGestern) quickGestern.classList.toggle('active', period && period.type === 'yesterday');
       if(quickMonat) quickMonat.classList.toggle('active', period && period.type === 'currentMonth');
       document.querySelectorAll('.geld-pill').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-month') === String(period && period.month) && p.getAttribute('data-year') === String(period && period.year)); });
@@ -1410,7 +1399,7 @@
         wrap.appendChild(btn);
       }
     }
-    if(pdfWrap) pdfWrap.style.display = 'none';
+    if(pdfWrap) hide(pdfWrap);
     if(quickGestern) quickGestern.onclick = function(){ if(typeof haptic === 'function') haptic(6); var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); var d = yesterday; var l = (d.getDate() < 10 ? '0' : '') + d.getDate() + '.' + ((d.getMonth()+1) < 10 ? '0' : '') + (d.getMonth()+1) + '.' + d.getFullYear(); setGeldPeriod('Gestern (' + l + ')', { type: 'yesterday', date: l, label: l }); };
     if(quickMonat) quickMonat.onclick = function(){ if(typeof haptic === 'function') haptic(6); var n = new Date(); var l = monate[n.getMonth()] + ' ' + n.getFullYear(); setGeldPeriod(l, { type: 'currentMonth', month: n.getMonth() + 1, year: n.getFullYear(), label: l }); };
     if(pdfBtn) pdfBtn.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); if(typeof showToast === 'function') showToast('PDF wird vorbereitet'); };
@@ -1551,7 +1540,7 @@
     // Normale Kacheln rendern
     grid.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
-    empty.style.display = list.length ? 'none' : 'block';
+    if(list.length > 0) hide(empty); else show(empty);
 
     list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o, {context:'start'})));
   }
@@ -1619,6 +1608,8 @@
   }
   
   function renderDiscover(){
+    var main = document.querySelector('.discover-main');
+    if(main && !main.hasAttribute('data-discover-view') && typeof discoverViewMode !== 'undefined') main.setAttribute('data-discover-view', discoverViewMode);
     // Date Bar rendern (neu)
     renderDiscoverDays();
     
@@ -1641,18 +1632,18 @@
         e.preventDefault();
         e.stopPropagation();
         triggerHapticFeedback([10]);
-        const isExpanded = discoverLocationExpanded.style.display === 'block';
+        const isExpanded = discoverLocationExpanded.classList.contains('is-open');
         if(!isExpanded){
           const rect = btnDiscoverLocationText.getBoundingClientRect();
-          discoverLocationExpanded.style.top = (rect.bottom + 6) + 'px';
-          discoverLocationExpanded.style.left = Math.max(16, rect.left) + 'px';
-          discoverLocationExpanded.style.right = 'auto';
-          discoverLocationExpanded.style.display = 'block';
+          discoverLocationExpanded.style.setProperty('--expanded-top', (rect.bottom + 6) + 'px');
+          discoverLocationExpanded.style.setProperty('--expanded-left', Math.max(16, rect.left) + 'px');
+          discoverLocationExpanded.style.setProperty('--expanded-right', 'auto');
+          discoverLocationExpanded.classList.add('is-open');
           discoverLocationInput.value = (locationQuery && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
           if(typeof lucide !== 'undefined') lucide.createIcons();
           setTimeout(() => discoverLocationInput.focus(), 100);
         } else {
-          discoverLocationExpanded.style.display = 'none';
+          discoverLocationExpanded.classList.remove('is-open');
           discoverLocationInput.value = '';
           if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
         }
@@ -1700,7 +1691,7 @@
             selectLocation(query);
           }
         } else if(e.key === 'Escape'){
-          discoverLocationExpanded.style.display = 'none';
+          discoverLocationExpanded.classList.remove('is-open');
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
         }
@@ -1710,7 +1701,7 @@
       const discoverLocationClose = document.getElementById('discoverLocationClose');
       if(discoverLocationClose){
         discoverLocationClose.onclick = () => {
-          discoverLocationExpanded.style.display = 'none';
+          discoverLocationExpanded.classList.remove('is-open');
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
         };
@@ -1720,7 +1711,7 @@
       function requestUserLocation(){
         if(!navigator.geolocation){
           if(typeof showToast === 'function') showToast('GPS nicht verfügbar', 2000);
-          if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'block';
+          if(discoverLocationExpanded) discoverLocationExpanded.classList.add('is-open');
           if(discoverLocationInput) discoverLocationInput.focus();
           return;
         }
@@ -1732,7 +1723,7 @@
             userLng = position.coords.longitude;
             locationQuery = 'Aktueller Standort';
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = '📍 Aktueller Standort';
-            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+            if(discoverLocationExpanded) discoverLocationExpanded.classList.remove('is-open');
             if(typeof showToast === 'function') showToast('Standort aktualisiert', 1500);
             renderDiscover();
           },
@@ -1741,7 +1732,7 @@
             userLat = SCHORNDORF_LAT;
             userLng = SCHORNDORF_LNG;
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = DEFAULT_LOCATION_FALLBACK;
-            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+            if(discoverLocationExpanded) discoverLocationExpanded.classList.remove('is-open');
             renderDiscover();
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
@@ -1774,7 +1765,7 @@
       if(swipeLocationCity) swipeLocationCity.textContent = loc;
       if(discoverLocationInput) discoverLocationInput.value = '';
       if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
-      if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+      if(discoverLocationExpanded) discoverLocationExpanded.classList.remove('is-open');
       locationExpanded = false;
       triggerHapticFeedback([10]);
       renderDiscover();
@@ -1785,7 +1776,7 @@
       const exp = document.getElementById('discoverLocationExpanded');
       const inp = document.getElementById('discoverLocationInput');
       if(exp && inp){
-        exp.style.display = 'block';
+        exp.classList.add('is-open');
         inp.value = (locationQuery && locationQuery !== DEFAULT_LOCATION_FALLBACK && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
         inp.placeholder = 'PLZ oder Ort eingeben...';
         setTimeout(function(){ inp.focus(); }, 120);
@@ -1806,13 +1797,13 @@
         triggerHapticFeedback([10]);
         
         if(!searchExpanded){
-          discoverSearchExpanded.style.display = 'block';
+          discoverSearchExpanded.classList.add('is-open');
           setTimeout(() => {
             discoverSearchInput.focus();
           }, 100);
           searchExpanded = true;
         } else {
-          discoverSearchExpanded.style.display = 'none';
+          discoverSearchExpanded.classList.remove('is-open');
           discoverSearchInput.value = '';
           searchExpanded = false;
           renderDiscover();
@@ -1836,7 +1827,7 @@
       // ESC zum Schließen
       discoverSearchInput.onkeydown = (e)=>{
         if(e.key === 'Escape'){
-          discoverSearchExpanded.style.display = 'none';
+          discoverSearchExpanded.classList.remove('is-open');
           discoverSearchInput.value = '';
           searchExpanded = false;
           locationQuery = '';
@@ -1851,13 +1842,13 @@
     const radiusDropdown = document.getElementById('discoverRadiusDropdown');
     if(radiusLabel) radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
     if(radiusBtn && radiusDropdown){
-      radiusBtn.onclick = function(e){ e.stopPropagation(); radiusDropdown.style.display = radiusDropdown.style.display === 'block' ? 'none' : 'block'; };
+      radiusBtn.onclick = function(e){ e.stopPropagation(); radiusDropdown.classList.toggle('is-open'); };
       radiusDropdown.querySelectorAll('.discover-radius-opt').forEach(function(btn){
         btn.onclick = function(){
           discoverRadiusM = parseInt(btn.getAttribute('data-radius'),10);
           save('mittagio_discover_radius', discoverRadiusM);
           radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
-          radiusDropdown.style.display = 'none';
+          radiusDropdown.classList.remove('is-open');
           if(typeof lucide !== 'undefined') lucide.createIcons();
           renderDiscover();
         };
@@ -1865,8 +1856,8 @@
       if(!radiusDropdown._closedBound){
         radiusDropdown._closedBound = true;
         document.addEventListener('click', function(e){
-          if(radiusDropdown.style.display === 'block' && !radiusBtn.contains(e.target) && !radiusDropdown.contains(e.target)){
-            radiusDropdown.style.display = 'none';
+          if(radiusDropdown.classList.contains('is-open') && !radiusBtn.contains(e.target) && !radiusDropdown.contains(e.target)){
+            radiusDropdown.classList.remove('is-open');
           }
         });
       }
@@ -1980,7 +1971,7 @@
       // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
       setTimeout(() => {
       offersEl.innerHTML = '';
-      if(emptyEl) emptyEl.style.display = 'none';
+      if(emptyEl) hide(emptyEl);
 
       if(list.length === 0){
         // Modern Craft Empty State: Emoji, Serif-Headline, Text, Radius-Button [cite: 2026-01-29, 2026-02-18]
@@ -2081,32 +2072,22 @@
     discoverViewMode = mode === 'map' || mode === 'list' ? mode : 'list';
     save(LS.discoverView, discoverViewMode);
     
-    const listEl = document.getElementById('discoverOffers');
-    const mapWrap = document.getElementById('discoverMap');
-    const swipeEl = document.getElementById('discoverSwipe');
-    const emptyEl = document.getElementById('discoverEmpty');
-    const switchBtn = document.getElementById('discoverViewSwitchBtn');
+    const main = document.querySelector('.discover-main');
+    if(main) main.setAttribute('data-discover-view', discoverViewMode);
+    
     const switchIcon = document.getElementById('discoverViewSwitchIcon');
     const switchLabel = document.getElementById('discoverViewSwitchLabel');
-    
     if(discoverViewMode === 'map'){
-      if(listEl) listEl.style.display = 'none';
-      if(emptyEl) emptyEl.style.display = 'none';
-      if(mapWrap) { mapWrap.style.display = 'block'; renderDiscoverMap(); }
-      if(swipeEl) swipeEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '☰';
       if(switchLabel) switchLabel.textContent = 'Liste';
+      renderDiscoverMap();
       var routeEl = document.getElementById('discoverPinDrawerRoute');
-      if(routeEl) routeEl.style.display = (routeEl.getAttribute('href') && routeEl.getAttribute('href') !== '#') ? 'inline-flex' : 'none';
+      if(routeEl){ if(routeEl.getAttribute('href') && routeEl.getAttribute('href') !== '#') setVisible(routeEl, 'inline-flex'); else hide(routeEl); }
     } else {
-      if(listEl) listEl.style.display = 'flex';
-      if(mapWrap) mapWrap.style.display = 'none';
-      if(swipeEl) swipeEl.style.display = 'none';
-      if(emptyEl) emptyEl.style.display = 'none';
       if(switchIcon) switchIcon.textContent = '🗺️';
       if(switchLabel) switchLabel.textContent = 'Karte';
       var routeEl = document.getElementById('discoverPinDrawerRoute');
-      if(routeEl) routeEl.style.display = 'none';
+      if(routeEl) hide(routeEl);
       if(typeof renderDiscover === 'function') renderDiscover();
     }
     
@@ -2150,7 +2131,7 @@
     var mapEl = document.getElementById('discoverMapLeaflet');
     if(!mapEl) return;
     if(list.length === 0){
-      mapEl.style.display = 'none';
+      hide(mapEl);
       var empty = mapEl.parentNode.querySelector('.discover-map-empty');
       if(empty) empty.remove();
       var emptyDiv = document.createElement('div');
@@ -2160,7 +2141,7 @@
       if(discoverLeafletMap){ discoverLeafletMarkers.forEach(function(m){ discoverLeafletMap.removeLayer(m); }); discoverLeafletMarkers = []; }
       return;
     }
-    mapEl.style.display = 'block';
+    show(mapEl);
     var empty = mapEl.parentNode.querySelector('.discover-map-empty');
     if(empty) empty.remove();
     if(typeof L === 'undefined'){
@@ -2175,7 +2156,7 @@
         if(btn){
           var c = discoverLeafletMap.getCenter();
           var d = Math.abs(c.lat - SCHORNDORF_CENTER[0]) + Math.abs(c.lng - SCHORNDORF_CENTER[1]);
-          btn.style.display = d > 0.005 ? 'block' : 'none';
+          if(d > 0.005) show(btn); else hide(btn);
         }
       });
     }
@@ -2188,8 +2169,13 @@
       var hasAbholnummer = !!(p && (data.hasPickupCode || p.hasPickupCode));
       var latlng = offerToLatLng(o);
       var color = hasAbholnummer ? '#FFD700' : '#22c55e';
-      var icon = L.divIcon({ className: 'discover-leaflet-pin', html: '<div style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+      var icon = L.divIcon({ className: 'discover-leaflet-pin', html: '<div class="s5-map-pin"></div>', iconSize: [28, 28], iconAnchor: [14, 14] });
       var marker = L.marker(latlng, { icon: icon }).addTo(discoverLeafletMap);
+      var iconEl = marker.getElement ? marker.getElement() : marker._icon;
+      if (iconEl) {
+        var pinDiv = iconEl.querySelector ? iconEl.querySelector('.s5-map-pin') : null;
+        if (pinDiv) pinDiv.style.setProperty('--pin-bg', color);
+      }
       marker.on('click', function(){ openDiscoverPinDrawer(o); });
       discoverLeafletMarkers.push(marker);
     });
@@ -2223,7 +2209,7 @@
     var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
     if(routeEl){
       routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
-      routeEl.style.display = (discoverViewMode === 'map' && addr) ? 'inline-flex' : 'none';
+      if(discoverViewMode === 'map' && addr) setVisible(routeEl, 'inline-flex'); else hide(routeEl);
     }
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
@@ -2267,7 +2253,7 @@
   var discoverMapBtnHierSuchen = document.getElementById('discoverMapBtnHierSuchen');
   if(discoverMapBtnHierSuchen){
     discoverMapBtnHierSuchen.onclick = function(){
-      this.style.display = 'none';
+      hide(this);
       if(discoverLeafletMap){ discoverLeafletMap.setView(SCHORNDORF_CENTER, discoverLeafletMap.getZoom()); renderDiscoverMap(); }
     };
   }
@@ -2392,15 +2378,15 @@
     }
     
     if(swipeCards.length === 0){
-      if(swipeEmpty) swipeEmpty.style.display = 'block';
+      if(swipeEmpty) show(swipeEmpty);
       const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
       return;
     }
     
-    if(swipeEmpty) swipeEmpty.style.display = 'none';
+    if(swipeEmpty) hide(swipeEmpty);
     const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-    if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+    if(swipeEndOfStack) hide(swipeEndOfStack);
     
     // Erstelle nur die ersten 3 Karten (Performance)
     const cardsToShow = Math.min(3, swipeCards.length);
@@ -2423,14 +2409,14 @@
     card.dataset.offerId = data.id;
     card.dataset.swipeIndex = index;
     card.dataset.category = (data.category || data.diet || '').toLowerCase(); // Für Filter-Logik
-    card.style.zIndex = 100 - index;
-    
-    // Tinder-Stack: Random Rotation (-2° bis +2°) für Stapel-Effekt
-    const randomRotation = (Math.random() * 4 - 2); // -2 bis +2 Grad
+    const randomRotation = (Math.random() * 4 - 2);
     const scale = 1 - index * 0.04;
     const translateY = index * 12;
-    card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${index > 0 ? randomRotation : 0}deg)`;
-    card.style.opacity = index === 0 ? 1 : 0.92;
+    card.style.setProperty('--swipe-z', String(100 - index));
+    card.style.setProperty('--swipe-ty', String(translateY));
+    card.style.setProperty('--swipe-scale', String(scale));
+    card.style.setProperty('--swipe-rot', index > 0 ? String(randomRotation) : '0');
+    card.style.setProperty('--swipe-opacity', index === 0 ? '1' : '0.92');
     
     // Float/Waber-Animation nur für die aktive (oberste) Karte
     if(index === 0){
@@ -2456,22 +2442,22 @@
         <div class="swipe-card-image-wrapper">
           <div class="swipe-card-image">
             <img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" />
-            <div class="swipe-card-heart-icon" style="position:absolute; top:12px; right:12px; width:44px; height:44px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:15; cursor:pointer; transition:all 0.2s ease;" title="${isFavorited ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}">
-              <span style="font-size:20px; ${isFavorited ? 'color:#E34D4D;' : 'color:#999;'}">${isFavorited ? '❤️' : '🤍'}</span>
+            <div class="swipe-card-heart-icon s5-swipe-heart-wrap" title="${isFavorited ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}">
+              <span class="${isFavorited ? 's5-swipe-heart-emoji-fav' : 's5-swipe-heart-emoji'}">${isFavorited ? '❤️' : '🤍'}</span>
             </div>
             <div class="swipe-card-price-sticker">${euro(data.price)}</div>
           </div>
         </div>
         
         <!-- Titel-Sektion: Direkt unter dem Bild -->
-        <div class="swipe-card-title-section" style="width:100%; padding:16px 12px 0; text-align:center;">
+        <div class="swipe-card-title-section s5-swipe-title-section">
           <h2 class="swipe-card-title">${esc(data.dish||'Gericht')}</h2>
           <p class="swipe-card-provider">${esc(data.providerName||'Anbieter')}</p>
-          <div style="margin-top:12px; padding:0 8px;">${renderPillarBars(hasDineIn, orderingEnabled, hasReuseSupport)}</div>
+          <div class="s5-swipe-pillar-wrap">${renderPillarBars(hasDineIn, orderingEnabled, hasReuseSupport)}</div>
         </div>
         
         <!-- Logistik-Sektion: Distanzen, Essenszeit & Allergene -->
-        <div class="swipe-card-logistics-section" style="width:100%; padding:12px 16px 0; margin-top:8px;">
+        <div class="swipe-card-logistics-section s5-swipe-logistics">
           ${(() => {
             // Distanzberechnung
             const distanceKm = data.distanceKm || 0;
@@ -2486,7 +2472,7 @@
               if(timeMatch){
                 const fromTime = timeMatch[1] + ':' + timeMatch[2];
                 const toTime = timeMatch[3] + ':' + timeMatch[4];
-                timeWindowHtml = `<div style="display:flex; align-items:center; gap:6px; font-size:13px; color:#666; margin-bottom:8px;">
+                timeWindowHtml = `<div class="s5-swipe-time-row">
                   <span>🕒</span>
                   <span>von ${fromTime} bis ${toTime} Uhr</span>
                 </div>`;
@@ -2497,20 +2483,20 @@
             let allergensHtml = '';
             if(data.allergens && Array.isArray(data.allergens) && data.allergens.length > 0){
               const allergenCount = data.allergens.length;
-              allergensHtml = `<div style="display:flex; align-items:center; gap:6px; font-size:13px; color:#666; cursor:pointer; text-decoration:underline; margin-top:8px;" onclick="showSwipeAllergensOverlay('${esc(data.id)}'); event.stopPropagation();" title="Allergene anzeigen">
+              allergensHtml = `<div class="s5-swipe-allergen-link" onclick="showSwipeAllergensOverlay('${esc(data.id)}'); event.stopPropagation();" title="Allergene anzeigen">
                 <span>Allergene anzeigen</span>
-                <span style="font-size:12px;">ⓘ</span>
+                <span class="s5-swipe-allergen-i">ⓘ</span>
               </div>`;
             }
             
             return `
               <!-- Doppelte Distanzanzeige: Parallel -->
-              <div style="display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:8px; flex-wrap:wrap;">
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:#666;">
+              <div class="s5-swipe-dist-row">
+                <div class="s5-swipe-dist-item">
                   <span>🚶</span>
                   <span>${walkingMeters < 1000 ? walkingMeters + 'm' : (walkingMeters / 1000).toFixed(1) + 'km'} • ${walkingMinutes} Min</span>
                 </div>
-                <div style="display:flex; align-items:center; gap:6px; font-size:13px; color:#666;">
+                <div class="s5-swipe-dist-item">
                   <span>🚗</span>
                   <span>${distanceKm.toFixed(1)}km • ${carMinutes} Min</span>
                 </div>
@@ -2538,7 +2524,7 @@
         if(span){
           const nowFav = dishFavs.has(String(data.id));
           span.innerHTML = nowFav ? '❤️' : '🤍';
-          span.style.color = nowFav ? '#E34D4D' : '#999';
+          span.className = nowFav ? 's5-swipe-heart-emoji-fav' : 's5-swipe-heart-emoji';
         }
       };
     }
@@ -2585,27 +2571,27 @@
         ? ALLERGENE_STANDARD[code] 
         : `Allergen ${code}`;
       const firstWord = typeof allergenFirstWord === 'function' ? allergenFirstWord(fullLabel) : String(fullLabel).trim().split(/\s+/)[0] || fullLabel;
-      return `<div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
-        <i data-lucide="shield-alert" style="width:20px;height:20px;color:rgba(255,255,255,0.8);flex-shrink:0;"></i>
-        <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(code)}</span>
-        <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(firstWord)}</span>
+      return `<div class="s5-allergen-row">
+        <i data-lucide="shield-alert" class="s5-allergen-icon"></i>
+        <span class="s5-allergen-code">${esc(code)}</span>
+        <span class="s5-allergen-label">${esc(firstWord)}</span>
       </div>`;
     }).join('');
     
     const disclaimer = 'Für die Richtigkeit und Aktualität der Angaben ist ausschließlich der Anbieter verantwortlich. Bei schweren Allergien halten Sie bitte Rücksprache mit dem Personal vor Ort.';
     
     content.innerHTML = `
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
-        <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene & Informationen</h3>
-        <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;">
-          <i data-lucide="x" style="width:20px;height:20px;"></i>
+      <div class="s5-allergen-hdr">
+        <h3 class="s5-allergen-hdr-title">Allergene & Informationen</h3>
+        <button type="button" class="s5-allergen-hdr-close" onclick="this.closest('.s5-overlay-dark').remove();">
+          <i data-lucide="x" class="s5-allergen-hdr-close-i"></i>
         </button>
       </div>
-      <div style="padding:12px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; flex-shrink:0; font-size:12px; color:rgba(255,255,255,0.85); line-height:1.5;">
+      <div class="s5-allergen-disclaimer">
         ${esc(disclaimer)}
       </div>
-      <div style="max-height:280px; overflow-y:auto; flex:1; min-height:0;">
-        ${allergenList || '<p style="color:rgba(255,255,255,0.5); font-size:14px;">Keine passenden Allergene in der Standard-Liste.</p>'}
+      <div class="s5-allergen-scroll">
+        ${allergenList || '<p class="s5-allergen-empty">Keine passenden Allergene in der Standard-Liste.</p>'}
       </div>
     `;
     
@@ -2633,9 +2619,10 @@
         const swipeStack = document.getElementById('swipeStack');
         if(!swipeStack) return;
         const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
-          if(!c || !c.style) return false;
-          const opacity = c.style.opacity;
-          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+          if(!c) return false;
+          if(c.classList.contains('s5-swipe-hidden')) return false;
+          const opacity = c.style.getPropertyValue('--swipe-opacity');
+          return opacity !== '0' && opacity !== '0px';
         });
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(currentCard && currentCard.dataset){
@@ -2676,7 +2663,7 @@
       btnReject.onclick = () => {
         const swipeStack = document.getElementById('swipeStack');
         if(!swipeStack) return;
-        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => c.style.opacity !== '0');
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => !c.classList.contains('s5-swipe-hidden') && c.style.getPropertyValue('--swipe-opacity') !== '0');
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
@@ -2701,7 +2688,7 @@
       btnLike.onclick = () => {
         const swipeStack = document.getElementById('swipeStack');
         if(!swipeStack) return;
-        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => c.style.opacity !== '0');
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => !c.classList.contains('s5-swipe-hidden') && c.style.getPropertyValue('--swipe-opacity') !== '0');
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
@@ -2803,13 +2790,13 @@
     overlay.id = 'matchOverlayTinder';
     overlay.className = 's5-overlay-dark s5-overlay-inset';
     overlay.innerHTML = `
-      <div class="match-overlay" style="text-align:center; padding:40px; max-width:320px;">
-        <div style="font-size:80px; margin-bottom:16px;">😋</div>
-        <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
-        <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
-        <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In meine Box 🍱</button>
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
+      <div class="match-overlay s5-overlay-match-box">
+        <div class="s5-overlay-match-emoji">😋</div>
+        <h2 class="s5-overlay-match-title">Lecker!</h2>
+        <p class="s5-overlay-match-text">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
+        <div class="s5-overlay-match-btns">
+          <button type="button" class="s5-overlay-match-btn-primary" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();">In meine Box 🍱</button>
+          <button type="button" class="s5-overlay-match-btn-secondary" onclick="document.getElementById('matchOverlayTinder').remove();">Weiter</button>
         </div>
       </div>
     `;
@@ -2862,8 +2849,7 @@
       swipeFiltersSelected = true;
       const intro = document.getElementById('swipeFilterIntro');
       const area = document.getElementById('swipeStackArea');
-      if(intro) intro.style.display = 'none';
-      if(area) area.style.display = 'flex';
+      setSwipeState(intro, area, 'area');
       renderSwipeCards();
       showToast('Karten geladen – viel Spaß beim Swipen!', 1500);
     } else {
@@ -2908,17 +2894,20 @@
     const cardRect = card.getBoundingClientRect();
     const favRect = favNavBtn.getBoundingClientRect();
     
-    flyImg.style.left = cardRect.left + (cardRect.width / 2) - 50 + 'px';
-    flyImg.style.top = cardRect.top + (cardRect.height * 0.3) + 'px';
-    
+    flyImg.style.setProperty('--fly-left', (cardRect.left + (cardRect.width / 2) - 50) + 'px');
+    flyImg.style.setProperty('--fly-top', (cardRect.top + (cardRect.height * 0.3)) + 'px');
+    flyImg.style.setProperty('--fly-width', '100px');
+    flyImg.style.setProperty('--fly-height', '100px');
+    flyImg.style.setProperty('--fly-x', '0');
+    flyImg.style.setProperty('--fly-y', '0');
+    flyImg.style.setProperty('--fly-scale', '1');
+    flyImg.style.setProperty('--fly-opacity', '1');
     document.body.appendChild(flyImg);
-    
-    // Animation zum Herz-Icon
     setTimeout(() => {
-      flyImg.style.left = favRect.left + (favRect.width / 2) - 50 + 'px';
-      flyImg.style.top = favRect.top + (favRect.height / 2) - 50 + 'px';
-      flyImg.style.transform = 'scale(0.2) rotate(360deg)';
-      flyImg.style.opacity = '0';
+      flyImg.style.setProperty('--fly-left', (favRect.left + (favRect.width / 2) - 50) + 'px');
+      flyImg.style.setProperty('--fly-top', (favRect.top + (favRect.height / 2) - 50) + 'px');
+      flyImg.style.setProperty('--fly-scale', '0.2');
+      flyImg.style.setProperty('--fly-opacity', '0');
     }, 50);
     
     // Heart-Reaction: Bounce + Glow
@@ -2963,29 +2952,29 @@
     content.onclick = function(e){ e.stopPropagation(); };
     
     content.innerHTML = `
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-        <div style="width:48px; height:48px; border-radius:12px; background:rgba(255,215,0,0.15); display:flex; align-items:center; justify-content:center;">
-          <i data-lucide="store" style="width:24px;height:24px; color:#FFD700;"></i>
+      <div class="s5-prov-pop-hdr">
+        <div class="s5-prov-pop-icon-wrap">
+          <i data-lucide="store" class="s5-prov-pop-icon-store"></i>
         </div>
-        <div style="flex:1;">
-          <div style="font-weight:900; font-size:18px; color:#2D3436; margin-bottom:4px;">${esc(provider.providerName || 'Anbieter')}</div>
-          <div style="font-size:14px; color:#666; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="map-pin" style="width:14px;height:14px;"></i>
+        <div class="s5-prov-pop-body">
+          <div class="s5-prov-pop-title">${esc(provider.providerName || 'Anbieter')}</div>
+          <div class="s5-prov-pop-address">
+            <i data-lucide="map-pin" class="s5-prov-pop-icon-pin"></i>
             <span>${esc(address)}</span>
           </div>
         </div>
-        <button onclick="this.closest('.backdrop').remove();" style="background:none; border:none; padding:8px; cursor:pointer; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='#f5f5f5';" onmouseout="this.style.background='none';">
-          <i data-lucide="x" style="width:20px;height:20px; color:#666;"></i>
+        <button type="button" class="s5-prov-pop-close" onclick="this.closest('.backdrop').remove();">
+          <i data-lucide="x" class="s5-prov-pop-icon-x"></i>
         </button>
       </div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        <button class="btn-primary" type="button" onclick="openGoogleMapsRoute('${esc(providerId)}'); this.closest('.backdrop').remove();" style="width:100%; min-height:48px; font-weight:700;">
-          <i data-lucide="navigation" style="width:20px;height:20px;"></i> <span>Anfahrt</span>
+      <div class="s5-prov-pop-actions">
+        <button class="btn-primary s5-prov-pop-btn" type="button" onclick="openGoogleMapsRoute('${esc(providerId)}'); this.closest('.backdrop').remove();">
+          <i data-lucide="navigation" class="s5-prov-pop-icon-nav"></i> <span>Anfahrt</span>
         </button>
         ${provider.distanceKm != null ? (() => {
           const walkingMinutes = Math.round(Number(provider.distanceKm) * 12);
           const walkingTimeText = walkingMinutes < 1 ? '< 1 Min.' : `${walkingMinutes} Min.`;
-          return `<div style="text-align:center; font-size:13px; color:#666; padding:8px; display:flex; align-items:center; justify-content:center; gap:4px;"><i data-lucide="navigation" style="width:14px;height:14px;"></i> <span>${walkingTimeText} zu Fuß</span></div>`;
+          return `<div class="s5-prov-pop-walking"><i data-lucide="navigation" class="s5-prov-pop-icon-nav-sm"></i> <span>${walkingTimeText} zu Fuß</span></div>`;
         })() : ''}
       </div>
     `;
@@ -3070,22 +3059,18 @@
     // WICHTIG: Dies verhindert, dass alte State-Variablen aus Closure die neue Karte blockieren
     const allCards = swipeStack.querySelectorAll('.swipe-card');
     allCards.forEach(card => {
-      if(card && card.style){
-        // Entferne alle Swipe-Klassen und setze State zurück
-        card.classList.remove('swiping');
-        card.style.transition = '';
-        // Entferne haptisches Feedback Flag
+      if(card){
+        card.classList.remove('swiping', 's5-swipe-hidden');
         if(card.dataset) card.dataset.hapticTriggered = '';
       }
     });
     
-    // Speicher-Bereinigung: Entferne alle entfernten Karten aus dem DOM
     allCards.forEach(card => {
-      if(!card || !card.parentNode || !card.style || card.style.opacity === '0'){
-        // Karte wurde bereits entfernt oder ist unsichtbar - entferne sie komplett
-        if(card && card.parentNode && card.style){
-          // CRITICAL FIX: Setze display:none BEVOR entfernt wird, um Events zu blockieren
-          card.style.display = 'none';
+      const opacity = card && card.style ? card.style.getPropertyValue('--swipe-opacity') : '';
+      const isHidden = !card || !card.parentNode || card.classList.contains('s5-swipe-hidden') || opacity === '0';
+      if(isHidden){
+        if(card && card.parentNode){
+          card.classList.add('s5-swipe-hidden');
           // Cleanup: Entferne alle Event-Listener durch Klonen und Ersetzen
           const newCard = card.cloneNode(true);
           card.parentNode.replaceChild(newCard, card);
@@ -3097,11 +3082,9 @@
     // Verschiebe alle verbleibenden Karten nach oben (zentriert)
     // Performance-Fix: Prüfe ob Elemente noch existieren
     let cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
-      if(!c || !c.parentNode || !c.style) return false; // Element existiert nicht mehr
-      // CRITICAL FIX: Filtere auch display:none Karten aus
-      if(c.style.display === 'none') return false;
-      // Filtere Karten mit opacity 0 oder swipe-Klassen
-      const opacity = c.style.opacity;
+      if(!c || !c.parentNode) return false;
+      if(c.classList.contains('s5-swipe-hidden')) return false;
+      const opacity = c.style.getPropertyValue('--swipe-opacity');
       if(opacity === '0' || opacity === '0px') return false;
       if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
       return true;
@@ -3137,46 +3120,34 @@
     
     // CRITICAL FIX: Aktualisiere cards-Array nach dem Laden neuer Karten
     cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
-      if(!c || !c.parentNode || !c.style) return false;
-      if(c.style.display === 'none') return false;
-      const opacity = c.style.opacity;
+      if(!c || !c.parentNode) return false;
+      if(c.classList.contains('s5-swipe-hidden')) return false;
+      const opacity = c.style.getPropertyValue('--swipe-opacity');
       if(opacity === '0' || opacity === '0px') return false;
       if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
       return true;
     });
     
     cards.forEach((card, i) => {
-      if(!card || !card.parentNode || !card.style) return; // Sicherheitscheck
-      
-      // CRITICAL FIX: Aktualisiere den Index als data-Attribut für dynamische Prüfung
+      if(!card || !card.parentNode) return;
       if(card.dataset) card.dataset.swipeIndex = String(currentSwipeIndex + i);
-      
-      // Reset Transform und Transition für sauberen Neustart
-      card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-      card.style.zIndex = String(100 - i);
       const scale = 1 - i * 0.05;
       const translateY = i * 10;
-      card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
-      card.style.opacity = i === 0 ? '1' : '0.95';
-      
-      // CRITICAL: Die oberste Karte (i === 0) muss interaktiv sein und Event-Listener erhalten
+      card.style.setProperty('--swipe-z', String(100 - i));
+      card.style.setProperty('--swipe-ty', String(translateY));
+      card.style.setProperty('--swipe-scale', String(scale));
+      card.style.setProperty('--swipe-opacity', i === 0 ? '1' : '0.95');
       if(i === 0){
-        card.style.pointerEvents = 'auto';
-        card.style.cursor = 'grab';
-        card.style.display = 'block';
-        card.style.willChange = 'transform';
-        card.classList.remove('swipe-left', 'swipe-right', 'swiping', 'fly-out-left', 'fly-out-right');
-        card.classList.add('active-float'); // Tinder Float/Waber Animation
-        card.style.opacity = '1';
-        card.style.visibility = 'visible';
-        // Tinder: Random Rotation für Stack-Effekt entfernen bei aktiver Karte
-        card.style.transform = `translate(-50%, -50%) scale(1)`;
+        card.classList.remove('swipe-left', 'swipe-right', 'swiping', 'fly-out-left', 'fly-out-right', 's5-swipe-stack');
+        card.classList.add('active-float', 's5-swipe-top');
+        card.style.setProperty('--swipe-ty', '0');
+        card.style.setProperty('--swipe-scale', '1');
+        card.style.setProperty('--swipe-rot', '0');
+        card.style.setProperty('--swipe-opacity', '1');
       } else {
-        card.style.pointerEvents = 'none';
-        card.classList.remove('active-float');
-        // Tinder: Random Rotation beibehalten für Stack-Effekt
-        const randomRotation = (Math.random() * 4 - 2);
-        card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${randomRotation}deg)`;
+        card.classList.remove('active-float', 's5-swipe-top');
+        card.classList.add('s5-swipe-stack');
+        card.style.setProperty('--swipe-rot', String((Math.random() * 4 - 2)));
       }
     });
     
@@ -3188,17 +3159,18 @@
     
     // CRITICAL FIX: Prüfe sowohl ob keine Karten mehr sichtbar sind UND ob alle Karten durchgesehen wurden
     const allCardsVisible = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
-      if(!c || !c.style) return false;
-      const opacity = c.style.opacity;
-      return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+      if(!c) return false;
+      if(c.classList.contains('s5-swipe-hidden')) return false;
+      const opacity = c.style.getPropertyValue('--swipe-opacity');
+      return opacity !== '0' && opacity !== '0px';
     }).length;
     
     if(allCardsVisible === 0 && currentSwipeIndex >= swipeCards.length){
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'block';
-      if(swipeEmpty) swipeEmpty.style.display = 'none';
+      if(swipeEndOfStack) show(swipeEndOfStack);
+      if(swipeEmpty) hide(swipeEmpty);
     } else {
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
-      if(swipeEmpty) swipeEmpty.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
+      if(swipeEmpty) hide(swipeEmpty);
     }
     
     // Debug-Overlay aktualisieren
@@ -3211,20 +3183,18 @@
     // Performance-Fix: Aggressiveres Cleanup nach jedem Swipe
     setTimeout(() => {
       if(!swipeStack) return;
-      const removedCards = swipeStack.querySelectorAll('.swipe-card[style*="opacity: 0"]');
+      const removedCards = swipeStack.querySelectorAll('.swipe-card.s5-swipe-hidden');
       removedCards.forEach(card => {
         if(card && card.parentNode){
-          // Entferne alle Event-Listener durch Klonen
           const newCard = card.cloneNode(true);
           card.parentNode.replaceChild(newCard, card);
           card.remove();
         }
       });
-      
-      // Zusätzlicher Cleanup: Entferne Karten die nicht mehr sichtbar sind
       const allCards = swipeStack.querySelectorAll('.swipe-card');
       allCards.forEach(card => {
-        if(card && (card.style.opacity === '0' || !card.parentNode || card.offsetParent === null)){
+        const opacity = card.style.getPropertyValue('--swipe-opacity');
+        if(card && (opacity === '0' || !card.parentNode || card.classList.contains('s5-swipe-hidden'))){
           if(card.parentNode) card.remove();
         }
       });
@@ -3302,8 +3272,8 @@
     // Zeige FAB nur in Discover-View
     function showFabInDiscover(){
       const currentView = document.querySelector('.view.active');
+      if(currentView && currentView.id === 'v-discover') setVisible(fabModeToggle, 'flex'); else hide(fabModeToggle);
       if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
         // Zeige Hint nach kurzer Verzögerung
         setTimeout(() => {
           if(fabHint) fabHint.classList.add('show');
@@ -3313,8 +3283,6 @@
           if(fabHint) fabHint.classList.remove('show');
           save('fabHintShown', true);
         }, 2500);
-      } else {
-        fabModeToggle.style.display = 'none';
       }
     }
     
@@ -3333,11 +3301,7 @@
     // Hint bereits gezeigt - zeige FAB nur in Discover
     function showFabInDiscover(){
       const currentView = document.querySelector('.view.active');
-      if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
-      } else {
-        fabModeToggle.style.display = 'none';
-      }
+      if(currentView && currentView.id === 'v-discover') setVisible(fabModeToggle, 'flex'); else hide(fabModeToggle);
     }
     showFabInDiscover();
     
@@ -3356,9 +3320,7 @@
     syncToggleState();
     if(fabModeToggle){
       const currentView = document.querySelector('.view.active');
-      if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
-      }
+      if(currentView && currentView.id === 'v-discover') setVisible(fabModeToggle, 'flex'); else hide(fabModeToggle);
     }
   }, 200);
   
@@ -3418,8 +3380,7 @@
     dismissBtn.onclick = function(e){
       e.stopPropagation();
       triggerHapticFeedback([10]);
-      card.style.opacity = '0';
-      card.style.transform = 'scale(0.9)';
+      card.classList.add('s5-dismiss-out');
       setTimeout(function(){ if(card.parentNode) card.parentNode.removeChild(card); }, 200);
       showToast('Gericht ausgeschlossen');
     };
@@ -3478,7 +3439,7 @@
       <div class="tgtg-list-item-img-wrap tgtg-list-item-img-compact">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
         <div class="tgtg-actions-top">
-          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" class="s5-card-icon-fav ${isFavorited ? 's5-card-icon-fav-active' : ''}"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-fav${isFavorited ? ' fav-active' : ''}" aria-label="Favorit" title="Favorit"><i data-lucide="heart" class="s5-card-icon-fav"></i></button>
           <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" class="s5-card-icon-share"></i></button>
         </div>
         <div class="tgtg-price-badge">${euro(data.price)}</div>
@@ -3607,7 +3568,7 @@
     // Heart Icon (Favorit) - rechts oben (kein Text, nur Icon)
     const dishKey = data.id;
     const heart=document.createElement('button');
-    heart.className='card-heart'+(dishFavs.has(dishKey)?' on':'');
+    heart.className='card-heart'+(dishFavs.has(dishKey)?' on fav-active':'');
     heart.type='button';
     heart.innerHTML = dishFavs.has(dishKey) ? iconMarkup('heart', {fill:true}) : iconMarkup('heart');
     heart.onclick=(e)=>{ e.stopPropagation(); toggleDishFav(dishKey); };
@@ -3697,13 +3658,7 @@
     } else {
       // Standard: Anbieter mit Store-Icon
       const providerEl = document.createElement('p');
-      providerEl.className='card-provider';
-      providerEl.style.cursor = 'pointer';
-      providerEl.style.textDecoration = 'underline';
-      providerEl.style.textDecorationColor = 'rgba(0,0,0,0.2)';
-      providerEl.style.transition = 'opacity 0.2s ease';
-      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
-      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+      providerEl.className = 'card-provider s5-provider-link';
       providerEl.innerHTML = `<i data-lucide="store" class="s5-card-icon-share-btn"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
@@ -3771,7 +3726,7 @@
         const orderBtn = document.createElement('button');
         orderBtn.type = 'button';
         orderBtn.className = 's5-order-btn-polaroid' + (!data.hasPickupCode ? ' is-disabled' : '');
-        orderBtn.innerHTML = '<span style="font-size:18px;line-height:1;">\uD83C\uDF71</span> <span>In meine Box</span>';
+        orderBtn.innerHTML = '<span class="s5-order-btn-emoji">\uD83C\uDF71</span> <span>In meine Box</span>';
         orderBtn.disabled = !data.hasPickupCode;
         orderBtn.onclick = function(e){
           e.stopPropagation();
@@ -3951,14 +3906,12 @@
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'tgtg-btn-remove s5-fav-remove';
-    removeBtn.innerHTML = '<i data-lucide="x" style="width:14px;height:14px;color:#E34D4D;stroke-width:3;"></i>';
+    removeBtn.innerHTML = '<i data-lucide="x" class="s5-icon-x-red-14"></i>';
     removeBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
       triggerHapticFeedback([15]);
-      card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-      card.style.opacity = '0';
-      card.style.transform = 'scale(0.95)';
+      card.classList.add('s5-fav-remove-out');
       setTimeout(() => {
         toggleDishFav(data.id);
         renderFavorites();
@@ -3969,10 +3922,10 @@
     const body = document.createElement('div');
     body.className = 'fav-card-body s5-fav-body';
     body.innerHTML = `
-      <p class="tgtg-fav-meta" style="font-size:11px; font-weight:700; color:#94a3b8; margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(data.providerName||'Anbieter')}</p>
-      <p class="tgtg-fav-title" style="font-size:14px; font-weight:800; color:var(--tgtg-title-color,#0f172a); margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${esc(data.dish||'Gericht')}</p>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:6px;">
-        <span class="tgtg-list-item-price" style="font-size:14px; font-weight:900;">${euro(data.price)}</span>
+      <p class="tgtg-fav-meta s5-tgtg-fav-meta">${esc(data.providerName||'Anbieter')}</p>
+      <p class="tgtg-fav-title s5-tgtg-fav-title">${esc(data.dish||'Gericht')}</p>
+      <div class="s5-tgtg-fav-row">
+        <span class="tgtg-list-item-price s5-tgtg-fav-price">${euro(data.price)}</span>
       </div>
     `;
     
@@ -4031,10 +3984,6 @@
     // activeFavDay wird immer auf heute gesetzt
     activeFavDay = isoDate(new Date());
     
-    // Verstecke Day-Switcher falls noch vorhanden
-    const daySwitcher = document.getElementById('favDaySwitcher');
-    if(daySwitcher) daySwitcher.style.display = 'none';
-
     const candidates = offers
       .filter(o => o.active !== false && providerFavs.has(o.providerId) && o.day === activeFavDay)
       .sort((a,b)=>String(b.day||'').localeCompare(String(a.day||'')));
@@ -4058,35 +4007,19 @@
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
     const hasAnyFavorites = providerList.length > 0 || dishList.length > 0;
     
-    if(favEmptyState){
-      favEmptyState.style.display = hasAnyFavorites ? 'none' : 'flex';
-      // Stelle sicher, dass Flex-Layout aktiv ist
-      if(!hasAnyFavorites){
-        favEmptyState.style.flexDirection = 'column';
-        favEmptyState.style.alignItems = 'center';
-        favEmptyState.style.textAlign = 'center';
-      }
-    }
-    if(favContent){
-      favContent.style.display = hasAnyFavorites ? 'block' : 'none';
-    }
+    if(favEmptyState){ if(!hasAnyFavorites) setVisible(favEmptyState, 'flex'); else hide(favEmptyState); }
+    if(favContent){ if(hasAnyFavorites) show(favContent); else hide(favContent); }
     
     // Provider Section - "Deine Lieblings-Anbieter heute"
     const sectionProvidersWrapper = document.getElementById('sectionProvidersWrapper');
     const favProviderSeparator = document.getElementById('favProviderSeparator');
     provGrid.innerHTML='';
     
-    // Zeige Sektion nur wenn es Anbieter-Favoriten gibt
-    if(sectionProvidersWrapper){
-      sectionProvidersWrapper.style.display = providerFavs.size > 0 ? 'block' : 'none';
-    }
-    if(favProviderSeparator){
-      favProviderSeparator.style.display = (providerFavs.size > 0 && dishList.length > 0) ? 'block' : 'none';
-    }
-    
+    if(sectionProvidersWrapper){ if(providerFavs.size > 0) show(sectionProvidersWrapper); else hide(sectionProvidersWrapper); }
+    if(favProviderSeparator){ if(providerFavs.size > 0 && dishList.length > 0) show(favProviderSeparator); else hide(favProviderSeparator); }
     const sectionProviders = document.getElementById('sectionProviders');
-    if(sectionProviders) sectionProviders.style.display = providerList.length > 0 ? 'block' : 'none';
-    provEmpty.style.display = providerList.length ? 'none' : 'block';
+    if(sectionProviders){ if(providerList.length > 0) show(sectionProviders); else hide(sectionProviders); }
+    if(provEmpty){ if(providerList.length > 0) hide(provEmpty); else show(provEmpty); }
     
     // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
     const allFavoritedProviders = Array.from(providerFavs);
@@ -4138,10 +4071,8 @@
         let total = 0;
         dishList.forEach(o => { total += Number(normalizeOffer(o).price) || 0; });
         favSummaryValue.textContent = (typeof euro === 'function' ? euro(total) : (total.toFixed(2) + ' €'));
-        favSummaryBar.style.display = 'flex';
-      } else {
-        favSummaryBar.style.display = 'none';
       }
+      if(dishList.length > 0) setVisible(favSummaryBar, 'flex'); else hide(favSummaryBar);
     }
     // Header: Standort links (wie Discovery)
     const favHeaderLocation = document.getElementById('favHeaderLocation');
@@ -4153,8 +4084,8 @@
     // Dish Section: alle Gericht-Favoriten (95% Karten, Slim-Pills, Aktionen)
     dishGrid.innerHTML='';
     const sectionDishesWrapper = document.getElementById('sectionDishesWrapper');
-    if(sectionDishesWrapper) sectionDishesWrapper.style.display = dishList.length > 0 ? 'block' : 'none';
-    dishEmpty.style.display = dishList.length ? 'none' : 'block';
+    if(sectionDishesWrapper){ if(dishList.length > 0) show(sectionDishesWrapper); else hide(sectionDishesWrapper); }
+    if(dishEmpty){ if(dishList.length > 0) hide(dishEmpty); else show(dishEmpty); }
     const topFour = dishList;
     topFour.forEach(o=>{
       if(o?.id){
@@ -4171,8 +4102,6 @@
     // IF User wählt 'Team-Bestellung': Variante 2 (Direkt-Warenkorb-Link) – zukünftig
     // ELSE IF Abholnummer 🧾 vorhanden: Variante 1 (Fokus Zeitersparnis / Skip-the-line)
     // ELSE (Keine Abholnummer): Variante 3 (Fokus Gericht & Treffen – „Lockerer Lunch“)
-    const favShareWrap = document.getElementById('favShareWrap');
-    if(favShareWrap) favShareWrap.style.display = 'none';
     const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
     const firstDish = topFour.length > 0 ? normalizeOffer(topFour[0]) : null;
     const firstProviderName = (providerList.length > 0 && !firstDish) ? (normalizeOffer(providerList[0]).providerName || 'Mittagio') : null;
@@ -4222,7 +4151,7 @@
     };
     const btnFavShareHeader = document.getElementById('btnFavShareHeader');
     if(btnFavShareHeader){
-      btnFavShareHeader.style.display = (topFour.length > 0 || providerList.length > 0) ? 'flex' : 'none';
+      if(topFour.length > 0 || providerList.length > 0) setVisible(btnFavShareHeader, 'flex'); else hide(btnFavShareHeader);
       btnFavShareHeader.onclick = function(e){ e.preventDefault(); e.stopPropagation(); shareFavAction(); };
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
@@ -4231,7 +4160,7 @@
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');
     const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(o.id) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
-    if(favPullHint) favPullHint.style.display = hasUpcoming ? 'block' : 'none';
+    if(favPullHint){ if(hasUpcoming) show(favPullHint); else hide(favPullHint); }
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
@@ -4312,7 +4241,7 @@
     const img = document.createElement('div');
     img.className = 's5-upcoming-img';
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    img.innerHTML = '<img src="' + esc(imgSrc) + '" alt="' + esc(data.dish||'') + '" style="width:100%; height:100%; object-fit:cover;" />';
+    img.innerHTML = '<img src="' + esc(imgSrc) + '" alt="' + esc(data.dish||'') + '" class="s5-img-cover" />';
     card.appendChild(img);
     const body = document.createElement('div');
     body.className = 's5-upcoming-body';
@@ -4331,9 +4260,9 @@
     const iconsRow = document.createElement('div');
     iconsRow.className = 's5-upcoming-icons';
     iconsRow.innerHTML = `
-      <span style="font-size:14px; opacity:${hasDineIn ? '1' : '0.3'};" title="Vor Ort">🍴</span>
-      <span style="font-size:14px; opacity:${orderingEnabled ? '1' : '0.3'};" title="Abholnummer">🧾</span>
-      <span style="font-size:14px; opacity:${hasReuse ? '1' : '0.3'};" title="Mehrweg">🔄</span>
+      <span class="s5-upcoming-pillar ${hasDineIn ? 's5-upcoming-pillar-active' : 's5-upcoming-pillar-inactive'}" title="Vor Ort">🍴</span>
+      <span class="s5-upcoming-pillar ${orderingEnabled ? 's5-upcoming-pillar-active' : 's5-upcoming-pillar-inactive'}" title="Abholnummer">🧾</span>
+      <span class="s5-upcoming-pillar ${hasReuse ? 's5-upcoming-pillar-active' : 's5-upcoming-pillar-inactive'}" title="Mehrweg">🔄</span>
     `;
     body.appendChild(iconsRow);
     
@@ -4358,11 +4287,7 @@
       // Zeige Vorschau wenn Nutzer unter Anbieter-Favoriten scrollt oder hochzieht
       if(!previewShown && (scrollTop > favContentBottom - window.innerHeight * 0.8 || scrollTop < lastScrollTop)){
         previewShown = true;
-        upcomingPreview.style.display = 'block';
-        // Fade-in Animation
-        setTimeout(() => {
-          upcomingPreview.style.opacity = '1';
-        }, 50);
+        show(upcomingPreview);
       }
       
       lastScrollTop = scrollTop;
@@ -4385,10 +4310,7 @@
       // Wenn Nutzer nach oben zieht (pull up)
       if(touchY > touchStartY + 50 && !previewShown){
         previewShown = true;
-        upcomingPreview.style.display = 'block';
-        setTimeout(() => {
-          upcomingPreview.style.opacity = '1';
-        }, 50);
+        show(upcomingPreview);
       }
     }, {passive: true});
   }
@@ -4424,7 +4346,7 @@
 
     const removeBtn = document.createElement('button');
     removeBtn.classList.add('s5-pickup-card-remove');
-    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px; height:16px; color:#E34D4D;"></i>';
+    removeBtn.innerHTML = '<i data-lucide="x" class="s5-icon-x-red-16"></i>';
     removeBtn.onclick = (e) => { e.stopPropagation(); toggleDishFav(data.id); renderFavorites(); };
     card.appendChild(removeBtn);
 
@@ -4467,7 +4389,7 @@
     const routeBtn = document.createElement('button');
     routeBtn.type = 'button';
     routeBtn.className = 'btn-route';
-    routeBtn.innerHTML = '<i data-lucide="map-pin" style="width:18px;height:18px;"></i> Route starten';
+    routeBtn.innerHTML = '<i data-lucide="map-pin" class="s5-icon-18"></i> Route starten';
     routeBtn.onclick = (e) => {
       e.stopPropagation();
       const addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
@@ -4481,7 +4403,7 @@
       const abholBtn = document.createElement('button');
       abholBtn.type = 'button';
       abholBtn.className = 'btn-abholnummer';
-      abholBtn.innerHTML = '<i data-lucide="receipt" style="width:18px;height:18px;"></i> Jetzt Abholnummer ziehen';
+      abholBtn.innerHTML = '<i data-lucide="receipt" class="s5-icon-18"></i> Jetzt Abholnummer ziehen';
       abholBtn.onclick = (e) => {
         e.stopPropagation();
         openOffer(data.id);
@@ -4536,11 +4458,11 @@
     img.src = src;
     img.alt = '';
     fly.appendChild(img);
-    fly.style.left = srcRect.left + 'px';
-    fly.style.top = srcRect.top + 'px';
-    fly.style.width = srcRect.width + 'px';
-    fly.style.height = srcRect.height + 'px';
-    fly.style.transition = 'none';
+    fly.classList.add('fly-thumbnail-initial');
+    fly.style.setProperty('--fly-left', srcRect.left + 'px');
+    fly.style.setProperty('--fly-top', srcRect.top + 'px');
+    fly.style.setProperty('--fly-width', srcRect.width + 'px');
+    fly.style.setProperty('--fly-height', srcRect.height + 'px');
     document.body.appendChild(fly);
     const startCenterX = srcRect.left + srcRect.width / 2;
     const startCenterY = srcRect.top + srcRect.height / 2;
@@ -4550,9 +4472,11 @@
     const ty = targetCenterY - startCenterY;
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
-        fly.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease';
-        fly.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(0.12)';
-        fly.style.opacity = '0.85';
+        fly.classList.remove('fly-thumbnail-initial');
+        fly.style.setProperty('--fly-x', tx + 'px');
+        fly.style.setProperty('--fly-y', ty + 'px');
+        fly.style.setProperty('--fly-scale', '0.12');
+        fly.style.setProperty('--fly-opacity', '0.85');
         setTimeout(function(){
           fly.remove();
           onComplete();
@@ -4593,9 +4517,9 @@
     const hasReuse = providerData.reuse && providerData.reuse.enabled;
     
     pillars.innerHTML = `
-      <div class="pillar-mini ${hasDineIn ? 'active' : ''}" style="width:24px; height:24px;">🍴</div>
-      <div class="pillar-mini ${orderingEnabled ? 'active yellow' : ''}" style="width:24px; height:24px;">🧾</div>
-      <div class="pillar-mini ${hasReuse ? 'active green' : ''}" style="width:24px; height:24px;">🔄</div>
+      <div class="pillar-mini s5-pillar-mini-24 ${hasDineIn ? 'active' : ''}">🍴</div>
+      <div class="pillar-mini s5-pillar-mini-24 ${orderingEnabled ? 'active yellow' : ''}">🧾</div>
+      <div class="pillar-mini s5-pillar-mini-24 ${hasReuse ? 'active green' : ''}">🔄</div>
     `;
     card.appendChild(pillars);
     
@@ -4610,10 +4534,27 @@
     return generatePickupCode();
   }
 
+  /** Single-Truth pro UI-Bereich: immer genau ein State sichtbar */
+  function setOrdersState(emptyEl, box, state, nohitsOpts){
+    hide(emptyEl);
+    hide(box);
+    if(state === 'empty'){ if(emptyEl) setVisible(emptyEl, 'flex'); return; }
+    if(state === 'nohits'){ show(box); box.innerHTML = ''; box.textContent = (nohitsOpts && nohitsOpts.text) || 'Keine passenden Bestellungen.'; box.className = (nohitsOpts && nohitsOpts.className) || 'hint'; box.style.padding = (nohitsOpts && nohitsOpts.padding) || '24px'; box.style.textAlign = (nohitsOpts && nohitsOpts.textAlign) || 'center'; return; }
+    if(state === 'list'){ show(box); box.className = ''; box.style.padding = ''; box.style.textAlign = ''; return; }
+  }
+  function setCreateFlowRennerState(emptyEl, state){
+    if(!emptyEl) return;
+    if(state === 'empty') show(emptyEl); else hide(emptyEl);
+  }
+  function setSwipeState(introEl, areaEl, state){
+    hide(introEl);
+    hide(areaEl);
+    if(state === 'intro'){ if(introEl) show(introEl); return; }
+    if(state === 'area'){ if(areaEl) setVisible(areaEl, 'flex'); return; }
+  }
+
   function renderOrders(){
-    // Orders aus localStorage laden
     orders = loadOrders();
-    
     const box = document.getElementById('ordersList');
     const emptyEl = document.getElementById('ordersEmptyState');
     const filters = document.getElementById('ordersFilters');
@@ -4634,8 +4575,7 @@
       });
     }
     if(!orders.length){
-      if(emptyEl) emptyEl.style.display='flex';
-      box.style.display='none';
+      setOrdersState(emptyEl, box, 'empty');
       box.innerHTML='';
       return;
     }
@@ -4671,20 +4611,10 @@
       return (b.createdAt||0) - (a.createdAt||0);
     });
     if(!list.length){
-      if(emptyEl) emptyEl.style.display='none';
-      box.style.display='block';
-      box.innerHTML='';
-      box.textContent = 'Keine passenden Bestellungen.';
-      box.className = 'hint';
-      box.style.padding = '24px';
-      box.style.textAlign = 'center';
+      setOrdersState(emptyEl, box, 'nohits');
       return;
     }
-    if(emptyEl) emptyEl.style.display='none';
-    box.style.display='block';
-    box.className = '';
-    box.style.padding = '';
-    box.style.textAlign = '';
+    setOrdersState(emptyEl, box, 'list');
     box.innerHTML = list.map(o=>{
       // Status-Anzeige
       const status = o.status || 'offen';
@@ -4706,7 +4636,7 @@
       <div class="order-item ${isDone ? 'done' : ''}">
         <div class="order-top">
           <div>
-            <div style="font-weight:900">${esc(o.providerName || 'Anbieter')}</div>
+            <div class="s5-order-item-provider">${esc(o.providerName || 'Anbieter')}</div>
             <div class="hint">${esc(o.dishName || o.summary || '')}</div>
           </div>
           <div class="order-right">
@@ -4714,7 +4644,7 @@
             <div class="status-pill ${isDone ? 'done' : 'open'}">${esc(statusLabel)}</div>
           </div>
         </div>
-        <div class="hint" style="margin-top:6px;">
+        <div class="hint s5-order-item-hint">
           ${o.total ? `Gesamt: ${euro(o.totalCents ? (o.totalCents / 100) : (o.total || 0))} · ` : ''}${o.etaTime ? `Abholzeit: ${esc(o.etaTime)} · ` : ''}${fmt(o.createdAt)}
         </div>
       </div>
@@ -4752,10 +4682,10 @@
     const content = document.getElementById('orderDetailContent');
     if(content){
       content.innerHTML = `
-        <div><span style="color:#64748b;">Gericht</span><br><strong>${esc(order.dishName || order.summary || 'Bestellung')}</strong></div>
-        <div><span style="color:#64748b;">Anbieter</span><br><strong>${esc(order.providerName || 'Anbieter')}</strong></div>
-        <div><span style="color:#64748b;">Datum</span><br><strong>${esc(dateStr)}</strong></div>
-        <div><span style="color:#64748b;">Status</span><br><strong>${esc(statusText)}</strong></div>
+        <div><span class="s5-order-detail-label">Gericht</span><br><strong>${esc(order.dishName || order.summary || 'Bestellung')}</strong></div>
+        <div><span class="s5-order-detail-label">Anbieter</span><br><strong>${esc(order.providerName || 'Anbieter')}</strong></div>
+        <div><span class="s5-order-detail-label">Datum</span><br><strong>${esc(dateStr)}</strong></div>
+        <div><span class="s5-order-detail-label">Status</span><br><strong>${esc(statusText)}</strong></div>
       `;
     }
     const block = document.getElementById('orderDetailAbholnummerBlock');
@@ -4763,14 +4693,10 @@
     const btnShowCode = document.getElementById('btnOrderDetailShowCode');
     const isPaidOrPickedUp = order.status === 'PAID' || order.status === 'PICKED_UP' || order.status === 'abgeholt';
     if(block){
+      if(isPaidOrPickedUp && (order.pickupCode || order.code)) show(block); else hide(block);
       if(isPaidOrPickedUp && (order.pickupCode || order.code)){
-        block.style.display = 'block';
         if(codeEl) codeEl.textContent = order.pickupCode || order.code || '–';
-        if(btnShowCode){
-          btnShowCode.onclick = function(){ closeOrderDetailSheet(); openCodeSheetWithOrder(order); };
-        }
-      } else {
-        block.style.display = 'none';
+        if(btnShowCode) btnShowCode.onclick = function(){ closeOrderDetailSheet(); openCodeSheetWithOrder(order); };
       }
     }
     document.getElementById('orderDetailBd').classList.add('active');
@@ -4843,14 +4769,10 @@
       };
     }
     
-    // Favorite State
+    // Favorite State (Sprint 5b.30: Klasse statt style.fill)
     const favorites = load('mittagio_favorites', []);
     const isFav = favorites.includes(id);
-    const heartIcon = sFavoriteBtn ? sFavoriteBtn.querySelector('i[data-lucide="heart"]') : null;
-    if(heartIcon){
-      heartIcon.style.fill = isFav ? '#e74c3c' : 'none';
-      heartIcon.style.color = '#e74c3c';
-    }
+    if(sFavoriteBtn) sFavoriteBtn.classList.toggle('fav-active', isFav);
     if(sFavoriteBtn){
       sFavoriteBtn.onclick = (e) => {
         e.stopPropagation();
@@ -4879,13 +4801,9 @@
       });
     }
 
-    // Sticky Bottom CTA: Mittagio-Gelb und Text "Mittagsbox"
+    // Sticky Bottom CTA: Mittagio-Gelb per Klasse (Sprint 5b.29)
     if(btnCTA){
-      btnCTA.style.background = '#FFD700';
-      btnCTA.style.color = '#1a1a1a';
-      btnCTA.style.border = 'none';
-      btnCTA.style.fontWeight = '900';
-      btnCTA.style.boxShadow = '0 8px 24px rgba(255,215,0,0.25)';
+      btnCTA.classList.add('s5-detail-cta-primary');
       if(primaryCTAText) primaryCTAText.textContent = 'In meine Box legen';
     }
 
@@ -4900,8 +4818,8 @@
         const car = Math.round(o.distanceKm * 1.5);
         const pid = (o.providerId || '').replace(/'/g, "\\'");
         sDistanceInfo.innerHTML = `
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚶 ${walk < 1 ? '< 1' : walk} Min.</button>
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚗 ${car < 1 ? '< 1' : car} Min.</button>
+          <button type="button" class="s5-detail-map-btn" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');">🚶 ${walk < 1 ? '< 1' : walk} Min.</button>
+          <button type="button" class="s5-detail-map-btn" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');">🚗 ${car < 1 ? '< 1' : car} Min.</button>
         `;
       } else {
         sDistanceInfo.classList.remove('is-visible');
@@ -4911,9 +4829,9 @@
     // Status Badge
     if(statusBadgeEl){
       if(orderingEnabled){
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(39,174,96,0.12); border-radius:8px; color:#27AE60; font-size:13px; font-weight:700; border:1px solid rgba(39,174,96,0.2);">⚡ Nur mit Abholnummer</span>';
+        statusBadgeEl.innerHTML = '<span class="s5-detail-status-abhol">⚡ Nur mit Abholnummer</span>';
       } else {
-        statusBadgeEl.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(100,116,139,0.1); border-radius:8px; color:#64748b; font-size:13px; font-weight:600; border:1px solid rgba(100,116,139,0.2);">👁️ Nur Info</span>';
+        statusBadgeEl.innerHTML = '<span class="s5-detail-status-info">👁️ Nur Info</span>';
       }
     }
 
@@ -4928,16 +4846,13 @@
       
       badges.slice(0, 3).forEach(badge => {
         const badgeEl = document.createElement('span');
-        badgeEl.className = `card-status-badge ${badge.class}`;
+        badgeEl.className = `card-status-badge ${badge.class}${badge.class === 'eco' ? ' s5-detail-badge-eco' : ''}`;
         if(badge.class === 'eco'){
-          badgeEl.style.background = 'rgba(39,174,96,0.1)';
-          badgeEl.style.color = '#27AE60';
-          badgeEl.style.border = '1px solid rgba(39,174,96,0.2)';
-          badgeEl.innerHTML = `<img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"><span>${esc(badge.text)}</span>`;
+          badgeEl.innerHTML = `<img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon s5-detail-badge-icon"><span>${esc(badge.text)}</span>`;
         } else if(badge.class === 'code'){
-          badgeEl.innerHTML = `<img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"> <span>${esc(badge.text)}</span>`;
+          badgeEl.innerHTML = `<img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon s5-detail-badge-icon"> <span>${esc(badge.text)}</span>`;
         } else {
-          badgeEl.innerHTML = `<i data-lucide="${badge.icon}" style="width:14px;height:14px;"></i> <span>${esc(badge.text)}</span>`;
+          badgeEl.innerHTML = `<i data-lucide="${badge.icon}" class="s5-detail-badge-icon-sm"></i> <span>${esc(badge.text)}</span>`;
         }
         badgesEl.appendChild(badgeEl);
       });
@@ -4950,9 +4865,7 @@
         const day = o.day ? new Date(o.day) : new Date();
         const dateStr = fmtDateWithTime(day, o.pickupWindow);
         const timeEl = document.createElement('div');
-        timeEl.style.display = 'flex';
-        timeEl.style.alignItems = 'center';
-        timeEl.style.gap = '6px';
+        timeEl.className = 's5-detail-info-time';
         timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
         infoRowEl.appendChild(timeEl);
       }
@@ -4976,8 +4889,10 @@
     // Allergene: Label oben, Kürzel als graue Pills (#F2F2F2, border-radius 8px), ⓘ öffnet Legende
     const sAllergensCodesWrap = document.getElementById('sAllergensCodesWrap');
     if(aw){
-      if(o.allergens && o.allergens.length){
-        aw.style.display = 'flex';
+      const hasAllergens = !!(o.allergens && o.allergens.length);
+      aw.classList.toggle('is-hidden', !hasAllergens);
+      aw.classList.toggle('is-visible-flex', hasAllergens);
+      if(hasAllergens){
         const r = o.allergens.map(a => String(a||'').trim());
         const codes = [];
         r.forEach(v => {
@@ -4991,52 +4906,42 @@
         const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
         if(sAllergensCodes) sAllergensCodes.textContent = uniq.length ? uniq.join(', ') : '–';
         if(sAllergensCodesWrap){
-          sAllergensCodesWrap.innerHTML = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+          sAllergensCodesWrap.innerHTML = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '<span class="allergen-pill s5-allergen-pill-empty">–</span>';
         }
         if(sAllergens){
           const list = uniq.map(c => {
             const label = ALLERGENE_STANDARD[c];
             const word = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : String(label||'').trim().split(/\s+/)[0];
-            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-              <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
-              <span style="font-weight:700; color:rgba(255,255,255,0.9);">${esc(c)}</span>
-              <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(word)}</span>
+            return `<div class="s5-detail-allergen-row">
+              <i data-lucide="shield-alert" class="s5-detail-allergen-icon"></i>
+              <span class="s5-detail-allergen-code">${esc(c)}</span>
+              <span class="s5-detail-allergen-word">${esc(word)}</span>
             </div>`;
           }).join('');
           sAllergens.innerHTML = list || '';
         }
       } else {
-        aw.style.display = 'flex';
         if(sAllergensCodes) sAllergensCodes.textContent = '–';
-        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '<span class="allergen-pill s5-allergen-pill-empty">–</span>';
       }
     }
 
-    // Extras
+    // Extras (Sprint 5b.31: State-Konvention)
     if(ew){
-      if(o.extras && o.extras.length){
-        ew.style.display='block';
-        const sx = document.getElementById('sExtras');
-        if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
-      } else ew.style.display='none';
+      const hasExtras = !!(o.extras && o.extras.length);
+      if(hasExtras){ show(ew); const sx = document.getElementById('sExtras'); if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · '); } else hide(ew);
     }
 
-    // Reuse
+    // Reuse (Sprint 5b.31: State-Konvention + show/hide Helper)
     if(rw){
-      if(o.reuse && o.reuse.enabled){
-        rw.style.display='block';
-        const sr = document.getElementById('sReuse');
-        if(sr) sr.textContent = `Pfand ${euro(o.reuse.deposit)}`;
-      } else rw.style.display='none';
+      const hasReuse = !!(o.reuse && o.reuse.enabled);
+      if(hasReuse){ show(rw); const sr = document.getElementById('sReuse'); if(sr) sr.textContent = `Pfand ${euro(o.reuse.deposit)}`; } else hide(rw);
     }
 
-    // Eco-Badge
+    // Eco-Badge (Sprint 5b.31: State-Konvention)
     if(ecoBadgeEl){
       const hasReuseSupport = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
-      ecoBadgeEl.style.display = hasReuseSupport ? 'block' : 'none';
-      if(hasReuseSupport){
-        ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon"> <span>Mehrweg möglich</span></div>`;
-      }
+      if(hasReuseSupport){ show(ecoBadgeEl); ecoBadgeEl.innerHTML = `<div class="s5-detail-eco-badge"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon"> <span>Mehrweg möglich</span></div>`; } else hide(ecoBadgeEl);
     }
 
     // CTA Button Logic
@@ -5068,7 +4973,7 @@
             save('mittagio_favorites', favs);
             dishFavs.add(o.id);
             save(LS.dishFavs, Array.from(dishFavs));
-            if(heartIcon) heartIcon.style.fill = '#e74c3c';
+            if(sFavoriteBtn) sFavoriteBtn.classList.add('fav-active');
           }
           
           flyThumbnailToMittagsbox(sImg, () => {
@@ -5108,7 +5013,7 @@
             save('mittagio_favorites', favs);
             dishFavs.add(o.id);
             save(LS.dishFavs, Array.from(dishFavs));
-            if(heartIcon) heartIcon.style.fill = '#e74c3c';
+            if(sFavoriteBtn) sFavoriteBtn.classList.add('fav-active');
           }
           const currentCount = load('provider_' + o.providerId + '_requests', 0) || 0;
           save('provider_' + o.providerId + '_requests', currentCount + 1);
@@ -5146,20 +5051,20 @@
       const listHtml = uniq.map(c => {
         const label = ALLERGENE_STANDARD[c];
         const word = typeof allergenFirstWord === 'function' ? allergenFirstWord(label) : String(label||'').trim().split(/\s+/)[0];
-        return `<div style="display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.1);">
-          <i data-lucide="shield-alert" style="width:20px;height:20px;color:rgba(255,255,255,0.8);flex-shrink:0;"></i>
-          <span style="color:rgba(255,255,255,0.9); font-weight:700; font-size:14px; flex-shrink:0;">${esc(c)}</span>
-          <span style="color:rgba(255,255,255,0.85); font-size:14px;">${esc(word)}</span>
+        return `<div class="s5-allergen-row">
+          <i data-lucide="shield-alert" class="s5-allergen-icon"></i>
+          <span class="s5-allergen-code">${esc(c)}</span>
+          <span class="s5-allergen-label">${esc(word)}</span>
         </div>`;
       }).join('');
       
       content.innerHTML = `
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
-          <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene</h3>
-          <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
+        <div class="s5-allergen-hdr">
+          <h3 class="s5-allergen-hdr-title">Allergene</h3>
+          <button type="button" class="s5-allergen-hdr-close" onclick="this.closest('.s5-overlay-dark').remove();"><i data-lucide="x" class="s5-allergen-hdr-close-i"></i></button>
         </div>
-        <div style="max-height:280px; overflow-y:auto; flex:1;">
-          ${listHtml || '<p style="color:rgba(255,255,255,0.5);">Keine Allergene hinterlegt.</p>'}
+        <div class="s5-allergen-scroll">
+          ${listHtml || '<p class="s5-allergen-empty">Keine Allergene hinterlegt.</p>'}
         </div>
       `;
       ov.appendChild(content);
@@ -5174,7 +5079,7 @@
       const content = document.createElement('div');
       content.className = 's5-modal-dark';
       content.onclick = function(e){ e.stopPropagation(); };
-      content.innerHTML = '<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;"><h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Extras</h3><button type="button" class="extras-overlay-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button></div><div style="color:rgba(255,255,255,0.9); font-size:14px;">' + (list.length ? list.map(function(t){ return '<div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1);">' + (typeof esc === 'function' ? esc(t) : t) + '</div>'; }).join('') : '<p style="color:rgba(255,255,255,0.5);">Keine Extras.</p>') + '</div>';
+      content.innerHTML = '<div class="s5-extras-hdr"><h3 class="s5-extras-hdr-title">Extras</h3><button type="button" class="extras-overlay-close s5-extras-hdr-close"><i data-lucide="x"></i></button></div><div class="s5-extras-body">' + (list.length ? list.map(function(t){ return '<div class="s5-extras-item">' + (typeof esc === 'function' ? esc(t) : t) + '</div>'; }).join('') : '<p class="s5-extras-empty">Keine Extras.</p>') + '</div>';
       var closeBtn = content.querySelector('.extras-overlay-close');
       if(closeBtn) closeBtn.onclick = function(){ ov.remove(); };
       ov.appendChild(content);
@@ -5182,16 +5087,14 @@
       if(typeof lucide !== 'undefined') lucide.createIcons();
     };
 
-    // Route Button
+    // Route Button (Sprint 5b.31: State-Konvention is-hidden)
     if(btnOpenRoute){
+      btnOpenRoute.classList.toggle('is-hidden', !!o.hasPickupCode);
       if(!o.hasPickupCode){
-        btnOpenRoute.style.display = 'block';
         btnOpenRoute.onclick = () => {
           const routeMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
           window.open(routeMaps, '_blank');
         };
-      } else {
-        btnOpenRoute.style.display = 'none';
       }
     }
 
@@ -5273,7 +5176,7 @@
     
     if(dishImageEl){
       const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-      dishImageEl.innerHTML = `<img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" style="width:100%; height:100%; object-fit:cover;" />`;
+      dishImageEl.innerHTML = `<img src="${esc(imgSrc)}" alt="${esc(data.dish||'')}" class="s5-img-cover" />`;
     }
     if(dishNameEl) dishNameEl.textContent = data.dish || 'Gericht';
     if(providerNameEl) providerNameEl.textContent = data.providerName || 'Anbieter';
@@ -5459,7 +5362,7 @@
       return;
     }
     // Provider Login Modal schließen
-    if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').style.display !== 'none'){
+    if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').classList.contains('s5-sheet-visible')){
       closeProviderLoginModal();
       e.preventDefault();
       if(typeof navigate === 'function') navigate(null, { replace: true, url: location.pathname });
@@ -5642,16 +5545,16 @@
     _saveScopeCallbacks = opts;
     var bd = document.getElementById('saveScopeBackdrop');
     var sheet = document.getElementById('saveScopeSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd) bd.classList.add('s5-sheet-bd-visible');
+    if(sheet) sheet.classList.add('s5-sheet-visible');
     try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeSaveScopeDialog(){
     _saveScopeCallbacks = null;
     var bd = document.getElementById('saveScopeBackdrop');
     var sheet = document.getElementById('saveScopeSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) bd.classList.remove('s5-sheet-bd-visible');
+    if(sheet) sheet.classList.remove('s5-sheet-visible');
   }
   (function(){
     var bd = document.getElementById('saveScopeBackdrop');
@@ -5671,16 +5574,16 @@
     _wizardExitSaveCallbacks = { onSave: onSave, onDiscard: onDiscard };
     var bd = document.getElementById('wizardExitSaveBd');
     var sheet = document.getElementById('wizardExitSaveSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'flex';
+    if(bd) bd.classList.add('s5-sheet-bd-visible');
+    if(sheet) sheet.classList.add('s5-sheet-visible-flex');
     try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeWizardExitSavePrompt(){
     _wizardExitSaveCallbacks = null;
     var bd = document.getElementById('wizardExitSaveBd');
     var sheet = document.getElementById('wizardExitSaveSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) bd.classList.remove('s5-sheet-bd-visible');
+    if(sheet) sheet.classList.remove('s5-sheet-visible-flex');
   }
   (function(){
     var bd = document.getElementById('wizardExitSaveBd');
@@ -5732,8 +5635,8 @@
     if(orderingEnabled) badges.push('Abholnummer');
     return `
       <div class="print-card">
-        <div style="display:flex;align-items:center;gap:12px;">
-          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" style="width:56px;height:56px;border-radius:12px;object-fit:cover" />` : ''}
+        <div class="s5-print-hdr">
+          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" class="s5-print-logo-56" />` : ''}
           <div>
             <h1>${esc(name)}</h1>
             <div class="print-muted">${esc(addr || '')}</div>
@@ -5744,7 +5647,7 @@
           <div><b>Preis:</b> ${euro(data.price || 0)}</div>
           <div><b>Essenszeit:</b> ${esc(data.pickupWindow || profile.mealWindow || '')}</div>
         </div>
-        <div style="margin-top:8px;">
+        <div class="s5-print-mt8">
           ${badges.map(b=>`<span class="print-badge">${esc(b)}</span>`).join(' ')}
         </div>
       </div>
@@ -5787,25 +5690,25 @@
 
     return `
       <div class="print-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div class="s5-print-hdr-week">
           <div>
             <h1>${esc(profile.name || 'Anbieter')}</h1>
             <div class="print-muted">${esc(buildAddress(profile) || '')}</div>
             <div class="print-muted">Essenszeit: ${esc(profile.mealWindow || '')}</div>
-            <div class="print-muted" style="margin-top:6px;"><b>Unsere Gerichte – nächste Tage</b></div>
+            <div class="print-muted s5-print-muted-mt"><b>Unsere Gerichte – nächste Tage</b></div>
           </div>
-          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" style="width:72px;height:72px;border-radius:14px;object-fit:cover" />` : ''}
+          ${profile.logoData ? `<img src="${profile.logoData}" alt="Logo" class="s5-print-logo-72" />` : ''}
         </div>
       </div>
       <div class="print-grid">
         ${dayBlocks}
       </div>
-      <div class="print-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div class="print-card s5-print-footer">
         <div>
-          <div style="font-weight:900">Mittagio</div>
+          <div class="s5-print-mittagio">Mittagio</div>
           <div class="print-muted">Dein Mittag. Lokal. Frisch. Digital.</div>
         </div>
-        <div style="text-align:center;">
+        <div class="s5-print-center">
           <div class="pickup-code-display">Abholnummer</div>
           <div class="print-muted">Ein Tap genügt</div>
         </div>
@@ -5918,7 +5821,7 @@
     });
     var topGerichte = mine.slice(0, 4);
     grid.innerHTML = '';
-    if(emptyEl) emptyEl.style.display = topGerichte.length ? 'none' : 'block';
+    setCreateFlowRennerState(emptyEl, topGerichte.length ? 'list' : 'empty');
     topGerichte.forEach(function(c){
       var tile = document.createElement('div');
       tile.className = 'renner-speed-tile';
@@ -5961,11 +5864,11 @@
         const d = new Date(createFlowPreselectedDate);
         const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
         const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
-        hint.innerHTML = '<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
-        hint.style.display = 'inline-flex';
+        hint.innerHTML = '<i data-lucide="calendar" class="s5-createflow-hint-icon"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
+        setVisible(hint, 'inline-flex');
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       } else {
-        hint.style.display = 'none';
+        hide(hint);
       }
 
       populateCreateFlowRenner();
@@ -6078,9 +5981,8 @@
     bubble.innerText = '0,00 €';
     var cx = typeof x === 'number' ? x : (window.innerWidth / 2);
     var cy = typeof y === 'number' ? y : (window.innerHeight / 2);
-
-    bubble.style.left = (cx - 30) + 'px';
-    bubble.style.top = (cy - 20) + 'px';
+    bubble.style.setProperty('--bubble-x', (cx - 30) + 'px');
+    bubble.style.setProperty('--bubble-y', (cy - 20) + 'px');
     document.body.appendChild(bubble);
     setTimeout(function(){ bubble.remove(); }, 800);
   };
@@ -6610,15 +6512,22 @@
     const btn=document.getElementById('btnCheckout');
     const activeWrap = document.getElementById('cartActiveSessionWrap');
     const mainCard = document.getElementById('cartMainCard');
+    const cartVerzehrartEl = document.getElementById('cartVerzehrart');
+    /* Baseline: alles in definierten Zustand, dann nur die sichtbaren Teile aktivieren (keine Misch-States) */
+    if(activeWrap) hide(activeWrap);
+    if(mainCard) show(mainCard);
+    if(btn) hide(btn);
+    if(cartVerzehrartEl) hide(cartVerzehrartEl);
+
     const today = isoDate(new Date());
     const allOrders = typeof loadOrders === 'function' ? loadOrders() : [];
     const activeOrders = allOrders.filter(function(o){
       return o.status === 'PAID' && o.pickupDate === today && (o.pickupCode || o.abholnummer || o.code);
     });
-    
+
     if(activeOrders.length > 0){
-      activeWrap.style.display = 'block';
-      if(mainCard) mainCard.style.display = 'none';
+      if(activeWrap) show(activeWrap);
+      if(mainCard) hide(mainCard);
       const abholDisplay = document.getElementById('cartActiveAbholnummerDisplay');
       const listEl = document.getElementById('cartActiveSessionList');
       const firstCode = activeOrders[0].pickupCode || activeOrders[0].abholnummer || activeOrders[0].code || '–';
@@ -6639,16 +6548,16 @@
               '<div class="mittagsbox-card-row">' +
                 '<div class="mittagsbox-thumb"><img src="' + esc(imgSrc) + '" alt="" /></div>' +
                 '<div class="mittagsbox-body">' +
-                  '<div style="font-weight:800; font-size:16px; color:#1a1a1a; line-height:1.3;">' + esc(norm.dish) + '</div>' +
-                  '<div style="font-weight:800; color:var(--brand); font-size:15px; margin-top:4px;">' + euro(Number(norm.price) || (order.total || 0) / 100) + '</div>' +
+                  '<div class="s5-mittagsbox-dish">' + esc(norm.dish) + '</div>' +
+                  '<div class="s5-mittagsbox-price">' + euro(Number(norm.price) || (order.total || 0) / 100) + '</div>' +
                   '<div class="mittagsbox-pillars">' +
                     '<span class="' + (hasDineIn ? 'active' : '') + '" title="Vor Ort">🍴</span>' +
                     '<span class="' + (hasAbholnummer ? 'active' : '') + '" title="Abholnummer">🧾</span>' +
                     '<span class="' + (hasReuse ? 'active' : '') + '" title="Mehrweg">🔄</span>' +
                   '</div>' +
-                  '<div style="font-size:13px; font-weight:700; color:#64748b; margin-top:8px;">' + esc(norm.providerName) + '</div>' +
-                  '<div style="font-size:12px; color:#94a3b8; margin-top:2px;">' + esc(addr) + '</div>' +
-                  '<div style="font-size:12px; font-weight:700; color:#22c55e; margin-top:6px;">' + esc(countdownText) + '</div>' +
+                  '<div class="s5-mittagsbox-provider">' + esc(norm.providerName) + '</div>' +
+                  '<div class="s5-mittagsbox-addr">' + esc(addr) + '</div>' +
+                  '<div class="s5-mittagsbox-countdown">' + esc(countdownText) + '</div>' +
                   '<div class="mittagsbox-route-btns">' +
                     '<button type="button" class="route-btn" onclick="openGoogleMapsRoute(\'' + esc(order.providerId) + '\');">🚶 Fußweg</button>' +
                     '<button type="button" class="route-btn" onclick="openGoogleMapsRoute(\'' + esc(order.providerId) + '\');">🚗 Fahrtweg</button>' +
@@ -6664,40 +6573,35 @@
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       return;
     }
-    
-    if(activeWrap) activeWrap.style.display = 'none';
-    if(mainCard) mainCard.style.display = 'block';
-    
+
     if(!cart || !cart.items.length){
       box.innerHTML = `
-        <div style="text-align:center; padding:60px 20px;">
-          <div style="width:120px; height:120px; margin:0 auto 24px; background:linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%); border-radius:40px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.04);">
-            <i data-lucide="shopping-basket" style="width:48px;height:48px;color:#cbd5e1;"></i>
+        <div class="s5-cart-empty-wrap">
+          <div class="s5-cart-empty-icon-box">
+            <i data-lucide="shopping-basket" class="s5-cart-empty-icon"></i>
           </div>
-          <h3 style="font-size:22px; font-weight:850; margin-bottom:12px; color:#1a1a1a; letter-spacing:-0.02em;">Deine Mittagsbox hat Hunger.</h3>
-          <p style="font-size:15px; color:#64748b; margin-bottom:32px; line-height:1.6; max-width:280px; margin-left:auto; margin-right:auto;">Such dir was Leckeres aus – in wenigen Klicks ist die Abholnummer sicher.</p>
-          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:260px; margin:0 auto;">
-            <i data-lucide="compass" style="width:20px;height:20px;"></i> <span>Entdecken</span>
+          <h3 class="s5-cart-empty-title">Deine Mittagsbox hat Hunger.</h3>
+          <p class="s5-cart-empty-text">Such dir was Leckeres aus – in wenigen Klicks ist die Abholnummer sicher.</p>
+          <button class="btn-cust-primary s5-cart-empty-btn" type="button" onclick="if(typeof window.showDiscover==='function') window.showDiscover();">
+            <i data-lucide="compass"></i> <span>Entdecken</span>
           </button>
         </div>
       `;
-      if(btn) btn.style.display='none';
-      const cartVerzehrart = document.getElementById('cartVerzehrart');
-      if(cartVerzehrart) cartVerzehrart.style.display = 'none';
+      if(btn) hide(btn);
+      if(cartVerzehrartEl) hide(cartVerzehrartEl);
       updateHeaderBasket();
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
 
     if(btn){
-      btn.style.display = 'flex';
+      show(btn);
       btn.onclick = () => {
         if(!cart.pickupTime){ showToast('Bitte wähle eine Abholzeit'); return; }
         showCheckout();
       };
     }
-    const cartVerzehrart = document.getElementById('cartVerzehrart');
-    if(cartVerzehrart) cartVerzehrart.style.display = 'block';
+    if(cartVerzehrartEl) setVisible(cartVerzehrartEl, 'flex');
 
     let total=0;
     const TIME_SLOTS = getTimeSlots();
@@ -6720,24 +6624,22 @@
     let groupedHtml = '';
     itemsByProvider.forEach((group, pid) => {
       groupedHtml += `
-        <div style="margin-bottom:20px;">
-          <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="store" style="width:14px;height:14px;"></i> ${esc(group.provider.providerName)}
-          </div>
+        <div class="s5-cart-group">
+          <div class="s5-cart-group-hdr"><i data-lucide="store"></i> ${esc(group.provider.providerName)}</div>
           ${group.items.map(({offer, qty}) => {
             const norm = normalizeOffer(offer);
             const lineTotal = Number(norm.price||0) * qty;
             total += lineTotal;
             return `
-              <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f1f3f5;">
-                <div style="flex:1; min-width:0;">
-                  <div style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(norm.dish)}</div>
-                  <div style="font-weight:800; color:var(--brand); font-size:13px; margin-top:2px;">${euro(lineTotal)}</div>
+              <div class="s5-cart-line">
+                <div class="s5-cart-line-body">
+                  <div class="s5-cart-line-dish">${esc(norm.dish)}</div>
+                  <div class="s5-cart-line-price">${euro(lineTotal)}</div>
                 </div>
-                <div style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border-radius:10px; padding:4px;">
-                  <button onclick="changeQty('${offer.id}', -1)" style="width:28px; height:28px; border-radius:8px; border:none; background:#fff; font-weight:900; cursor:pointer;">-</button>
-                  <span style="font-weight:800; min-width:16px; text-align:center;">${qty}</span>
-                  <button onclick="changeQty('${offer.id}', 1)" style="width:28px; height:28px; border-radius:8px; border:none; background:#fff; font-weight:900; cursor:pointer;">+</button>
+                <div class="s5-cart-qty-wrap">
+                  <button type="button" class="s5-cart-qty-btn" onclick="changeQty('${offer.id}', -1)">-</button>
+                  <span class="s5-cart-qty-num">${qty}</span>
+                  <button type="button" class="s5-cart-qty-btn" onclick="changeQty('${offer.id}', 1)">+</button>
                 </div>
               </div>
             `;
@@ -6747,17 +6649,17 @@
     });
 
     box.innerHTML = groupedHtml + `
-      <div style="margin-top:20px;">
-        <label style="display:block; font-weight:800; font-size:14px; margin-bottom:12px; color:#64748b; text-transform:uppercase;">Abholzeit</label>
-        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none;">
+      <div class="s5-cart-abholzeit-wrap">
+        <label class="s5-cart-abholzeit-label">Abholzeit</label>
+        <div class="s5-cart-abholzeit-slots">
           ${slotsToShow.map(t => `
             <button class="cust-chip ${cart.pickupTime === t ? 'active' : ''}" onclick="selectCartTime('${t}')">${t}</button>
           `).join('')}
         </div>
       </div>
-      <div style="margin-top:24px; padding-top:20px; border-top:2px solid #1a1a1a; display:flex; align-items:center; justify-content:space-between;">
-        <span style="font-weight:850; font-size:18px;">Gesamt</span>
-        <span style="font-weight:950; font-size:22px; color:#1a1a1a;">${euro(total)}</span>
+      <div class="s5-cart-total-row">
+        <span class="s5-cart-total-label">Gesamt</span>
+        <span class="s5-cart-total-value">${euro(total)}</span>
       </div>
     `;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -6823,9 +6725,7 @@
         const slotMinutes = h * 60 + m;
         const isAvailable = slotMinutes >= currentMinutes + 15;
         const isSelected = selectedTime === t;
-        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:72px; padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
-          ${t}
-        </button>`;
+        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}">${t}</button>`;
       }).join('');
       
       // Handler für Time-Slots
@@ -6838,18 +6738,13 @@
           
           // Custom Input ausblenden
           const customInputWrapper = document.getElementById('customTimeInputWrapper');
-          if(customInputWrapper) customInputWrapper.style.display = 'none';
+          if(customInputWrapper) customInputWrapper.classList.remove('s5-custom-time-visible');
           const customInput = document.getElementById('checkoutPickupTimeCustom');
           if(customInput) customInput.value = '';
           
           // UI aktualisieren
           checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
-            const isSelected = b.getAttribute('data-time') === time;
-            b.classList.toggle('selected', isSelected);
-            b.style.borderColor = isSelected ? '#FFD700' : '#e7e1d5';
-            b.style.background = isSelected ? '#FFD700' : '#fff';
-            b.style.color = isSelected ? '#2D3436' : '#666';
-            b.style.fontWeight = isSelected ? '900' : '600';
+            b.classList.toggle('selected', b.getAttribute('data-time') === time);
           });
           
           const hiddenInput = document.getElementById('checkoutPickupTime');
@@ -6864,19 +6759,13 @@
     const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
     if(btnOtherTime && customTimeInputWrapper && customTimeInput){
       btnOtherTime.onclick = () => {
-        const isVisible = customTimeInputWrapper.style.display !== 'none';
-        customTimeInputWrapper.style.display = isVisible ? 'none' : 'block';
+        const isVisible = customTimeInputWrapper.classList.contains('s5-custom-time-visible');
+        customTimeInputWrapper.classList.toggle('s5-custom-time-visible', !isVisible);
         if(!isVisible){
           customTimeInput.focus();
           // Alle Slots deselektieren
           if(checkoutTimeSlots){
-            checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
-              b.classList.remove('selected');
-              b.style.borderColor = '#e7e1d5';
-              b.style.background = '#fff';
-              b.style.color = '#666';
-              b.style.fontWeight = '600';
-            });
+            checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
           }
           // Wenn bereits eine Custom-Zeit gesetzt ist, diese anzeigen
           if(cart && cart.pickupTime && !TIME_SLOTS.includes(cart.pickupTime)){
@@ -6924,7 +6813,7 @@
     });
     const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
     const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
-    if(btnVorOrt) btnVorOrt.style.display = anyDineIn ? '' : 'none';
+    if(btnVorOrt) btnVorOrt.classList.toggle('s5-btn-vorort-hidden', !anyDineIn);
     if(!anyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
       cart.verzehrmodus = 'mitnehmen';
       save(LS.cart, cart);
@@ -6996,7 +6885,7 @@
     const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
     const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
     const isMitnehmen = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
-    if(verpackungWrap) verpackungWrap.style.display = isMitnehmen ? 'block' : 'none';
+    if(verpackungWrap) verpackungWrap.classList.toggle('s5-verpackung-visible', isMitnehmen);
     
     const verpackung = cart.verpackung || 'mehrweg';
     const setVerpackungActive = (btn, active) => {
@@ -7034,34 +6923,34 @@
       const o = offers.find(x => x.id === it.offerId);
       if(o && o.providerId) providerMap.set(o.providerId, normalizeOffer(o).providerName || 'Anbieter');
     });
-    let providerLineHtml = '<div style="margin-bottom:12px; font-size:14px; color:#64748b;">Bei: ';
+    let providerLineHtml = '<div class="s5-checkout-provider-line">Bei: ';
     const providerEntries = [];
     providerMap.forEach((name, pid) => providerEntries.push({ pid, name }));
-    providerLineHtml += providerEntries.map(({ pid, name }) => `<button type="button" class="checkout-provider-link" data-provider-id="${esc(pid)}" style="background:none;border:none;padding:0;font-weight:700;color:#1a1a1a;text-decoration:underline;cursor:pointer;font-size:14px;">${esc(name)}</button>`).join(', ');
+    providerLineHtml += providerEntries.map(({ pid, name }) => `<button type="button" class="checkout-provider-link s5-checkout-provider-link" data-provider-id="${esc(pid)}">${esc(name)}</button>`).join(', ');
     providerLineHtml += '</div>';
     
     // Bestellübersicht rendern
-    let summaryHTML = providerLineHtml + '<div style="font-weight:700; font-size:16px; margin-bottom:16px; color:#2D3436;">Bestellübersicht</div>';
+    let summaryHTML = providerLineHtml + '<div class="s5-checkout-heading">Bestellübersicht</div>';
     cart.items.forEach(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(o){
         const normalized = normalizeOffer(o);
         const lineTotal = Number(normalized.price||0) * it.qty;
         summaryHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.08);">
+          <div class="s5-checkout-line">
             <div>
-              <div style="font-weight:600; font-size:15px; color:#2D3436;">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
-              <div style="font-size:13px; color:#666; margin-top:4px;">${esc(normalized.providerName||'Anbieter')}</div>
+              <div class="s5-checkout-line-dish">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
+              <div class="s5-checkout-line-provider">${esc(normalized.providerName||'Anbieter')}</div>
             </div>
-            <div style="font-weight:700; font-size:16px; color:#2D3436;">${euro(lineTotal)}</div>
+            <div class="s5-checkout-line-price">${euro(lineTotal)}</div>
           </div>
         `;
       }
     });
     summaryHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid #2D3436;">
-        <div style="font-weight:900; font-size:18px; color:#2D3436;">Gesamt</div>
-        <div style="font-weight:900; font-size:24px; color:#FFB800;">${euro(total)}</div>
+      <div class="s5-checkout-total-row">
+        <div class="s5-checkout-total-label">Gesamt</div>
+        <div class="s5-checkout-total-value">${euro(total)}</div>
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
@@ -7382,14 +7271,12 @@
       console.error('Order not found for checkout success', { sessionId, orderId });
       // Zeige Fehler-UI
       const errorView = document.createElement('div');
-      errorView.className = 'panel';
-      errorView.style.padding = '40px 20px';
-      errorView.style.textAlign = 'center';
+      errorView.className = 'panel s5-order-error-wrap';
       errorView.innerHTML = `
-        <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
-        <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
-        <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
-        <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
+        <div class="s5-order-error-icon">⚠️</div>
+        <h3 class="s5-order-error-title">Bestellung nicht gefunden</h3>
+        <p class="hint s5-order-error-hint">Die Bestellung konnte nicht gefunden werden.</p>
+        <button class="btn s5-order-error-btn" type="button" onclick="if(typeof window.showDiscover==='function') window.showDiscover();">
           <i data-lucide="compass"></i> Zur Entdecken-Seite
         </button>
       `;
@@ -7552,30 +7439,28 @@
     const thumbWrap = document.getElementById('orderSuccessThumbWrap');
     
     if(orders.length > 1){
-      if(singleBlock) singleBlock.style.display = 'none';
+      if(singleBlock) singleBlock.classList.add('s5-single-block-hidden');
       if(multiBlock){
-        multiBlock.style.display = 'block';
+        multiBlock.classList.add('s5-multi-block-visible');
         multiBlock.innerHTML = orders.map(function(o){
           const c = o.pickupCode || o.abholnummer || o.code || '–';
           const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">#' + (c + '').replace(/</g, '&lt;') + '</span></div></div>';
+          return '<div class="s5-code-card"><div class="s5-code-provider">Bei ' + name + '</div><div class="s5-code-row"><span class="s5-code-emoji">🧾</span><span class="s5-code-value">#' + (c + '').replace(/</g, '&lt;') + '</span></div></div>';
         }).join('');
       }
     } else {
-      if(singleBlock) singleBlock.style.display = 'block';
-      if(multiBlock) multiBlock.style.display = 'none';
+      if(singleBlock) singleBlock.classList.remove('s5-single-block-hidden');
+      if(multiBlock) multiBlock.classList.remove('s5-multi-block-visible');
       if(abholnummerEl) abholnummerEl.textContent = (codeStr.indexOf('#') === 0 ? '' : '#') + codeStr;
     }
-    if(zeitEl) zeitEl.innerHTML = '<span style="font-size:18px;">🕒</span> Abholbereit um ' + zeitDisplay;
+    if(zeitEl) zeitEl.innerHTML = '<span class="s5-code-emoji-18">🕒</span> Abholbereit um ' + zeitDisplay;
     if(modusEl){
-      if(modus === 'vor_ort') modusEl.innerHTML = '<span style="font-size:18px;">🍴</span> Vor Ort essen';
-      else modusEl.innerHTML = '<span style="font-size:18px;">🔄</span> Mitnehmen';
+      if(modus === 'vor_ort') modusEl.innerHTML = '<span class="s5-code-emoji-18">🍴</span> Vor Ort essen';
+      else modusEl.innerHTML = '<span class="s5-code-emoji-18">🔄</span> Mitnehmen';
     }
     if(verpackungWrap){
-      if(isMitnehmen && verpackung){
-        verpackungWrap.style.display = 'flex';
-        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span style="font-size:18px;">🔄</span> Eigener Behälter' : '<span style="font-size:18px;">🔄</span> Mehrweg-System';
-      } else verpackungWrap.style.display = 'none';
+      verpackungWrap.classList.toggle('s5-verpackung-flex', !!(isMitnehmen && verpackung));
+      if(isMitnehmen && verpackung) verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span class="s5-code-emoji-18">🔄</span> Eigener Behälter' : '<span class="s5-code-emoji-18">🔄</span> Mehrweg-System';
     }
     if(thumbEl && thumbWrap){
       var offer = offers && offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
@@ -7652,7 +7537,7 @@
     if(logoWrap){
       if(norm.providerLogoData || first.providerLogoData){
         var src = norm.providerLogoData || first.providerLogoData;
-        logoWrap.innerHTML = '<img src="' + esc(src) + '" alt="" style="width:100%; height:100%; object-fit:cover;" />';
+        logoWrap.innerHTML = '<img src="' + esc(src) + '" alt="" class="s5-img-cover" />';
       } else if(logoEmoji) {
         logoWrap.innerHTML = '<span id="pubProvLogoEmoji">🏢</span>';
       }
@@ -7662,7 +7547,7 @@
     const favBtn = document.getElementById('btnToggleFavProvider');
     if(favBtn){
       const isFav = providerFavs.has(pid);
-      favBtn.innerHTML = `<i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
+      favBtn.innerHTML = `<i data-lucide="heart" class="s5-heart-icon ${isFav ? 's5-heart-icon-fav' : ''}"></i>`;
       favBtn.onclick = () => {
         toggleProviderFavorite(pid);
         renderPublicProviderProfile();
@@ -7741,9 +7626,9 @@
 
   function updateProfileView(){
     var pwaTipEl = document.getElementById('profilePwaTip');
-    if(pwaTipEl) pwaTipEl.style.display = load('mittagio_pwa_tip_dismissed', false) ? 'none' : 'block';
+    if(pwaTipEl) pwaTipEl.classList.toggle('s5-pwa-tip-visible', !load('mittagio_pwa_tip_dismissed', false));
     var btnDismissPwa = document.getElementById('btnDismissPwaTip');
-    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ save('mittagio_pwa_tip_dismissed', true); var el = document.getElementById('profilePwaTip'); if(el) el.style.display = 'none'; }; }
+    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ save('mittagio_pwa_tip_dismissed', true); var el = document.getElementById('profilePwaTip'); if(el) el.classList.remove('s5-pwa-tip-visible'); }; }
     const isLoggedIn = customer.loggedIn;
     const firstName = customer.name ? customer.name.split(' ')[0] : '';
     const fullName = customer.name || 'Gast';
@@ -7755,12 +7640,10 @@
     if(headerCard){
       if(isLoggedIn){
         headerCard.innerHTML = `
-          <div style="width:64px; height:64px; border-radius:24px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(255,215,0,0.3); flex-shrink:0;">
-            ${initials}
-          </div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">Persönlicher Bereich</div>
+          <div class="s5-prof-hdr-avatar">${initials}</div>
+          <div class="s5-prof-hdr-body">
+            <div class="s5-prof-hdr-greeting">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+            <div class="s5-prof-hdr-sub">Persönlicher Bereich</div>
           </div>
         `;
         // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
@@ -7770,12 +7653,10 @@
         if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
-          <div style="flex:1;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;">Willkommen 👋</div>
-            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und die Mittagsbox zu speichern.</p>
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px;">
-              Profil anlegen
-            </button>
+          <div class="s5-prof-hdr-guest-wrap">
+            <div class="s5-prof-hdr-greeting s5-prof-hdr-greeting-standalone">Willkommen 👋</div>
+            <p class="s5-prof-hdr-text">Melde dich an, um deine Bestellungen und die Mittagsbox zu speichern.</p>
+            <button class="btn-cust-primary s5-prof-hdr-btn" type="button" id="btnProfileCreateAccount">Profil anlegen</button>
           </div>
         `;
         const btn = document.getElementById('btnProfileCreateAccount');
@@ -7793,43 +7674,43 @@
     const noAbholnummerHint = document.getElementById('profileNoAbholnummerHint');
     if(abholnummerSection && abholnummerList){
       if(activeAbholnummern.length > 0){
-        abholnummerSection.style.display = 'block';
-        if(noAbholnummerHint) noAbholnummerHint.style.display = 'none';
+        abholnummerSection.classList.add('s5-abholnummer-section-visible');
+        if(noAbholnummerHint) noAbholnummerHint.classList.add('s5-no-abholnummer-hidden');
         abholnummerList.innerHTML = activeAbholnummern.map(order => {
           const code = order.pickupCode || '–';
           return `
-            <div class="cust-card" style="flex-direction:row; padding:24px; align-items:center; gap:20px; margin-bottom:0; border:2px solid rgba(255,215,0,0.35); background:rgba(255,215,0,0.08); border-radius:20px; cursor:pointer;" onclick="showPickupCode('${esc(order.id)}');">
-              <div style="width:56px; height:56px; border-radius:16px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:28px;">🧾</div>
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:950; font-size:28px; color:#1a1a1a; letter-spacing:3px; font-family:monospace; line-height:1.2;">${esc(code)}</div>
-                <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:6px;">${esc(order.providerName || 'Anbieter')}</div>
+            <div class="cust-card s5-pickup-code-card" onclick="showPickupCode('${esc(order.id)}');">
+              <div class="s5-pickup-code-icon-wrap">🧾</div>
+              <div class="s5-pickup-code-body">
+                <div class="s5-pickup-code-value">${esc(code)}</div>
+                <div class="s5-pickup-code-provider">${esc(order.providerName || 'Anbieter')}</div>
               </div>
-              <i data-lucide="chevron-right" style="width:24px;height:24px; color:var(--brand);"></i>
+              <i data-lucide="chevron-right" class="s5-pickup-code-chevron"></i>
             </div>
           `;
         }).join('');
       } else {
-        abholnummerSection.style.display = 'none';
-        if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
+        abholnummerSection.classList.remove('s5-abholnummer-section-visible');
+        if(noAbholnummerHint) noAbholnummerHint.classList.remove('s5-no-abholnummer-hidden'), noAbholnummerHint.classList.add('s5-no-abholnummer-visible');
       }
-    } else if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
+    } else if(noAbholnummerHint) noAbholnummerHint.classList.add('s5-no-abholnummer-visible');
 
     // Historie (letzte 2)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
     if(orderHistoryEl){
       const sorted = (allOrders || []).slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       if(sorted.length === 0){
-        orderHistoryEl.innerHTML = '<p style="margin:0; color:#64748b; font-size:14px; text-align:center; padding:10px 0;">Noch keine Bestellungen.</p>';
+        orderHistoryEl.innerHTML = '<p class="s5-prof-order-empty">Noch keine Bestellungen.</p>';
       } else {
         const firstTwo = sorted.slice(0, 2);
         orderHistoryEl.innerHTML = firstTwo.map(o => `
-          <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:12px 0; border-bottom:1px solid #f1f3f5; display:flex; align-items:center; gap:12px; cursor:pointer;">
-            <div style="width:40px; height:40px; border-radius:10px; background:#f8f9fa; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
-            <div style="flex:1; min-width:0;">
-              <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
-              <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} • ${o.pickupDate || ''}</div>
+          <div class="profile-order-item s5-prof-order-row" onclick="showOrderDetail('${o.id}')">
+            <div class="s5-prof-order-icon">🍽️</div>
+            <div class="s5-prof-order-body">
+              <div class="s5-prof-order-dish">${esc(o.dishName || 'Gericht')}</div>
+              <div class="s5-prof-order-meta">${esc(o.providerName || 'Anbieter')} • ${o.pickupDate || ''}</div>
             </div>
-            <div style="font-weight:800; font-size:14px; color:var(--brand);">${euro(Number(o.total||0)/100)}</div>
+            <div class="s5-prof-order-price">${euro(Number(o.total||0)/100)}</div>
           </div>
         `).join('');
       }
@@ -7844,14 +7725,14 @@
         const o = allOffers.find(x => x.providerId === pid);
         return { id: pid, name: o ? o.providerName : 'Anbieter' };
       });
-      if(myFavProviders.length === 0) return '<p style="margin:0; color:#64748b; font-size:13px; text-align:center;">Noch keine Lieblinge gespeichert.</p>';
+      if(myFavProviders.length === 0) return '<p class="s5-prof-fav-empty">Noch keine Lieblinge gespeichert.</p>';
       return myFavProviders.map(p => `
-        <div onclick="closeProfileSettingsSheet(); showProviderProfilePublic('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#fff; border-radius:12px; border:1px solid #f1f3f5; cursor:pointer;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:32px; height:32px; border-radius:8px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:14px;">🏢</div>
-            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(p.name)}</span>
+        <div class="s5-prof-fav-row" onclick="closeProfileSettingsSheet(); showProviderProfilePublic('${p.id}')">
+          <div class="s5-prof-fav-left">
+            <div class="s5-prof-fav-icon">🏢</div>
+            <span class="s5-prof-fav-name">${esc(p.name)}</span>
           </div>
-          <i data-lucide="chevron-right" style="width:16px;height:16px;color:#cbd5e1;"></i>
+          <i data-lucide="chevron-right" class="s5-prof-fav-chevron"></i>
         </div>
       `).join('');
     })();
@@ -7872,10 +7753,10 @@
       const checked = s.key === 'reuse' ? isReuseEnabled : prefs[s.key];
       const changeHandler = s.key === 'reuse' ? `toggleReuseOption(this.checked)` : `toggleDietaryPreference('${s.key}', this.checked)`;
       return `
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8f9fa; border-radius:14px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <i data-lucide="${s.icon}" style="width:18px;height:18px;color:#64748b;"></i>
-            <span style="font-weight:700; font-size:14px; color:#1a1a1a;">${s.label}</span>
+        <div class="s5-prof-setting-row">
+          <div class="s5-prof-setting-left">
+            <i data-lucide="${s.icon}" class="s5-prof-setting-icon"></i>
+            <span class="s5-prof-setting-label">${s.label}</span>
           </div>
           <label class="switch-mini">
             <input type="checkbox" ${checked ? 'checked' : ''} onchange="${changeHandler}">
@@ -7896,15 +7777,13 @@
       { q: 'Wo finde ich Mehrweg-Optionen?', a: 'Achte auf das 🔄-Icon beim Gericht. Wir bauen unser Mehrweg-Netzwerk stetig aus.', icon: 'refresh-cw' }
     ];
     const faqHtml = faqs.map(f => `
-      <div style="border-radius:14px; border:1px solid #f1f3f5; overflow:hidden;">
-        <button onclick="const a = this.nextElementSibling; a.style.display = a.style.display === 'none' ? 'block' : 'none';" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-          <i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>
-          <span style="flex:1; font-size:14px; font-weight:700; color:#1a1a1a;">${f.q}</span>
-          <i data-lucide="chevron-down" style="width:16px;height:16px;color:#cbd5e1;"></i>
+      <div class="s5-prof-faq-wrap">
+        <button type="button" class="s5-prof-faq-btn" onclick="this.nextElementSibling.classList.toggle('is-open');">
+          <i data-lucide="${f.icon}" class="s5-prof-faq-btn-icon"></i>
+          <span class="s5-prof-faq-btn-text">${f.q}</span>
+          <i data-lucide="chevron-down" class="s5-prof-faq-btn-chevron"></i>
         </button>
-        <div style="display:none; padding:14px; font-size:14px; line-height:1.5; color:#64748b; background:#fff;">
-          ${f.a}
-        </div>
+        <div class="s5-prof-faq-body">${f.a}</div>
       </div>
     `).join('');
     if(faqEl) faqEl.innerHTML = faqHtml;
@@ -7932,22 +7811,22 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     const scrollEl = document.getElementById('profileSettingsSheetScroll');
-    if(bd){ bd.style.display = 'block'; bd.style.opacity = '1'; }
-    if(sheet) sheet.style.display = 'block';
+    if(bd){ bd.classList.add('s5-sheet-bd-visible'); }
+    if(sheet) sheet.classList.add('s5-sheet-visible');
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   function closeProfileSettingsSheet(){
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
-    if(bd){ bd.style.display = 'none'; bd.style.opacity = '0'; }
-    if(sheet){ sheet.style.display = 'none'; }
+    if(bd){ bd.classList.remove('s5-sheet-bd-visible'); }
+    if(sheet){ sheet.classList.remove('s5-sheet-visible'); }
   }
   function toggleProfileSettingsSection(sectionId){
     const el = document.getElementById(sectionId);
     if(!el) return;
-    const isHidden = el.style.display === 'none';
-    el.style.display = isHidden ? 'block' : 'none';
+    const isHidden = el.classList.contains('s5-prof-section-hidden');
+    el.classList.toggle('s5-prof-section-hidden', !isHidden);
     const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + sectionId + '"]');
     chevrons.forEach(c => { c.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; });
     var scrollEl = document.getElementById('profileSettingsSheetScroll');
@@ -7957,15 +7836,15 @@
   function openProfilePwaTipSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd){ bd.style.display = 'block'; bd.classList.add('active'); }
-    if(sheet){ sheet.style.display = 'block'; sheet.classList.add('active'); }
+    if(bd){ bd.classList.add('s5-sheet-bd-visible', 'active'); }
+    if(sheet){ sheet.classList.add('s5-sheet-visible', 'active'); }
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function closePwaStartScreenSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); }
-    if(sheet){ sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if(bd){ bd.classList.remove('s5-sheet-bd-visible', 'active'); }
+    if(sheet){ sheet.classList.remove('s5-sheet-visible', 'active'); }
   }
   if(typeof window !== 'undefined'){ window.openProfilePwaTipSheet = openProfilePwaTipSheet; window.closePwaStartScreenSheet = closePwaStartScreenSheet; }
   var pwaDeferredPrompt = null;
@@ -8045,16 +7924,16 @@
   function showProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd){ providerLoginBd.style.display = 'block'; providerLoginBd.classList.add('active'); }
-    if(providerLoginSheet){ providerLoginSheet.style.display = 'block'; providerLoginSheet.classList.add('active'); }
+    if(providerLoginBd){ providerLoginBd.classList.add('s5-sheet-bd-visible', 'active'); }
+    if(providerLoginSheet){ providerLoginSheet.classList.add('s5-sheet-visible', 'active'); }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
   function closeProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd){ providerLoginBd.style.display = 'none'; providerLoginBd.classList.remove('active'); }
-    if(providerLoginSheet){ providerLoginSheet.style.display = 'none'; providerLoginSheet.classList.remove('active'); }
+    if(providerLoginBd){ providerLoginBd.classList.remove('s5-sheet-bd-visible', 'active'); }
+    if(providerLoginSheet){ providerLoginSheet.classList.remove('s5-sheet-visible', 'active'); }
     // Felder leeren
     const emailField = document.getElementById('providerLoginEmail');
     const passField = document.getElementById('providerLoginPass');
@@ -8255,11 +8134,11 @@
       const banner = document.createElement('div');
       banner.className = 's5-banner-green';
       banner.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#2e7d32;">Du hast ein Gericht vorbereitet</div>
-        <div style="font-size:14px; line-height:1.4; margin-bottom:12px; color:#666;">Möchtest du weitermachen?</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn secondary" type="button" id="btnOnboardingResume" style="flex:1; min-height:44px;">Weiter bearbeiten</button>
-          <button class="btn ghost" type="button" id="btnOnboardingDiscard" style="flex:1; min-height:44px;">Verwerfen</button>
+        <div class="s5-onb-dialog-title">Du hast ein Gericht vorbereitet</div>
+        <div class="s5-onb-dialog-text">Möchtest du weitermachen?</div>
+        <div class="s5-onb-dialog-btns">
+          <button class="btn secondary s5-onb-dialog-btn" type="button" id="btnOnboardingResume">Weiter bearbeiten</button>
+          <button class="btn ghost s5-onb-dialog-btn" type="button" id="btnOnboardingDiscard">Verwerfen</button>
         </div>
       `;
       entryPanel.insertBefore(banner, entryPanel.firstChild);
@@ -8307,20 +8186,20 @@
     const card = document.createElement('div');
     card.className = 'onboarding-preview-card inserat-card-preview';
     card.innerHTML = `
-      <div class="onboarding-preview-photo" style="position:relative; width:100%; height:190px; min-height:190px; overflow:hidden; background:#f1f5f9; flex-shrink:0;">
-        <img src="${esc(imgSrc)}" alt="${esc(dish.dish||'')}" style="width:100%; height:100%; object-fit:cover; display:block;" />
-        <div class="price-badge-on-image" style="position:absolute; bottom:12px; right:12px; background:#FFD700; color:#121826; padding:8px 14px; border-radius:20px; font-weight:800; font-size:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">${typeof euro === 'function' ? euro(price) : price + ' €'}</div>
+      <div class="onboarding-preview-photo s5-onb-photo">
+        <img src="${esc(imgSrc)}" alt="${esc(dish.dish||'')}" />
+        <div class="price-badge-on-image s5-onb-price-badge">${typeof euro === 'function' ? euro(price) : price + ' €'}</div>
       </div>
-      <div class="onboarding-preview-powerbar" style="display:flex; gap:8px; padding:10px 16px; background:#f8fafc; border-bottom:1px solid rgba(0,0,0,0.04); justify-content:center; flex-wrap:wrap;">
-        <span style="min-width:44px; min-height:44px; border-radius:12px; background:rgba(16,185,129,0.12); color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px;">🍴</span>
-        <span style="min-width:44px; min-height:44px; border-radius:12px; background:#f8fafc; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:18px;">🔄</span>
-        <span style="min-width:44px; min-height:44px; border-radius:12px; background:#f8fafc; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:18px;">🕒</span>
+      <div class="onboarding-preview-powerbar s5-onb-powerbar">
+        <span class="s5-onb-power-icon s5-onb-power-icon-active">🍴</span>
+        <span class="s5-onb-power-icon s5-onb-power-icon-inactive">🔄</span>
+        <span class="s5-onb-power-icon s5-onb-power-icon-inactive">🕒</span>
       </div>
-      <div style="padding:20px 20px 24px;">
-        <h3 class="onboarding-preview-title" style="font-family:'Source Serif 4',Georgia,serif; font-size:20px; font-weight:700; color:#0f172a; margin:0 0 8px; line-height:1.3;">${esc(dish.dish || 'Gericht')}</h3>
-        <p style="color:#64748b; font-size:14px; margin:0 0 16px;">${esc(provider?.profile?.name || 'Dein Betrieb')}</p>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="background:#f1f5f9; padding:6px 12px; border-radius:999px; font-size:13px; font-weight:700; color:#64748b;">${catEmoji} ${cat}</span>
+      <div class="s5-onb-body">
+        <h3 class="onboarding-preview-title s5-onb-title">${esc(dish.dish || 'Gericht')}</h3>
+        <p class="s5-onb-sub">${esc(provider?.profile?.name || 'Dein Betrieb')}</p>
+        <div class="s5-onb-cat-row">
+          <span class="s5-onb-cat-pill">${catEmoji} ${cat}</span>
         </div>
       </div>
     `;
@@ -8593,7 +8472,7 @@
     }, 200);
     
     // Nachricht anzeigen
-    message.style.display = 'block';
+    message.classList.add('s5-message-visible');
     
     // Haptic Feedback
     if (window.userHasInteracted && 'vibrate' in navigator){
@@ -8767,149 +8646,119 @@
     if(type === 'impressum'){
       title = 'Impressum';
       html = `
-        <h3 style="margin:0 0 20px;">Impressum</h3>
-        <div style="line-height:1.8;">
-          <p style="font-weight:700; margin-bottom:12px;">Verantwortlich für den Inhalt:</p>
+        <h3 class="s5-legal-h3">Impressum</h3>
+        <div class="s5-legal-body">
+          <p class="s5-legal-p-head">Verantwortlich für den Inhalt:</p>
           <p>
             <strong>Mike Quach</strong><br>
             Langäcker 2<br>
             73635 Rudersberg<br>
             Deutschland
           </p>
-          <p style="margin-top:16px;">
-            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            <strong>Business:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          <p class="s5-legal-p-mt16">
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" class="s5-legal-link">info@mittagio.de</a><br>
+            <strong>Business:</strong> <a href="mailto:support@mittagio.de" class="s5-legal-link">support@mittagio.de</a>
           </p>
-          <p style="margin-top:20px; padding-top:20px; border-top:1px solid #eee; font-size:13px; color:#666;">
+          <p class="s5-legal-p-divider">
             <strong>Plattformhinweis:</strong><br>
             Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.
           </p>
-          <p style="margin-top:20px; padding-top:16px; border-top:1px solid #eee; font-size:13px; color:#94a3b8; text-align:center;">
-            made with ❤️ by mittagio.de
-          </p>
+          <p class="s5-legal-p-footer">made with ❤️ by mittagio.de</p>
         </div>
       `;
     } else if(type === 'agb'){
       title = 'Allgemeine Geschäftsbedingungen (Kunden)';
       html = `
-        <h3 style="margin:0 0 20px;">Allgemeine Geschäftsbedingungen (Kunden)</h3>
-        <div style="line-height:1.8; font-size:14px;">
-          <p style="margin-bottom:16px;"><strong>1. Geltungsbereich</strong></p>
-          <p style="margin-bottom:20px;">Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform Mittagio durch Kunden. Mittagio betreibt eine Plattform zur Vermittlung von Mittagsangeboten lokaler Anbieter.</p>
-          
-          <p style="margin-bottom:16px;"><strong>2. Rolle von Mittagio</strong></p>
-          <p style="margin-bottom:20px;">Mittagio ist kein Restaurant und kein Lieferdienst. Mittagio vermittelt ausschließlich zwischen Kunden und Anbietern. Der Kaufvertrag kommt direkt zwischen dem Kunden und dem jeweiligen Anbieter zustande.</p>
-          
-          <p style="margin-bottom:16px;"><strong>3. Nutzung der Plattform</strong></p>
-          <p style="margin-bottom:20px;">Die Nutzung ist grundsätzlich ohne Registrierung möglich. Kunden können Mittagsangebote auswählen und entdecken. Ein Anspruch auf Verfügbarkeit bestimmter Angebote besteht nicht.</p>
-          
-          <p style="margin-bottom:16px;"><strong>4. Bestellung & Abholung</strong></p>
-          <p style="margin-bottom:20px;">Mit Abschluss der Bestellung erhält der Kunde eine Abholnummer. Die Abholnummer ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
-          
-          <p style="margin-bottom:16px;"><strong>5. Preise & Bezahlung</strong></p>
-          <p style="margin-bottom:20px;">Alle Preise werden vom Anbieter festgelegt. Die Bezahlung erfolgt direkt beim Anbieter vor Ort, sofern nicht anders angegeben. Mittagio erhebt aktuell keine Gebühren vom Kunden.</p>
-          
-          <p style="margin-bottom:16px;"><strong>6. Stornierung</strong></p>
-          <p style="margin-bottom:20px;">Stornierungen sind abhängig von den Regelungen des jeweiligen Anbieters. Ein Anspruch auf Stornierung oder Rückerstattung über Mittagio besteht nicht.</p>
-          
-          <p style="margin-bottom:16px;"><strong>7. Haftung</strong></p>
-          <p style="margin-bottom:20px;">Mittagio haftet nicht für Qualität, Menge oder Beschaffenheit der Speisen, Ausfälle, Verspätungen oder Änderungen durch den Anbieter, sowie Allergene oder Unverträglichkeiten. Für diese Punkte ist ausschließlich der jeweilige Anbieter verantwortlich.</p>
-          
-          <p style="margin-bottom:16px;"><strong>8. Verfügbarkeit</strong></p>
-          <p style="margin-bottom:20px;">Mittagio bemüht sich um eine hohe Verfügbarkeit der Plattform, übernimmt jedoch keine Garantie für eine jederzeit unterbrechungsfreie Nutzung.</p>
-          
-          <p style="margin-bottom:16px;"><strong>9. Änderungen der AGB</strong></p>
-          <p style="margin-bottom:20px;">Mittagio behält sich vor, diese AGB anzupassen, wenn sich Funktionen oder rechtliche Rahmenbedingungen ändern.</p>
-          
-          <p style="margin-bottom:16px;"><strong>10. Kontakt</strong></p>
-          <p style="margin-bottom:20px;">Bei Fragen zur Nutzung der Plattform: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
-          
-          <p style="margin-top:24px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#666;">
-            <strong>Stand:</strong> Januar 2026
-          </p>
+        <h3 class="s5-legal-h3">Allgemeine Geschäftsbedingungen (Kunden)</h3>
+        <div class="s5-legal-body-sm">
+          <p class="s5-legal-p-title"><strong>1. Geltungsbereich</strong></p>
+          <p class="s5-legal-p">Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Plattform Mittagio durch Kunden. Mittagio betreibt eine Plattform zur Vermittlung von Mittagsangeboten lokaler Anbieter.</p>
+          <p class="s5-legal-p-title"><strong>2. Rolle von Mittagio</strong></p>
+          <p class="s5-legal-p">Mittagio ist kein Restaurant und kein Lieferdienst. Mittagio vermittelt ausschließlich zwischen Kunden und Anbietern. Der Kaufvertrag kommt direkt zwischen dem Kunden und dem jeweiligen Anbieter zustande.</p>
+          <p class="s5-legal-p-title"><strong>3. Nutzung der Plattform</strong></p>
+          <p class="s5-legal-p">Die Nutzung ist grundsätzlich ohne Registrierung möglich. Kunden können Mittagsangebote auswählen und entdecken. Ein Anspruch auf Verfügbarkeit bestimmter Angebote besteht nicht.</p>
+          <p class="s5-legal-p-title"><strong>4. Bestellung & Abholung</strong></p>
+          <p class="s5-legal-p">Mit Abschluss der Bestellung erhält der Kunde eine Abholnummer. Die Abholnummer ist beim Anbieter vorzuzeigen. Die Abholung erfolgt innerhalb der vom Anbieter angegebenen Essenszeit.</p>
+          <p class="s5-legal-p-title"><strong>5. Preise & Bezahlung</strong></p>
+          <p class="s5-legal-p">Alle Preise werden vom Anbieter festgelegt. Die Bezahlung erfolgt direkt beim Anbieter vor Ort, sofern nicht anders angegeben. Mittagio erhebt aktuell keine Gebühren vom Kunden.</p>
+          <p class="s5-legal-p-title"><strong>6. Stornierung</strong></p>
+          <p class="s5-legal-p">Stornierungen sind abhängig von den Regelungen des jeweiligen Anbieters. Ein Anspruch auf Stornierung oder Rückerstattung über Mittagio besteht nicht.</p>
+          <p class="s5-legal-p-title"><strong>7. Haftung</strong></p>
+          <p class="s5-legal-p">Mittagio haftet nicht für Qualität, Menge oder Beschaffenheit der Speisen, Ausfälle, Verspätungen oder Änderungen durch den Anbieter, sowie Allergene oder Unverträglichkeiten. Für diese Punkte ist ausschließlich der jeweilige Anbieter verantwortlich.</p>
+          <p class="s5-legal-p-title"><strong>8. Verfügbarkeit</strong></p>
+          <p class="s5-legal-p">Mittagio bemüht sich um eine hohe Verfügbarkeit der Plattform, übernimmt jedoch keine Garantie für eine jederzeit unterbrechungsfreie Nutzung.</p>
+          <p class="s5-legal-p-title"><strong>9. Änderungen der AGB</strong></p>
+          <p class="s5-legal-p">Mittagio behält sich vor, diese AGB anzupassen, wenn sich Funktionen oder rechtliche Rahmenbedingungen ändern.</p>
+          <p class="s5-legal-p-title"><strong>10. Kontakt</strong></p>
+          <p class="s5-legal-p">Bei Fragen zur Nutzung der Plattform: <a href="mailto:info@mittagio.de" class="s5-legal-link">info@mittagio.de</a></p>
+          <p class="s5-legal-p-stand"><strong>Stand:</strong> Januar 2026</p>
         </div>
       `;
     } else if(type === 'datenschutz'){
       title = 'Datenschutzerklärung';
       html = `
-        <h3 style="margin:0 0 20px;">Datenschutzerklärung</h3>
-        <div style="line-height:1.8; font-size:14px;">
-          <p style="margin-bottom:16px;"><strong>1. Verantwortlicher</strong></p>
-          <p style="margin-bottom:20px;">
+        <h3 class="s5-legal-h3">Datenschutzerklärung</h3>
+        <div class="s5-legal-body-sm">
+          <p class="s5-legal-p-title"><strong>1. Verantwortlicher</strong></p>
+          <p class="s5-legal-p">
             Verantwortlich für die Datenverarbeitung ist:<br><br>
             <strong>MQ Mittagio UG (haftungsbeschränkt)</strong><br>
             Vertreten durch: Mike Quach<br>
             Langäcker 2<br>
             73635 Rudersberg<br>
             Deutschland<br><br>
-            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+            <strong>Kunden-Hilfe:</strong> <a href="mailto:info@mittagio.de" class="s5-legal-link">info@mittagio.de</a><br>
+            <strong>Business-Anfragen:</strong> <a href="mailto:support@mittagio.de" class="s5-legal-link">support@mittagio.de</a>
           </p>
-          
-          <p style="margin-bottom:16px;"><strong>2. Allgemeines</strong></p>
-          <p style="margin-bottom:20px;">Der Schutz deiner persönlichen Daten ist uns wichtig. Wir verarbeiten personenbezogene Daten nur im notwendigen Umfang und gemäß den geltenden Datenschutzgesetzen (DSGVO).</p>
-          
-          <p style="margin-bottom:16px;"><strong>3. Welche Daten wir verarbeiten</strong></p>
-          <p style="margin-bottom:12px;"><strong>a) Bei der Nutzung der Plattform</strong></p>
-          <p style="margin-bottom:20px;">Beim Besuch von Mittagio werden technisch notwendige Daten verarbeitet, z. B.:</p>
-          <ul style="margin:0 0 20px 20px; padding-left:0;">
-            <li style="margin-bottom:8px;">IP-Adresse (gekürzt/anonymisiert, sofern möglich)</li>
-            <li style="margin-bottom:8px;">Datum und Uhrzeit des Zugriffs</li>
-            <li style="margin-bottom:8px;">Browsertyp / Betriebssystem</li>
-            <li style="margin-bottom:8px;">aufgerufene Seiten</li>
+          <p class="s5-legal-p-title"><strong>2. Allgemeines</strong></p>
+          <p class="s5-legal-p">Der Schutz deiner persönlichen Daten ist uns wichtig. Wir verarbeiten personenbezogene Daten nur im notwendigen Umfang und gemäß den geltenden Datenschutzgesetzen (DSGVO).</p>
+          <p class="s5-legal-p-title"><strong>3. Welche Daten wir verarbeiten</strong></p>
+          <p class="s5-legal-p-mb12"><strong>a) Bei der Nutzung der Plattform</strong></p>
+          <p class="s5-legal-p">Beim Besuch von Mittagio werden technisch notwendige Daten verarbeitet, z. B.:</p>
+          <ul class="s5-legal-ul">
+            <li class="s5-legal-li">IP-Adresse (gekürzt/anonymisiert, sofern möglich)</li>
+            <li class="s5-legal-li">Datum und Uhrzeit des Zugriffs</li>
+            <li class="s5-legal-li">Browsertyp / Betriebssystem</li>
+            <li class="s5-legal-li">aufgerufene Seiten</li>
           </ul>
-          <p style="margin-bottom:20px;">Diese Daten sind technisch erforderlich, um die Plattform bereitzustellen.</p>
-          
-          <p style="margin-bottom:12px;"><strong>b) Bei einer Bestellung</strong></p>
-          <p style="margin-bottom:12px;">Wenn du ein Mittagsangebot bestellst, verarbeiten wir:</p>
-          <ul style="margin:0 0 12px 20px; padding-left:0;">
-            <li style="margin-bottom:8px;">ausgewähltes Gericht</li>
-            <li style="margin-bottom:8px;">Anbieter</li>
-            <li style="margin-bottom:8px;">Abholzeit (ungefähr)</li>
-            <li style="margin-bottom:8px;">generierte Abholnummer</li>
+          <p class="s5-legal-p">Diese Daten sind technisch erforderlich, um die Plattform bereitzustellen.</p>
+          <p class="s5-legal-p-mb12"><strong>b) Bei einer Bestellung</strong></p>
+          <p class="s5-legal-p-mb12">Wenn du ein Mittagsangebot bestellst, verarbeiten wir:</p>
+          <ul class="s5-legal-ul-sm">
+            <li class="s5-legal-li">ausgewähltes Gericht</li>
+            <li class="s5-legal-li">Anbieter</li>
+            <li class="s5-legal-li">Abholzeit (ungefähr)</li>
+            <li class="s5-legal-li">generierte Abholnummer</li>
           </ul>
-          <p style="margin-bottom:20px;">
-            👉 Keine Pflicht zur Registrierung<br>
-            👉 Keine Zahlungsdaten (Bezahlung erfolgt ggf. vor Ort beim Anbieter)
-          </p>
-          
-          <p style="margin-bottom:12px;"><strong>c) Lokale Speicherung (PWA)</strong></p>
-          <p style="margin-bottom:20px;">Bestellungen und Abholnummern werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
-          
-          <p style="margin-bottom:16px;"><strong>4. Weitergabe von Daten</strong></p>
-          <p style="margin-bottom:20px;">Deine Daten werden nur an den jeweiligen Anbieter weitergegeben, soweit dies zur Abwicklung deiner Bestellung erforderlich ist.</p>
-          <p style="margin-bottom:20px;">Eine Weitergabe an Dritte erfolgt nicht, außer:</p>
-          <ul style="margin:0 0 20px 20px; padding-left:0;">
-            <li style="margin-bottom:8px;">es besteht eine gesetzliche Verpflichtung</li>
-            <li style="margin-bottom:8px;">oder du hast ausdrücklich eingewilligt</li>
+          <p class="s5-legal-p">👉 Keine Pflicht zur Registrierung<br>👉 Keine Zahlungsdaten (Bezahlung erfolgt ggf. vor Ort beim Anbieter)</p>
+          <p class="s5-legal-p-mb12"><strong>c) Lokale Speicherung (PWA)</strong></p>
+          <p class="s5-legal-p">Bestellungen und Abholnummern werden lokal auf deinem Gerät gespeichert (z. B. im LocalStorage), damit du sie auch offline wieder anzeigen kannst. Diese Daten werden nicht automatisch an uns übertragen.</p>
+          <p class="s5-legal-p-title"><strong>4. Weitergabe von Daten</strong></p>
+          <p class="s5-legal-p">Deine Daten werden nur an den jeweiligen Anbieter weitergegeben, soweit dies zur Abwicklung deiner Bestellung erforderlich ist.</p>
+          <p class="s5-legal-p">Eine Weitergabe an Dritte erfolgt nicht, außer:</p>
+          <ul class="s5-legal-ul">
+            <li class="s5-legal-li">es besteht eine gesetzliche Verpflichtung</li>
+            <li class="s5-legal-li">oder du hast ausdrücklich eingewilligt</li>
           </ul>
-          
-          <p style="margin-bottom:16px;"><strong>5. Cookies & Tracking</strong></p>
-          <p style="margin-bottom:20px;">Mittagio verwendet keine Tracking-Cookies und kein Nutzer-Tracking zu Werbezwecken.</p>
-          <p style="margin-bottom:20px;">Es werden ausschließlich technisch notwendige Speichermechanismen verwendet (z. B. für App-Funktionen).</p>
-          
-          <p style="margin-bottom:16px;"><strong>6. Hosting</strong></p>
-          <p style="margin-bottom:20px;">Die Plattform wird über externe Hosting-Anbieter betrieben. Dabei können technisch notwendige Zugriffsdaten (z. B. IP-Adresse) verarbeitet werden, um den sicheren Betrieb zu gewährleisten.</p>
-          
-          <p style="margin-bottom:16px;"><strong>7. Deine Rechte</strong></p>
-          <p style="margin-bottom:12px;">Du hast jederzeit das Recht auf:</p>
-          <ul style="margin:0 0 12px 20px; padding-left:0;">
-            <li style="margin-bottom:8px;">Auskunft über deine gespeicherten Daten</li>
-            <li style="margin-bottom:8px;">Berichtigung unrichtiger Daten</li>
-            <li style="margin-bottom:8px;">Löschung deiner Daten</li>
-            <li style="margin-bottom:8px;">Einschränkung der Verarbeitung</li>
-            <li style="margin-bottom:8px;">Widerspruch gegen die Verarbeitung</li>
+          <p class="s5-legal-p-title"><strong>5. Cookies & Tracking</strong></p>
+          <p class="s5-legal-p">Mittagio verwendet keine Tracking-Cookies und kein Nutzer-Tracking zu Werbezwecken.</p>
+          <p class="s5-legal-p">Es werden ausschließlich technisch notwendige Speichermechanismen verwendet (z. B. für App-Funktionen).</p>
+          <p class="s5-legal-p-title"><strong>6. Hosting</strong></p>
+          <p class="s5-legal-p">Die Plattform wird über externe Hosting-Anbieter betrieben. Dabei können technisch notwendige Zugriffsdaten (z. B. IP-Adresse) verarbeitet werden, um den sicheren Betrieb zu gewährleisten.</p>
+          <p class="s5-legal-p-title"><strong>7. Deine Rechte</strong></p>
+          <p class="s5-legal-p-mb12">Du hast jederzeit das Recht auf:</p>
+          <ul class="s5-legal-ul-sm">
+            <li class="s5-legal-li">Auskunft über deine gespeicherten Daten</li>
+            <li class="s5-legal-li">Berichtigung unrichtiger Daten</li>
+            <li class="s5-legal-li">Löschung deiner Daten</li>
+            <li class="s5-legal-li">Einschränkung der Verarbeitung</li>
+            <li class="s5-legal-li">Widerspruch gegen die Verarbeitung</li>
           </ul>
-          <p style="margin-bottom:20px;">Anfragen bitte per E-Mail an: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
-          
-          <p style="margin-bottom:16px;"><strong>8. Änderungen dieser Datenschutzerklärung</strong></p>
-          <p style="margin-bottom:20px;">Diese Datenschutzerklärung kann angepasst werden, wenn sich Funktionen oder gesetzliche Vorgaben ändern.</p>
-          <p style="margin-bottom:20px;">Es gilt jeweils die auf dieser Seite veröffentlichte Version.</p>
-          
-          <p style="margin-top:24px; padding-top:20px; border-top:1px solid #eee; font-size:12px; color:#666;">
-            <strong>9. Stand</strong><br>
-            Stand: Januar 2026
-          </p>
+          <p class="s5-legal-p">Anfragen bitte per E-Mail an: <a href="mailto:info@mittagio.de" class="s5-legal-link">info@mittagio.de</a></p>
+          <p class="s5-legal-p-title"><strong>8. Änderungen dieser Datenschutzerklärung</strong></p>
+          <p class="s5-legal-p">Diese Datenschutzerklärung kann angepasst werden, wenn sich Funktionen oder gesetzliche Vorgaben ändern.</p>
+          <p class="s5-legal-p">Es gilt jeweils die auf dieser Seite veröffentlichte Version.</p>
+          <p class="s5-legal-p-stand"><strong>9. Stand</strong><br>Stand: Januar 2026</p>
         </div>
       `;
     }
@@ -9181,9 +9030,9 @@
     if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
     if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
     var discoverLoc = document.getElementById('discoverLocationExpanded');
-    if(discoverLoc && discoverLoc.style.display !== 'none') discoverLoc.style.display = 'none';
+    if(discoverLoc && discoverLoc.classList.contains('is-open')) discoverLoc.classList.remove('is-open');
     var discoverRadius = document.getElementById('discoverRadiusDropdown');
-    if(discoverRadius && discoverRadius.style.display !== 'none') discoverRadius.style.display = 'none';
+    if(discoverRadius && discoverRadius.classList.contains('is-open')) discoverRadius.classList.remove('is-open');
   }
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
@@ -9478,13 +9327,7 @@
       
       // Sektion nur anzeigen wenn Requests vorhanden
       const demandSection = document.getElementById('providerCustomerDemand');
-      if(demandSection){
-        if(requestCount > 0){
-          demandSection.style.display = 'block';
-        } else {
-          demandSection.style.display = 'none';
-        }
-      }
+      if(demandSection) demandSection.classList.toggle('s5-demand-visible', requestCount > 0);
     }
     
       // ---------------------------------------------------------
@@ -9512,21 +9355,14 @@
       const btnHeroShare = document.getElementById('btnHeroShare');
 
       if(heroStateStart && heroStateActive){
+        heroStateStart.classList.toggle('s5-hero-start-hidden', !!isHeroActive);
+        heroStateActive.classList.toggle('s5-hero-active-visible', !!isHeroActive);
         if(isHeroActive){
-          heroStateStart.style.display = 'none';
-          heroStateActive.style.display = 'block';
-          
           if(heroRevenue) heroRevenue.textContent = tagesumsatzEuro.replace('.', ',') + ' €';
           if(heroOrders) heroOrders.textContent = todayOrders.length;
           if(heroPickups) heroPickups.textContent = todayOrders.filter(o => o.status === 'PAID').length;
-          
-          // Farbe bei Umsatz grün
           if(heroRevenue && hasRevenue) heroRevenue.style.color = '#2e7d32';
           else if(heroRevenue) heroRevenue.style.color = '#1a1a1a';
-          
-        } else {
-          heroStateStart.style.display = 'block';
-          heroStateActive.style.display = 'none';
         }
       }
       
@@ -10990,15 +10826,15 @@
       grid.innerHTML += '<div class="review-card"><img src="' + escFn(img) + '" alt=""><div class="info"><h3>' + escFn(name) + '</h3><div class="pillars">🍴 🔄 ' + (useAbholnummer ? '🧾' : '') + '</div></div></div>';
     });
     if(useAbholnummer){
-      if(rowStd) rowStd.style.display = 'none';
-      if(rowSmart) rowSmart.style.display = 'flex';
-      if(feeNote) feeNote.style.display = 'block';
+      if(rowStd) hide(rowStd);
+      if(rowSmart) setVisible(rowSmart, 'flex');
+      if(feeNote) show(feeNote);
       if(totalEl) totalEl.textContent = '0,00 €';
       if(btnEl){ btnEl.textContent = 'Kostenlos aktivieren'; btnEl.style.background = '#10b981'; }
     } else {
-      if(rowStd) rowStd.style.display = 'flex';
-      if(rowSmart) rowSmart.style.display = 'none';
-      if(feeNote) feeNote.style.display = 'none';
+      if(rowStd) setVisible(rowStd, 'flex');
+      if(rowSmart) hide(rowSmart);
+      if(feeNote) hide(feeNote);
       if(totalEl) totalEl.textContent = '4,99 €';
       if(btnEl){ btnEl.textContent = 'Jetzt für 4,99 € aktivieren'; btnEl.style.background = '#222222'; }
     }
@@ -11023,7 +10859,7 @@
 
   window.processFinalActivation = function(){
     var rowSmart = document.getElementById('row-smart');
-    var useAbhol = rowSmart && rowSmart.style.display === 'flex';
+    var useAbhol = rowSmart && rowSmart.classList.contains('is-visible-flex');
     if(typeof saveTransaction === 'function'){
       var txId = 'TX-' + (typeof cryptoId === 'function' ? cryptoId().slice(0, 8) : Date.now().toString(36).toUpperCase());
       var tx = {
@@ -11052,12 +10888,13 @@
     var s1 = document.getElementById('v-step-1');
     var s2 = document.getElementById('v-step-2-monetize');
     if(!s1 || !s2) return;
-    s1.style.transition = 'opacity 0.2s ease';
-    s1.style.opacity = '0';
+    s1.classList.remove('s5-checkout-step-active');
+    s1.classList.add('s5-checkout-step-fading');
     setTimeout(function(){
-      s1.style.display = 'none';
-      s2.style.display = 'block';
-      s2.style.opacity = '1';
+      s1.classList.remove('s5-checkout-step-fading');
+      s1.classList.add('s5-checkout-step-inactive');
+      s2.classList.remove('s5-checkout-step-inactive');
+      s2.classList.add('s5-checkout-step-active');
       try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
       var p = typeof price === 'number' ? price : 12.50;
       var n = typeof servings === 'number' ? servings : 25;
@@ -11111,14 +10948,15 @@
     if(imgEl) imgEl.src = wData.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
     if(titleEl) titleEl.textContent = (wData.dish || '').trim() || 'Gericht';
     if(priceEl) priceEl.textContent = (Number(wData.price) || 0).toFixed(2).replace('.', ',') + ' €';
-    if(abholBox) abholBox.style.display = isSmart ? 'block' : 'none';
+    if(abholBox){ if(isSmart) show(abholBox); else hide(abholBox); }
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 100, 30, 200]); }catch(e){}
-    s2.style.transition = 'opacity 0.2s ease';
-    s2.style.opacity = '0';
+    s2.classList.remove('s5-checkout-step-active');
+    s2.classList.add('s5-checkout-step-fading');
     setTimeout(function(){
-      s2.style.display = 'none';
-      s3.style.display = 'block';
-      s3.style.opacity = '1';
+      s2.classList.remove('s5-checkout-step-fading');
+      s2.classList.add('s5-checkout-step-inactive');
+      s3.classList.remove('s5-checkout-step-inactive');
+      s3.classList.add('s5-checkout-step-active');
       if(typeof window.triggerLiveConfetti === 'function') window.triggerLiveConfetti();
     }, 200);
   };
@@ -11127,7 +10965,7 @@
   window.resetFlowToDashboard = function(){
     remove('wizard_draft');
     var s3 = document.getElementById('v-step-3-success');
-    if(s3) s3.style.display = 'none';
+    if(s3){ s3.classList.remove('s5-checkout-step-active'); s3.classList.add('s5-checkout-step-inactive'); }
     if(typeof showProviderHome === 'function') showProviderHome();
   };
 
@@ -19271,7 +19109,7 @@
       
       // End-of-Stack Karte ausblenden
       const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
       
       showToast('Von vorne gestartet', 1500);
     };
