@@ -290,12 +290,12 @@
     imgContainer.appendChild(img);
     const likeBtn = document.createElement('button');
     likeBtn.className = 'discover-card-btn-like';
-    likeBtn.innerHTML = `<i data-lucide="heart" style="width:18px; height:18px; ${isFavorited ? 'fill:#E34D4D;' : ''}"></i>`;
+    likeBtn.innerHTML = `<i data-lucide="heart" class="s5-card-icon-heart ${isFavorited ? 's5-card-icon-heart-active' : ''}"></i>`;
     likeBtn.onclick = (e) => { e.stopPropagation(); toggleFavorite(data.id, likeBtn); };
     imgContainer.appendChild(likeBtn);
     const shareBtn = document.createElement('button');
     shareBtn.className = 'discover-card-btn-share';
-    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:16px;height:16px;"></i>';
+    shareBtn.innerHTML = '<i data-lucide="share-2" class="s5-card-icon-share-btn"></i>';
     shareBtn.onclick = (e) => { e.stopPropagation(); shareOffer(data); };
     imgContainer.appendChild(shareBtn);
     imgWrap.appendChild(imgContainer);
@@ -305,9 +305,9 @@
     const pillarsRow = document.createElement('div');
     pillarsRow.className = 'discover-card-pillars card-pillars';
     pillarsRow.innerHTML = [
-      '<span class="pillar-icon" title="Vor Ort" style="' + (vorOrt ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🍴</span>',
-      '<span class="pillar-icon" title="Abholnummer" style="' + (abholnummer ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🧾</span>',
-      '<span class="pillar-icon" title="Mehrweg" style="' + (mehrweg ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🔄</span>',
+      '<span class="pillar-icon' + (vorOrt ? '' : ' is-inactive') + '" title="Vor Ort">🍴</span>',
+      '<span class="pillar-icon' + (abholnummer ? '' : ' is-inactive') + '" title="Abholnummer">🧾</span>',
+      '<span class="pillar-icon' + (mehrweg ? '' : ' is-inactive') + '" title="Mehrweg">🔄</span>',
     ].join('');
     card.appendChild(pillarsRow);
     
@@ -323,7 +323,7 @@
     providerPriceRow.className = 'discover-card-provider-price-row';
     const providerLine = document.createElement('div');
     providerLine.className = 'cust-card-meta discover-card-provider-line';
-    providerLine.innerHTML = `<i data-lucide="store" style="width:14px;height:14px;vertical-align:middle;"></i> <span>${(data.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+    providerLine.innerHTML = `<i data-lucide="store" class="s5-card-icon-store"></i> <span>${(data.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
     const price = document.createElement('div');
     price.className = 'cust-card-price price-pill discover-card-price';
     price.textContent = euro(data.price);
@@ -337,7 +337,7 @@
     const ctaBtn = document.createElement('button');
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn btn-mittagsbox-cta discover-card-cta-btn';
-    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
+    ctaBtn.innerHTML = '<span class="s5-card-cta-emoji">🍱</span> <span>In meine Box</span>';
     ctaBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -360,7 +360,7 @@
       const carMinutes = Math.round(Number(data.distanceKm) * 1.5);
       const mobilityRow = document.createElement('div');
       mobilityRow.className = 'discover-card-mobility-row';
-      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes < 1 ? '< 1' : walkingMinutes} min</span><span style="color:#e2e8f0;">|</span><span>🚗 ${carMinutes < 1 ? '< 1' : carMinutes} min</span>`;
+      mobilityRow.innerHTML = `<span>🚶 ${walkingMinutes < 1 ? '< 1' : walkingMinutes} min</span><span class="s5-card-divider">|</span><span>🚗 ${carMinutes < 1 ? '< 1' : carMinutes} min</span>`;
       body.appendChild(mobilityRow);
     }
     
@@ -1666,10 +1666,10 @@
           if(suggestions.length > 0){
             discoverLocationSuggestions.innerHTML = suggestions.map(loc => {
               const safe = String(loc).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-              return `<div class="location-suggestion-item" data-loc="${safe}" style="padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(0,0,0,0.05); transition:background 0.2s ease;" onmouseover="this.style.background='rgba(0,0,0,0.05)';" onmouseout="this.style.background='transparent';">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <i data-lucide="map-pin" style="width:14px;height:14px; color:#666;"></i>
-                  <span style="font-size:14px; font-weight:500; color:#333;">${safe}</span>
+              return `<div class="location-suggestion-item s5-loc-item" data-loc="${safe}">
+                <div class="s5-loc-item-inner">
+                  <i data-lucide="map-pin" class="s5-loc-icon"></i>
+                  <span class="s5-loc-text">${safe}</span>
                 </div>
               </div>`;
             }).join('');
@@ -3376,26 +3376,19 @@
     const skeleton = document.createElement('div');
     skeleton.className = 'dish-card skeleton-pulse';
     skeleton.innerHTML = `
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <!-- Bild-Platzhalter -->
-        <div class="skeleton-bg" style="width:100px; height:100px; max-width:100px; max-height:100px; flex-shrink:0; border-radius:12px;"></div>
-        
-        <!-- Text-Platzhalter -->
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0; padding:2px 0;">
+      <div class="s5-skel-row">
+        <div class="skeleton-bg s5-skel-thumb"></div>
+        <div class="s5-skel-body">
           <div>
-            <!-- Name & Preis Zeile -->
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
-              <div class="skeleton-bg" style="height:16px; border-radius:4px; flex:1; max-width:66%;"></div>
-              <div class="skeleton-bg" style="height:16px; border-radius:4px; width:25%;"></div>
+            <div class="s5-skel-header-row">
+              <div class="skeleton-bg s5-skel-line-name"></div>
+              <div class="skeleton-bg s5-skel-line-price"></div>
             </div>
-            <!-- Anbieter-Platzhalter -->
-            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:50%; margin-bottom:6px;"></div>
+            <div class="skeleton-bg-light s5-skel-line-provider"></div>
           </div>
-          
-          <!-- Info-Zeile Platzhalter -->
-          <div style="display:flex; gap:12px; margin-top:auto;">
-            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:48px;"></div>
-            <div class="skeleton-bg-light" style="height:10px; border-radius:4px; width:48px;"></div>
+          <div class="s5-skel-footer-row">
+            <div class="skeleton-bg-light s5-skel-chip"></div>
+            <div class="skeleton-bg-light s5-skel-chip"></div>
           </div>
         </div>
       </div>
@@ -3485,8 +3478,8 @@
       <div class="tgtg-list-item-img-wrap tgtg-list-item-img-compact">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
         <div class="tgtg-actions-top">
-          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
-          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#1a1a1a;"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" class="s5-card-icon-fav ${isFavorited ? 's5-card-icon-fav-active' : ''}"></i></button>
+          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" class="s5-card-icon-share"></i></button>
         </div>
         <div class="tgtg-price-badge">${euro(data.price)}</div>
       </div>
@@ -3527,7 +3520,7 @@
     
     const ctaBtn = card.querySelector('.dish-card-cta');
     if(ctaBtn){
-      if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.disabled = true; ctaBtn.onclick = function(e){ e.stopPropagation(); showToast('Keine Abholnummer – nur ansehen.', 2000); }; }
+      if(!abholnummer){ ctaBtn.classList.add('s5-card-cta-disabled'); ctaBtn.disabled = true; ctaBtn.onclick = function(e){ e.stopPropagation(); showToast('Keine Abholnummer – nur ansehen.', 2000); }; }
       else {
         ctaBtn.onclick = function(e){
           e.stopPropagation(); e.preventDefault();
@@ -3580,7 +3573,7 @@
     
     if(isPolaroid){
       img.classList.add('s5-polaroid-img');
-      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" style="width:100%; height:100%; object-fit:cover;" />';
+      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" class="s5-card-img-cover" />';
       const priceSticker = document.createElement('div');
       priceSticker.className = 'price-pill s5-on-img';
       priceSticker.textContent = euro(data.price);
@@ -3588,17 +3581,17 @@
       if(data.photoDataIsStandard){
         const symbolHint = document.createElement('div');
         symbolHint.className = 's5-symbol-hint';
-        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
+        symbolHint.innerHTML = '<p class="s5-card-symbol-hint-p"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
         img.appendChild(symbolHint);
       }
     } else {
       img.style.position = 'relative';
       img.style.overflow = 'hidden';
-      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" style="width:100%; height:100%; object-fit:cover;" />';
+      img.innerHTML = '<img alt="' + esc(data.dish||'') + '" src="' + esc(imgSrc) + '" class="s5-card-img-cover" />';
       if(data.photoDataIsStandard){
         const symbolHint = document.createElement('div');
         symbolHint.className = 's5-symbol-hint s5-symbol-hint-full';
-        symbolHint.innerHTML = '<p style="margin:0; font-size:10px; font-weight:800; color:#1a1a1a; text-transform:uppercase; display:flex; align-items:center; gap:6px;"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
+        symbolHint.innerHTML = '<p class="s5-card-symbol-hint-p"><span>\u2139\uFE0F</span> Symbolbild: Abweichungen zum Original m\u00F6glich</p>';
         img.appendChild(symbolHint);
       }
     }
@@ -3655,7 +3648,7 @@
     if(isPolaroid){
       const providerEl = document.createElement('p');
       providerEl.className = 's5-provider-line';
-      providerEl.innerHTML = '<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>' + esc(data.providerName || 'Anbieter') + '</span>';
+      providerEl.innerHTML = '<i data-lucide="store" class="s5-card-icon-store-mr"></i> <span>' + esc(data.providerName || 'Anbieter') + '</span>';
       providerEl.onclick = (e) => {
         e.stopPropagation();
         if(data.providerId) showProviderProfilePublic(data.providerId);
@@ -3684,18 +3677,18 @@
         
         // Minimalistisches Design: Icons + Zeiten/Entfernung, einzeilig
         mobilityRow.innerHTML = `
-          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
-            <span style="font-size:14px; line-height:1;">🚶</span>
+          <span class="s5-card-mobility-chip">
+            <span class="s5-card-mobility-chip-icon">🚶</span>
             <span>${walkingTimeText} min</span>
           </span>
-          <span style="color:#999; font-size:10px;">|</span>
-          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
-            <span style="font-size:14px; line-height:1;">🚗</span>
+          <span class="s5-card-mobility-divider">|</span>
+          <span class="s5-card-mobility-chip">
+            <span class="s5-card-mobility-chip-icon">🚗</span>
             <span>${carTimeText} min</span>
           </span>
-          <span style="color:#999; font-size:10px;">|</span>
-          <span style="display:inline-flex; align-items:center; gap:3px; white-space:nowrap;">
-            <span style="font-size:14px; line-height:1;">📍</span>
+          <span class="s5-card-mobility-divider">|</span>
+          <span class="s5-card-mobility-chip">
+            <span class="s5-card-mobility-chip-icon">📍</span>
             <span>${distanceText}</span>
           </span>
         `;
@@ -3711,7 +3704,7 @@
       providerEl.style.transition = 'opacity 0.2s ease';
       providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
       providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
-      providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
+      providerEl.innerHTML = `<i data-lucide="store" class="s5-card-icon-share-btn"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
         if(data.providerId) showProviderProfilePublic(data.providerId);
@@ -4829,8 +4822,8 @@
     if(sImg){
       sImg.src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
       sImg.style.display = 'block';
-      sImg.onerror = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'flex'; sImg.style.display = 'none'; };
-      sImg.onload = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'none'; };
+      sImg.onerror = () => { if(sImgPlaceholder){ sImgPlaceholder.classList.add('is-visible'); } sImg.style.display = 'none'; };
+      sImg.onload = () => { if(sImgPlaceholder){ sImgPlaceholder.classList.remove('is-visible'); } };
     }
     
     if(sDish) sDish.textContent = o.dish || '';
@@ -4902,7 +4895,7 @@
     // Logistik: 🚶 und 🚗 als zwei elegante klickbare Cards (Routenplanung)
     if(sDistanceInfo){
       if(o.distanceKm != null){
-        sDistanceInfo.style.display = 'grid';
+        sDistanceInfo.classList.add('is-visible');
         const walk = Math.round(o.distanceKm * 12);
         const car = Math.round(o.distanceKm * 1.5);
         const pid = (o.providerId || '').replace(/'/g, "\\'");
@@ -4911,7 +4904,7 @@
           <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚗 ${car < 1 ? '< 1' : car} Min.</button>
         `;
       } else {
-        sDistanceInfo.style.display = 'none';
+        sDistanceInfo.classList.remove('is-visible');
       }
     }
 
@@ -5062,7 +5055,7 @@
         btnCTA.onclick = null;
       } else if(orderingEnabled){
         primaryCTAText.textContent = 'In meine Box legen';
-        if(sInfoHint) sInfoHint.style.display = 'none';
+        if(sInfoHint) sInfoHint.classList.remove('is-visible');
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
           btnCTA.classList.add('loading');
@@ -5106,7 +5099,7 @@
         primaryCTAText.textContent = 'In meine Box legen';
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
-          sInfoHint.style.display = 'block';
+          sInfoHint.classList.add('is-visible');
         }
         btnCTA.onclick = () => {
           const favs = load('mittagio_favorites', []);
@@ -7712,18 +7705,18 @@
 
   function createPublicOfferRow(o, showDate = false){
     const norm = normalizeOffer(o);
-    const dateLabel = showDate ? `<div style="font-size:11px; font-weight:800; color:var(--brand); text-transform:uppercase; margin-bottom:4px;">${fmtDayShort(o.day)}</div>` : '';
+    const dateLabel = showDate ? `<div class="s5-card-date-label">${fmtDayShort(o.day)}</div>` : '';
     return `
-      <div class="cust-card pub-prov-offer-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:18px;">
-        <div style="width:64px; height:64px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
-          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" alt="" style="width:100%; height:100%; object-fit:cover;">
+      <div class="cust-card pub-prov-offer-card s5-card-row" onclick="showDishDetail('${o.id}')">
+        <div class="s5-card-thumb">
+          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" alt="" class="s5-card-thumb-img">
         </div>
-        <div style="flex:1; min-width:0;">
+        <div class="s5-card-body">
           ${dateLabel}
-          <div style="font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dish)}</div>
-          <div style="font-size:13px; color:#64748b; font-weight:600;">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
+          <div class="s5-card-title">${esc(o.dish)}</div>
+          <div class="s5-card-meta">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
         </div>
-        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0;"></i>
+        <i data-lucide="chevron-right" class="s5-card-chevron"></i>
       </div>
     `;
   }
@@ -8721,25 +8714,25 @@
     if(!content) return;
     
     content.innerHTML = `
-      <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB</h2>
-      <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto; padding-right:8px;">
+      <h2 class="s5-agb-h2">AGB</h2>
+      <div class="s5-agb-scroll">
         <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
         <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
         
-        <p style="margin-top:16px;"><strong>Kosten:</strong></p>
-        <ul style="padding-left:20px; margin:8px 0;">
+        <p class="s5-agb-p-spacer"><strong>Kosten:</strong></p>
+        <ul class="s5-agb-ul">
           <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
           <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
         </ul>
         
-        <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
+        <p class="s5-agb-p-spacer"><strong>Abholnummer:</strong></p>
         <p>Abholnummer = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
         
-        <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
+        <p class="s5-agb-p-spacer"><strong>Verantwortung:</strong></p>
         <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
         
-        <p style="margin-top:16px;"><strong>Support:</strong></p>
-        <p><a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+        <p class="s5-agb-p-spacer"><strong>Support:</strong></p>
+        <p><a href="mailto:info@mittagio.de" class="s5-legal-link">info@mittagio.de</a></p>
       </div>
     `;
     
