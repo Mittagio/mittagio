@@ -31,15 +31,15 @@
     var dataDate = data.dataDate ? ' data-date="' + esc(String(data.dataDate)) + '"' : '';
     var hasAbhol = !!(data.hasPickupCode);
     var showAbholBadge = data.showAbholBadge !== false;
-    var badgeHtml = (hasAbhol && showAbholBadge) ? '<span class="prov-card-abhol-badge s5-views-abhol-badge">🧾</span>' : '';
+    var badgeHtml = (hasAbhol && showAbholBadge) ? '<span class="prov-card-abhol-badge" style="position:absolute;bottom:6px;right:6px;padding:4px 8px;border-radius:8px;background:rgba(15,23,42,0.9);color:#fff;font-size:11px;font-weight:800;">🧾</span>' : '';
     if (compact) {
-      return '<div class="prov-card inserat-bar-card kw-slot-compact s5-views-compact-card"' + dataOfferId + dataCookbookId + dataDate + ' role="button" tabindex="0">' +
-        '<div class="s5-views-compact-img-wrap">' +
-          '<img src="' + esc(img) + '" alt="" class="s5-views-img-cover" onerror="this.src=\'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70\'">' +
+      return '<div class="prov-card inserat-bar-card kw-slot-compact"' + dataOfferId + dataCookbookId + dataDate + ' role="button" tabindex="0" style="display:flex;align-items:center;padding:8px 12px;border-radius:12px;background:#fff;border:1px solid #e5e7eb;width:100%;margin:0 0 6px 0;box-shadow:0 1px 3px rgba(0,0,0,0.04);cursor:pointer;">' +
+        '<div style="width:48px;height:48px;min-width:48px;border-radius:10px;overflow:hidden;flex-shrink:0;position:relative;">' +
+          '<img src="' + esc(img) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src=\'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70\'">' +
         '</div>' +
-        '<div class="s5-views-compact-body">' +
-          '<h3 class="s5-views-compact-title">' + name + '</h3>' +
-          '<span class="s5-views-compact-price">' + price + '</span>' +
+        '<div style="flex:1;padding-left:12px;min-width:0;">' +
+          '<h3 style="font-family:\'Montserrat\',sans-serif;font-weight:800;font-size:14px;margin:0;color:#1a1a1a;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + name + '</h3>' +
+          '<span style="font-weight:700;font-size:14px;color:#10b981;">' + price + '</span>' +
         '</div>' +
       '</div>';
     }
@@ -53,18 +53,18 @@
         return '<span class="' + cls + '" data-pillar="' + esc(String(p.pillar)) + '" role="button" tabindex="0" title="' + esc(title) + '" aria-label="' + esc(title) + '">' + esc(String(p.icon)) + '</span>';
       }).join('') + '</div>';
     } else {
-      pillarsBlock = '<div class="s5-views-pillars-text">' + pillars + '</div>';
+      pillarsBlock = '<div style="font-size:14px;margin:4px 0;">' + pillars + '</div>';
     }
-    return '<div class="prov-card inserat-bar-card prov-list-item s5-views-list-card"' + dataOfferId + dataCookbookId + dataDate + ' role="button" tabindex="0">' +
-      '<div class="prov-list-item-img-wrap s5-views-list-img-wrap">' +
-        '<img src="' + esc(img) + '" alt="" class="s5-views-img-cover" onerror="this.src=\'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70\'">' +
+    return '<div class="prov-card inserat-bar-card prov-list-item"' + dataOfferId + dataCookbookId + dataDate + ' role="button" tabindex="0" style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #e5e7eb;width:100%;background:transparent;margin:0;border-radius:0;box-shadow:none;cursor:pointer;">' +
+      '<div class="prov-list-item-img-wrap" style="width:100px;height:100px;min-width:100px;border-radius:12px;overflow:hidden;margin-left:0;flex-shrink:0;position:relative;">' +
+        '<img src="' + esc(img) + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src=\'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=70\'">' +
         badgeHtml +
       '</div>' +
-      '<div class="prov-list-item-body s5-views-list-body">' +
-        '<h3 class="prov-list-item-title s5-views-list-title">' + name + '</h3>' +
+      '<div class="prov-list-item-body" style="flex:1;padding-left:16px;display:flex;flex-direction:column;min-width:0;">' +
+        '<h3 class="prov-list-item-title" style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;margin:0;color:#1a1a1a;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + name + '</h3>' +
         pillarsBlock +
-        '<div class="prov-list-item-meta-row' + (data.dashboardCard ? ' prov-list-item-meta-row-dashboard' : '') + ' s5-views-meta-row">' +
-          '<span class="price-tag' + (data.dashboardCard ? ' prov-list-item-price-informational' : '') + ' s5-views-price-tag">' + price + '</span>' +
+        '<div class="prov-list-item-meta-row' + (data.dashboardCard ? ' prov-list-item-meta-row-dashboard' : '') + '" style="display:flex;justify-content:flex-end;align-items:center;margin-top:auto;">' +
+          '<span class="price-tag' + (data.dashboardCard ? ' prov-list-item-price-informational' : '') + '" style="font-weight:800;font-size:1.25rem;">' + price + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';

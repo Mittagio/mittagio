@@ -108,9 +108,9 @@
       : (Array.isArray(c) ? c.length : 0);
     if(itemCount > 0){
       badge.textContent = itemCount > 99 ? '99+' : itemCount;
-      if(typeof setVisible === 'function') setVisible(badge, 'flex');
+      badge.style.display = 'flex';
     } else {
-      if(typeof hide === 'function') hide(badge);
+      badge.style.display = 'none';
     }
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
