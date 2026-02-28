@@ -19886,3 +19886,44 @@
     }
   }
   setTimeout(forceShowFirstOffer, 1500);
+
+  /* --- MITTAGIO DATEN-MASTER-KEY (COMIC-STAND) --- */
+  (function forceDataInjection() {
+    console.log("Architekt: Injiere finale Comic-Stand-Daten...");
+    var today = typeof window.isoDate === 'function' ? window.isoDate(new Date()) : new Date().toISOString().slice(0, 10);
+    var comicStandOffer = {
+      id: "test-1",
+      dish: "Original Mittagio Gericht",
+      price: 9.50,
+      imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=500",
+      providerId: "metzger-1",
+      providerName: "Metzgerei Thomas",
+      providerStreet: "Hauptstraße 1",
+      providerZip: "73614",
+      providerCity: "Schorndorf",
+      address: "Hauptstraße 1, 73614 Schorndorf",
+      day: today,
+      active: true,
+      dineInPossible: true,
+      hasPickupCode: true,
+      reuse: { enabled: true, deposit: 0 },
+      distanceKm: 0.2,
+      allergens: [],
+      extras: []
+    };
+    var dataArray = [comicStandOffer];
+    window.offers = dataArray;
+    window.allOffers = dataArray;
+    window.products = dataArray;
+    setTimeout(function() {
+      if (typeof renderDiscover === 'function') {
+        renderDiscover();
+        console.log("Architekt: Render-Befehl mit Comic-Daten ausgeführt.");
+      } else {
+        var container = document.getElementById('discoverOffers') || document.getElementById('v-discover');
+        if (container) {
+          container.innerHTML = '<div class="tgtg-list-item">Daten geladen - Warte auf UI...</div>';
+        }
+      }
+    }, 200);
+  })();
