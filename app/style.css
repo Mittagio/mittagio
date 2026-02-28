@@ -12,9 +12,21 @@
     .is-visible-grid{ display:grid !important; }
     .is-visible-inline-block{ display:inline-block !important; }
     .is-faded{ opacity:0; pointer-events:none; }
+    .is-disabled{ opacity:.3; pointer-events:none; cursor:not-allowed; }
+    .is-dim{ opacity:.3; }
     .is-active{ /* Auswahl/Aktiv – Kontext-Styles ergänzen */ }
-    .is-disabled{ opacity:0.6; pointer-events:none; cursor:not-allowed; }
     .is-loading{ opacity:0.8; pointer-events:none; }
+    /* Sprint 5b.32: Transform via CSS vars (Motion/Animation) */
+    .v-transform{ transform:translate3d(var(--x,0px),var(--y,0px),0) rotate(var(--rot,0deg)) scale(var(--scale,1)); }
+    .v-slide-x{ transform:translateX(var(--slide-x,0%)); transition:transform .25s ease; will-change:transform; }
+    .v-slide-y{ transform:translateY(var(--slide-y,0%)); transition:transform .25s ease; will-change:transform; }
+    .swipe-layer{ transform:translateX(var(--x,0px)); will-change:transform; }
+    .quick-adjust{ transform:translate(-50%,var(--qy,100%)); transition:transform .25s ease; will-change:transform; }
+    .slot-x{ transform:translateX(var(--x,0px)); will-change:transform; }
+    .card-x{ transform:translateX(var(--x,0px)); will-change:transform; transition:transform .25s ease; }
+    /* Sprint 5b.32: Chevron Rotation (State) */
+    .chevron,.profile-sheet-chevron{ transition:transform .2s ease; }
+    .chevron.is-rotated,.profile-sheet-chevron.is-rotated{ transform:rotate(180deg); }
     /* Sprint 5b.31: Reduced Motion (Accessibility) */
     @media (prefers-reduced-motion: reduce){
       *, *::before, *::after{ transition:none !important; animation:none !important; }
@@ -6003,6 +6015,7 @@
     .s5-photo-overlay{ position:absolute; inset:0; cursor:pointer; }
     .inserat-photo-placeholder-center.s5-photo-placeholder-center{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#e2e8f0; pointer-events:none; }
     .photo-lightbox-overlay.s5-lightbox{ position:fixed; inset:0; background:#000; z-index:20000; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.28s ease; }
+    .photo-lightbox-overlay.photo-lightbox-open{ opacity:1; }
     .photo-lightbox-img.s5-lightbox-img{ max-width:100%; max-height:100%; object-fit:contain; transform:scale(0.85); transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1); }
     .photo-lightbox-close.s5-lightbox-close{ position:absolute; top:16px; right:16px; width:48px; height:48px; background:rgba(255,255,255,0.2); border:none; border-radius:50%; color:#fff; font-size:28px; cursor:pointer; z-index:1; display:flex; align-items:center; justify-content:center; }
     .s5-sug-wrap{ position:absolute; bottom:12px; left:0; right:0; display:flex; gap:12px; justify-content:center; align-items:center; pointer-events:auto; }

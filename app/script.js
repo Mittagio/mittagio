@@ -74,7 +74,7 @@
   // ========== /STORE ==========
 
   /** Sprint 5b.31: UI-State Helper – eine Sichtbarkeits-Klasse pro Element (kein Stapeln). hide → aria-hidden="true"; show/setVisible → entfernen. */
-  var VISIBILITY_CLASSES = ['is-hidden','is-visible','is-visible-flex','is-visible-inline-flex','is-visible-grid','is-visible-inline-block'];
+  var VISIBILITY_CLASSES = ['is-hidden','is-visible','is-visible-flex','is-visible-inline-flex','is-visible-grid','is-visible-inline-block','is-faded'];
   function clearVisibility(el){ if(!el) return; VISIBILITY_CLASSES.forEach(function(c){ el.classList.remove(c); }); }
   function resetVisibility(el){ if(!el) return; clearVisibility(el); el.removeAttribute('aria-hidden'); }
   function show(el){ if(!el) return; clearVisibility(el); el.classList.add('is-visible'); el.removeAttribute('aria-hidden'); }
@@ -95,7 +95,17 @@
   function setActive(el, on){ if(!el) return; if(on) el.classList.add('is-active'); else el.classList.remove('is-active'); }
   function isHidden(el){ return !el || el.classList.contains('is-hidden'); }
   function isVisible(el){ return !!el && !el.classList.contains('is-hidden'); }
-  if(typeof window !== 'undefined'){ window.show = show; window.hide = hide; window.setVisible = setVisible; window.setActive = setActive; window.clearVisibility = clearVisibility; window.resetVisibility = resetVisibility; window.isHidden = isHidden; window.isVisible = isVisible; }
+  /** Sprint 5b.32: Slide-X / Transform Helper (kein style.transform mehr) */
+  function slideX(el, percent){ if(!el) return; el.classList.add('v-slide-x'); el.style.setProperty('--slide-x', percent); }
+  function slideY(el, percent){ if(!el) return; el.classList.add('v-slide-y'); el.style.setProperty('--slide-y', percent); }
+  function resetSlideX(el){ if(!el) return; el.style.removeProperty('--slide-x'); }
+  function resetSlideY(el){ if(!el) return; el.style.removeProperty('--slide-y'); }
+  function resetTransform(el){
+    if(!el) return;
+    el.style.removeProperty('--x'); el.style.removeProperty('--y'); el.style.removeProperty('--rot');
+    el.style.removeProperty('--scale'); el.style.removeProperty('--slide-x'); el.style.removeProperty('--slide-y');
+  }
+  if(typeof window !== 'undefined'){ window.show = show; window.hide = hide; window.setVisible = setVisible; window.setActive = setActive; window.clearVisibility = clearVisibility; window.resetVisibility = resetVisibility; window.isHidden = isHidden; window.isVisible = isVisible; window.slideX = slideX; window.slideY = slideY; window.resetSlideX = resetSlideX; window.resetSlideY = resetSlideY; window.resetTransform = resetTransform; }
   /* Quick QA nach Visibility-Migration: (1) Orders leer→Treffer→keine Treffer ohne Refresh (2) Swipe Intro→Area→zurück (3) FAB an 3 Stellen nicht doppelt/hängend (4) Favoriten-Preview nicht unsichtbar klickbar (5) Provider Sub Sub1→Sub2→Close: Main nicht hidden, kein Scroll-Lock */
 
   /** Einzige Stelle für History: pushState/replaceState. opts: { replace=false, skipHistory=false, stateExtra=null, url=undefined } */
@@ -1339,15 +1349,14 @@
     if(!subId){
       var visibleSub = contentEl ? contentEl.querySelector('.provider-profile-sub[style*="flex"]') : null;
       if(visibleSub && visibleSub.id){
-        visibleSub.style.transition = 'transform 0.28s cubic-bezier(0.32,0.72,0,1)';
-        visibleSub.style.transform = 'translateX(100%)';
+        slideX(visibleSub, '100%');
         setTimeout(function(){
           subs.forEach(function(id){ var el = document.getElementById(id); if(el) hide(el); });
           if(mainContent) show(mainContent);
           if(mainWrap) show(mainWrap);
           if(header) show(header);
           if(heroEl) show(heroEl);
-          visibleSub.style.transform = ''; visibleSub.style.transition = '';
+          resetSlideX(visibleSub);
           if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }, 280);
         return;
@@ -1355,7 +1364,7 @@
     }
     subs.forEach(function(id){
       var el = document.getElementById(id);
-      if(el){ if(subId && id === targetId){ setVisible(el, 'flex'); el.style.transform = ''; } else hide(el); }
+      if(el){ if(subId && id === targetId){ setVisible(el, 'flex'); resetSlideX(el); } else hide(el); }
     });
     var card = document.getElementById('providerBusinessDataCardWrap');
     var slot = document.getElementById('providerBusinessDataCardSlot');
@@ -5450,8 +5459,9 @@
           const points = document.querySelectorAll('#onboardingExplanationPoints .onboarding-point');
           points.forEach((point, index) => {
             setTimeout(() => {
-              point.style.opacity = '1';
-              point.style.transform = 'translateY(0)';
+              point.classList.add('v-transform');
+              point.classList.remove('is-faded');
+              point.style.setProperty('--y', '0px');
             }, index * 200);
           });
           // Icons aktualisieren
@@ -7813,7 +7823,7 @@
     // Chevron drehen
     if(btn){
       const chevron = btn.querySelector('.chevron');
-      if(chevron) chevron.style.transform = hidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      if(chevron) chevron.classList.toggle('is-rotated', hidden);
     }
   }
 
@@ -7839,7 +7849,7 @@
     const sectionHidden = el.classList.contains('s5-prof-section-hidden');
     el.classList.toggle('s5-prof-section-hidden', !sectionHidden);
     const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + sectionId + '"]');
-    chevrons.forEach(c => { c.style.transform = sectionHidden ? 'rotate(180deg)' : 'rotate(0deg)'; });
+    chevrons.forEach(c => { c.classList.toggle('is-rotated', sectionHidden); });
     var scrollEl = document.getElementById('profileSettingsSheetScroll');
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -8471,14 +8481,15 @@
     // Grüner Flash-Effekt
     demoCode.style.background = '#4caf50';
     demoCode.style.color = '#fff';
-    demoCode.style.transform = 'scale(0.95)';
+    demoCode.classList.add('v-transform');
+    demoCode.style.setProperty('--scale','0.95');
     demoCode.style.borderColor = '#4caf50';
     
     // Nach 200ms zurück
     setTimeout(() => {
       demoCode.style.background = '#fff';
       demoCode.style.color = '#2D3436';
-      demoCode.style.transform = 'scale(1)';
+      demoCode.style.setProperty('--scale','1');
       demoCode.style.borderColor = '#FFD700';
     }, 200);
     
@@ -8869,13 +8880,13 @@
           popup.innerHTML = text + (arrow.outerHTML || '<div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #1e1e1e;"></div>');
         }
       }
-      popup.style.opacity = '1';
+      popup.classList.remove('is-faded');
     }
   }
   function hideTilePopup(element){
     const popup = element.querySelector('.tile-popup');
     if(popup){
-      popup.style.opacity = '0';
+      popup.classList.add('is-faded');
     }
   }
   
@@ -9625,7 +9636,8 @@
             if(Math.abs(dx) < Math.abs(dy)) return;
             var clamp = 120;
             dx = Math.max(-clamp, Math.min(clamp, dx));
-            swipeLayerEl.style.transform = 'translateX(' + dx + 'px)';
+            swipeLayerEl.classList.add('swipe-layer');
+            swipeLayerEl.style.setProperty('--x', dx + 'px');
             ev.preventDefault();
           }, { passive: false });
           providerActiveListings.addEventListener('touchend', function(ev){
@@ -9633,7 +9645,7 @@
             var dx = ev.changedTouches[0].clientX - swipeStartX;
             var dy = ev.changedTouches[0].clientY - swipeStartY;
             var id = swipeCard.getAttribute('data-offer-id');
-            swipeLayerEl.style.transform = '';
+            swipeLayerEl.style.removeProperty('--x');
             swipeCard = null;
             swipeWrapEl = null;
             swipeLayerEl = null;
@@ -10452,7 +10464,7 @@
           if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
           if (typeof showToast === 'function') showToast('Kopie zum Folgetag');
         }
-        slotEl.style.transform = '';
+        slotEl.style.removeProperty('--x');
         slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy');
       }
       slotEl.addEventListener('touchstart', function(e){
@@ -10465,7 +10477,8 @@
         currentX = e.touches[0].clientX - startX;
         if (currentX < -20 || currentX > 20) clearLongPress();
         currentX = Math.max(-120, Math.min(120, currentX));
-        slotEl.style.transform = 'translateX(' + currentX + 'px)';
+        slotEl.classList.add('slot-x');
+        slotEl.style.setProperty('--x', currentX + 'px');
         updateSwipeVisual();
       }, { passive: true });
       slotEl.addEventListener('touchend', function(){
@@ -10484,11 +10497,12 @@
         currentX = e.clientX - startX;
         if (currentX < -20 || currentX > 20) clearLongPress();
         currentX = Math.max(-120, Math.min(120, currentX));
-        slotEl.style.transform = 'translateX(' + currentX + 'px)';
+        slotEl.classList.add('slot-x');
+        slotEl.style.setProperty('--x', currentX + 'px');
         updateSwipeVisual();
       });
       slotEl.addEventListener('mouseup', function(){ clearLongPress(); handleSwipeEnd(); });
-      slotEl.addEventListener('mouseleave', function(){ clearLongPress(); slotEl.style.transform = ''; slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy'); });
+      slotEl.addEventListener('mouseleave', function(){ clearLongPress(); slotEl.style.removeProperty('--x'); slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy'); });
     });
   }
   function openKWBoardMoveSheet(fromDay, fromSlot){
@@ -10746,8 +10760,10 @@
     var tens = Math.floor(v / 10);
     var ones = v % 10;
     var cellH = 22;
-    tensEl.style.transform = 'translateY(-' + (tens * cellH) + 'px)';
-    onesEl.style.transform = 'translateY(-' + (ones * cellH) + 'px)';
+    tensEl.classList.add('v-transform');
+    tensEl.style.setProperty('--y', (-tens * cellH) + 'px');
+    onesEl.classList.add('v-transform');
+    onesEl.style.setProperty('--y', (-ones * cellH) + 'px');
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
@@ -10849,8 +10865,9 @@
       if(totalEl) totalEl.textContent = '4,99 €';
       if(btnEl){ btnEl.textContent = 'Jetzt für 4,99 € aktivieren'; btnEl.style.background = '#222222'; }
     }
+    slideX(view, '100%');
     show(view);
-    setTimeout(function(){ view.style.transform = 'translateX(0)'; }, 10);
+    setTimeout(function(){ slideX(view, '0%'); }, 10);
     document.body.classList.add('insert-review-active');
     try{ if(typeof navigate === 'function') navigate('insert-review', {}); }catch(e){}
   };
@@ -10860,9 +10877,10 @@
     var view = document.getElementById('v-insert-review');
     if(!view) return;
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
-    view.style.transform = 'translateX(100%)';
+    slideX(view, '100%');
     setTimeout(function(){
       hide(view);
+      resetSlideX(view);
       document.body.classList.remove('insert-review-active');
       if(!skipHistoryBack){ try{ history.back(); }catch(e){} }
     }, 300);
@@ -10937,8 +10955,8 @@
     var wbd = document.getElementById('wbd');
     if(wizardModal){
       wizardModal.style.transition = 'opacity 0.2s ease';
-      wizardModal.style.opacity = '0';
-      setTimeout(function(){ hide(wizardModal); wizardModal.style.opacity = ''; }, 200);
+      wizardModal.classList.add('is-faded');
+      setTimeout(function(){ hide(wizardModal); wizardModal.classList.remove('is-faded'); }, 200);
     }
     if(wbd) wbd.classList.remove('active');
   };
@@ -11031,11 +11049,9 @@
     var el = document.getElementById('v-provider-week');
     if (!el) { if (typeof showProviderHome === 'function') showProviderHome(); return; }
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-    el.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
-    el.style.transform = 'translateX(100%)';
+    slideX(el, '100%');
     setTimeout(function(){
-      el.style.transition = '';
-      el.style.transform = '';
+      resetSlideX(el);
       el.classList.remove('active');
       el.style.setProperty('display', 'none', 'important');
       var section = targetSection || 'dashboard';
@@ -11049,13 +11065,11 @@
     var cbView = document.getElementById('v-provider-cookbook');
     if (!cbView) { if (typeof showProviderHome === 'function') showProviderHome(); return; }
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-    cbView.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
-    cbView.style.transform = 'translateX(100%)';
+    slideX(cbView, '100%');
     setTimeout(function(){
       document.body.classList.remove('provider-cookbook-active', 'cookbook-active');
       if (typeof showProviderHome === 'function') showProviderHome();
-      cbView.style.transition = '';
-      cbView.style.transform = '';
+      resetSlideX(cbView);
     }, 300);
   }
   if (typeof window !== 'undefined') window.closeCookbookWithNativeAnim = closeCookbookWithNativeAnim;
@@ -11930,13 +11944,14 @@
     function onStart(e){
       startX = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0;
       currentX = 0;
+      cardEl.classList.add('card-x');
       cardEl.style.transition = 'none';
     }
     function onMove(e){
       var x = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0;
       currentX = x - startX;
       currentX = Math.max(-100, Math.min(100, currentX));
-      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+      cardEl.style.setProperty('--x', currentX + 'px');
     }
     function onEnd(e){
       if(currentX < -SWIPE_THRESHOLD){
@@ -11944,29 +11959,29 @@
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-left');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        cardEl.style.transform = 'translateX(-120%)';
+        cardEl.style.setProperty('--x', '-120%');
         swipeEl.style.transition = 'opacity 0.25s ease';
-        swipeEl.style.opacity = '0';
+        swipeEl.classList.add('is-faded');
         setTimeout(function(){ deletePlannedEntryWithUndo(date, index); }, 320);
       } else if(currentX > SWIPE_THRESHOLD){
         if(e && e.cancelable) e.preventDefault();
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-right');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        cardEl.style.transform = 'translateX(120%)';
+        cardEl.style.setProperty('--x', '120%');
         swipeEl.style.transition = 'opacity 0.25s ease';
-        swipeEl.style.opacity = '0';
+        swipeEl.classList.add('is-faded');
         setTimeout(function(){ copyWeekEntryToNextDay(date, index); }, 320);
       } else {
         cardEl.style.transition = 'transform 0.2s ease-out';
-        cardEl.style.transform = 'translateX(0)';
+        cardEl.style.setProperty('--x', '0px');
       }
     }
     function onMouseMove(e){
       if(!mouseActive) return;
       currentX = e.clientX - startX;
       currentX = Math.max(-100, Math.min(100, currentX));
-      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+      cardEl.style.setProperty('--x', currentX + 'px');
     }
     function onMouseUp(){
       if(!mouseActive) return;
@@ -14671,7 +14686,7 @@
         flyImg.style.width = 'calc(100% - 32px)';
         flyImg.style.height = '250px';
         flyImg.style.borderRadius = '16px';
-        flyImg.style.opacity = '0';
+        flyImg.classList.add('is-faded');
       }, 50);
     }
     setTimeout(function(){
@@ -14843,7 +14858,7 @@
     overlay.innerHTML = '<div class="cookbook-ingest-flash"></div><div class="cookbook-ingest-bg"></div><div class="cookbook-ingest-counter">0</div><div class="cookbook-ingest-progress-wrap"><div class="cookbook-ingest-progress-bar"></div></div>';
     show(overlay);
     overlay.style.pointerEvents = 'auto';
-    overlay.style.opacity = '1';
+    overlay.classList.remove('is-faded');
     var counterEl = overlay.querySelector('.cookbook-ingest-counter');
     var progressBar = overlay.querySelector('.cookbook-ingest-progress-bar');
     var flashEl = overlay.querySelector('.cookbook-ingest-flash');
@@ -14858,9 +14873,9 @@
       if(current >= total){
         if(counterEl) counterEl.classList.add('cookbook-ingest-pop');
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(50); } catch(e){}
-        if(flashEl){ flashEl.style.opacity = '1'; }
+        if(flashEl){ flashEl.classList.remove('is-faded'); }
         setTimeout(function(){
-          overlay.style.opacity = '0';
+          overlay.classList.add('is-faded');
           overlay.style.pointerEvents = 'none';
           setTimeout(function(){
             hide(overlay);
@@ -16248,12 +16263,12 @@
   function setWizardContent(node){
     const c = document.getElementById('wContent');
     if(!c) return;
-    c.style.opacity='0';
-    c.style.transform='translateY(8px)';
+    c.classList.add('v-transform','is-faded');
+    c.style.setProperty('--y','8px');
     c.style.transition='opacity 0.2s ease, transform 0.2s ease';
     c.innerHTML='';
     c.appendChild(node);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ c.style.opacity='1'; c.style.transform='translateY(0)'; }); });
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ c.classList.remove('is-faded'); c.style.setProperty('--y','0px'); }); });
   }
 
   function rebuildWizard(){
@@ -16788,7 +16803,7 @@
       overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); cameraInput.click(); } };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
-      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay s5-lightbox'; var img=document.createElement('img'); img.className='photo-lightbox-img s5-lightbox-img'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close s5-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; function closeLb(){ lb.style.pointerEvents='none'; lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ hide(lb); lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; setVisible(lb,'flex'); lb.style.pointerEvents='auto'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
+      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay s5-lightbox'; var img=document.createElement('img'); img.className='photo-lightbox-img s5-lightbox-img'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close s5-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; function closeLb(){ lb.style.pointerEvents='none'; lb.classList.remove('photo-lightbox-open'); var lbImgEl=lb.querySelector('.photo-lightbox-img'); if(lbImgEl){ lbImgEl.classList.add('v-transform'); lbImgEl.style.setProperty('--scale','0.85'); } setTimeout(function(){ hide(lb); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; setVisible(lb,'flex'); lb.style.pointerEvents='auto'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.classList.add('photo-lightbox-open'); var _lbImg=lb.querySelector('.photo-lightbox-img'); if(_lbImg){ _lbImg.classList.add('v-transform'); _lbImg.style.setProperty('--scale','1'); } }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
       photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData) openPhotoLightbox(imgEl.src||w.data.photoData); };
       if(cameraInput){
@@ -17204,13 +17219,12 @@
           finishBtn.style.background='#222222';
           if(window.userHasInteracted && window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
-        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        quickAdjustPanel.classList.add('quick-adjust');
         requestAnimationFrame(function(){
-          quickAdjustPanel.style.transform='translate(-50%, 100%)';
+          quickAdjustPanel.style.setProperty('--qy','100%');
           setTimeout(function(){
             hide(quickAdjustPanel);
-            quickAdjustPanel.style.transform='';
-            quickAdjustPanel.style.transition='';
+            quickAdjustPanel.style.removeProperty('--qy');
             quickAdjustPanel.innerHTML='';
             updatePowerBarFromData();
           }, 320);
@@ -17220,10 +17234,10 @@
       function openQuickAdjust(type){
         hapticLight();
         quickAdjustPanel.innerHTML='';
-        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-        quickAdjustPanel.style.transform='translate(-50%, 100%)';
+        quickAdjustPanel.classList.add('quick-adjust');
+        quickAdjustPanel.style.setProperty('--qy','100%');
         show(quickAdjustPanel);
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translate(-50%, 0)'; }); });
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.setProperty('--qy','0%'); }); });
         var headline=document.createElement('h3');
         headline.className='quick-adjust-headline s5-panel-headline';
         if(type==='time'){
@@ -17375,23 +17389,14 @@
         var valid = isPrimaryValid();
         var primaryBtn = box.querySelector('#inserat-action-section .btn-primary-black');
         if (primaryBtn) {
-          if (valid) {
-            primaryBtn.classList.add('is-ready');
-            primaryBtn.disabled = false;
-            primaryBtn.style.opacity = '1';
-            primaryBtn.style.pointerEvents = 'auto';
-          } else {
-            primaryBtn.classList.remove('is-ready');
-            primaryBtn.disabled = true;
-            primaryBtn.style.opacity = '0.3';
-            primaryBtn.style.pointerEvents = 'none';
-          }
+          primaryBtn.classList.toggle('is-ready', valid);
+          primaryBtn.disabled = !valid;
+          primaryBtn.classList.toggle('is-disabled', !valid);
         }
         var linkSpeichern = box.querySelector('#btnSpeichernKochbuch');
         if (linkSpeichern) {
-            linkSpeichern.disabled = !valid;
-          linkSpeichern.style.opacity = valid ? '1' : '0.3';
-          linkSpeichern.style.pointerEvents = valid ? 'auto' : 'none';
+          linkSpeichern.disabled = !valid;
+          linkSpeichern.classList.toggle('is-disabled', !valid);
         }
         if (stepName) stepName.classList.remove('inserat-validation-error');
         if (priceSection) priceSection.classList.remove('inserat-validation-error');
@@ -17413,8 +17418,7 @@
         linkSpeichern.className='inserat-footer-link btn-secondary-link s5-link-speichern';
         linkSpeichern.textContent=(w.ctx&&w.ctx.editOfferId)?'Änderungen speichern':(entryPoint==='week'?'Speichern':'Im Kochbuch speichern');
         linkSpeichern.disabled=!primaryValid;
-        linkSpeichern.style.opacity=primaryValid?'1':'0.3';
-        linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
+        linkSpeichern.classList.toggle('is-disabled',!primaryValid);
         linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
@@ -17455,8 +17459,7 @@
       btnWeiter.className='btn-primary-black footer-main-button s5-btn-weiter';
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
-      btnWeiter.style.opacity='0.3';
-      btnWeiter.style.pointerEvents='none';
+      btnWeiter.classList.add('is-disabled');
       btnWeiter.onclick=function(){
         if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
         hapticLight();
@@ -17488,8 +17491,7 @@
         btnEinplanen.className='btn-primary-black s5-btn-einplanen';
         btnEinplanen.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
         btnEinplanen.disabled=!primaryValid;
-        btnEinplanen.style.opacity=primaryValid?'1':'0.3';
-        btnEinplanen.style.pointerEvents=primaryValid?'auto':'none';
+        btnEinplanen.classList.toggle('is-disabled',!primaryValid);
         btnEinplanen.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
         btnEinplanen.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
@@ -18612,16 +18614,16 @@
   function openInfoLegendSheet(){
     if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
-    if(bd){ bd.style.pointerEvents='auto'; bd.style.opacity='1'; bd.classList.add('active'); }
-    if(sheet){ sheet.style.transform='translateY(0)'; sheet.classList.add('active'); }
+    if(bd){ bd.style.pointerEvents='auto'; bd.classList.remove('is-faded'); bd.classList.add('active'); }
+    if(sheet){ slideY(sheet,'0%'); sheet.classList.add('active'); }
     var list=sheet&&sheet.querySelector('.info-legend-list'); if(list&&w&&w.data){ list.querySelectorAll('.info-legend-item').forEach(function(li){ li.classList.remove('active'); var key=li.getAttribute('data-legend'); if(key==='vorort'&&w.data.dineInPossible) li.classList.add('active'); if(key==='mehrweg'&&w.data.reuse&&w.data.reuse.enabled) li.classList.add('active'); if(key==='zeit'&&(w.data.pickupWindow&&String(w.data.pickupWindow).trim())) li.classList.add('active'); if(key==='allergene'&&(w.data.allergens&&w.data.allergens.length)) li.classList.add('active'); if(key==='extras'&&(w.data.extras&&w.data.extras.length)) li.classList.add('active'); if(key==='abholnummer'&&w.data.hasPickupCode) li.classList.add('active'); }); }
     var btn=document.getElementById('infoLegendVerstandenBtn'); if(btn&&!btn._bound){ btn._bound=true; btn.onclick=function(){ closeInfoLegendSheet(); }; }
   }
   function closeInfoLegendSheet(){
     if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
-    if(bd){ bd.style.pointerEvents='none'; bd.style.opacity='0'; bd.classList.remove('active'); }
-    if(sheet){ sheet.style.transform='translateY(100%)'; sheet.classList.remove('active'); }
+    if(bd){ bd.style.pointerEvents='none'; bd.classList.add('is-faded'); bd.classList.remove('active'); }
+    if(sheet){ slideY(sheet,'100%'); sheet.classList.remove('active'); }
   }
   if(typeof window !== 'undefined'){ window.openPricingFairnessOverlay = openPricingFairnessOverlay; window.closePricingFairnessOverlay = closePricingFairnessOverlay; window.openInfoLegendSheet = openInfoLegendSheet; window.closeInfoLegendSheet = closeInfoLegendSheet; }
 
@@ -19062,7 +19064,7 @@
       const textarea = document.createElement('textarea');
       textarea.value = code;
       textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
+      textarea.classList.add('is-faded');
       document.body.appendChild(textarea);
       textarea.select();
       try{

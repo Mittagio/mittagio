@@ -467,7 +467,7 @@
     const upcomingPreview = document.getElementById('favUpcomingPreview');
     if(upcomingPreview){
       hide(upcomingPreview);
-      upcomingPreview.style.opacity = '0';
+      upcomingPreview.classList.add('is-faded');
     }
     pushViewState({view: 'fav', mode: window.mode}, location.pathname);
   }
