@@ -11545,3 +11545,16 @@ main, #v-discover {
   color: #888;
   font-family: 'Inter', sans-serif;
 }
+
+/* --- MITTAGIO FLUTLICHT (SICHTBARKEIT) --- */
+#v-discover.active, #v-fav.active, #v-favorites.active,
+#v-cart.active, #v-lunchbox.active, #v-profile.active,
+.view.active {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#v-profile {
+  padding-bottom: 100px !important;
+  background: #ffffff !important;
+}

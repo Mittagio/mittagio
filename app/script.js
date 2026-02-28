@@ -19808,33 +19808,27 @@
     };
   })();
 
-  /* --- MITTAGIO VOLL-ANSCHLUSS (ALLE SEITEN) --- */
-  (function fullAppConnect() {
-    console.log("Architekt: Aktiviere alle Raum-Leitungen...");
-    var killLayers = ['#cookbookMittagioLayer', '.magazine-overlay', '.s5-magazine-layer'];
-    killLayers.forEach(function(sel) {
-      var el = document.querySelector(sel);
-      if (el) el.style.pointerEvents = 'none';
-    });
-    document.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-view], [data-go], [data-pgo], .navbtn');
-      if (!btn) return;
-      var viewKey = btn.getAttribute('data-view') || btn.getAttribute('data-go') || btn.getAttribute('data-pgo');
-      if (!viewKey) return;
-      var viewId = viewKey.indexOf('v-') === 0 ? viewKey : 'v-' + viewKey;
-      if (typeof window.showView === 'function') window.showView(viewId);
-      console.log("Architekt: Navigiere zu ->", viewKey);
+  /* --- MITTAGIO GENERAL-SCHLÜSSEL (ALLE RÄUME) --- */
+  (function connectAllRooms() {
+    console.log("Architekt: Verbinde alle Zimmer-Leitungen...");
+    var originalShowView = window.showView;
+    window.showView = function(viewId) {
+      if (typeof originalShowView === 'function') originalShowView(viewId);
       setTimeout(function() {
-        if (viewKey === 'discover' || viewKey === 'v-discover') {
+        console.log("Architekt: Aktiviere Möbel-Logik für ->", viewId);
+        if (viewId === 'v-discover' || viewId === 'discover') {
           if (typeof renderDiscover === 'function') renderDiscover();
-        } else if (viewKey === 'fav' || viewKey === 'v-fav' || viewKey === 'favorites' || viewKey === 'v-favorites') {
+        } else if (viewId === 'v-fav' || viewId === 'v-favorites' || viewId === 'favorites') {
           if (typeof renderFavorites === 'function') renderFavorites();
-        } else if (viewKey === 'cart' || viewKey === 'v-cart' || viewKey === 'lunchbox' || viewKey === 'v-lunchbox') {
+          else if (typeof renderFavs === 'function') renderFavs();
+        } else if (viewId === 'v-cart' || viewId === 'v-lunchbox' || viewId === 'cart') {
           if (typeof renderCart === 'function') renderCart();
-        } else if (viewKey === 'profile' || viewKey === 'v-profile' || viewKey === 'meins') {
+          else if (typeof renderLunchbox === 'function') renderLunchbox();
+        } else if (viewId === 'v-profile' || viewId === 'profile') {
           if (typeof updateProfileView === 'function') updateProfileView();
+          else if (typeof renderProfile === 'function') renderProfile();
         }
         window.scrollTo(0, 0);
       }, 50);
-    }, true);
+    };
   })();
