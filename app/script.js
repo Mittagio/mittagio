@@ -18,6 +18,28 @@
     if (badge) { if (window.DEMO_MODE) show(badge); else hide(badge); }
     if (typeof showToast === 'function') showToast('Demo-Modus: ' + (window.DEMO_MODE ? 'An' : 'Aus'));
   }
+  /** Sprint 5b.31: UI-State Helper – vor initDemoBadge, da hide/show benötigt */
+  var VISIBILITY_CLASSES = ['is-hidden','is-visible','is-visible-flex','is-visible-inline-flex','is-visible-grid','is-visible-inline-block','is-faded'];
+  function clearVisibility(el){ if(!el) return; (VISIBILITY_CLASSES||[]).forEach(function(c){ el.classList.remove(c); }); }
+  function resetVisibility(el){ if(!el) return; clearVisibility(el); el.removeAttribute('aria-hidden'); }
+  function show(el){ if(!el) return; clearVisibility(el); el.classList.add('is-visible'); el.removeAttribute('aria-hidden'); }
+  function hide(el){ if(!el) return; clearVisibility(el); el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
+  function setVisible(el, mode){
+    if(!el) return;
+    clearVisibility(el);
+    if(mode === 'hide' || mode === 'none'){ el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
+    else{
+      el.removeAttribute('aria-hidden');
+      if(mode === 'flex') el.classList.add('is-visible-flex');
+      else if(mode === 'inline-flex') el.classList.add('is-visible-inline-flex');
+      else if(mode === 'grid') el.classList.add('is-visible-grid');
+      else if(mode === 'inline-block') el.classList.add('is-visible-inline-block');
+      else el.classList.add('is-visible');
+    }
+  }
+  function setActive(el, on){ if(!el) return; if(on) el.classList.add('is-active'); else el.classList.remove('is-active'); }
+  function isHidden(el){ return !el || el.classList.contains('is-hidden'); }
+  function isVisible(el){ return !!el && !el.classList.contains('is-hidden'); }
   if (typeof window !== 'undefined') {
     window.toggleDemoMode = toggleDemoMode;
     (function initDemoBadge(){
@@ -73,28 +95,6 @@
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; window.remove = remove; window.getMode = getMode; window.setMode = setMode; }
   // ========== /STORE ==========
 
-  /** Sprint 5b.31: UI-State Helper – eine Sichtbarkeits-Klasse pro Element (kein Stapeln). hide → aria-hidden="true"; show/setVisible → entfernen. */
-  var VISIBILITY_CLASSES = ['is-hidden','is-visible','is-visible-flex','is-visible-inline-flex','is-visible-grid','is-visible-inline-block','is-faded'];
-  function clearVisibility(el){ if(!el) return; VISIBILITY_CLASSES.forEach(function(c){ el.classList.remove(c); }); }
-  function resetVisibility(el){ if(!el) return; clearVisibility(el); el.removeAttribute('aria-hidden'); }
-  function show(el){ if(!el) return; clearVisibility(el); el.classList.add('is-visible'); el.removeAttribute('aria-hidden'); }
-  function hide(el){ if(!el) return; clearVisibility(el); el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
-  function setVisible(el, mode){
-    if(!el) return;
-    clearVisibility(el);
-    if(mode === 'hide' || mode === 'none'){ el.classList.add('is-hidden'); el.setAttribute('aria-hidden', 'true'); }
-    else{
-      el.removeAttribute('aria-hidden');
-      if(mode === 'flex') el.classList.add('is-visible-flex');
-      else if(mode === 'inline-flex') el.classList.add('is-visible-inline-flex');
-      else if(mode === 'grid') el.classList.add('is-visible-grid');
-      else if(mode === 'inline-block') el.classList.add('is-visible-inline-block');
-      else el.classList.add('is-visible');
-    }
-  }
-  function setActive(el, on){ if(!el) return; if(on) el.classList.add('is-active'); else el.classList.remove('is-active'); }
-  function isHidden(el){ return !el || el.classList.contains('is-hidden'); }
-  function isVisible(el){ return !!el && !el.classList.contains('is-hidden'); }
   /** Sprint 5b.32: Slide-X / Transform Helper (kein style.transform mehr) */
   function slideX(el, percent){ if(!el) return; el.classList.add('v-slide-x'); el.style.setProperty('--slide-x', percent); }
   function slideY(el, percent){ if(!el) return; el.classList.add('v-slide-y'); el.style.setProperty('--slide-y', percent); }
