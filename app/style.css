@@ -11528,3 +11528,20 @@ main, #v-discover {
   gap: 15px !important;
   border-top: 1px solid #f7f7f7 !important;
 }
+
+/* --- MITTAGIO SICHTBARKEITS-GARANTIE --- */
+#v-discover, #v-fav, #v-cart, #v-profile,
+#v-favorites, #v-lunchbox,
+.view.active {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.view:empty::after {
+  content: "Hier ist noch alles ruhig...";
+  display: block;
+  text-align: center;
+  padding: 50px;
+  color: #888;
+  font-family: 'Inter', sans-serif;
+}

@@ -19808,25 +19808,33 @@
     };
   })();
 
-  /* --- MITTAGIO FINAL STABILIZER (RESTORE 26.02.) --- */
-  (function stabilizeMittagio() {
-    console.log("Architekt: Stabilisierung läuft...");
+  /* --- MITTAGIO VOLL-ANSCHLUSS (ALLE SEITEN) --- */
+  (function fullAppConnect() {
+    console.log("Architekt: Aktiviere alle Raum-Leitungen...");
     var killLayers = ['#cookbookMittagioLayer', '.magazine-overlay', '.s5-magazine-layer'];
     killLayers.forEach(function(sel) {
       var el = document.querySelector(sel);
       if (el) el.style.pointerEvents = 'none';
     });
     document.addEventListener('click', function(e) {
-      var navBtn = e.target.closest('#customerNav button, .navbtn, [data-go], [data-pgo]');
-      if (navBtn) {
-        var view = navBtn.getAttribute('data-go') || navBtn.getAttribute('data-pgo') || navBtn.getAttribute('data-view');
-        if (view) {
-          var viewId = view.indexOf('v-') === 0 ? view : 'v-' + view;
-          if (typeof window.showView === 'function') {
-            window.showView(viewId);
-            console.log("Architekt: Nav-Klick erkannt -> " + viewId);
-          }
+      var btn = e.target.closest('[data-view], [data-go], [data-pgo], .navbtn');
+      if (!btn) return;
+      var viewKey = btn.getAttribute('data-view') || btn.getAttribute('data-go') || btn.getAttribute('data-pgo');
+      if (!viewKey) return;
+      var viewId = viewKey.indexOf('v-') === 0 ? viewKey : 'v-' + viewKey;
+      if (typeof window.showView === 'function') window.showView(viewId);
+      console.log("Architekt: Navigiere zu ->", viewKey);
+      setTimeout(function() {
+        if (viewKey === 'discover' || viewKey === 'v-discover') {
+          if (typeof renderDiscover === 'function') renderDiscover();
+        } else if (viewKey === 'fav' || viewKey === 'v-fav' || viewKey === 'favorites' || viewKey === 'v-favorites') {
+          if (typeof renderFavorites === 'function') renderFavorites();
+        } else if (viewKey === 'cart' || viewKey === 'v-cart' || viewKey === 'lunchbox' || viewKey === 'v-lunchbox') {
+          if (typeof renderCart === 'function') renderCart();
+        } else if (viewKey === 'profile' || viewKey === 'v-profile' || viewKey === 'meins') {
+          if (typeof updateProfileView === 'function') updateProfileView();
         }
-      }
+        window.scrollTo(0, 0);
+      }, 50);
     }, true);
   })();
