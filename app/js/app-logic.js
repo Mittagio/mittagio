@@ -13,6 +13,19 @@
   var cart = window.cart;
   var isoDate = window.isoDate;
 
+  /* Fallback: loadOrders/saveOrders aus script.js, falls Load-Order-Problem */
+  if(!loadOrders || !saveOrders){
+    var ordersKey = (LS && LS.orders) ? LS.orders : 'mittagio_orders_v1';
+    if(!loadOrders){
+      loadOrders = function(){ try{ var s = localStorage.getItem(ordersKey); return s ? JSON.parse(s) : []; } catch(e){ return []; } };
+      if(typeof window !== 'undefined') window.loadOrders = loadOrders;
+    }
+    if(!saveOrders){
+      saveOrders = function(arr){ try{ localStorage.setItem(ordersKey, JSON.stringify(arr || [])); } catch(e){} };
+      if(typeof window !== 'undefined') window.saveOrders = saveOrders;
+    }
+  }
+
   if(!loadOrders || !saveOrders){ console.warn('app-logic: loadOrders/saveOrders nicht geladen'); return; }
 
   function addOrder(order){
