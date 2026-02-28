@@ -80,11 +80,11 @@
       } catch(e) {}
     }
     view.classList.add('active');
-    if(id === 'v-pickup-code') view.style.display = 'flex';
+    if(id === 'v-pickup-code') setVisible(view, 'flex');
     else if(id === 'v-provider-week') view.classList.add('s5-view-provider-week');
     else if(id === 'v-provider-cookbook') view.classList.add('s5-view-provider-cookbook');
     else if(isProviderView) view.classList.add('s5-view-provider-default');
-    else view.style.display = 'block';
+    else show(view);
     document.querySelectorAll('.view').forEach(v => {
       if(v === view) return;
       v.classList.remove('active');
@@ -136,18 +136,18 @@
     }
     const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
     if(toggleTopbar){
-      toggleTopbar.style.display = (id === views.discover) ? 'flex' : 'none';
+      id === views.discover ? setVisible(toggleTopbar, 'flex') : hide(toggleTopbar);
     }
     const fabModeToggle = document.getElementById('fabModeToggle');
     if(fabModeToggle && id !== views.discover){
-      fabModeToggle.style.display = 'none';
+      hide(fabModeToggle);
     }
     const isProv = window.mode === 'provider';
     const isCustomerOrStart = window.mode === 'customer' || window.mode === 'start';
     const customerNavEl = document.getElementById('customerNav');
     const providerNavWrapEl = document.getElementById('providerNavWrap');
-    if(customerNavEl) customerNavEl.style.display = isCustomerOrStart ? 'flex' : 'none';
-    if(providerNavWrapEl) providerNavWrapEl.style.display = isProv ? 'block' : 'none';
+    if(customerNavEl) isCustomerOrStart ? setVisible(customerNavEl, 'flex') : hide(customerNavEl);
+    if(providerNavWrapEl) isProv ? show(providerNavWrapEl) : hide(providerNavWrapEl);
     if(isCustomerOrStart){
       var go = (id === 'v-discover') ? 'discover' : (id === 'v-profile') ? 'profile' : (id === 'v-cart') ? 'cart' : (id === 'v-fav') ? 'fav' : (id === 'v-orders') ? 'orders' : null;
       if(go) setCustomerNavActive(go);
@@ -169,9 +169,9 @@
     const providerNavWrap = document.getElementById('providerNavWrap');
     const providerNav = document.getElementById('providerNav');
     const statusIndicator = document.getElementById('providerStatusIndicator');
-    if(customerNav) customerNav.style.display = (isCustomer || isStart) ? 'flex' : 'none';
-    if(providerNavWrap) providerNavWrap.style.display = isProv ? 'block' : 'none';
-    if(statusIndicator) statusIndicator.style.display = (isProv && provider && provider.loggedIn) ? 'flex' : 'none';
+    if(customerNav) (isCustomer || isStart) ? setVisible(customerNav, 'flex') : hide(customerNav);
+    if(providerNavWrap) isProv ? show(providerNavWrap) : hide(providerNavWrap);
+    if(statusIndicator) (isProv && provider && provider.loggedIn) ? setVisible(statusIndicator, 'flex') : hide(statusIndicator);
     if(isProv && provider && provider.loggedIn){
       document.body.classList.add('provider-mode');
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined) history.scrollRestoration = 'manual';
@@ -287,7 +287,7 @@
   /** Profil-Sub (Settings, Business, etc.) sichtbar? [cite: GLOBAL NATIVE NAV 2026-02-23] */
   function isProfileSubOpen(){
     var main = document.getElementById('providerProfileMainContent');
-    return !!(main && main.style.display === 'none');
+    return !!(main && isHidden(main));
   }
 
   /** Andere Sheets/Modals offen (KW-Selector, Magic-Sheet, CreateFlow, WeekAdd)? [cite: GLOBAL NATIVE NAV 2026-02-23] */
@@ -295,16 +295,16 @@
     var ids = ['kwSelectorSheet','weekMagicSheet','createFlowSheet','quickPostSheet','publishFeeSheet','codeSheet','codeBd','weekAddSheet'];
     for (var i = 0; i < ids.length; i++) {
       var el = document.getElementById(ids[i]);
-      if (el && (el.classList.contains('active') || (el.style && el.style.display !== 'none'))) return true;
+      if (el && (el.classList.contains('active') || isVisible(el))) return true;
     }
     var kwBd = document.getElementById('kwSelectorBd');
     var magicBd = document.getElementById('weekMagicSheetBd');
     var createBd = document.getElementById('createFlowBd');
     var weekAddBd = document.getElementById('weekAddSheetBd');
-    if (kwBd && kwBd.style.display !== 'none') return true;
-    if (magicBd && magicBd.style.display !== 'none') return true;
+    if (kwBd && isVisible(kwBd)) return true;
+    if (magicBd && isVisible(magicBd)) return true;
     if (createBd && createBd.classList.contains('active')) return true;
-    if (weekAddBd && weekAddBd.style.display !== 'none') return true;
+    if (weekAddBd && isVisible(weekAddBd)) return true;
     return false;
   }
 
@@ -453,20 +453,20 @@
     const dynamicView = document.getElementById('v-pickup-code-dynamic');
     if(dynamicView && dynamicView.parentNode) dynamicView.parentNode.removeChild(dynamicView);
     const fabModeToggle = document.getElementById('fabModeToggle');
-    if(fabModeToggle) fabModeToggle.style.display = 'flex';
+    if(fabModeToggle) setVisible(fabModeToggle, 'flex');
     const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
-    if(toggleTopbar) toggleTopbar.style.display = 'flex';
+    if(toggleTopbar) setVisible(toggleTopbar, 'flex');
     if (!opts || !opts.skipHistory) pushViewState({view: 'discover', mode: window.mode}, location.pathname);
   }
   function showFav(){
     setCustomerNavActive('fav');
     showView(views.fav);
     const toggleTopbar = document.getElementById('toggleDiscoverViewTopbar');
-    if(toggleTopbar) toggleTopbar.style.display = 'none';
+    if(toggleTopbar) hide(toggleTopbar);
     renderFavorites();
     const upcomingPreview = document.getElementById('favUpcomingPreview');
     if(upcomingPreview){
-      upcomingPreview.style.display = 'none';
+      hide(upcomingPreview);
       upcomingPreview.style.opacity = '0';
     }
     pushViewState({view: 'fav', mode: window.mode}, location.pathname);
@@ -487,7 +487,7 @@
     setCustomerNavActive('profile');
     const pickupCodeView = document.getElementById('v-pickup-code');
     if(pickupCodeView){
-      pickupCodeView.style.display = 'none';
+      hide(pickupCodeView);
       pickupCodeView.classList.remove('active');
     }
     showView(views.profile);
@@ -570,7 +570,7 @@
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     }
     const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
+    if(providerNavBackRow) hide(providerNavBackRow);
     pushViewState({section: 'dashboard', view: 'provider-home', mode: window.mode}, location.pathname);
   }
   function showProviderPickups(){
@@ -581,16 +581,16 @@
     document.querySelectorAll('.kw-move-overlay').forEach(function(o){ o.remove(); });
     var wb = document.getElementById('weekAddSheetBd');
     var ws = document.getElementById('weekAddSheet');
-    if(wb) wb.style.display = 'none';
-    if(ws){ ws.classList.remove('active'); ws.style.display = 'none'; }
+    if(wb) hide(wb);
+    if(ws){ ws.classList.remove('active'); hide(ws); }
     var wu = document.getElementById('weekUndoSnackbar');
-    if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
+    if(wu){ wu.classList.remove('active'); hide(wu); }
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Abholnummern');
     renderProviderPickups();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
+    if(providerNavBackRow) show(providerNavBackRow);
     pushViewState({section: 'pickups', view: 'provider-pickups', mode: window.mode}, location.pathname);
   }
   function showProviderWeek(preselectDay, preselectKW){
@@ -627,7 +627,7 @@
     renderCookbook();
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
     const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'none';
+    if(providerNavBackRow) hide(providerNavBackRow);
     pushViewState({section: 'cookbook', view: 'provider-cookbook', mode: window.mode}, location.pathname);
   }
   function showProviderProfile(){
@@ -639,7 +639,7 @@
     renderProviderProfile();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
     const providerNavBackRow = document.getElementById('providerNavBackRow');
-    if(providerNavBackRow) providerNavBackRow.style.display = 'block';
+    if(providerNavBackRow) show(providerNavBackRow);
     pushViewState({section: 'profile', view: 'provider-profile', mode: window.mode}, location.pathname);
   }
   function showProviderBilling(){

@@ -4,11 +4,13 @@
     ::-webkit-scrollbar{ height:6px; width:6px; }
     ::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.2); border-radius:3px; }
     ::-webkit-scrollbar-track{ background:transparent; }
-    /* Sprint 5b.31: State-Konvention wasserdicht – nur 4 Sichtbarkeits-Klassen (+ is-faded für Opacity) */
+    /* Sprint 5b.31: State-Konvention – Sichtbarkeits-Klassen (+ grid, inline-block) */
     .is-hidden{ display:none !important; pointer-events:none; }
     .is-visible{ display:block !important; }
     .is-visible-flex{ display:flex !important; }
     .is-visible-inline-flex{ display:inline-flex !important; }
+    .is-visible-grid{ display:grid !important; }
+    .is-visible-inline-block{ display:inline-block !important; }
     .is-faded{ opacity:0; pointer-events:none; }
     .is-active{ /* Auswahl/Aktiv – Kontext-Styles ergänzen */ }
     .is-disabled{ opacity:0.6; pointer-events:none; cursor:not-allowed; }

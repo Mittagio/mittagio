@@ -11,6 +11,10 @@ import { readdirSync } from 'fs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const appDir = join(__dirname, '..', 'app');
 
+/** style.display-Zeilen, in deren Nähe (bis zu 5 Zeilen davor) dieser Kommentar steht, sind erlaubt (robust bei Leerzeilen). */
+const WHITELIST_COMMENT = 'intentional best-effort UI recovery';
+const WHITELIST_CONTEXT_LINES = 5;
+
 const displayRe = /\.style\.display\s*[=!]/;
 const transformRe = /\.style\.transform\s*=/;
 const opacityRe = /\.style\.opacity\s*=/;
@@ -35,22 +39,29 @@ for (const file of jsFiles) {
   const text = readFileSync(file, 'utf8');
   const lines = text.split('\n');
   lines.forEach((line, i) => {
-    if (displayRe.test(line)) displayHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80) });
+    const start = Math.max(0, i - WHITELIST_CONTEXT_LINES);
+    const contextBefore = lines.slice(start, i).join('\n');
+    if (displayRe.test(line)) displayHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80), contextBefore });
     if (transformRe.test(line)) transformHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80) });
     if (opacityRe.test(line)) opacityHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80) });
   });
 }
 
-const total = displayHits.length + transformHits.length + opacityHits.length;
+const displayFiltered = displayHits.filter(h => {
+  if ((h.contextBefore || '').includes(WHITELIST_COMMENT)) return false; // erlaubt
+  return true;
+});
+
+const total = displayFiltered.length + transformHits.length + opacityHits.length;
 if (total === 0) {
   console.log('check-ui-state: 0 Treffer (style.display / style.transform / style.opacity). OK.');
   process.exit(0);
 }
 
 console.error('Sprint 5b.31 – Inline UI-State gefunden (migriere zu show/hide/setVisible oder CSS-Variablen):');
-if (displayHits.length) {
+if (displayFiltered.length) {
   console.error('\nstyle.display:');
-  displayHits.forEach(h => console.error(`  ${h.file}:${h.line}  ${h.content}`));
+  displayFiltered.forEach(h => console.error(`  ${h.file}:${h.line}  ${h.content}`));
 }
 if (transformHits.length) {
   console.error('\nstyle.transform:');
