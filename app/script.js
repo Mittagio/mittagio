@@ -19790,3 +19790,38 @@
       }
     }
   });
+
+  /* --- MITTAGIO MASTER-RENDER-TRIGGER --- */
+  (function() {
+    var originalShowView = window.showView;
+    window.showView = function(viewId) {
+      if (typeof originalShowView === 'function') {
+        originalShowView(viewId);
+      }
+      if (viewId === 'v-discover' || viewId === 'discover') {
+        console.log("Architekt: Entdecken-View wird zwangsweise beleuchtet.");
+        if (typeof renderDiscover === 'function') {
+          renderDiscover();
+        }
+      }
+      window.scrollTo(0, 0);
+    };
+  })();
+
+  /* --- MITTAGIO EMERGENCY RENDER --- */
+  (function repairRenderLogic() {
+    console.log("Bauleiter: Starte Not-System...");
+    setTimeout(function() {
+      var discoverContainer = document.getElementById('v-discover');
+      if (discoverContainer && discoverContainer.innerHTML.trim() === "") {
+        console.warn("Bauleiter: Container leer! Triggere Render-Prozess...");
+        if (typeof renderDiscover === 'function') {
+          renderDiscover();
+        } else if (typeof renderOffers === 'function') {
+          renderOffers();
+        }
+      }
+      document.body.style.opacity = "1";
+      document.body.style.visibility = "visible";
+    }, 500);
+  })();
