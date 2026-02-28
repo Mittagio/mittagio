@@ -13,18 +13,24 @@ const appDir = join(__dirname, '..', 'app');
 
 /** style.display-Zeilen, in deren Nähe (bis zu 5 Zeilen davor) dieser Kommentar steht, sind erlaubt (robust bei Leerzeilen). */
 const WHITELIST_COMMENT = 'intentional best-effort UI recovery';
-const WHITELIST_CONTEXT_LINES = 5;
+const LOOKBACK = 5;
 
 const displayRe = /\.style\.display\s*[=!]/;
 const transformRe = /\.style\.transform\s*=/;
 const opacityRe = /\.style\.opacity\s*=/;
 
+const SKIP_DIRS = ['node_modules', '.git', 'dist', 'build'];
+
 function walk(dir, ext, list = []) {
   const entries = readdirSync(dir, { withFileTypes: true });
   for (const e of entries) {
     const full = join(dir, e.name);
-    if (e.isDirectory()) walk(full, ext, list);
-    else if (e.name.endsWith(ext)) list.push(full);
+    if (e.isDirectory()) {
+      if (SKIP_DIRS.includes(e.name)) continue;
+      walk(full, ext, list);
+    } else if (e.name.endsWith(ext)) {
+      list.push(full);
+    }
   }
   return list;
 }
@@ -39,18 +45,18 @@ for (const file of jsFiles) {
   const text = readFileSync(file, 'utf8');
   const lines = text.split('\n');
   lines.forEach((line, i) => {
-    const start = Math.max(0, i - WHITELIST_CONTEXT_LINES);
-    const contextBefore = lines.slice(start, i).join('\n');
-    if (displayRe.test(line)) displayHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80), contextBefore });
+    let allowed = false;
+    for (let j = 1; j <= LOOKBACK; j++) {
+      const prev = lines[i - j] || '';
+      if (prev.includes(WHITELIST_COMMENT)) { allowed = true; break; }
+    }
+    if (displayRe.test(line)) displayHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80), allowed });
     if (transformRe.test(line)) transformHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80) });
     if (opacityRe.test(line)) opacityHits.push({ file: rel, line: i + 1, content: line.trim().slice(0, 80) });
   });
 }
 
-const displayFiltered = displayHits.filter(h => {
-  if ((h.contextBefore || '').includes(WHITELIST_COMMENT)) return false; // erlaubt
-  return true;
-});
+const displayFiltered = displayHits.filter(h => !h.allowed);
 
 const total = displayFiltered.length + transformHits.length + opacityHits.length;
 if (total === 0) {
