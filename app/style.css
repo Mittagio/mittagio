@@ -1107,6 +1107,8 @@
     /* Provider-FAB und Abholnummer-Overlay in Kundenansicht nie anzeigen (auch beim Runterscrollen) */
     body:not(.provider-mode) #fabProviderAddOffer,
     body:not(.provider-mode) #fabProviderAddOfferLabel { display: none !important; }
+    /* Kochbuch-Footer „Dieses Gericht jetzt inserieren“ nur im Anbieterbereich – nie im Kundenbereich */
+    body:not(.provider-mode) #cookbookFooterWrap { display: none !important; }
     #fabProviderAddOfferLabel { display: none !important; }
 
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
@@ -5612,13 +5614,9 @@
       padding: 8px 12px 10px;
       justify-content: flex-start;
     }
-    /* Radius & Tage: schmal, feine Grauschrift [cite: 2026-02-18] */
+    /* Radius & Tage: dc21201 hatte diese Leiste NICHT – ausgeblendet (nur Kalender oben rechts) */
     #v-discover .discover-radius-time-row.discover-filter-row-slim{
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px 6px;
-      flex-wrap: wrap;
+      display: none !important;
     }
     #v-discover .discover-filter-row-slim .discover-radius-pill{
       min-height: 32px;
@@ -5626,7 +5624,7 @@
       font-size: 13px;
       color: #94a3b8;
     }
-    #v-discover #discoverDaysBar{ display:flex; gap:6px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; padding:4px 12px 6px; scroll-padding:12px; scrollbar-width:none; min-width:0; max-width:100%; width:100%; box-sizing:border-box; white-space:nowrap; touch-action:pan-x; }
+    #v-discover #discoverDaysBar{ display:none !important; }
     #v-discover #discoverDaysBar::-webkit-scrollbar{ display:none; }
     /* Radius & Tage: 13px, dezentes Grau – nur aktiver (gelber) Tag sticht hervor [cite: 2026-02-18] */
     #v-discover #discoverDaysBar .cust-chip{ min-height:28px; min-width:52px; width:52px; padding:4px 4px; font-size:13px; font-weight:600; border-radius:999px; flex:0 0 52px; box-sizing:border-box; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border:1px solid rgba(0,0,0,0.05); background:#f8fafc; color:#cbd5e1; transition:background 0.2s, color 0.2s, border-color 0.2s; }
@@ -8687,8 +8685,7 @@
     }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow:visible; }
     #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
-    /* Kochbuch Galerie-Modus: untere Router-Navigation ausblenden [cite: 2026-01-26, 2026-02-18] */
-    body.provider-cookbook-active #providerNavWrap{ display:none !important; }
+    /* dc21201: Provider-Nav immer sichtbar – Cookbook-Footer darüber positioniert */
     /* Kochbuch: Scroll-Bereich feste Höhe, kein Springen [cite: 2026-02-25] */
     #v-provider-cookbook #cookbookScrollWrap{
       margin-top:120px;
@@ -8713,6 +8710,7 @@
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
     /* Kochbuch: Footer fixiert, Safe-Area, nur Content scrollt [cite: 2026-02-23, 2026-02-25] */
     .cookbook-footer-fixed{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; background:#ffffff !important; margin:0; border-radius:0; border-top:1px solid #ebebeb; padding:16px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-left)); padding-bottom:calc(16px + env(safe-area-inset-bottom)); display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
+    body.provider-cookbook-active .cookbook-footer-fixed{ bottom:calc(75px + env(safe-area-inset-bottom, 0)); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222 !important; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
