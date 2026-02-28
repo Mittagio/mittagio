@@ -1,0 +1,44 @@
+---
+description: Sprint 5b.31 – Finalize UI-State Layer. Kein Inline display/transform für State; 0 Treffer; Anti-Rückfall.
+alwaysApply: true
+---
+
+# Sprint 5b.31: Finalize UI-State Layer
+
+## Sprint-Definition (verbindlich, ein Satz)
+
+**Codebase-Audit:** Entferne alle Reststellen von style.display / style.transform und legacy s5-visibility-Klassen; ersetze sie durch ui-state-Helper (show/hide/setVisible) und CSS-Variablen; **Ergebnis: 0 Treffer.**
+
+## Regeln für Treffer
+
+| Kategorie | Aktion |
+|-----------|--------|
+| **style.display** | Immer migrieren → show / hide / setVisible (bzw. setVisible(el, 'flex')) |
+| **style.transform** | Animation/Dragging → CSS-Variablen (Motion-Standard); statisch → Klasse oder CSS |
+| **style.opacity** | Wie Transform: Animation → CSS-Var; statisch → Klasse (z. B. .is-faded) |
+| **Legacy s5-*visible / s5-*hidden** | Löschen oder auf .is-hidden / .is-visible / .is-visible-flex mappen |
+| **CSS display (State)** | Nur behalten, wenn echtes „Default Layout“; State nur über .is-* |
+
+## aria-hidden in Helpers
+
+- **hide(el)** → `el.setAttribute('aria-hidden', 'true')`
+- **show(el) / setVisible(el, mode)** → `el.removeAttribute('aria-hidden')` (oder `aria-hidden="false"`; Entfernen reicht)
+- Optional (später): Bei hide() auf Container mit fokussierten Elementen Fokus auf sicheres Element umleiten. Für die App ist aria-hidden Nice-to-have, kein Blocker.
+
+## Audit-Checkliste
+
+Vollständige Trefferliste (Datei:Zeile | Kontext | Kategorie | Aktion) in **docs/sprint-5b31-audit-checklist.md**. Reihenfolge A → B → C → D; in ca. 30 Min abarbeitbar.
+
+## Anti-Rückfall (Schutz gegen Inline-Zeug)
+
+- **Kein neuer Code** darf für UI-State `element.style.display`, `element.style.transform` oder `element.style.opacity` setzen. State nur über show/hide/setVisible und .is-* / CSS-Variablen.
+- **Guard (verbindlich):**
+  - **Pre-commit:** `.git/hooks/pre-commit` führt `node scripts/check-ui-state.js` aus; bei Treffern Exit 1 (Commit blockiert). **Nach Abschluss des Audits** aktivieren (chmod +x .git/hooks/pre-commit bzw. unter Windows Git Bash). Bis dahin schlägt der Hook bei jedem Commit fehl (weil noch Treffer vorhanden).
+  - **npm:** `npm run check:ui-state` – gleicher Check, bricht mit Exit 1 bei Treffern. Jederzeit ausführbar; vor PR oder vor Aktivierung des Hooks nutzen.
+- Wer versehentlich wieder style.display / style.transform für State einbaut, merkt es sofort (Commit schlägt fehl oder CI).
+
+## Referenz
+
+- Helper: **app/script.js** – clearVisibility, show, hide, setVisible (inkl. aria-hidden).
+- State-CSS: **app/style.css** – .is-hidden, .is-visible, .is-visible-flex, .is-visible-inline-flex, .is-faded.
+- Guard: **scripts/check-ui-state.js**; **package.json** → `"check:ui-state": "node scripts/check-ui-state.js"`.
