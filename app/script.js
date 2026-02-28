@@ -105,7 +105,10 @@
     el.style.removeProperty('--x'); el.style.removeProperty('--y'); el.style.removeProperty('--rot');
     el.style.removeProperty('--scale'); el.style.removeProperty('--slide-x'); el.style.removeProperty('--slide-y');
   }
-  if(typeof window !== 'undefined'){ window.show = show; window.hide = hide; window.setVisible = setVisible; window.setActive = setActive; window.clearVisibility = clearVisibility; window.resetVisibility = resetVisibility; window.isHidden = isHidden; window.isVisible = isVisible; window.slideX = slideX; window.slideY = slideY; window.resetSlideX = resetSlideX; window.resetSlideY = resetSlideY; window.resetTransform = resetTransform; }
+  /** Lucide Icons: gebündelt via rAF statt setTimeout pro Render */
+  var lucideQueued = false;
+  function queueLucide(){ if(typeof lucide === 'undefined' || lucideQueued) return; lucideQueued = true; requestAnimationFrame(function(){ lucideQueued = false; lucide.createIcons(); }); }
+  if(typeof window !== 'undefined'){ window.show = show; window.hide = hide; window.setVisible = setVisible; window.setActive = setActive; window.clearVisibility = clearVisibility; window.resetVisibility = resetVisibility; window.isHidden = isHidden; window.isVisible = isVisible; window.slideX = slideX; window.slideY = slideY; window.resetSlideX = resetSlideX; window.resetSlideY = resetSlideY; window.resetTransform = resetTransform; window.queueLucide = queueLucide; }
   /* Quick QA nach Visibility-Migration: (1) Orders leer→Treffer→keine Treffer ohne Refresh (2) Swipe Intro→Area→zurück (3) FAB an 3 Stellen nicht doppelt/hängend (4) Favoriten-Preview nicht unsichtbar klickbar (5) Provider Sub Sub1→Sub2→Close: Main nicht hidden, kein Scroll-Lock */
 
   /** Einzige Stelle für History: pushState/replaceState. opts: { replace=false, skipHistory=false, stateExtra=null, url=undefined } */
@@ -707,6 +710,7 @@
     // WICHTIG: Ersetze alte Offers, damit keine Duplikate entstehen
     offers = [...newOffers];
     save(LS.offers, offers);
+    if(typeof resetNormCache === 'function') resetNormCache();
 
     // Jetzt Bestellungen mit Abholnummers erstellen
     providerNames.forEach((provider, pIdx) => {
@@ -901,6 +905,7 @@
     }
     offers = [...demoOffers];
     save(LS.offers, offers);
+    if(typeof resetNormCache === 'function') resetNormCache();
 
     week = { ...weekEntries };
     save(LS.week, week);
@@ -1200,6 +1205,13 @@
   }
 
   /* buildAddress, parseAddress, normalizeProviderProfile, formatLunchWeekdays, normalizeOffer → js/utils.js */
+  /** Sprint 5b.33b: normalizeOffer Cache + offersByProviderId Index (1× pro Offer, O(1) Lookup) */
+  var normCache = new Map();
+  var offersByProviderId = null;
+  function getNorm(offer){ if(!offer) return null; var id=offer.id||offer.offerId; if(normCache.has(id)) return normCache.get(id); var n=typeof normalizeOffer==='function'?normalizeOffer(offer):null; if(n) normCache.set(id,n); return n; }
+  function resetNormCache(){ normCache.clear(); offersByProviderId=null; }
+  function ensureOffersByProviderId(){ if(!offersByProviderId){ offersByProviderId=new Map(); (typeof offers!=='undefined'&&offers?offers:[]).forEach(function(o){ var pid=o.providerId||(o.provider&&o.provider.id); if(pid&&!offersByProviderId.has(pid)) offersByProviderId.set(pid,o); }); } return offersByProviderId; }
+  if(typeof window !== 'undefined'){ window.getNorm=getNorm; window.resetNormCache=resetNormCache; }
 
   // --- Navigation (views für ui-navigation) ---
   const views = {
@@ -1886,33 +1898,24 @@
     // Nicht switchDiscoverView(discoverViewMode) hier aufrufen – verursacht Rekursion (switchDiscoverView ruft renderDiscover auf).
     // Sichtbarkeit Liste/Karte wird beim Toggle und beim Init gesetzt.
     
+    var offersByProviderId = ensureOffersByProviderId();
+    
     // Angebote filtern: Nur heute + Zeit-Filter (10 Min Gehzeit oder 15 Min Fahrzeit)
     let list = offers.filter(o => o.day === activeDay && o.active !== false);
     
     // Zeit-Filter: Standard 10 Min Gehzeit (5 km/h = 12 Min/km), optional 15 Min Fahrzeit (50 km/h = 1.2 Min/km)
     if(activeTimeFilter === 'walking'){
-      // Standard: Gehzeit <= 10 Min
-      list = list.filter(o => {
-        const data = normalizeOffer(o);
-        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
-        const walkingMinutes = Math.round(Number(data.distanceKm) * 12);
-        return walkingMinutes <= 10;
-      });
+      list = list.filter(function(o){ var data=getNorm(o); if(!data||data.distanceKm==null) return false; return Math.round(Number(data.distanceKm)*12)<=10; });
     } else if(activeTimeFilter === 'driving'){
-      // Erweitert: Fahrzeit <= 15 Min
-      list = list.filter(o => {
-        const data = normalizeOffer(o);
-        if(data.distanceKm == null) return false; // Keine Entfernung = ausblenden
-        const carMinutes = Math.round(Number(data.distanceKm) * 1.2);
-        return carMinutes <= 15;
-      });
+      list = list.filter(function(o){ var data=getNorm(o); if(!data||data.distanceKm==null) return false; return Math.round(Number(data.distanceKm)*1.2)<=15; });
     }
     
     // Ernährungs-Präferenzen Filter (aus Profil)
     if(customer && customer.dietaryPreferences){
       const prefs = customer.dietaryPreferences;
-      list = list.filter(o => {
-        const normalized = normalizeOffer(o);
+      list = list.filter(function(o){
+        var normalized = getNorm(o);
+        if(!normalized) return false;
         const category = normalized.category || '';
         const allergens = normalized.allergens || [];
         
@@ -1957,20 +1960,12 @@
     }
     // Hunger-Radius (500m / 1km / 3km)
     const radiusKm = discoverRadiusM / 1000;
-    list = list.filter(o => {
-      const data = normalizeOffer(o);
-      const d = data.distanceKm != null ? Number(data.distanceKm) : 0;
-      return d <= radiusKm;
-    });
+    list = list.filter(function(o){ var data=getNorm(o); if(!data) return false; var d=data.distanceKm!=null?Number(data.distanceKm):0; return d<=radiusKm; });
     
     // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
     if(q){
-      list = list.filter(o=>{
-        const data = normalizeOffer(o);
-        const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
-        return String(addr||'').toLowerCase().includes(q);
-      });
+      list = list.filter(function(o){ var data=getNorm(o); if(!data) return false; var addr=buildAddress({address:data.address,street:data.providerStreet,zip:data.providerZip,city:data.providerCity}); return String(addr||'').toLowerCase().includes(q); });
     }
     
     // List Cards rendern (Modern Style)
@@ -2025,14 +2020,12 @@
         emptyWrap.appendChild(btnRadius);
         offersEl.appendChild(emptyWrap);
       } else {
-        // Vertikal zentrierte Karten (wie Detailansicht), eine Karte pro Angebot [cite: 2026-02-18]
-        list.forEach(o => { offersEl.appendChild(createDiscoverListCard(o)); });
+        var frag = document.createDocumentFragment();
+        list.forEach(function(o){ frag.appendChild(createDiscoverListCard(o, offersByProviderId)); });
+        offersEl.appendChild(frag);
       }
 
-      // Icons aktualisieren nach dem Rendern
-      if(typeof lucide !== 'undefined'){
-        setTimeout(function(){ lucide.createIcons(); }, 50);
-      }
+      if(typeof queueLucide === 'function') queueLucide();
       }, 300); // 300ms Delay für realistische Ladezeit
     }
     
@@ -3434,13 +3427,14 @@
   }
   
   // TGTG-Airbnb: Flaches List-Item (Bild + Text + 1px Divider) [cite: 2026-02-20]
-  function createDiscoverListCard(o){
-    const data = normalizeOffer(o);
+  function createDiscoverListCard(o, offersByProviderId){
+    var data = typeof getNorm === 'function' ? getNorm(o) : (typeof normalizeOffer === 'function' ? normalizeOffer(o) : null);
+    if(!data) data = {};
     const card = document.createElement('div');
     card.className = 'tgtg-list-item';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-    const offerProvider = offers.find(p => p.providerId === data.providerId);
+    var offerProvider = (offersByProviderId && offersByProviderId.get) ? offersByProviderId.get(data.providerId) : (typeof offers !== 'undefined' && offers ? offers.find(function(p){ return p.providerId === data.providerId; }) : null);
     const vorOrt = !!(offerProvider && offerProvider.dineInPossible !== false);
     const abholnummer = !!(offerProvider && offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
     const mehrweg = !!(offerProvider && offerProvider.reuse && offerProvider.reuse.enabled);
@@ -3492,7 +3486,7 @@
       favBtn.onclick = function(e){
         e.stopPropagation(); e.preventDefault();
         toggleFavorite(data.id, favBtn);
-        if(typeof lucide !== 'undefined') lucide.createIcons();
+        if(typeof queueLucide === 'function') queueLucide();
         favBtn.classList.add('heart-just-clicked');
         setTimeout(function(){ favBtn.classList.remove('heart-just-clicked'); }, 460);
       };
@@ -5520,6 +5514,7 @@
     offersArr.push(draft);
     save(LS.offers, offersArr);
     if(typeof offers !== 'undefined') offers = offersArr;
+    if(typeof resetNormCache === 'function') resetNormCache();
     return draftId;
   }
   if(typeof window !== 'undefined') window.createOfferFromCookbook = createOfferFromCookbook;
@@ -6528,17 +6523,36 @@
 
   // updateHeaderBasket, getRemainingPickupMinutes → js/app-logic.js
   
+  var _lastCartSig = '';
+  function getCartSig(){
+    var today = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    var items = ((typeof cart !== 'undefined' && cart && cart.items) ? cart.items : []).map(function(i){ return (i.offerId || '') + ':' + (i.qty || 0); }).sort().join('|');
+    var t = (cart && cart.pickupTime) ? cart.pickupTime : '';
+    var allOrders = typeof loadOrders === 'function' ? loadOrders() : [];
+    var activeCount = allOrders.filter(function(o){ return o.status === 'PAID' && o.pickupDate === today && (o.pickupCode || o.abholnummer || o.code); }).length;
+    var minuteKey = Math.floor(Date.now() / 60000);
+    return today + '::' + activeCount + '::' + minuteKey + '::' + t + '::' + items;
+  }
+
   function renderCart(){
+    var sig = getCartSig();
+    if(sig === _lastCartSig) return;
+    _lastCartSig = sig;
+
     const box=document.getElementById('cartBox');
     const btn=document.getElementById('btnCheckout');
     const activeWrap = document.getElementById('cartActiveSessionWrap');
     const mainCard = document.getElementById('cartMainCard');
     const cartVerzehrartEl = document.getElementById('cartVerzehrart');
-    /* Baseline: alles in definierten Zustand, dann nur die sichtbaren Teile aktivieren (keine Misch-States) */
+    if(!box) return;
+    if(!box._cartDelegateBound){ box._cartDelegateBound = true; box.addEventListener('click', function(e){ var b=e.target.closest('[data-action]'); if(!b) return; var a=b.dataset.action; if(a==='route'){ if(typeof openGoogleMapsRoute==='function') openGoogleMapsRoute(b.dataset.providerId); } else if(a==='abgeholt'){ if(typeof markOrderAbgeholt==='function') markOrderAbgeholt(b.dataset.orderId); } else if(a==='qty'){ if(typeof changeQty==='function') changeQty(b.dataset.offerId, Number(b.dataset.delta)); } else if(a==='selectTime'){ if(typeof selectCartTime==='function') selectCartTime(b.dataset.time); } else if(a==='showDiscover'){ if(typeof window.showDiscover==='function') window.showDiscover(); } }); }
     if(activeWrap) hide(activeWrap);
     if(mainCard) show(mainCard);
     if(btn) hide(btn);
     if(cartVerzehrartEl) hide(cartVerzehrartEl);
+
+    const offersById = new Map((typeof offers !== 'undefined' && offers ? offers : []).map(function(o){ return [o.id, o]; }));
+    function getOfferForOrder(order){ return offersById.get(order.dishId) || offersById.get(order.offerId); }
 
     const today = isoDate(new Date());
     const allOrders = typeof loadOrders === 'function' ? loadOrders() : [];
@@ -6555,7 +6569,7 @@
       if(abholDisplay) abholDisplay.textContent = (String(firstCode).indexOf('#') === 0 ? '' : '#') + firstCode;
       if(listEl){
         listEl.innerHTML = activeOrders.map(function(order){
-          const offer = offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
+          const offer = getOfferForOrder(order);
           const norm = offer ? normalizeOffer(offer) : { dish: order.dishName || 'Gericht', price: (order.total || 0) / 100, imageUrl: '', providerName: order.providerName || 'Anbieter', providerStreet: '', providerZip: '', providerCity: '', address: order.providerAddress || '', dineInPossible: true, hasPickupCode: true, reuse: null };
           const imgSrc = (norm && norm.imageUrl) || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=70';
           const addr = (norm && buildAddress({ address: norm.address, street: norm.providerStreet, zip: norm.providerZip, city: norm.providerCity })) || order.providerAddress || 'Adresse nicht verfügbar';
@@ -6580,10 +6594,10 @@
                   '<div class="s5-mittagsbox-addr">' + esc(addr) + '</div>' +
                   '<div class="s5-mittagsbox-countdown">' + esc(countdownText) + '</div>' +
                   '<div class="mittagsbox-route-btns">' +
-                    '<button type="button" class="route-btn" onclick="openGoogleMapsRoute(\'' + esc(order.providerId) + '\');">🚶 Fußweg</button>' +
-                    '<button type="button" class="route-btn" onclick="openGoogleMapsRoute(\'' + esc(order.providerId) + '\');">🚗 Fahrtweg</button>' +
+                    '<button type="button" class="route-btn" data-action="route" data-provider-id="' + esc(order.providerId) + '">🚶 Fußweg</button>' +
+                    '<button type="button" class="route-btn" data-action="route" data-provider-id="' + esc(order.providerId) + '">🚗 Fahrtweg</button>' +
                   '</div>' +
-                  '<button type="button" class="btn-abgeholt" onclick="markOrderAbgeholt(\'' + esc(order.id) + '\');">Abgeholt</button>' +
+                  '<button type="button" class="btn-abgeholt" data-action="abgeholt" data-order-id="' + esc(order.id) + '">Abgeholt</button>' +
                 '</div>' +
               '</div>' +
             '</div>'
@@ -6591,7 +6605,7 @@
         }).join('');
       }
       updateHeaderBasket();
-      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+      queueLucide();
       return;
     }
 
@@ -6603,7 +6617,7 @@
           </div>
           <h3 class="s5-cart-empty-title">Deine Mittagsbox hat Hunger.</h3>
           <p class="s5-cart-empty-text">Such dir was Leckeres aus – in wenigen Klicks ist die Abholnummer sicher.</p>
-          <button class="btn-cust-primary s5-cart-empty-btn" type="button" onclick="if(typeof window.showDiscover==='function') window.showDiscover();">
+          <button class="btn-cust-primary s5-cart-empty-btn" type="button" data-action="showDiscover">
             <i data-lucide="compass"></i> <span>Entdecken</span>
           </button>
         </div>
@@ -6611,7 +6625,7 @@
       if(btn) hide(btn);
       if(cartVerzehrartEl) hide(cartVerzehrartEl);
       updateHeaderBasket();
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+      queueLucide();
       return;
     }
 
@@ -6635,55 +6649,54 @@
     const slotsToShow = availableSlots.length > 0 ? availableSlots : TIME_SLOTS.slice(0, 6);
     
     const itemsByProvider = new Map();
-    cart.items.forEach(it => {
-      const o = offers.find(x => x.id === it.offerId);
+    cart.items.forEach(function(it){
+      const o = offersById.get(it.offerId);
       if(!o) return;
       if(!itemsByProvider.has(o.providerId)) itemsByProvider.set(o.providerId, { provider: normalizeOffer(o), items: [] });
-      itemsByProvider.get(o.providerId).items.push({offer: o, qty: it.qty});
+      itemsByProvider.get(o.providerId).items.push({ offerId: o.id, qty: it.qty });
     });
     
     let groupedHtml = '';
-    itemsByProvider.forEach((group, pid) => {
-      groupedHtml += `
-        <div class="s5-cart-group">
-          <div class="s5-cart-group-hdr"><i data-lucide="store"></i> ${esc(group.provider.providerName)}</div>
-          ${group.items.map(({offer, qty}) => {
-            const norm = normalizeOffer(offer);
-            const lineTotal = Number(norm.price||0) * qty;
-            total += lineTotal;
-            return `
-              <div class="s5-cart-line">
-                <div class="s5-cart-line-body">
-                  <div class="s5-cart-line-dish">${esc(norm.dish)}</div>
-                  <div class="s5-cart-line-price">${euro(lineTotal)}</div>
-                </div>
-                <div class="s5-cart-qty-wrap">
-                  <button type="button" class="s5-cart-qty-btn" onclick="changeQty('${offer.id}', -1)">-</button>
-                  <span class="s5-cart-qty-num">${qty}</span>
-                  <button type="button" class="s5-cart-qty-btn" onclick="changeQty('${offer.id}', 1)">+</button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
+    itemsByProvider.forEach(function(group, pid){
+      groupedHtml += (
+        '<div class="s5-cart-group">' +
+        '<div class="s5-cart-group-hdr"><i data-lucide="store"></i> ' + esc(group.provider.providerName) + '</div>' +
+        group.items.map(function(it){
+          const offer = offersById.get(it.offerId);
+          const norm = offer ? normalizeOffer(offer) : { dish: 'Gericht', price: 0 };
+          const lineTotal = Number(norm.price||0) * it.qty;
+          total += lineTotal;
+          return (
+            '<div class="s5-cart-line">' +
+              '<div class="s5-cart-line-body">' +
+                '<div class="s5-cart-line-dish">' + esc(norm.dish) + '</div>' +
+                '<div class="s5-cart-line-price">' + euro(lineTotal) + '</div>' +
+              '</div>' +
+              '<div class="s5-cart-qty-wrap">' +
+                '<button type="button" class="s5-cart-qty-btn" data-action="qty" data-offer-id="' + esc(it.offerId) + '" data-delta="-1">-</button>' +
+                '<span class="s5-cart-qty-num">' + it.qty + '</span>' +
+                '<button type="button" class="s5-cart-qty-btn" data-action="qty" data-offer-id="' + esc(it.offerId) + '" data-delta="1">+</button>' +
+              '</div>' +
+            '</div>'
+          );
+        }).join('') +
+        '</div>'
+      );
     });
 
-    box.innerHTML = groupedHtml + `
-      <div class="s5-cart-abholzeit-wrap">
-        <label class="s5-cart-abholzeit-label">Abholzeit</label>
-        <div class="s5-cart-abholzeit-slots">
-          ${slotsToShow.map(t => `
-            <button class="cust-chip ${cart.pickupTime === t ? 'active' : ''}" onclick="selectCartTime('${t}')">${t}</button>
-          `).join('')}
-        </div>
-      </div>
-      <div class="s5-cart-total-row">
-        <span class="s5-cart-total-label">Gesamt</span>
-        <span class="s5-cart-total-value">${euro(total)}</span>
-      </div>
-    `;
-    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    box.innerHTML = groupedHtml + (
+      '<div class="s5-cart-abholzeit-wrap">' +
+      '<label class="s5-cart-abholzeit-label">Abholzeit</label>' +
+      '<div class="s5-cart-abholzeit-slots">' +
+      slotsToShow.map(function(t){ return '<button class="cust-chip ' + (cart.pickupTime === t ? 'active' : '') + '" data-action="selectTime" data-time="' + esc(t) + '">' + t + '</button>'; }).join('') +
+      '</div>' +
+      '</div>' +
+      '<div class="s5-cart-total-row">' +
+      '<span class="s5-cart-total-label">Gesamt</span>' +
+      '<span class="s5-cart-total-value">' + euro(total) + '</span>' +
+      '</div>'
+    );
+    queueLucide();
     updateHeaderBasket();
   }
 
