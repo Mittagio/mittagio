@@ -11507,3 +11507,24 @@ body {
 main, #v-discover {
   padding-bottom: 100px !important;
 }
+
+/* --- MITTAGIO DESIGN-GESETZ (COMIC-STAND) --- */
+#customerNav, #providerNavWrap {
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  background-color: #ffffff !important;
+  border-top: 1px solid #ebebeb !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  margin: 0 !important;
+}
+.tgtg-list-item, .dish-card {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.card-pillars, .pillar-row {
+  order: 2 !important;
+  display: flex !important;
+  padding: 10px 15px !important;
+  gap: 15px !important;
+  border-top: 1px solid #f7f7f7 !important;
+}

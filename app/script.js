@@ -19808,122 +19808,25 @@
     };
   })();
 
-  /* --- MITTAGIO EMERGENCY RENDER --- */
-  (function repairRenderLogic() {
-    console.log("Bauleiter: Starte Not-System...");
-    setTimeout(function() {
-      var discoverContainer = document.getElementById('v-discover');
-      if (discoverContainer && discoverContainer.innerHTML.trim() === "") {
-        console.warn("Bauleiter: Container leer! Triggere Render-Prozess...");
-        if (typeof renderDiscover === 'function') {
-          renderDiscover();
-        } else if (typeof renderOffers === 'function') {
-          renderOffers();
+  /* --- MITTAGIO FINAL STABILIZER (RESTORE 26.02.) --- */
+  (function stabilizeMittagio() {
+    console.log("Architekt: Stabilisierung läuft...");
+    var killLayers = ['#cookbookMittagioLayer', '.magazine-overlay', '.s5-magazine-layer'];
+    killLayers.forEach(function(sel) {
+      var el = document.querySelector(sel);
+      if (el) el.style.pointerEvents = 'none';
+    });
+    document.addEventListener('click', function(e) {
+      var navBtn = e.target.closest('#customerNav button, .navbtn, [data-go], [data-pgo]');
+      if (navBtn) {
+        var view = navBtn.getAttribute('data-go') || navBtn.getAttribute('data-pgo') || navBtn.getAttribute('data-view');
+        if (view) {
+          var viewId = view.indexOf('v-') === 0 ? view : 'v-' + view;
+          if (typeof window.showView === 'function') {
+            window.showView(viewId);
+            console.log("Architekt: Nav-Klick erkannt -> " + viewId);
+          }
         }
       }
-      document.body.style.opacity = "1";
-      document.body.style.visibility = "visible";
-    }, 500);
-  })();
-
-  /* --- MITTAGIO NOT-DATEN (COMIC-STAND TEST) --- */
-  function injectDemoData() {
-    if (window.offers && Array.isArray(window.offers) && window.offers.length > 0) return;
-    console.log("Bauleiter: Injiere Test-Gericht...");
-    var today = typeof window.isoDate === 'function' ? window.isoDate(new Date()) : new Date().toISOString().slice(0, 10);
-    var demoOffer = {
-      id: typeof window.cryptoId === 'function' ? window.cryptoId() : 'demo_' + Date.now(),
-      providerId: 'demo-provider',
-      providerName: 'Test-Küche',
-      providerStreet: 'Teststraße 1',
-      providerZip: '73614',
-      providerCity: 'Schorndorf',
-      address: 'Teststraße 1, 73614 Schorndorf',
-      dish: 'Test-Cheeseburger',
-      category: 'Mit Fleisch',
-      price: 12.90,
-      day: today,
-      active: true,
-      imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500',
-      hasPickupCode: true,
-      dineInPossible: true,
-      distanceKm: 0.3,
-      allergens: [],
-      extras: [],
-      reuse: { enabled: true, deposit: 0 }
-    };
-    if (window.offers && Array.isArray(window.offers)) {
-      window.offers.length = 0;
-      window.offers.push(demoOffer);
-    } else {
-      window.offers = [demoOffer];
-    }
-    if (typeof window.resetNormCache === 'function') window.resetNormCache();
-    if (typeof renderDiscover === 'function') renderDiscover();
-  }
-  setTimeout(injectDemoData, 1000);
-
-  /* --- MITTAGIO ULTRA-FORCE-RENDER --- */
-  function forceShowFirstOffer() {
-    console.log("Architekt: Erpringe Filter-Logik...");
-    var container = document.getElementById('discoverOffers') || document.getElementById('v-discover') || document.querySelector('.discover-offers-list');
-    if (!container) {
-      console.error("Architekt: Container nicht gefunden!");
-      return;
-    }
-    if (window.offers && window.offers.length > 0) {
-      var item = window.offers[0];
-      var imgSrc = item.imageUrl || item.img || item.photoData || '';
-      var name = item.dish || item.name || 'Gericht';
-      var price = (typeof item.price === 'number' ? item.price.toFixed(2) : String(item.price || '0')).replace('.', ',');
-      var cardHtml = '<div class="tgtg-list-item" style="display:block!important;margin:15px;border:1px solid #ebebeb;border-radius:12px;background:white;">' +
-        (imgSrc ? '<img src="' + imgSrc.replace(/"/g, '&quot;') + '" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px 12px 0 0;">' : '') +
-        '<div class="card-pillars" style="display:flex;gap:15px;padding:10px;"><span>🍴</span><span>🧾</span><span>🔄</span></div>' +
-        '<div style="padding:15px;"><h3 style="margin:0;font-size:18px;">' + String(name).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</h3>' +
-        '<p style="color:#484848;">' + price + ' €</p></div></div>';
-      container.innerHTML = cardHtml;
-      console.log("Architekt: Test-Gericht wurde manuell in den DOM gedrückt.");
-    }
-  }
-  setTimeout(forceShowFirstOffer, 1500);
-
-  /* --- MITTAGIO DATEN-MASTER-KEY (COMIC-STAND) --- */
-  (function forceDataInjection() {
-    console.log("Architekt: Injiere finale Comic-Stand-Daten...");
-    var today = typeof window.isoDate === 'function' ? window.isoDate(new Date()) : new Date().toISOString().slice(0, 10);
-    var comicStandOffer = {
-      id: "test-1",
-      dish: "Original Mittagio Gericht",
-      price: 9.50,
-      imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=500",
-      providerId: "metzger-1",
-      providerName: "Metzgerei Thomas",
-      providerStreet: "Hauptstraße 1",
-      providerZip: "73614",
-      providerCity: "Schorndorf",
-      address: "Hauptstraße 1, 73614 Schorndorf",
-      day: today,
-      active: true,
-      dineInPossible: true,
-      hasPickupCode: true,
-      reuse: { enabled: true, deposit: 0 },
-      distanceKm: 0.2,
-      allergens: [],
-      extras: []
-    };
-    var dataArray = [comicStandOffer];
-    window.offers = dataArray;
-    window.allOffers = dataArray;
-    window.products = dataArray;
-    setTimeout(function() {
-      if (typeof renderDiscover === 'function') {
-        renderDiscover();
-        console.log("Architekt: Render-Befehl mit Comic-Daten ausgeführt.");
-      } else {
-        var container = document.getElementById('discoverOffers') || document.getElementById('v-discover');
-        if (container) {
-          container.innerHTML = '<div class="tgtg-list-item">Daten geladen - Warte auf UI...</div>';
-        }
-      }
-    }, 200);
+    }, true);
   })();
