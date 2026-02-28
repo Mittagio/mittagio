@@ -11429,11 +11429,17 @@
 .s5-legal-ul-sm { margin: 0 0 12px 20px; padding-left: 0; }
 .s5-legal-li { margin-bottom: 8px; }
 
-/* --- Mittagio-Master-Code (Stand 26.02. Restore) – !important glattbügelt Refactoring-Fehler --- */
-/* 1. AIRBNB-FOOTER: Kunden- und Anbieter-Bottom-Nav */
-#customerNav,
-#providerNavWrap,
-#cookbookFooterWrap.cookbook-footer-fixed {
+/* --- MITTAGIO DESIGN-GESETZ (RESTORE 26.02.) --- */
+
+/* 1. KUNDEN-CONTENT SICHTBARKEIT */
+#v-discover, .tgtg-list-item, .discover-offers-list {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* 2. AIRBNB-FOOTER (Weiß, bündig, feine graue Linie #ebebeb) */
+#customerNav, #providerNavWrap, #cookbookFooterWrap {
   background-color: #ffffff !important;
   border-top: 1px solid #ebebeb !important;
   margin: 0 !important;
@@ -11441,56 +11447,43 @@
   padding-bottom: env(safe-area-inset-bottom) !important;
   position: fixed !important;
   bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 9999 !important;
+  width: 100% !important;
+  z-index: 999999 !important;
+  box-shadow: none !important;
+}
+body.provider-cookbook-active #cookbookFooterWrap { bottom: calc(75px + env(safe-area-inset-bottom, 0)) !important; }
+
+/* 3. DIE 3 SÄULEN (🍴, 🧾, 🔄) - Exakte Anordnung unter dem Bild */
+.card-pillars, .pillar-row {
   display: flex !important;
-  justify-content: space-around !important;
-  align-items: center !important;
-}
-body.provider-cookbook-active #cookbookFooterWrap.cookbook-footer-fixed { bottom: calc(75px + env(safe-area-inset-bottom, 0)) !important; }
-
-/* 2. BUTTONS: Schwarz, 8px, Airbnb-Style */
-.btn-primary, [class*="button-primary"], .primary-btn-black, .btn-airbnb-primary, .nav-btn-primary {
-  background-color: #222222 !important;
-  color: #ffffff !important;
-  border-radius: 8px !important;
-  padding: 12px 24px !important;
-  font-weight: bold !important;
-  border: none !important;
-  text-decoration: none !important;
-}
-.btn-secondary, [class*="button-secondary"] {
-  background: none !important;
-  color: #222222 !important;
-  font-weight: bold !important;
-  text-decoration: underline !important;
-  border: none !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  gap: 15px !important;
+  padding: 10px 16px !important;
+  border-top: 1px solid #f7f7f7 !important;
 }
 
-/* 3. SÄULEN (🍴, 🧾, 🔄) UNTER DEM BILD */
-.dish-card, .tgtg-list-item, .discover-pin-drawer {
+/* 4. INSERIEREN-RIEGEL (Absolute Sperre für Kunden) */
+body:not(.provider-mode) #cookbookFooterWrap,
+body:not(.provider-mode) .cookbook-footer-btn-inserieren {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* --- COMIC-STAND: KARTEN-LAYOUT --- */
+.tgtg-list-item, .dish-card {
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 16px !important;
   border: 1px solid #ebebeb !important;
   border-radius: 12px !important;
-  overflow: hidden !important;
+  box-shadow: none !important;
+}
+.card-pillars, .pillar-row {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 15px !important;
+  padding: 10px 16px !important;
+  order: 2 !important;
   background: #ffffff !important;
 }
-.pillar-row, .card-pillars {
-  display: flex !important;
-  gap: 20px !important;
-  padding: 10px 16px !important;
-  border-bottom: 1px solid #f0f0f0 !important;
-}
-
-/* 4. LOGIK-SPERRE: KEIN INSERIEREN IM KUNDENBEREICH */
-body:not(.provider-mode) .btn-inserieren,
-body:not(.provider-mode) .cookbook-footer-btn-inserieren,
-body:not(.provider-mode) .mittagio-dual-btn-inserieren,
-body:not(.provider-mode) #cookbookFooterWrap,
-#v-discover .btn-inserieren,
-#v-discover .cookbook-footer-btn-inserieren {
-  display: none !important;
-}
-body.provider-mode .btn-inserieren,
-body.provider-mode .cookbook-footer-btn-inserieren,
-body.provider-mode .mittagio-dual-btn-inserieren { display: block !important; }

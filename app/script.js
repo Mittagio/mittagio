@@ -19758,3 +19758,35 @@
   if(typeof window !== 'undefined' && typeof window.showProfile !== 'function'){
     window.showProfile = function(){ if(typeof window.showView==='function' && window.views && window.views.profile){ window.showView(window.views.profile); } else { console.warn('showProfile shim: no target'); } };
   }
+
+  /* --- MITTAGIO MASTER-LOGIK RESTORE --- */
+  window.forceMittagioRender = function() {
+    const activeView = document.querySelector('.view.active');
+    if (activeView && (activeView.id === 'v-discover' || activeView.id === 'discover')) {
+      if (typeof renderDiscover === 'function') {
+        renderDiscover();
+        console.log("Architekt: Entdecken-Bereich wurde neu gezeichnet.");
+      }
+    }
+  };
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('[data-view]') || e.target.closest('.nav-btn') || e.target.closest('.navbtn') || e.target.closest('[data-go]') || e.target.closest('[data-pgo]')) {
+      setTimeout(window.forceMittagioRender, 50);
+    }
+  });
+
+  /* --- MITTAGIO ARCHITEKTEN-GARANTIE (RESTORE 26.02.) --- */
+  window.addEventListener('click', function(e) {
+    const target = e.target.closest('[data-view], .navbtn, [data-go], [data-pgo]');
+    if (target) {
+      const view = target.getAttribute('data-view') || target.getAttribute('data-go');
+      if (view === 'discover' || view === 'v-discover') {
+        setTimeout(function() {
+          if (typeof renderDiscover === 'function') {
+            renderDiscover();
+            console.log("Mittagio: Entdecken-Inhalt wurde neu generiert.");
+          }
+        }, 60);
+      }
+    }
+  });
