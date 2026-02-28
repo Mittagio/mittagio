@@ -165,23 +165,13 @@
 
   function getFavPillars(dishId){ const m = load(LS.favPillars, {}); return m[dishId] || null; }
   function setFavPillars(dishId, pillars){ const m = load(LS.favPillars, {}); m[dishId] = pillars; save(LS.favPillars, m); }
+  /** 3 Säulen: Emojis 🍴 🧾 🔄 direkt unter dem Bild (dc21201-Stand, keine Lucide-Icons) */
   function renderPillarBars(vorOrt, abholnummer, mehrweg){
-    // Hochwertige, app-like Icons mit Labels (statt Balken)
-    // Design: Runde Badges mit Icon + Text darunter, horizontal angeordnet (Sprint 5b.5: s5-pillars-*)
     return `
-      <div class="s5-pillars-bar">
-        <div class="s5-pillars-segment ${vorOrt ? '' : 's5-pillars-segment-inactive'}">
-          <div class="s5-pillars-iconwrap s5-pillars-iconwrap-green"><i data-lucide="utensils" class="s5-pillars-icon"></i></div>
-          <div class="s5-pillars-label">Vor Ort</div>
-        </div>
-        <div class="s5-pillars-segment ${abholnummer ? '' : 's5-pillars-segment-abhol-inactive'}">
-          <div class="s5-pillars-iconwrap ${abholnummer ? 's5-pillars-iconwrap-yellow' : 's5-pillars-iconwrap-yellow-inactive'}"><i data-lucide="receipt" class="s5-pillars-icon"></i></div>
-          <div class="s5-pillars-label">Abholnummer</div>
-        </div>
-        <div class="s5-pillars-segment ${mehrweg ? '' : 's5-pillars-segment-inactive'}">
-          <div class="s5-pillars-iconwrap s5-pillars-iconwrap-blue"><i data-lucide="leaf" class="s5-pillars-icon"></i></div>
-          <div class="s5-pillars-label">Mehrweg</div>
-        </div>
+      <div class="s5-pillars-bar s5-pillars-emoji">
+        <span class="pillar-emoji ${vorOrt ? 'active' : 'is-inactive'}" title="Vor Ort">🍴</span>
+        <span class="pillar-emoji ${abholnummer ? 'active' : 'is-inactive'}" title="Abholnummer">🧾</span>
+        <span class="pillar-emoji ${mehrweg ? 'active' : 'is-inactive'}" title="Mehrweg">🔄</span>
       </div>
     `;
   }
@@ -14119,7 +14109,7 @@
         customerTab.style.background = '#fff';
         customerTab.style.borderBottom = '3px solid #FFD700';
         customerTab.style.fontWeight = '700';
-        customerTab.style.color = '#334155';
+        customerTab.style.color = '#1a1a1a';
       }
       if(providerTab){
         providerTab.style.background = '#f9f9f9';
@@ -14134,7 +14124,7 @@
         providerTab.style.background = '#fff';
         providerTab.style.borderBottom = '3px solid #FFD700';
         providerTab.style.fontWeight = '700';
-        providerTab.style.color = '#334155';
+        providerTab.style.color = '#1a1a1a';
       }
       if(customerTab){
         customerTab.style.background = '#f9f9f9';
