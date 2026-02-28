@@ -11428,3 +11428,69 @@
 .s5-legal-ul { margin: 0 0 20px 20px; padding-left: 0; }
 .s5-legal-ul-sm { margin: 0 0 12px 20px; padding-left: 0; }
 .s5-legal-li { margin-bottom: 8px; }
+
+/* --- Mittagio-Master-Code (Stand 26.02. Restore) – !important glattbügelt Refactoring-Fehler --- */
+/* 1. AIRBNB-FOOTER: Kunden- und Anbieter-Bottom-Nav */
+#customerNav,
+#providerNavWrap,
+#cookbookFooterWrap.cookbook-footer-fixed {
+  background-color: #ffffff !important;
+  border-top: 1px solid #ebebeb !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+}
+body.provider-cookbook-active #cookbookFooterWrap.cookbook-footer-fixed { bottom: calc(75px + env(safe-area-inset-bottom, 0)) !important; }
+
+/* 2. BUTTONS: Schwarz, 8px, Airbnb-Style */
+.btn-primary, [class*="button-primary"], .primary-btn-black, .btn-airbnb-primary, .nav-btn-primary {
+  background-color: #222222 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+  font-weight: bold !important;
+  border: none !important;
+  text-decoration: none !important;
+}
+.btn-secondary, [class*="button-secondary"] {
+  background: none !important;
+  color: #222222 !important;
+  font-weight: bold !important;
+  text-decoration: underline !important;
+  border: none !important;
+}
+
+/* 3. SÄULEN (🍴, 🧾, 🔄) UNTER DEM BILD */
+.dish-card, .tgtg-list-item, .discover-pin-drawer {
+  border: 1px solid #ebebeb !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+}
+.pillar-row, .card-pillars {
+  display: flex !important;
+  gap: 20px !important;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+/* 4. LOGIK-SPERRE: KEIN INSERIEREN IM KUNDENBEREICH */
+body:not(.provider-mode) .btn-inserieren,
+body:not(.provider-mode) .cookbook-footer-btn-inserieren,
+body:not(.provider-mode) .mittagio-dual-btn-inserieren,
+body:not(.provider-mode) #cookbookFooterWrap,
+#v-discover .btn-inserieren,
+#v-discover .cookbook-footer-btn-inserieren {
+  display: none !important;
+}
+body.provider-mode .btn-inserieren,
+body.provider-mode .cookbook-footer-btn-inserieren,
+body.provider-mode .mittagio-dual-btn-inserieren { display: block !important; }
