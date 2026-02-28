@@ -5310,19 +5310,20 @@
 
   // Back-Navigation Regeln (Customer/Provider) – Single Source statt langer if/else [cite: History-Context 2026-02-26]
   // Discover = Root; Back von Discover/Start: kein Wechsel zu Start, v-start → Discover
+  // Lazy-Callbacks: script.js lädt vor ui-navigation.js, daher window.showProfile etc. erst bei Aufruf verfügbar
   var BACK_RULES = {
-    'v-fav': showDiscover,
-    'v-cart': showDiscover,
-    'v-orders': showProfile,
-    'v-profile': showDiscover,
+    'v-fav': function(){ if(typeof window.showDiscover==='function') window.showDiscover(); },
+    'v-cart': function(){ if(typeof window.showDiscover==='function') window.showDiscover(); },
+    'v-orders': function(){ if(typeof window.showProfile==='function') window.showProfile(); },
+    'v-profile': function(){ if(typeof window.showDiscover==='function') window.showDiscover(); },
     'v-discover': function(){ /* noop – Discover ist Root */ },
-    'v-start': showDiscover
+    'v-start': function(){ if(typeof window.showDiscover==='function') window.showDiscover(); }
   };
   var PROVIDER_BACK_RULES = {
-    'v-provider-profile': showProviderHome,
-    'v-provider-pickups': showProviderHome,
-    'v-provider-cookbook': function(){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){} showProviderHome(); },
-    'v-provider-billing': showProviderProfile
+    'v-provider-profile': function(){ if(typeof window.showProviderHome==='function') window.showProviderHome(); },
+    'v-provider-pickups': function(){ if(typeof window.showProviderHome==='function') window.showProviderHome(); },
+    'v-provider-cookbook': function(){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){} if(typeof window.showProviderHome==='function') window.showProviderHome(); },
+    'v-provider-billing': function(){ if(typeof window.showProviderProfile==='function') window.showProviderProfile(); }
   };
 
   window.addEventListener('popstate', function(e){
@@ -19761,4 +19762,9 @@
     document.addEventListener('DOMContentLoaded', initApp);
   } else {
     initApp();
+  }
+
+  // --- Backward compatibility shims (alte inline onclicks / Load-Order) ---
+  if(typeof window !== 'undefined' && typeof window.showProfile !== 'function'){
+    window.showProfile = function(){ if(typeof window.showView==='function' && window.views && window.views.profile){ window.showView(window.views.profile); } else { console.warn('showProfile shim: no target'); } };
   }
