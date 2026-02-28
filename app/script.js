@@ -445,6 +445,7 @@
   }
   
   // addOrder, updateOrder, getOrderById, listActiveOrders, generatePickupCode, assignPickupCode, generateDishLetterPickupCode → js/app-logic.js
+  if(typeof window !== 'undefined'){ window.loadOrders = loadOrders; window.saveOrders = saveOrders; }
 
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
