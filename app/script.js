@@ -5679,10 +5679,12 @@
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; }
         slider.setAttribute('data-inserat-step','1');
-        var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
-        if(airbnbFooter) airbnbFooter.style.display='none';
+        var f1=document.getElementById('mastercard-footer-step1');
+        var f2=document.getElementById('mastercard-footer-step2');
+        if(f1) f1.style.setProperty('display','flex','important');
+        if(f2) f2.style.setProperty('display','none','important');
         var sf = box.querySelector('[data-inserat-step="3"]');
-        if(sf) sf.style.display='none';
+        if(sf) sf.style.setProperty('display','none','important');
         wizardEl.classList.remove('inserat-step2-active');
         wizardEl.classList.remove('inserat-step3-active');
         e.preventDefault();
@@ -16186,7 +16188,7 @@
   /** Content-Safety: Scroll-Bereich erhält Platz für fixierten Footer – NUR Anbieter [cite: 2026-02-23] */
   function applyVendorFooterPadding(){
     if(!document.body.classList.contains('provider-mode')) return;
-    var footer=document.querySelector('#wizard .inserat-action-section .system-footer-merged, #wizard .inserat-action-section .inserat-step1-nav, #wizard .inserat-action-section .inserat-immo-footer');
+    var footer=document.querySelector('#wizard #mastercard-footer-step1 .system-footer-merged, #wizard #mastercard-footer-step1 .inserat-step1-nav, #wizard #mastercard-footer-step1 .inserat-immo-footer');
     var scrollArea=document.querySelector('#wizard .mastercard-scroll-area, #wizard .inserat-scroll-area');
     if(footer&&scrollArea){
       var h=footer.offsetHeight;
@@ -17089,7 +17091,7 @@
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
           saveDraft();
-          var fb=box.querySelector('[data-inserat-step="2"] .btn-primary-black');
+          var fb=box.querySelector('#mastercard-footer-step2 .btn-primary-black');
           if(fb){
             fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
@@ -17751,7 +17753,7 @@
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
         if(price<=0) priceSection.classList.add('inserat-validation-error');
-        var targetBtn=btn||box.querySelector('#inserat-action-section .btn-primary-black')||box.querySelector('[data-inserat-step="2"] .btn-primary-black');
+        var targetBtn=btn||box.querySelector('#mastercard-footer-step1 .btn-primary-black')||box.querySelector('#mastercard-footer-step2 .btn-primary-black');
         if(targetBtn){
           targetBtn.classList.remove('btn-shake');
           targetBtn.offsetHeight;
@@ -17804,7 +17806,7 @@
       }
       function updateWizardFooter(){
         var valid = isPrimaryValid();
-        var primaryBtn = box.querySelector('#inserat-action-section .btn-primary-black');
+        var primaryBtn = box.querySelector('#mastercard-footer-step1 .btn-primary-black');
         if (primaryBtn) {
           if (valid) {
             primaryBtn.classList.add('is-ready');
@@ -17829,10 +17831,11 @@
       }
       var primaryValid = isPrimaryValid();
 
-      /* 3-Schritt Mastercard: Links Speichern (Shortcut) | Rechts Weiter (Primary) – einheitlich für alle entryPoints [cite: 2026-02-28] */
+      /* 3-Schritt Mastercard: Footer außerhalb des Sliders – Viewport-treu [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
       const actionSection=document.createElement('section');
-      actionSection.id='inserat-action-section';
+      actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:500; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
@@ -17905,26 +17908,26 @@
           slider.setAttribute('data-inserat-step','2');
           var wizardEl=document.getElementById('wizard');
           if(wizardEl) wizardEl.classList.add('inserat-step2-active');
-          var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
+          if(typeof updateFooterVisibility==='function') updateFooterVisibility();
         } else { rebuildWizard(); }
       };
       step1NavRow.appendChild(btnWeiter);
       actionSection.appendChild(step1NavRow);
-      step1Container.appendChild(actionSection);
+      /* Footer außerhalb des Sliders – nicht an step1Container [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
 
       if(slider){
         box.appendChild(slider);
+        box.appendChild(actionSection);
         var airbnbFooter=document.createElement('div');
+        airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.setAttribute('data-inserat-step','2');
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; position:fixed; left:0; right:0; bottom:0; z-index:500; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:500; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
-        linkZurueck.className='inserat-footer-link';
+        linkZurueck.className='inserat-footer-link btn-secondary-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
-        linkZurueck.className='btn-secondary-link';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(typeof updateFooterVisibility==='function') updateFooterVisibility(); var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display','none','important'); var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
@@ -17965,7 +17968,7 @@
         airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         box.appendChild(airbnbFooter);
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display=s===3?'flex':'none'; };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); });
       }
@@ -18409,10 +18412,12 @@
     slider.setAttribute('data-inserat-step', '3');
     var wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.classList.add('inserat-step3-active');
-    var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
+    var f1 = document.getElementById('mastercard-footer-step1');
+    var f2 = document.getElementById('mastercard-footer-step2');
+    if(f1) f1.style.setProperty('display','none','important');
+    if(f2) f2.style.setProperty('display','none','important');
     var step3Footer = box.querySelector('[data-inserat-step="3"]');
-    if(airbnbFooter) airbnbFooter.style.display = 'none';
-    if(step3Footer){ step3Footer.style.display = 'flex'; }
+    if(step3Footer) step3Footer.style.setProperty('display','flex','important');
   }
 
   /** Sharing: navigator.share oder WhatsApp-Fallback [cite: 2026-02-21] */

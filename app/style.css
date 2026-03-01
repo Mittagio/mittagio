@@ -75,12 +75,15 @@
       box-shadow: none !important;
     }
     /* 4. Deaktivierter Zustand: opacity 0.3, nicht klickbar bis is-ready [cite: MASTER-LOGIC 2026-02-23] */
+    #mastercard-footer-step1 .footer-btn-primary:not(.is-ready),
+    #mastercard-footer-step1 .btn-primary-black:not(.is-ready),
     #inserat-action-section .footer-btn-primary:not(.is-ready),
     #inserat-action-section .btn-primary-black:not(.is-ready) {
       opacity: 0.3 !important;
       pointer-events: none !important;
       transition: opacity 0.25s ease, background 0.25s ease;
     }
+    #mastercard-footer-step1 .btn-primary-black.is-ready,
     #inserat-action-section .btn-primary-black.is-ready {
       opacity: 1 !important;
       background: #222222 !important;
