@@ -17533,10 +17533,10 @@
       priceSection.appendChild(verdienstWrap);
       contentSheet.appendChild(priceSection);
 
-      // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
+      // ========== 6. Power-Bar: 6 Icons horizontal unter Preis [cite: Final-Fix 2026-03-01] 🍴🧾🔄🕒⚠️➕ ==========
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
-      powerBar.style.cssText='border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px;';
+      powerBar.style.cssText='display:flex !important; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-around; gap:8px; border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px; min-height:52px;';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
       var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
