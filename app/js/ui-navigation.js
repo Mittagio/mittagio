@@ -397,10 +397,9 @@
         if (typeof closePublishFeeModal === 'function') closePublishFeeModal();
         return;
       }
-      /* Wochenplan: Slide-Out bei Hardware-Zurück [cite: 2026-02-18, 2026-02-25] */
+      /* Wochenplan: Slide-Out bei Hardware-Zurück – immer zum Dashboard [cite: 2026-02-18, 2026-02-25] */
       if (document.body.classList.contains('provider-week-active') && typeof closeWeekplanWithNativeAnim === 'function') {
-        var targetSection = (event.state && event.state.section) ? event.state.section : 'dashboard';
-        closeWeekplanWithNativeAnim(targetSection);
+        closeWeekplanWithNativeAnim('dashboard');
         return;
       }
       /* Kochbuch: Slide-Out bei Hardware-Zurück [cite: 2026-02-18, 2026-02-25] */
@@ -621,6 +620,10 @@
     if(typeof closeCookbookActionSheet === 'function') closeCookbookActionSheet();
     document.body.classList.remove('provider-week-active');
     if(window.createFlowOriginView === 'dashboard') document.body.classList.add('cookbook-from-dashboard');
+    /* Handy-Back-Taste: Vor Kochbuch immer Dashboard-State im Stack, damit popstate zum Dashboard führt [cite: Plan Hardware-Back 2026-02-28] */
+    if (typeof history !== 'undefined' && (!history.state || history.state.section !== 'dashboard')) {
+      if (typeof history.pushState === 'function') history.pushState({ section: 'dashboard', view: 'provider-home', mode: typeof window.mode !== 'undefined' ? window.mode : 'provider' }, '', location.pathname);
+    }
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Kochbuch');

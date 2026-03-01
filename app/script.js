@@ -5810,6 +5810,12 @@
         showProviderHome();
         e.preventDefault();
         return;
+      } else if(providerView === 'v-provider-week'){
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
+        if(typeof closeWeekplanWithNativeAnim === 'function') closeWeekplanWithNativeAnim('dashboard');
+        else if(typeof showProviderHome === 'function') showProviderHome();
+        e.preventDefault();
+        return;
       } else if(providerView === 'v-provider-billing'){
         showProviderProfile();
         e.preventDefault();
