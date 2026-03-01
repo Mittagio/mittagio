@@ -18053,8 +18053,8 @@
     w = w || {};
     w.kind = 'listing';
     w.step = 0;
-    /* Neues Gericht / openListingWizard: immer Step 1, kein alter inseratStep [cite: FLOW FIX 2026-02-25] */
-    if(!(w.ctx && w.ctx.editOfferId)) w.inseratStep = 1;
+    /* 3-Schritt Mastercard: Immer Step 1 als Einstieg für alle Flows (auch Edit, Bulk) [cite: 2026-02-28] */
+    w.inseratStep = 1;
     var d = newDish || {};
     if(d.dish !== undefined || d.providerId !== undefined){
       w.data = Object.assign({}, w.data, d);
