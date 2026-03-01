@@ -29,7 +29,7 @@ Die InseratCard ist die **einzige** Komponente für alle Zustände. Ihr Aufbau i
 | Ebene | Element | Spezifikation |
 |-------|---------|---------------|
 | 1. Header | Foto-Modul | 190px Höhe, „Foto ändern“-Pill, Smart-Crop (zentriert). |
-| 2. Status | Power-Bar | 6 Icons: Vor Ort, Mehrweg, Zeit, Allergene, Extras, Info-Overlay. |
+| 2. Status | Power-Bar | Icons für Vor Ort, Mehrweg, Zeit, Allergene, Extras, Info. |
 | 3. Fokus | Gerichtsname | Volle Breite, fett, Midnight Blue. Mit Auto-Scaling der Schriftgröße. |
 | 4. Sub | Beschreibung | Direkt unter dem Titel als Untertitel, Schiefergrau, kleiner. |
 | 5. Action | Kategorie & Preis | Flex-Row: Kategorie-Pills (links), gelber Preis-Button (rechts). |

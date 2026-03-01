@@ -16,7 +16,7 @@ alwaysApply: true
 ## Layout (Top-Down, einheitlich)
 
 1. **Hero-Image:** Randlos oben (Edge-to-Edge). Kein zentriertes 160×160 im Flow; volle Breite wie eine Karte.
-2. **Status-Leiste:** Direkt unter dem Bild **nur zwei** horizontale Pills: 🍴 **Vor Ort** und 🔄 **Mehrweg**. Standardmäßig aus dem Profil. Emerald (#10b981) mit Glow wenn aktiv.
+2. **Status-Leiste:** Horizontale Pills für Vor Ort, Mehrweg (Standard aus Profil).
 3. **Info-Banner:** Eine schlichte, flache Zeile: „Abholung heute Mittag von 11:30 – 14:00 Uhr“ (mit optionalem 🕒 zum Bearbeiten).
 4. **Titel-Input:** „Was kochst du heute?“ – Position und Schriftgröße wie auf der Detailseite. Pulsierende Emerald-Unterlinie beim Fokus.
 5. **Kategorie-Pills:** Direkt unter dem Titel. Aktive Pills in Emerald (#10b981) mit Glow wie Detailseite.
@@ -36,5 +36,5 @@ alwaysApply: true
 
 ## Bei Änderungen
 
-- Keine Rückkehr zu zentriertem 160×160-Hero im Flow; kein dritter Pill (🧾) in der Status-Leiste – Abholnummer ist über die Pricing-Buttons abgedeckt.
+- Keine Rückkehr zu zentriertem 160×160-Hero im Flow.
 - Korrekturen im Chat durch den Nutzer sind erwünscht, damit die KI die Projekt-Präferenzen lernt.

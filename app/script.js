@@ -16206,6 +16206,7 @@
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
     if(wizard) wizard.classList.add('active');
+    if(typeof console !== 'undefined' && console.log) console.log('MASTER-WIZARD IS NOW LIVE');
     if(w && w.kind === 'listing'){
       if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
     }
@@ -17162,7 +17163,8 @@
         btnFinish.textContent='Zum Dashboard';
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
-        step3Footer.classList.add('inserat-step1-nav');
+        step3Footer.classList.add('inserat-step1-nav', 'inserat-airbnb-footer');
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:1050; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         step3Pane.appendChild(step3Footer);
         btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
@@ -17926,7 +17928,7 @@
         box.appendChild(actionSection);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
-        airbnbFooter.className='app-footer-main inserat-step1-nav';
+        airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
         airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:500; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';

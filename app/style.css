@@ -1641,6 +1641,25 @@
     body.wizard-inserat-open #cookbookFooterWrap { display: none !important; }
     body.cookbook-from-dashboard #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
+    /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28] */
+    body.wizard-inserat-open #wizard {
+      display: flex !important;
+      flex-direction: column !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 99999 !important;
+      transform: none !important;
+      bottom: 0 !important;
+    }
+    body.wizard-inserat-open #wbd {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 99998 !important;
+    }
+    body.wizard-inserat-open .bottom-nav {
+      display: none !important;
+    }
     /* Renner-Speed-Dial: 2x2 Grid, TOP-Badge, 70% Bild, Midnight Blue Name, grüner Preis [cite: 2026-02-16] */
     .create-flow-renner-section { margin-bottom: 0; }
     .create-flow-renner-heading { font-weight: 800; font-size: 15px; color: #1a1a1a; margin-bottom: 12px; }
@@ -3339,7 +3358,7 @@
       padding: 8px 16px;
     }
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
-    /* Mastercard-Footer Airbnb-Style: weiß, keine Margins/Radius [cite: 2026-02-23, LAYOUT-FIX 2026-02-28] */
+    /* Mastercard-Footer Airbnb-Style: weiß, bündig, schwarzer Button [cite: 2026-02-23, LAYOUT-FIX 2026-02-28] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
@@ -3351,7 +3370,9 @@
       width: 100% !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      z-index: 500 !important;
+      z-index: 1050 !important;
+      display: flex !important;
+      flex-direction: column !important;
       padding: 16px 20px !important;
       padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
       background: #ffffff !important;
@@ -3389,9 +3410,9 @@
       min-height: 48px !important;
       height: 48px !important;
       border-radius: 8px !important;
-      background: #334155 !important;
-      color: #94a3b8 !important;
-      opacity: 0.5;
+      background: #222222 !important;
+      color: #ffffff !important;
+      opacity: 0.4;
       pointer-events: none;
       transition: all 0.3s ease;
     }

@@ -34,7 +34,7 @@ Blitz und alle anderen Aktionen, die früher psheet geöffnet haben, sollen eben
 
 ## 3. Component Rules
 
-- **Power-Bar:** (🍴, 🔄, 🕒, 🌾, ➕, ⓘ) in der InseratCard **immer sichtbar**. Siehe Blueprint in **inserat-flow-stop-order.mdc**.
+- **Power-Bar:** Icons in der InseratCard sichtbar. Siehe Blueprint in **inserat-flow-stop-order.mdc**.
 - **Preis-Button (Gelb):** Rechts in der Action-Row; Hero-Morph zum 4rem-Eingabefeld. Referenz: `buildListingStep()` in `app/index.html`.
 - **Universal-X:** Schließt den Flow mit der Pop-Away-Animation (Klasse `x-pop-away`).
 

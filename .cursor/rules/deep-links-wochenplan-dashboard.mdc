@@ -46,5 +46,4 @@ Technisch: Beim Öffnen von `openWeekAddSheet(...)` wird die aktive View als Ori
 
 ## Design-Check
 
-- 3 Säulen unter dem Bild: 🍴 (Vor Ort), 🎫1️⃣ (Abholnummer), 🔄 (Mehrweg).
 - Clean-modernes Layout, keine Schiefertafel.
