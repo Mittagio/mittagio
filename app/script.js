@@ -16201,7 +16201,26 @@
       scrollArea.style.paddingBottom=(h+16)+'px';
     }
   }
+  /** Emergency-Restore: Wizard-Infrastruktur sicherstellen [cite: 2026-02-28]
+   * Soll-Struktur – buildListingStep() und CSS arbeiten nahtlos zusammen. */
+  function ensureWizardInDom(){
+    if(!document.getElementById('wbd')){
+      var wbd = document.createElement('div');
+      wbd.id = 'wbd';
+      wbd.className = 'backdrop';
+      wbd.onclick = function(ev){ if(ev&&ev.target===wbd){ var w=document.getElementById('wizard'); if(w&&w.classList.contains('active')){ if(w.getAttribute('data-flow')==='listing'&&history.length>1){ history.back(); } else if(w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function'){ closeMastercard(); } else if(typeof closeWizard==='function'){ closeWizard(); } } } };
+      document.body.appendChild(wbd);
+    }
+    if(!document.getElementById('wizard')){
+      var wizard = document.createElement('div');
+      wizard.id = 'wizard';
+      wizard.className = 'sheet sheet--kitchen';
+      wizard.innerHTML = '<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div><div class="wizard-inner"><div class="w-top"><div class="w-title" id="wTitle">Setup</div><div class="w-step" id="wStep">Schritt 1 von 5</div></div><div id="wQ" class="wizard-question"></div><div id="wHelp" class="wizard-help"></div><div class="wizard-scroll"><div id="wContent"></div></div><div class="wizard-footer" id="wizardFooter" style="display:none;"></div></div></div></div>';
+      document.body.appendChild(wizard);
+    }
+  }
   function openWizard(){
+    ensureWizardInDom();
     const wbd = document.getElementById('wbd');
     const wizard = document.getElementById('wizard');
     if(wbd) wbd.classList.add('active');
