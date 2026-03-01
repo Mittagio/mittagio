@@ -16949,6 +16949,8 @@
   function buildListingStep(){
     setWizardNextDefault();
     w.step = 0;
+    /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
+    w.inseratStep = 1;
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
