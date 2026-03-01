@@ -1701,6 +1701,10 @@
     #wizard[data-flow="listing"] .inserat-photo-in-scroll,
     #wizard[data-flow="listing"] .inserat-photo-tile,
     #wizard[data-flow="listing"] .inserat-collapsing-header { border-radius: 0 !important; }
+    /* PWA-Finish: Clean Look – keine Schiefertafel, weißer Hintergrund [cite: 2026-01-28, LAYOUT-FIX 2026-02-28] */
+    #wizard[data-flow="listing"] .liquid-master-panel,
+    #wizard[data-flow="listing"] .mastercard-container,
+    #wizard[data-flow="listing"] .inserat-card-sheet { background: #ffffff !important; }
     /* ===== RADIKALER COMPACT-REFACTOR [cite: 2026-02-23] ===== */
     /* 1. GLOBAL CLEANUP: Kein Glow, kein Gelb, flaches Design */
     #mastercard-step-edit .price-circle-yellow,
@@ -1959,6 +1963,10 @@
       margin-bottom: 16px !important;
     }
     #mastercard-step-edit .power-bar-module.inserat-power-bar { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; padding-top: 16px !important; }
+    /* 3 Säulen: Nur Emoji-Icons 🍴🧾🔄 – kein Text [cite: 2026-01-27, 2026-02-02, LAYOUT-FIX 2026-02-28] */
+    #mastercard-step-edit .inserat-power-bar .power-item[data-type="vor-ort"] .power-item-label,
+    #mastercard-step-edit .inserat-power-bar .power-item[data-type="abholnummer"] .power-item-label,
+    #mastercard-step-edit .inserat-power-bar .power-item[data-type="mehrweg"] .power-item-label { display: none !important; }
     #mastercard-step-edit .input-description { width: 100%; border: none; font-size: 14px; color: #64748b; resize: none; padding: 3px 0 5px 0; margin: 0; text-align: center; }
     #mastercard-step-edit .price-section,
     #wizard[data-flow="listing"] .price-section {
@@ -3331,7 +3339,9 @@
       padding: 8px 16px;
     }
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
-    /* DESIGN-TRENNUNG: Mastercard-Footer NUR im Anbieter-Bereich [cite: 2026-02-23] */
+    /* Mastercard-Footer Airbnb-Style: weiß, keine Margins/Radius [cite: 2026-02-23, LAYOUT-FIX 2026-02-28] */
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
       position: fixed !important;
@@ -3342,14 +3352,16 @@
       margin: 0 !important;
       border-radius: 0 !important;
       z-index: 500 !important;
-      padding: 12px 24px !important;
-      padding-bottom: env(safe-area-inset-bottom) !important;
-      background: #222222 !important;
-      border-top: none !important;
+      padding: 16px 20px !important;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+      background: #ffffff !important;
+      border-top: 1px solid #ebebeb !important;
     }
-    /* Footer-Padding reduziert wenn Nav ausgeblendet */
+    /* Footer-Padding: Safe-Area [cite: 2026-02-23] */
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
-      padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
     }
     /* Scroll-Bereich: Platz für fixierte Action-Leiste */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
@@ -3384,7 +3396,7 @@
       transition: all 0.3s ease;
     }
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black.is-ready {
-      background: #1a1a1a !important;
+      background: #222222 !important;
       color: #ffffff !important;
       opacity: 1;
       pointer-events: auto;
@@ -3746,9 +3758,12 @@
     #wizard[data-flow="listing"] .inserat-power-bar.inserat-soft-shell .func-icon-btn.active {
       background: #f1f5f9 !important; color: #0f172a !important; border: none !important;
     }
-    /* Mastercard Footer: Alle 3 Schritte gleich groß, gleiche Position [cite: 2026-02-23] */
+    /* Mastercard Footer: Airbnb-Style, weiß, 0 margin/radius [cite: 2026-02-23, LAYOUT-FIX 2026-02-28] */
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
+    #wizard[data-flow="listing"] #mastercard-footer-step2,
     #wizard[data-flow="listing"] [data-inserat-step="2"].inserat-step1-nav,
     #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main {
       position: fixed !important;
@@ -3757,6 +3772,7 @@
       right: 0 !important;
       width: 100% !important;
       margin: 0 !important;
+      border-radius: 0 !important;
       background: #ffffff !important;
       border-top: 1px solid #ebebeb !important;
       padding: 16px 20px !important;
@@ -3764,6 +3780,7 @@
       min-height: 72px !important;
       box-sizing: border-box !important;
     }
+    #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
     #wizard[data-flow="listing"] [data-inserat-step="2"].inserat-step1-nav .btn-primary-black,
     #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main .footer-btn-primary {
       background: #222222 !important;

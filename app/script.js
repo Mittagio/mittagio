@@ -17529,7 +17529,7 @@
           openQuickAdjust(type==='zeit'?'time':(type==='allergene'?'allergens':'extras'));
         }
       }
-      function addPowerItem(emo, label, type, isActive){
+      function addPowerItem(emo, label, type, isActive, emojiOnly){
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='power-item status-pill inserat-soft-pill '+(isActive?'active':'inactive');
@@ -17538,17 +17538,17 @@
         btn.setAttribute('title',label);
         var labelText=label;
         if(type==='allergene'&&w.data.allergens&&w.data.allergens.length){ labelText=(w.data.allergens||[]).join(', '); }
-        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
+        btn.innerHTML=emojiOnly ? '<span class="inserat-pill-emo">'+emo+'</span>' : '<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
         btn.onclick=function(){ handlePowerBarInteraction(type); };
         powerBar.appendChild(btn);
       }
       var hasAbholnummer=!!w.data.hasPickupCode;
-      addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn);
-      addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer);
-      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
-      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue);
-      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens);
-      addPowerItem('\u002B','Extras','extras',hasExtras);
+      addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn, true);
+      addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer, true);
+      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse, true);
+      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue, false);
+      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens, false);
+      addPowerItem('\u002B','Extras','extras',hasExtras, false);
       var powerBarExtras=document.createElement('div');
       powerBarExtras.className='power-bar-extras';
       powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';
