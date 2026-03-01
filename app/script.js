@@ -16369,11 +16369,7 @@
     /* 3-Schritt Mastercard: Alle Flows (auch Bulk) starten bei Schritt 1 [cite: FLOW FIX 2026-02-26] */
     /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
     try { localStorage.removeItem('wizard_draft'); } catch(e) {}
-    /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
-    if(!context.editOfferId && !context.dishId && !context.fromCookbookId && context.entryPoint !== 'cookbook' && context.entryPoint !== 'week'){
-      openListingWizard(context);
-      return;
-    }
+    /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
 
@@ -17831,12 +17827,11 @@
       }
       var primaryValid = isPrimaryValid();
 
-      /* 3-Schritt Mastercard: Links Speichern (Shortcut) | Rechts Weiter (Primary) – Airbnb-Style [cite: 2026-02-23] */
+      /* 3-Schritt Mastercard: Links Speichern (Shortcut) | Rechts Weiter (Primary) – einheitlich für alle entryPoints [cite: 2026-02-28] */
       const actionSection=document.createElement('section');
       actionSection.id='inserat-action-section';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
 
-      if(entryPoint === 'dashboard' || entryPoint === 'ACTIVE_LISTING'){
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
@@ -17900,9 +17895,8 @@
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
         w.inseratStep=2; saveDraft();
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
-        if(typeof window.bridgeToPremiumMonetization==='function'){
-          window.bridgeToPremiumMonetization();
-        } else if(slider){
+        /* Legacy bridgeToPremiumMonetization entfernt – InseratCard bleibt im #wizard [cite: STOP-ORDER] */
+        if(slider){
           try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
           var sweepEl=box.querySelector('.step2-slot-machine-sweep');
           if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
@@ -17914,50 +17908,6 @@
       };
       step1NavRow.appendChild(btnWeiter);
       actionSection.appendChild(step1NavRow);
-      } else {
-        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
-        var planRow=document.createElement('div');
-        planRow.className='app-footer-main';
-        planRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
-        var btnEinplanen=document.createElement('button');
-        btnEinplanen.type='button';
-        btnEinplanen.className='btn-primary-black';
-        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnEinplanen.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
-        btnEinplanen.disabled=!primaryValid;
-        btnEinplanen.style.opacity=primaryValid?'1':'0.3';
-        btnEinplanen.style.pointerEvents=primaryValid?'auto':'none';
-        btnEinplanen.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
-        btnEinplanen.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(entryPoint === 'cookbook' && id){
-            closeWizard(true);
-            if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖');
-            if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-          } else if(id && w.data.day){
-            if(!week[w.data.day]) week[w.data.day]=[];
-            var c=cookbook.find(function(x){ return x.id===id; });
-            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
-            save(LS.week, week);
-            closeWizard(true);
-            showSaveSuccessSheet({
-              title:'Im Wochenplan gespeichert',
-              sub:'Dein Gericht ist im Wochenplan eingetragen.',
-              dishName: w.data.dish||'',
-              price: w.data.price,
-              imageUrl: w.data.photoData||'',
-              savedEntryId: id,
-              savedDay: w.data.day,
-              onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); },
-              onLive: null
-            });
-          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
-        };
-        planRow.appendChild(btnEinplanen);
-        actionSection.appendChild(planRow);
-      }
       step1Container.appendChild(actionSection);
 
       if(slider){

@@ -34,14 +34,15 @@ Die InseratCard ist die **einzige** Komponente für alle Zustände. Ihr Aufbau i
 | 4. Sub | Beschreibung | Direkt unter dem Titel als Untertitel, Schiefergrau, kleiner. |
 | 5. Action | Kategorie & Preis | Flex-Row: Kategorie-Pills (links), gelber Preis-Button (rechts). |
 
-## Die Modus-Weiche (MODE_AD vs. MODE_PLAN)
+## 3-Schritt Mastercard-Flow (einziger Standard)
 
-Innerhalb der InseratCard steuert der Kontext die Interaktion:
+Alle Einstiege (Dashboard, Kochbuch, Wochenplan, Edit, Renner) nutzen denselben Flow:
 
-- **MODE_AD (Verkauf):** Zeigt „Preisübersicht“ und die Buttons „mit Abholnummer“ (Grün, 0,89 €) sowie „Nur Inserat“ (Gelb, 4,99 €).
-- **MODE_PLAN (Planung):** Blendet Preis-Infos aus. Zeigt Buttons wie „Im Kochbuch speichern“ oder „Einplanen“.
+- **Schritt 1 (STEP_EDIT):** Dateneingabe. Footer: Links „Speichern“ (Shortcut bei editOfferId/week/cookbook), Rechts „Weiter“ (Primary). Validiert und schiebt zu Schritt 2.
+- **Schritt 2 (STEP_MONEY):** Monetarisierung – „mit Abholnummer“ (0,89 €) oder „Nur Inserat“ (4,99 €).
+- **Schritt 3 (STEP_LIVE):** Bestätigung, Belohnung, Marketing.
 
-Die Weiche lebt **ausschließlich innerhalb** von `buildListingStep()` – keine separaten Formulare oder Flows.
+`startListingFlow()` leitet **immer** zu `startWizard('listing', context)` – kein openListingWizard mehr. Die Weiche lebt **ausschließlich innerhalb** von `buildListingStep()`.
 
 ## Inseratauswahl ist nur Filter
 

@@ -3330,8 +3330,7 @@
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
     /* DESIGN-TRENNUNG: Mastercard-Footer NUR im Anbieter-Bereich [cite: 2026-02-23] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
-    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing,
-    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan {
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing {
       position: fixed !important;
       bottom: 0 !important;
       left: 0 !important;
@@ -4128,32 +4127,6 @@
     /* Umsatzprognose: wie sInfoHint – 12px, 600, #94a3b8 */
     #wizard[data-flow="listing"] .inserat-prognose-wrap.inserat-umsatzprognose p {
       font-size: 12px; font-weight: 600; color: #94a3b8;
-    }
-    /* MODE_PLAN (week/cookbook): Speichern-Button zentriert, volle Breite [cite: 2026-02-25] */
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .app-footer-main {
-      display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;
-    }
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .app-footer-main .btn-primary-black {
-      width: 100% !important; flex: 1 !important; max-width: 100% !important;
-      display: flex !important; justify-content: center !important; align-items: center !important;
-    }
-    /* MODE_PLAN: Blauer Wochenplan-Button, grüner Kochbuch-Button [cite: 2026-02-18] */
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary {
-      width: 100%; min-height: 56px; padding: 16px 20px; border-radius: 20px; border: none; cursor: pointer;
-      background: #3b82f6; color: #fff; font-size: 16px; font-weight: 800;
-      box-shadow: 0 8px 24px rgba(59,130,246,0.35); -webkit-tap-highlight-color: transparent;
-      transition: transform 0.15s ease, box-shadow 0.2s ease;
-    }
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-primary:active {
-      transform: scale(0.98); box-shadow: 0 4px 16px rgba(59,130,246,0.25);
-    }
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary {
-      width: 100%; min-height: 48px; padding: 12px 20px; margin-top: 12px; border-radius: 16px; cursor: pointer;
-      background: rgba(16,185,129,0.08); color: #059669; font-size: 15px; font-weight: 700; border: 1px solid rgba(16,185,129,0.25);
-      -webkit-tap-highlight-color: transparent; transition: background 0.2s, transform 0.15s ease;
-    }
-    #wizard[data-flow="listing"] .inserat-action-section.inserat-action-plan .inserat-btn-plan-secondary:active {
-      transform: scale(0.98); background: rgba(16,185,129,0.2);
     }
     /* Funktions-Icons am Ende: schwebend, gläsernes Dropdown */
     .inserat-func-icons {
@@ -9472,4 +9445,18 @@
   box-shadow: 0 20px 50px rgba(0,0,0,0.2);
   object-fit: cover;
   z-index: 10000;
+}
+
+/* Legacy v-step-* Views: Nicht mehr verwenden – InseratCard nur im #wizard [cite: STOP-ORDER] */
+#v-step-1, #v-step-2-monetize, #v-step-3-success {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Legacy v-step-* entfernt – InseratCard nur im #wizard [cite: STOP-ORDER] */
+#v-step-1, #v-step-2-monetize, #v-step-3-success {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
