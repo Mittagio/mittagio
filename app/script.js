@@ -16223,8 +16223,9 @@
     ensureWizardInDom();
     const wbd = document.getElementById('wbd');
     const wizard = document.getElementById('wizard');
+    if(!wizard){ if(typeof console !== 'undefined' && console.warn) console.warn('WIZARD: #wizard nicht im DOM – wizard-inserat-open wird nicht gesetzt'); return; }
     if(wbd) wbd.classList.add('active');
-    if(wizard) wizard.classList.add('active');
+    wizard.classList.add('active');
     if(typeof console !== 'undefined' && console.log) console.log('MASTER-WIZARD IS NOW LIVE');
     if(w && w.kind === 'listing'){
       if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
