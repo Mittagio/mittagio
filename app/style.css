@@ -7544,7 +7544,34 @@
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* ========== KW-Board (High-End Wochenplan) ========== */
-      #v-provider-week .kw-board-header{ padding:8px 16px 6px; padding-top:8px; background:transparent; border-bottom:none; flex-shrink:0; }
+      /* KW-Navigation Header [cite: 2026-03-02] */
+      #v-provider-week .kw-nav-container{ display:flex; flex-direction:column; align-items:center; padding:12px 0; background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); border-bottom:1px solid #ebebeb; position:sticky; top:0; z-index:100; flex-shrink:0; }
+      #v-provider-week .kw-selector{ display:flex; align-items:center; gap:20px; }
+      #v-provider-week .kw-display{ font-size:18px; font-weight:800; margin:0; color:#222222; }
+      #v-provider-week .date-range{ font-size:12px; color:#717171; margin-top:4px; }
+      #v-provider-week .nav-arrow{ background:none; border:none; font-size:20px; color:#222222; cursor:pointer; padding:5px 10px; min-height:44px; min-width:44px; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+      #v-provider-week .nav-arrow:active{ opacity:0.7; }
+      /* Renner-Karussell */
+      #v-provider-week .renner-scroll{ display:flex; overflow-x:auto; gap:12px; padding:16px; scrollbar-width:none; flex-shrink:0; -webkit-overflow-scrolling:touch; }
+      #v-provider-week .renner-scroll::-webkit-scrollbar{ display:none; }
+      #v-provider-week .renner-card{ flex:0 0 70px; height:70px; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; transition:transform 0.2s; }
+      #v-provider-week .renner-card:active{ transform:scale(0.96); }
+      #v-provider-week .renner-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+      /* Tages-Timeline vertikal */
+      #v-provider-week .day-section{ padding:0 16px 24px; }
+      #v-provider-week .day-label{ font-size:12px; font-weight:700; color:#717171; text-transform:uppercase; margin-bottom:8px; }
+      #v-provider-week .slot-card{ background:#ffffff; border-radius:12px; padding:12px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 4px rgba(0,0,0,0.03); margin-bottom:8px; }
+      #v-provider-week .slot-card .slot-card-img-wrap{ position:relative; flex-shrink:0; width:64px; height:64px; border-radius:12px; overflow:hidden; background:#e2e8f0; }
+      #v-provider-week .slot-card .slot-card-img-wrap img{ width:100%; height:100%; object-fit:cover; }
+      #v-provider-week .slot-card .slot-abholnummer-badge{ position:absolute; top:4px; right:4px; font-size:10px; background:rgba(0,0,0,0.6); color:#fff; padding:2px 6px; border-radius:6px; }
+      #v-provider-week .slot-card .slot-card-body{ flex:1; min-width:0; text-align:left; }
+      #v-provider-week .slot-card .slot-card-title{ font-size:16px; font-weight:800; color:#1a1a1a; line-height:1.3; }
+      #v-provider-week .slot-card .slot-card-price{ font-size:14px; font-weight:600; color:#FFB800; margin-top:2px; }
+      #v-provider-week .veggie-sog-slot{ background:rgba(16,185,129,0.08); border:1px dashed #10b981; border-radius:12px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; cursor:pointer; transition:background 0.2s; }
+      #v-provider-week .veggie-sog-slot:active{ background:rgba(16,185,129,0.14); }
+      #v-provider-week .veggie-sog-text{ font-size:14px; font-weight:700; color:#0f172a; flex:1; min-width:0; }
+      #v-provider-week .veggie-sog-btn{ flex:0 0 70px; height:70px; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; }
+      #v-provider-week .veggie-sog-btn img{ width:100%; height:100%; object-fit:cover; }
       /* KW-Leiste: flacher und subtiler [cite: 2026-02-20] */
       #v-provider-week .kw-carousel{ display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scroll-padding:0 16px; padding:6px 16px 8px; scrollbar-width:none; }
       #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
@@ -7597,8 +7624,8 @@
         #v-provider-week .kw-day-card{ width:100%; max-width:100%; box-sizing:border-box; min-width:0; padding:12px; }
         #v-provider-week .kw-slots{ min-width:0; width:100%; box-sizing:border-box; }
         #v-provider-week .kw-slot-empty{ min-width:0; width:100%; box-sizing:border-box; }
-        /* Edge-to-Edge: KW-Carousel, Strip Safe-Area [cite: 2026-02-18] */
-        #v-provider-week .kw-board-header{ padding-left:max(12px, env(safe-area-inset-left)); padding-right:max(12px, env(safe-area-inset-right)); }
+        /* Edge-to-Edge: KW-Nav, Renner Safe-Area [cite: 2026-03-02] */
+        #v-provider-week .kw-nav-container{ padding-left:max(12px, env(safe-area-inset-left)); padding-right:max(12px, env(safe-area-inset-right)); }
       }
       @media (max-width:768px){ #v-provider-week .kw-grid{ grid-template-columns:1fr; } }
       #v-provider-week #kwBoardWrap{ overflow-x:hidden; max-width:100%; }
@@ -7762,15 +7789,16 @@
       #v-provider-week .kw-action-bar-fixed .btn:active{ transform:scale(0.97); }
       #v-provider-week .kw-action-bar-fixed .btn i{ opacity:0.9; }
       /* Preview-Mode: Palette + FAB + Footer ausblenden [cite: 2026-02-18] */
-      body.week-preview-mode #v-provider-week #kwBoardHeader{ display:none !important; }
+      body.week-preview-mode #v-provider-week #kwNavContainer{ display:none !important; }
+      body.week-preview-mode #v-provider-week #rennerScroll{ display:none !important; }
       body.week-preview-mode #weekMagicFab{ display:none !important; }
       body.week-preview-mode #weekViewFooter{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekKebab{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekPreviewClose{ display:inline-flex !important; align-items:center; justify-content:center; }
       /* Druck: nur Wochenplan-Content (Grid), Navigation/Header ausblenden [cite: 2026-02-18, 2026-02-23] */
       @media print{
-        #v-provider-week #kwBoardHeader,
-        #v-provider-week .kw-cookbook-strip-wrap,
+        #v-provider-week #kwNavContainer,
+        #v-provider-week #rennerScroll,
         #weekViewFooter,
         #v-provider-week .week-header-compact,
         #v-provider-week .week-kebab-trigger,
@@ -7795,10 +7823,11 @@
       #weekMagicFab{ display:none !important; }
       /* FAB: 16px Abstand über Footer-Button (54px + 16px padding ≈ 86px) [cite: 2026-02-23, 2026-03-02] */
       body.provider-week-active #weekMagicFab{ display:flex !important; z-index:10050 !important; pointer-events:auto !important; bottom:calc(86px + env(safe-area-inset-bottom, 0)) !important; }
-      /* Wochenplan-Footer: Airbnb-Standard – weiß, #ebebeb-Linie, Safe-Area [cite: 2026-02-23, 2026-02-25] */
-      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom, 0px) !important; box-sizing:border-box; }
-      .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
-      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
+      /* Wochenplan-Footer: Airbnb-Style – Links Counter, Rechts schwarzer Button [cite: 2026-03-02] */
+      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding:12px 24px calc(12px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
+      .week-view-footer-fixed .footer-content-wrapper{ display:flex; justify-content:space-between; align-items:center; gap:16px; }
+      .week-view-footer-fixed .week-footer-counter{ font-size:14px; font-weight:600; color:#717171; }
+      .week-view-footer-fixed .btn-airbnb-primary{ height:48px; min-height:48px; padding:0 24px; margin:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; flex-shrink:0; }
       .week-view-footer-fixed .btn-airbnb-primary:active{ transform:scale(0.98); }
       .week-view-footer-fixed .footer-subtext{ font-size:11px; color:#717171; margin:0; line-height:1.3; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */

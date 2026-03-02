@@ -10936,6 +10936,67 @@
     overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
     document.body.appendChild(overlay);
   }
+  /** Smart-Veggie-Sog: Top-Veggie-Gerichte passend zum Hauptgericht (Kategorie-Paarung + Historien-Check). */
+  function getSmartVeggieSuggestions(dayKey, mainEntry){
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var cb = (typeof cookbook !== 'undefined' && cookbook) ? cookbook : [];
+    var mine = cb.filter(function(c){ return c.providerId === pid; });
+    var veggie = mine.filter(function(c){
+      var cat = (c.category || '').toLowerCase();
+      var name = (c.dish || '').toLowerCase();
+      return /vegan|veggie|vegetarisch/i.test(cat) || /salat|gemüse|tofu|pilz|spätzle|maultasche|suppe|bowl/i.test(name);
+    });
+    if (veggie.length === 0) return [];
+    var mainCb = mainEntry ? cookbook.find(function(c){ return String(c.id) === String(mainEntry.cookbookId); }) : null;
+    var mainCat = (mainCb && mainCb.category) ? mainCb.category.toLowerCase() : '';
+    var mainName = (mainCb && mainCb.dish || mainEntry && mainEntry.dish || '').toLowerCase();
+    var pairScores = {};
+    veggie.forEach(function(v){
+      var score = 0;
+      if (/rind|schwein|fleisch|rostbraten|gulasch|schnitzel/i.test(mainCat) || /rind|schwein|fleisch|rostbraten|gulasch|schnitzel/i.test(mainName)){
+        if (/spätzle|maultasche|käse|pilz/i.test((v.dish||'').toLowerCase()) || /spätzle|maultasche| Käse|pilz/i.test((v.category||'').toLowerCase())) score += 30;
+      }
+      if (/geflügel|huhn|pute/i.test(mainCat) || /geflügel|huhn|pute/i.test(mainName)){
+        if (/salat|bowl|gemüse|leicht/i.test((v.dish||'').toLowerCase())) score += 30;
+      }
+      if (/eintopf|suppe/i.test(mainCat) || /eintopf|suppe/i.test(mainName)){
+        if (/suppe|eintopf|gemüse/i.test((v.dish||'').toLowerCase())) score += 30;
+      }
+      pairScores[String(v.id)] = score;
+    });
+    var w = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var offs = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.offers, []) : (typeof offers !== 'undefined' ? offers : []);
+    var dayNum = 0;
+    if (dayKey && dayKey.length >= 10){
+      var fd = new Date(dayKey + 'T12:00:00');
+      dayNum = fd.getDay() || 7;
+    }
+    var histCount = {};
+    Object.keys(w || {}).forEach(function(dateKey){
+      var arr = Array.isArray(w[dateKey]) ? w[dateKey] : [];
+      var fd2 = new Date(dateKey + 'T12:00:00');
+      if ((fd2.getDay() || 7) !== dayNum) return;
+      arr.forEach(function(e){
+        if (e && e.providerId === pid && e.cookbookId){
+          var id = String(e.cookbookId);
+          if (veggie.some(function(v){ return String(v.id) === id; })) histCount[id] = (histCount[id] || 0) + 1;
+        }
+      });
+    });
+    (Array.isArray(offs) ? offs : []).forEach(function(o){
+      if (o && o.providerId === pid && o.day && o.cookbookId){
+        var fd2 = new Date(o.day + 'T12:00:00');
+        if ((fd2.getDay() || 7) !== dayNum) return;
+        var id = String(o.cookbookId);
+        if (veggie.some(function(v){ return String(v.id) === id; })) histCount[id] = (histCount[id] || 0) + 1;
+      }
+    });
+    veggie.forEach(function(v){
+      v._veggieScore = (pairScores[String(v.id)] || 0) + (histCount[String(v.id)] || 0) * 20 + (v.lastUsed ? Math.min(10, Math.floor((Date.now() - (typeof v.lastUsed === 'number' ? v.lastUsed : new Date(v.lastUsed).getTime())) / 86400000)) : 0);
+    });
+    veggie.sort(function(a,b){ return (b._veggieScore || 0) - (a._veggieScore || 0); });
+    return veggie.slice(0, 4);
+  }
   /** Smart Suggestions: Wochentag (z.B. Freitag = Fisch/veggie), Saison (Sommer = leicht, Winter = Eintopf), Renner (häufig inseriert). */
   function getSmartSuggestions(focusDayKey){
     var pid = typeof providerId === 'function' ? providerId() : '';
@@ -11172,7 +11233,7 @@
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
-  /** Aktualisiert den Wochenplan-Footer (Zähler + Klick-Handler). Wird von renderWeekPlanBoard und renderWeekPlan aufgerufen. weekIndex optional (sonst weekPlanKWIndex bzw. aus weekPlanDay). */
+  /** Aktualisiert den Wochenplan-Footer (Counter links, Button rechts). [cite: 2026-03-02] */
   function updateWeekViewFooter(weekIndex){
     var kwIdx = (weekIndex !== undefined && weekIndex !== null) ? weekIndex : ((typeof weekPlanDay !== 'undefined' && weekPlanDay && typeof getWeekIndexForDate === 'function') ? getWeekIndexForDate(weekPlanDay) : (typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0));
     var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(kwIdx) : [];
@@ -11186,15 +11247,17 @@
     }, 0);
     var weekFooter = document.getElementById('weekViewFooter');
     var btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
+    var weekFooterCounter = document.getElementById('weekFooterCounter');
     if (!weekFooter || !btnWeekViewFooter) return;
     var count = totalDraftDishes;
+    if (weekFooterCounter) weekFooterCounter.textContent = count + ' Gericht' + (count !== 1 ? 'e' : '') + ' inserieren';
+    btnWeekViewFooter.textContent = 'Woche jetzt inserieren';
     if (count > 0) {
-      btnWeekViewFooter.innerHTML = '<span class="kw-activate-count-wrap">[<span id="kwActivateCount">' + count + '</span>] Gerichte jetzt aktivieren</span>';
       btnWeekViewFooter.disabled = false;
       btnWeekViewFooter.classList.remove('kw-activation-disabled');
     } else {
-      weekFooter.classList.add('week-footer-hidden');
-      return;
+      btnWeekViewFooter.disabled = true;
+      btnWeekViewFooter.classList.add('kw-activation-disabled');
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
@@ -11484,9 +11547,19 @@
     setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
     var grid = document.getElementById('kwGrid');
     if (!grid) return;
-    /* Header: KW-Badge [cite: 2026-02-21] */
+    /* KW-Navigation [cite: 2026-03-02] */
+    var kwDisplay = document.getElementById('kwDisplay');
+    var kwDateRange = document.getElementById('kwDateRange');
+    var kwNavPrev = document.getElementById('kwNavPrev');
+    var kwNavNext = document.getElementById('kwNavNext');
     var kwBadge = document.getElementById('weekHeaderKWBadge');
     if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
+    if (kwDisplay) kwDisplay.textContent = getKWLabel(weekPlanKWIndex);
+    var monday = getWeekMonday(weekPlanKWIndex);
+    var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+    if (kwDateRange) kwDateRange.textContent = (monday.getDate() + '.' + String(monday.getMonth() + 1).padStart(2, '0') + '. – ' + sunday.getDate() + '.' + String(sunday.getMonth() + 1).padStart(2, '0') + '.');
+    if (kwNavPrev && !kwNavPrev._bound){ kwNavPrev._bound = true; kwNavPrev.onclick = function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = Math.max(0, weekPlanKWIndex - 1); var k = getWeekDayKeys(weekPlanKWIndex); weekPlanDay = k[0]; renderWeekPlanBoard(); }; }
+    if (kwNavNext && !kwNavNext._bound){ kwNavNext._bound = true; kwNavNext.onclick = function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = weekPlanKWIndex + 1; var k = getWeekDayKeys(weekPlanKWIndex); weekPlanDay = k[0]; renderWeekPlanBoard(); }; }
     var btnPreviewClose = document.getElementById('btnWeekPreviewClose');
     if (btnPreviewClose && !btnPreviewClose._bound) {
       btnPreviewClose._bound = true;
@@ -11526,63 +11599,42 @@
     var defaultDineIn = p.dineInPossibleDefault !== false;
     var defaultPickup = !!p.abholnummerEnabledByDefault;
     var defaultReuse = !!p.reuseEnabledByDefault;
-    var stripWrap = document.getElementById('kwCookbookStripWrap');
-    var strip = document.getElementById('kwCookbookStrip');
-    if (stripWrap && !strip) {
-      strip = document.createElement('div');
-      strip.id = 'kwCookbookStrip';
-      strip.className = 'kw-cookbook-drag-strip';
-      strip.setAttribute('role', 'list');
-      stripWrap.appendChild(strip);
-    }
-    if (strip && stripWrap) {
-      var dismissed = window.__kwCookbookDismissedIds || {};
-      window.__kwCookbookDismissedIds = dismissed;
-      var focusDay = window.__kwSmartSuggestionFocusDay || weekPlanDay || (keys && keys[0]);
-      if (window.__kwSmartSuggestionFocusDay) window.__kwSmartSuggestionFocusDay = null;
-      var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(focusDay) : (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
-      strip.className = 'kw-cookbook-drag-strip kw-smart-suggestions-strip';
-      strip.innerHTML = suggestions.map(function(c){
-        var label = (c.dish || 'Gericht').substring(0, 12) + (c.dish && c.dish.length > 12 ? '…' : '');
-        var imgUrl = c.photoData || '';
-        var thumbStyle = imgUrl ? 'background-image:url(\'' + esc(imgUrl) + '\'); background-size:cover; background-position:center;' : 'background:linear-gradient(135deg,#e2e8f0,#cbd5e1);';
-        var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
-        return '<div class="kw-suggestion-card kw-suggestion-compact kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
-          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
-          '<div class="kw-suggestion-thumb kw-suggestion-thumb-mini" style="' + thumbStyle + '"></div>' +
-          '<span class="kw-suggestion-price">' + esc(priceStr) + '</span>' +
-          '</div>';
+    /* Renner-Karussell: Deine Renner als Quick-Select [cite: 2026-03-02] */
+    var rennerScroll = document.getElementById('rennerScroll');
+    if (rennerScroll) {
+      var renner = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+      renner.sort(function(a,b){ return (b.lastUsed || 0) - (a.lastUsed || 0); });
+      var topRenner = renner.slice(0, 8);
+      rennerScroll.innerHTML = topRenner.map(function(c){
+        var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+        return '<div class="renner-card" data-cookbook-id="' + esc(String(c.id)) + '" role="button" tabindex="0" aria-label="' + esc(c.dish || 'Gericht') + ' – Schnell zuweisen"><img src="' + esc(imgUrl) + '" alt=""></div>';
       }).join('');
-      strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
-        var cookbookId = pill.getAttribute('data-cookbook-id');
-        pill.ondragstart = function(e){
+      rennerScroll.querySelectorAll('.renner-card').forEach(function(card){
+        var cookbookId = card.getAttribute('data-cookbook-id');
+        card.ondragstart = function(e){
           e.dataTransfer.setData('text/plain', cookbookId);
           e.dataTransfer.effectAllowed = 'copy';
-          pill.classList.add('dragging');
           try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(err){}
           if(typeof haptic === 'function') haptic(6);
         };
-        pill.ondragend = function(){ pill.classList.remove('dragging'); };
-        pill.onclick = function(e){
+        card.onclick = function(e){
           e.preventDefault();
           if(typeof haptic === 'function') haptic(6);
           if(typeof openAddDishToDaySheet === 'function') openAddDishToDaySheet(cookbookId, keys, grid);
           else {
-            var emptySlots = grid.querySelectorAll('.kw-slot-empty');
+            var emptySlots = grid.querySelectorAll('.kw-slot-empty, .veggie-sog-slot');
             emptySlots.forEach(function(s){ s.classList.add('kw-slot-ghost-highlight'); });
             setTimeout(function(){ emptySlots.forEach(function(s){ s.classList.remove('kw-slot-ghost-highlight'); }); }, 2500);
           }
         };
       });
-      if(typeof lucide !== 'undefined' && lucide.createIcons) setTimeout(function(){ lucide.createIcons(); }, 50);
-      if(strip.scrollLeft !== undefined) strip.scrollLeft = 0;
     }
     var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
     grid.innerHTML = '';
     keys.forEach(function(key, dayIdx){
       var d = new Date(key + 'T12:00:00');
       var dayLabel = dayNames[dayIdx];
-      var dateLabel = d.getDate() + '.' + (d.getMonth() + 1) + '.';
+      var dateLabel = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.';
       var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
       var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
       var items = liveOffers.length > 0 ? liveOffers : provEntries;
@@ -11591,15 +11643,16 @@
       var isFilled = items.length > 0;
       var isDayEmpty = items.length === 0;
       var card = document.createElement('div');
-      card.className = 'kw-day-card' + (isLive ? ' kw-day-has-live' : '') + (isToday ? ' kw-day-today' : '') + (isFilled ? ' kw-day-filled' : ' kw-day-empty');
+      card.className = 'kw-day-card day-section' + (isLive ? ' kw-day-has-live' : '') + (isToday ? ' kw-day-today' : '') + (isFilled ? ' kw-day-filled' : ' kw-day-empty');
       card.setAttribute('data-date', key);
       card.id = 'day-' + key;
-      var countHtml = isFilled ? ' <span class="kw-day-count">(' + items.length + ' Gericht' + (items.length !== 1 ? 'e' : '') + ')</span>' : '';
-      card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + countHtml + '</div><div class="kw-slots"></div>';
+      card.innerHTML = '<div class="day-label kw-day-label">' + dayLabel + ' ' + dateLabel + '</div><div class="kw-slots"></div>';
       var slotsWrap = card.querySelector('.kw-slots');
-      /* Slots: flach, nur Name + Preis (Abholnummer aus Kachel entfernt) [cite: 2026-02-25] */
       var maxFilled = 5;
       var slot = 0;
+      var firstEntry = items[0];
+      var showVeggieSog = firstEntry && items.length < maxFilled;
+      var veggieSuggestions = showVeggieSog && typeof getSmartVeggieSuggestions === 'function' ? getSmartVeggieSuggestions(key, firstEntry) : [];
       for (slot = 0; slot < items.length && slot < maxFilled; slot++) {
         var entry = items[slot];
         if (entry) {
@@ -11607,22 +11660,41 @@
           var name = (cb && cb.dish) || entry.dish || 'Gericht';
           var price = (cb && cb.price) || entry.price || 0;
           var priceStr = typeof euro === 'function' ? euro(price) : (Number(price || 0).toFixed(2).replace('.', ',') + ' €');
-          var cat = (cb && cb.category) || '';
-          var catIcon = (cat === 'Vegan' || /vegan/i.test(cat)) ? '\uD83C\uDF31' : ((cat === 'Veggie' || /vegetarisch|veggie/i.test(cat)) ? '\uD83E\uDD66' : '\uD83E\uDD69');
-          var slotHtml = '<div class="kw-slot-flat prov-card kw-slot-bar kw-slot-compact" data-day="' + esc(key) + '" data-offer-id="' + (isLive && items[slot] && items[slot].id ? esc(String(items[slot].id)) : '') + '" data-cookbook-id="' + (entry.cookbookId ? esc(String(entry.cookbookId)) : '') + '" data-date="' + esc(key) + '"><span class="kw-slot-cat-icon" aria-hidden="true">' + catIcon + '</span><div class="kw-slot-flat-body"><span class="kw-slot-flat-title">' + esc(name) + '</span><span class="kw-slot-flat-price">' + esc(priceStr) + '</span></div></div>';
-          var slotWrap = document.createElement('div');
-          slotWrap.innerHTML = slotHtml;
-          var slotEl = slotWrap.firstElementChild || slotWrap;
-          slotEl.className = (slotEl.className || '') + ' kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
-          slotEl.setAttribute('data-day', key);
-          slotEl.setAttribute('data-slot', String(slot));
-          if (!isLive) slotEl.setAttribute('data-draft', '1');
-          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
-          slotsWrap.appendChild(slotEl);
+          var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
+          var hasAbhol = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
+          var badgeHtml = hasAbhol ? '<span class="slot-abholnummer-badge">\uD83C\uDFAB1\uFE0F\u20E3</span>' : '';
+          var imgHtml = img ? '<img src="' + esc(img) + '" alt="">' : '';
+          var slotCard = document.createElement('div');
+          slotCard.className = 'slot-card kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
+          slotCard.setAttribute('data-day', key);
+          slotCard.setAttribute('data-slot', String(slot));
+          slotCard.setAttribute('data-offer-id', isLive && items[slot] && items[slot].id ? String(items[slot].id) : '');
+          slotCard.setAttribute('data-cookbook-id', entry.cookbookId ? String(entry.cookbookId) : '');
+          if (!isLive) slotCard.setAttribute('data-draft', '1');
+          slotCard.innerHTML = '<div class="slot-card-img-wrap">' + imgHtml + badgeHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div>';
+          slotCard.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotCard.classList.contains('kw-slot-swipe-delete') || slotCard.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
+          slotsWrap.appendChild(slotCard);
         }
       }
-      /* Ein leerer Slot pro Tag, sobald Platz (max 5 Gerichte) [cite: RESET WOCHENPLAN 2026-02-23] */
-      if (items.length < maxFilled) {
+      if (showVeggieSog && veggieSuggestions.length > 0) {
+        var sogSlot = document.createElement('div');
+        sogSlot.className = 'veggie-sog-slot kw-slot';
+        sogSlot.setAttribute('data-day', key);
+        sogSlot.setAttribute('data-sog', '1');
+        var top2 = veggieSuggestions.slice(0, 2);
+        var btnsHtml = top2.map(function(v){
+          var imgUrl = v.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+          return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><img src="' + esc(imgUrl) + '" alt=""></button>';
+        }).join('');
+        sogSlot.innerHTML = '<span class="veggie-sog-text">+ Vegetarisches Gericht ergänzen? \uD83C\uDF3F</span>' + btnsHtml;
+        sogSlot.querySelectorAll('.veggie-sog-btn').forEach(function(btn){
+          var cid = btn.getAttribute('data-cookbook-id');
+          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof addCookbookEntryToWeek === 'function'){ addCookbookEntryToWeek(key, cid); renderWeekPlanBoard(); if(typeof showToast === 'function') showToast('Gericht eingetragen'); } };
+        });
+        sogSlot.onclick = function(e){ if(e.target.closest && e.target.closest('.veggie-sog-btn')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = key; if(typeof startListingFlow === 'function') startListingFlow({ date: key, entryPoint: 'week' }); };
+        slotsWrap.appendChild(sogSlot);
+      }
+      if (items.length < maxFilled && !showVeggieSog) {
         var empty = document.createElement('button');
         empty.type = 'button';
         empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
@@ -11630,6 +11702,15 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
+        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
+        slotsWrap.appendChild(empty);
+      } else if (items.length < maxFilled && showVeggieSog) {
+        var empty = document.createElement('button');
+        empty.type = 'button';
+        empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
+        empty.setAttribute('data-day', key);
+        empty.setAttribute('aria-label', 'Gericht hinzufügen');
+        empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">Gericht hinzufügen</span>';
         empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }

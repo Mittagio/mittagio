@@ -1268,12 +1268,17 @@
         </div>
       </header>
 
-      <!-- KW-Board: Inspirations-Slider + Elastic 7-Tage-Grid [cite: 2026-02-21] -->
+      <!-- KW-Board: KW-Navigation + Renner-Karussell + vertikale Tages-Timeline [cite: 2026-03-02] -->
       <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0; position:relative;">
-        <div class="kw-board-header" id="kwBoardHeader">
-          <h2 class="kw-board-strip-title" id="kwBoardStripTitle">Wochen-Gerichte</h2>
-          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap kw-inspirations-slider"></div>
+        <div class="kw-nav-container" id="kwNavContainer">
+          <div class="kw-selector">
+            <button type="button" class="nav-arrow" id="kwNavPrev" aria-label="Vorherige Woche">&lt;</button>
+            <h2 class="kw-display" id="kwDisplay">KW 10</h2>
+            <button type="button" class="nav-arrow" id="kwNavNext" aria-label="Nächste Woche">&gt;</button>
+          </div>
+          <p class="date-range" id="kwDateRange">02.03. – 08.03.</p>
         </div>
+        <div id="rennerScroll" class="renner-scroll" role="list"></div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
           <div class="kw-grid" id="kwGrid"></div>
@@ -3438,11 +3443,12 @@
   <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
     <span class="week-magic-fab-icon">✨</span>
   </button>
-  <!-- Wochenplan-Footer: Body-Level, Safe-Area, nur bei provider-week-active [cite: 2026-02-25] -->
-  <footer id="weekViewFooter" class="week-view-footer-fixed">
+  <!-- Wochenplan-Footer: Airbnb-Style – Links Counter, Rechts schwarzer Button [cite: 2026-03-02] -->
+  <footer id="weekViewFooter" class="week-view-footer-fixed app-footer">
     <div class="footer-content-wrapper">
+      <span class="week-footer-counter" id="weekFooterCounter">0 Gerichte inserieren</span>
       <button type="button" id="btnWeekViewFooter" class="btn-airbnb-primary">
-        <span class="kw-activate-count-wrap">[<span id="kwActivateCount">0</span>] Gerichte jetzt aktivieren</span>
+        Woche jetzt inserieren
       </button>
     </div>
   </footer>
