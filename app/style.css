@@ -7760,11 +7760,11 @@
       #weekViewFooter.week-footer-hidden{ display:none !important; }
       /* Magic FAB: über Footer (z-index 10050), klickbar [cite: 2026-02-25 Fehlersuche] */
       body.provider-week-active #v-provider-week .week-magic-fab,
-      body.provider-week-active #weekMagicFab{ z-index:9999 !important; pointer-events:auto !important; }
+      body.provider-week-active #weekMagicFab{ z-index:10050 !important; pointer-events:auto !important; }
       /* Wochenplan-Footer: Airbnb-Standard – weiß, #ebebeb-Linie, Safe-Area [cite: 2026-02-23, 2026-02-25] */
-      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
+      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom, 0px) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
-      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; margin-bottom:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
+      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
       .week-view-footer-fixed .btn-airbnb-primary:active{ transform:scale(0.98); }
       .week-view-footer-fixed .footer-subtext{ font-size:11px; color:#717171; margin:0; line-height:1.3; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */

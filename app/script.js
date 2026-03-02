@@ -11435,6 +11435,7 @@
     var el = document.getElementById('v-provider-week');
     if (!el) { if (typeof showProviderHome === 'function') showProviderHome(); return; }
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
+    document.body.classList.remove('provider-week-active');
     el.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
     el.style.transform = 'translateX(100%)';
     setTimeout(function(){
@@ -11442,7 +11443,7 @@
       el.style.transform = '';
       el.classList.remove('active');
       el.style.setProperty('display', 'none', 'important');
-      var section = targetSection || 'dashboard';
+      var section = (targetSection != null && targetSection !== '') ? targetSection : 'dashboard';
       if (section === 'dashboard' && typeof showProviderHome === 'function') showProviderHome();
       else if (typeof showSection === 'function') showSection(section, false);
     }, 300);
