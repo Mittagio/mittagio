@@ -65,6 +65,10 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+  /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
+  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
+  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
+  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
 
   // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
   function getTimeSlots(){
@@ -9453,7 +9457,7 @@
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
-    if (e.target.closest('#weekHeaderKWTrigger') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-02-25]
+    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-03-02]
     var view = trig.getAttribute('data-reset-view');
     if(!view) return;
     e.preventDefault();
@@ -11131,23 +11135,16 @@
       list.appendChild(btn);
     }
     }
-    /* KW-Emergency-Fix: Force Display – Kalender öffnet immer, egal welche KW [cite: 2026-02-26] */
-    bd.style.setProperty('display', 'block', 'important');
-    bd.style.setProperty('opacity', '1', 'important');
-    bd.style.setProperty('pointer-events', 'auto', 'important');
-    bd.style.setProperty('z-index', '10000', 'important');
-    bd.style.setProperty('background', 'rgba(0,0,0,0.5)', 'important');
+    show(bd);
+    show(sheet, 'flex');
     bd.classList.add('active');
-    sheet.style.setProperty('display', 'flex', 'important');
-    sheet.style.setProperty('opacity', '1', 'important');
-    sheet.style.setProperty('z-index', '10001', 'important');
     sheet.classList.add('active');
   }
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
-    if (bd) { bd.classList.remove('active'); bd.style.display = 'none'; }
-    if (sheet) { sheet.classList.remove('active'); sheet.style.display = 'none'; }
+    if (bd){ hide(bd); bd.classList.remove('active'); }
+    if (sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
   function openAddDishToDaySheet(cookbookId, keys, grid){
     if (!keys || !keys.length || typeof addCookbookEntryToWeek !== 'function') return;
@@ -11552,9 +11549,9 @@
     var kwDateRange = document.getElementById('kwDateRange');
     var kwNavPrev = document.getElementById('kwNavPrev');
     var kwNavNext = document.getElementById('kwNavNext');
-    var kwBadge = document.getElementById('weekHeaderKWBadge');
-    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
     if (kwDisplay) kwDisplay.textContent = getKWLabel(weekPlanKWIndex);
+    var backToNowHint = document.getElementById('kwBackToNowHint');
+    if (backToNowHint) { if (weekPlanKWIndex !== 0) show(backToNowHint); else hide(backToNowHint); }
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     if (kwDateRange) kwDateRange.textContent = (monday.getDate() + '.' + String(monday.getMonth() + 1).padStart(2, '0') + '. – ' + sunday.getDate() + '.' + String(sunday.getMonth() + 1).padStart(2, '0') + '.');
@@ -11883,12 +11880,13 @@
     var sheet = document.getElementById('weekMagicSheet');
     var magicList = document.getElementById('weekMagicSheetList');
     if (magicList && magicList.children && magicList.children.length === 0) populateWeekMagicSheetList();
-    if (bd && sheet){ bd.style.display = 'block'; bd.classList.add('active'); sheet.style.display = 'flex'; sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
+    if (bd && sheet){ show(bd); show(sheet, 'flex'); bd.classList.add('active'); sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
   }
   function closeWeekMagicSheet(){
     var bd = document.getElementById('weekMagicSheetBd');
     var sheet = document.getElementById('weekMagicSheet');
-    if (bd && sheet){ bd.style.display = 'none'; bd.classList.remove('active'); sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd){ hide(bd); bd.classList.remove('active'); }
+    if (sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
   /** FAB beim Öffnen des Wochenplans sicher binden (Schnellaktionen-Sheet) */
   function ensureWeekMagicFabBound(){
@@ -11900,14 +11898,26 @@
   }
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
   function ensureWeekHeaderKWTriggerBound(){
-    var kwTr = document.getElementById('weekHeaderKWTrigger');
-    if (kwTr && !kwTr._bound) {
-      kwTr._bound = true;
-      kwTr.onclick = function(e){
+    var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
+    if (kwEl && !kwEl._kwBound) {
+      kwEl._kwBound = true;
+      kwEl.style.cursor = 'pointer';
+      kwEl.onclick = function(e){
+        if (e.target.closest('.nav-arrow')) return;
         e.preventDefault();
         e.stopPropagation();
-        try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
-        if (typeof openKWSelector === 'function') openKWSelector();
+        if (weekPlanKWIndex !== 0) {
+          try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
+          if (typeof haptic === 'function') haptic(6);
+          weekPlanKWIndex = 0;
+          var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(0) : [];
+          weekPlanDay = keys && keys[0] ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: 0, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=0&day=' + weekPlanDay);
+        } else {
+          try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
+          if (typeof openKWSelector === 'function') openKWSelector();
+        }
       };
     }
   }
@@ -11919,16 +11929,16 @@
     kebabBtn._bound = true;
     kebabBtn.onclick = function(e){
       e.stopPropagation();
-      var opening = kebabDrop.style.display !== 'block';
+      var opening = kebabDrop.classList.contains('is-hidden');
       try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
       if (typeof haptic === 'function') haptic(6);
-      kebabDrop.style.display = opening ? 'block' : 'none';
+      if (opening) show(kebabDrop); else hide(kebabDrop);
       kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
       if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
     };
     var closeOnOutside = function(ev){
       if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
-        kebabDrop.style.display = 'none';
+        hide(kebabDrop);
         kebabBtn.setAttribute('aria-expanded', 'false');
       }
     };
@@ -11942,24 +11952,37 @@
     var kebabBtn = document.getElementById('btnWeekKebab');
     var kebabDrop = document.getElementById('weekKebabDropdown');
     if (!kebabBtn || !kebabDrop) return;
-    var opening = kebabDrop.style.display !== 'block';
+    var opening = kebabDrop.classList.contains('is-hidden');
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(opening ? 40 : 5); } catch(err){}
     if (typeof haptic === 'function') haptic(6);
-    kebabDrop.style.display = opening ? 'block' : 'none';
+    if (opening) show(kebabDrop); else hide(kebabDrop);
     kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
     if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
   if (typeof window !== 'undefined') window.toggleWeekKebabMenu = toggleWeekKebabMenu;
 
-  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: Universal-Linker 2026-02-26] */
+  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
   function initWeekPlanInteractions(){
-    var kwTr = document.getElementById('weekHeaderKWTrigger');
-    if (kwTr) {
-      kwTr.onclick = function(e){
+    var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
+    if (kwEl && !kwEl._kwBound) {
+      kwEl._kwBound = true;
+      kwEl.style.cursor = 'pointer';
+      kwEl.onclick = function(e){
+        if (e.target.closest('.nav-arrow')) return;
         e.preventDefault();
         e.stopPropagation();
-        try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
-        if (typeof openKWSelector === 'function') openKWSelector();
+        if (weekPlanKWIndex !== 0) {
+          try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
+          if (typeof haptic === 'function') haptic(6);
+          weekPlanKWIndex = 0;
+          var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(0) : [];
+          weekPlanDay = keys && keys[0] ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: 0, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=0&day=' + weekPlanDay);
+        } else {
+          try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
+          if (typeof openKWSelector === 'function') openKWSelector();
+        }
       };
     }
     var fab = document.getElementById('weekMagicFab');
@@ -11978,12 +12001,12 @@
       };
       if (!document.__weekKebabCloseBound) {
         document.__weekKebabCloseBound = true;
-        document.addEventListener('click', function(ev){
-          if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
-            kebabDrop.style.display = 'none';
-            kebabBtn.setAttribute('aria-expanded', 'false');
-          }
-        });
+      document.addEventListener('click', function(ev){
+        if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
+          hide(kebabDrop);
+          kebabBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
       }
       kebabDrop.onclick = function(e){ e.stopPropagation(); };
     }
@@ -12001,320 +12024,11 @@
   function renderWeekPlan(){
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
-    const dayWrap = document.getElementById('weekDays');
-    const list = document.getElementById('weekList');
-    /* Nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
-    if(!dayWrap || !list){
-      if (boardWrap) boardWrap.style.display = 'flex';
-      setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
-      if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-      if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-      return;
-    }
-    if (boardWrap) boardWrap.style.display = 'none';
-    let actionsBar = document.getElementById('weekActionsBar');
-    let activateBlock = document.getElementById('weekActivateBlock');
-    const thumbZone = document.getElementById('weekThumbZone');
-    const headerTitle = document.getElementById('weekHeaderTitle');
-    const headerSubtitle = document.getElementById('weekHeaderSubtitle');
-    const headerDoneBtn = document.getElementById('weekHeaderDoneBtn');
-
-    if(weekPlanMode === 'overview'){
-      if(headerTitle) headerTitle.textContent = 'Wochenplan';
-      if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche im Überblick';
-      if(headerDoneBtn) headerDoneBtn.style.display = 'none';
-      dayWrap.style.display = 'none';
-      dayWrap.innerHTML = '';
-      var ir = document.getElementById('weekIndicatorRow');
-      if(ir) ir.style.display = 'none';
-      var todayKey = isoDate(new Date());
-      var hasDraftToday = false;
-      var draftCount4Weeks = typeof getWeekDraftDays === 'function' ? getWeekDraftDays().length : 0;
-      var dayCardsHtml = '';
-      for(var w = 0; w < 4; w++){
-        var weekStart = w * 7;
-        var weekLabel = 'KW ' + (w + 1);
-        var rowHtml = '<div class="week-overview-week-row" style="margin-bottom:16px;"><div class="week-overview-day-label" style="margin-bottom:8px;">' + weekLabel + '</div>';
-        for(var i = 0; i < 7; i++){
-          var idx = weekStart + i;
-          var d = new Date(); d.setDate(d.getDate() + idx);
-          var key = isoDate(d);
-          var entriesForDay = week[key] || [];
-          var provEntries = entriesForDay.filter(function(x){ return x.providerId === providerId(); });
-          var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
-          var isLive = liveOffers.length > 0;
-          if(key === todayKey && !isLive && provEntries.length > 0) hasDraftToday = true;
-          var label = weekDayShortLabel(d, idx);
-          var badge = isLive ? '<span class="week-overview-badge online">ONLINE</span>' : (provEntries.length ? '<span class="week-overview-badge draft">ENTWURF</span>' : '');
-          var names = [];
-          if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
-          else { provEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
-          var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">—</span>';
-          rowHtml += '<div class="week-overview-day' + (isLive ? ' week-day-online' : '') + '" style="margin-bottom:8px;"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
-        }
-        rowHtml += '</div>';
-        dayCardsHtml += rowHtml;
-      }
-      list.innerHTML = '<div class="week-overview-scroll">' + (draftCount4Weeks > 0 ? '<p class="week-overview-draft-count" style="font-size:13px; font-weight:700; color:#64748b; margin-bottom:12px;">' + draftCount4Weeks + ' Entwurf' + (draftCount4Weeks !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen</p>' : '') + dayCardsHtml + '</div>';
-      list.classList.add('week-overview-list');
-      if(thumbZone){
-        thumbZone.innerHTML = '<div class="week-overview-cta-wrap"><button type="button" class="week-edit-primary" id="weekOverviewEditBtn"><i data-lucide="pencil" style="width:22px;height:22px;"></i> Plan bearbeiten</button></div><div class="week-actions-bar" id="weekOverviewActions" style="display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:nowrap;"><button class="btn secondary" type="button" id="weekOverviewActivate" style="' + (hasDraftToday ? '' : 'display:none;') + ' flex:0 0 auto; min-height:48px; padding:0 16px; border-radius:14px; font-size:14px; font-weight:700;" onclick="activateWeekDay(isoDate(new Date())); renderWeekPlan();">Live</button><button class="btn secondary" type="button" id="weekOverviewPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="printer" style="width:18px;height:18px;margin-right:6px;"></i>Drucken</button><button class="btn secondary" type="button" id="weekOverviewShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="share-2" style="width:18px;height:18px;margin-right:6px;"></i>Teilen</button></div>';
-        var editBtn = document.getElementById('weekOverviewEditBtn');
-        if(editBtn) editBtn.onclick = function(){ weekPlanMode = 'edit'; renderWeekPlan(); };
-        var pdfBtn = document.getElementById('weekOverviewPdf');
-        if(pdfBtn) pdfBtn.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
-        var shareBtn = document.getElementById('weekOverviewShare');
-        if(shareBtn) shareBtn.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
-      }
-      if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-      if(typeof lucide !== 'undefined') lucide.createIcons();
-      return;
-    }
-
-    weekPlanMode = weekPlanMode || 'edit';
-    if(headerTitle) headerTitle.textContent = 'Wochenplan';
-    if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche · Gerichte planen';
-    if(headerDoneBtn){ headerDoneBtn.style.display = 'block'; headerDoneBtn.onclick = function(){ weekPlanMode = 'overview'; renderWeekPlan(); }; }
-    dayWrap.style.display = '';
-    list.classList.remove('week-overview-list');
-    if(thumbZone) thumbZone.innerHTML = '<div id="weekMasterActivateBar" class="week-master-activate-bar" style="display:none;"><button type="button" class="week-master-btn" id="btnWeekMasterActivate"></button></div><div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb"><span class="week-activate-btn-text">Jetzt für 4,99 € aktivieren</span></button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
-    actionsBar = document.getElementById('weekActionsBar');
-    activateBlock = document.getElementById('weekActivateBlock');
-    var btnRefresh = document.getElementById('btnWeekRefreshZone');
-    if(btnRefresh) btnRefresh.onclick = function(){ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
-    var btnPdf = document.getElementById('btnWeekPdf');
-    if(btnPdf) btnPdf.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
-    var btnShare = document.getElementById('btnWeekShare');
-    if(btnShare) btnShare.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
-
-    var rangeStart = new Date();
-    var rangeEnd = new Date(); rangeEnd.setDate(rangeEnd.getDate() + 27);
-    var holidays = getGermanHolidaysForRange(rangeStart, rangeEnd, getBundeslandFromProvider());
-    dayWrap.innerHTML = '';
-    var weekIndicatorRow = document.getElementById('weekIndicatorRow');
-    if(!weekIndicatorRow){
-      weekIndicatorRow = document.createElement('div');
-      weekIndicatorRow.id = 'weekIndicatorRow';
-      weekIndicatorRow.className = 'week-indicator-row';
-      dayWrap.parentNode && dayWrap.parentNode.insertBefore(weekIndicatorRow, dayWrap.nextSibling);
-    }
-    var weekStatuses = [];
-    for(var w = 0; w < 4; w++){
-      var hasLive = false, hasDraft = false;
-      for(var di = 0; di < 7; di++){
-        var wd = new Date(); wd.setDate(wd.getDate() + w * 7 + di);
-        var k = isoDate(wd);
-        var provEntries = (week[k] || []).filter(function(x){ return x.providerId === providerId(); });
-        var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === k; });
-        if(liveOffers.length > 0) hasLive = true;
-        else if(provEntries.length > 0) hasDraft = true;
-      }
-      weekStatuses.push(hasLive ? 'active' : (hasDraft ? 'draft' : 'empty'));
-    }
-    weekIndicatorRow.style.display = 'flex';
-    weekIndicatorRow.innerHTML = weekStatuses.map(function(s, w){
-      return '<button type="button" class="week-indicator-dot week-dot-' + s + '" data-week="' + w + '" aria-label="Woche ' + (w + 1) + '" aria-hidden="false"></button>';
-    }).join('');
-    for(var i = 0; i < 28; i++){
-      var d = new Date(); d.setDate(d.getDate() + i);
-      var key = isoDate(d);
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'week-day-pill' + (weekPlanDay === key ? ' active' : '') + (i === 0 ? ' week-day-pill-today' : '') + (holidays[key] ? ' week-day-pill-holiday' : '');
-      b.setAttribute('data-date', key);
-      if(holidays[key]) b.setAttribute('title', 'Feiertag: ' + holidays[key]);
-      b.textContent = weekDayShortLabel(d, i);
-      b.onclick = function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanDay = k; renderWeekPlan(); }; }(key);
-      dayWrap.appendChild(b);
-    }
-    weekIndicatorRow.querySelectorAll('.week-indicator-dot').forEach(function(btn){
-      var w = parseInt(btn.getAttribute('data-week'), 10);
-      btn.onclick = function(){
-        if(typeof haptic === 'function') haptic(6);
-        var idx = w * 7;
-        if(dayWrap.children[idx]) dayWrap.children[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      };
-    });
-    /* Haptic beim Einrasten im Snap-Carousel (Magic Slider) */
-    if(!dayWrap._hapticSnapAttached){
-      dayWrap._hapticSnapAttached = true;
-      var snapTimeout;
-      dayWrap.addEventListener('scroll', function(){
-        clearTimeout(snapTimeout);
-        snapTimeout = setTimeout(function(){ if(typeof haptic === 'function') haptic(6); }, 120);
-      }, { passive: true });
-      try { dayWrap.addEventListener('scrollend', function(){ if(typeof haptic === 'function') haptic(6); }, { passive: true }); } catch(e){}
-    }
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        dayWrap.scrollLeft = 0;
-      });
-    });
-
-    const dayEntries = week[weekPlanDay] || [];
-    const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
-    const dayLiveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
-    const dayIsLive = dayLiveOffers.length > 0;
-
-    if(!providerEntries.length && !dayIsLive){
-      list.innerHTML = `
-        <div class="week-empty-state">
-          <div style="width:72px; height:72px; background:rgba(255,215,0,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-            <i data-lucide="calendar-plus" style="width:36px; height:36px; color:var(--brand,#FFD700);"></i>
-          </div>
-          <div class="week-empty-title">Noch kein Plan für diesen Tag</div>
-          <div class="week-empty-hint">Wähle ein Gericht aus dem Kochbuch oder lege ein neues an.</div>
-          <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; max-width:280px; min-height:56px; border-radius:14px; margin-bottom:10px;">
-            <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
-            <span>Gericht hinzufügen</span>
-          </button>
-          <button class="btn secondary" type="button" id="btnWeekEmptyNew" style="width:100%; max-width:280px; min-height:56px; border-radius:14px;">
-            Neues Gericht anlegen
-          </button>
-        </div>
-      `;
-      const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
-      if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'week', date: typeof weekPlanDay !== 'undefined' ? weekPlanDay : (typeof isoDate === 'function' ? isoDate(new Date()) : '') }); };
-      const btnWeekEmptyNew = document.getElementById('btnWeekEmptyNew');
-      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { if(typeof openDishFlow === 'function') openDishFlow(weekPlanDay, 'week'); };
-      if(actionsBar) actionsBar.style.display = 'none';
-      if(activateBlock) activateBlock.style.display = 'none';
-      if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-      if(typeof lucide !== 'undefined') lucide.createIcons();
-      return;
-    }
-
-    if(actionsBar) actionsBar.style.display = 'flex';
-    if(activateBlock) activateBlock.style.display = 'none';
-    list.innerHTML = '';
-
-    var statusBlock = document.createElement('div');
-    statusBlock.className = 'week-status-block';
-    var p = (provider && provider.profile) ? provider.profile : {};
-    var stdAbhol = !!p.abholnummerEnabledByDefault;
-    var stdMehrweg = !!p.reuseEnabledByDefault;
-    var stdVorOrt = p.dineInPossibleDefault !== false;
-    var profileStdHtml = '<div class="week-profile-std" style="font-size:11px; color:#94a3b8; margin-top:6px;">Standard: Abholnummer ' + (stdAbhol ? '✓' : '–') + ', Mehrweg ' + (stdMehrweg ? '✓' : '–') + ', Vor Ort ' + (stdVorOrt ? '✓' : '–') + '</div>';
-    if(dayIsLive){
-      statusBlock.innerHTML = '<div><div class="week-status-online"><span class="week-status-dot" style="background:#FFDE00;"></span><span>ONLINE</span></div>' + profileStdHtml + '</div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
-    } else {
-      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div>';
-    }
-    list.appendChild(statusBlock);
-
-    if(!dayIsLive && weekSortMode){
-      var sortBar = document.createElement('div');
-      sortBar.className = 'week-sort-bar';
-      sortBar.innerHTML = '<div><span style="font-size:14px; font-weight:800; color:#1a1a1a;">Reihenfolge per Drag & Drop ändern</span><div class="week-status-activate-hint" style="margin-top:4px;">Zum Beenden auf „Fertig“ tippen.</div></div><button type="button" class="week-sort-done" id="weekSortDoneBtn">Fertig</button>';
-      list.appendChild(sortBar);
-      var weekSortDoneBtn = document.getElementById('weekSortDoneBtn');
-      if(weekSortDoneBtn) weekSortDoneBtn.onclick = function(){ weekSortMode = false; renderWeekPlan(); };
-      list.classList.add('week-sort-mode');
-    } else {
-      list.classList.remove('week-sort-mode');
-    }
-
-    var itemsToShow = dayIsLive ? dayLiveOffers : providerEntries.map(function(x){ return x.entry; });
-    var entryIndices = dayIsLive ? [] : providerEntries.map(function(x){ return x.idx; });
-
-    itemsToShow.forEach(function(entry, idx){
-      var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
-      var name = (cb && cb.dish) || entry.dish || 'Gericht';
-      var price = (cb && cb.price) || entry.price || 0;
-      var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-      var weekIndex = entryIndices[idx];
-      var wrap = document.createElement('div');
-      wrap.className = 'week-meal-card-wrap' + (dayIsLive ? ' week-card-live' : ' week-card-offline');
-      if(entry.id) wrap.setAttribute('data-offer-id', String(entry.id));
-      if(!dayIsLive && weekSortMode){
-        wrap.draggable = true;
-        wrap.dataset.index = String(weekIndex);
-        var imgSort = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-        var thumbSort = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (imgSort ? ';background-image:url(\'' + esc(imgSort) + '\')' : '') + '"></div>';
-        wrap.innerHTML = '<div class="week-meal-card" style="display:flex; align-items:center;"><div class="week-meal-card-drag-handle"><i data-lucide="grip-vertical" style="width:24px;height:24px;"></i></div>' + thumbSort + '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span></div></div></div>';
-        wrap.ondragstart = function(e){ e.dataTransfer.setData('text/plain', weekIndex); e.dataTransfer.effectAllowed = 'move'; };
-        wrap.ondragover = function(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; var from = parseInt(e.dataTransfer.getData('text/plain'), 10); var to = parseInt(this.dataset.index, 10); if(from !== to){ this.classList.add('week-drag-over'); } };
-        wrap.ondragleave = function(){ this.classList.remove('week-drag-over'); };
-        wrap.ondrop = function(e){
-          e.preventDefault();
-          this.classList.remove('week-drag-over');
-          var fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-          var toIndex = parseInt(this.dataset.index, 10);
-          if(fromIndex !== toIndex && !isNaN(fromIndex) && !isNaN(toIndex)) reorderWeekDay(weekPlanDay, fromIndex, toIndex);
-        };
-        list.appendChild(wrap);
-        return;
-      }
-      var swipeInner = document.createElement('div');
-      swipeInner.className = 'week-meal-card-swipe';
-      var card = document.createElement('div');
-      card.className = 'week-meal-card';
-      var onlineHtml = dayIsLive
-        ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
-        : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
-      var p = (provider && provider.profile) ? provider.profile : {};
-      var defaultDineIn = p.dineInPossibleDefault !== false;
-      var defaultPickup = !!p.abholnummerEnabledByDefault;
-      var defaultReuse = !!p.reuseEnabledByDefault;
-      var entryDineIn = entry.dineInPossible !== false;
-      var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
-      var entryReuse = !!(entry.reuse && entry.reuse.enabled);
-      var hasTime = !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
-      var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
-      var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button></div>' : '';
-      var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
-      card.innerHTML = thumbHtml + '<div class="week-meal-content" style="flex:1;min-width:0; display:flex; flex-direction:column; align-items:stretch;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span style="flex-shrink:0;">' + onlineHtml + '</span><span class="price-pill week-meal-price-right">' + euro(price) + '</span></div>' + verdienstHtml + moveBtnHtml + '</div>';
-      card.style.cursor = 'pointer';
-      if(!dayIsLive){
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && e.target.closest('.week-meal-move-btn')) return; if(hasTime){ if(typeof startListingFlow === 'function') startListingFlow({ date: weekPlanDay, entryPoint: 'week', dishId: entry.cookbookId || undefined }); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
-        var swipeDel = document.createElement('div');
-        swipeDel.className = 'week-swipe-actions right';
-        swipeDel.innerHTML = '<i data-lucide="trash-2" style="width:22px;height:22px;"></i><span>Löschen</span>';
-        swipeDel.onclick = function(){ deletePlannedEntryWithUndo(weekPlanDay, weekIndex); };
-        var swipeCopy = document.createElement('div');
-        swipeCopy.className = 'week-swipe-actions left';
-        swipeCopy.innerHTML = '<i data-lucide="copy" style="width:22px;height:22px;"></i><span>Folgetag</span>';
-        swipeCopy.onclick = function(){ copyWeekEntryToNextDay(weekPlanDay, weekIndex); };
-        swipeInner.appendChild(swipeCopy);
-        swipeInner.appendChild(swipeDel);
-        swipeInner.appendChild(card);
-        card.querySelectorAll('.week-meal-move-btn').forEach(function(btn){
-          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof openMoveWeekEntrySheet === 'function') openMoveWeekEntrySheet(d, i); };
-        });
-        attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
-        attachLongPressToWeekCard(wrap);
-      } else {
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '', date: weekPlanDay, entryPoint: 'WEEKLY_PLAN_EDIT' }); };
-        swipeInner.appendChild(card);
-      }
-      wrap.appendChild(swipeInner);
-      var lastSavedId = '';
-      try { lastSavedId = sessionStorage.getItem('mittagio_last_saved_offer_id') || ''; } catch(e){}
-      if(lastSavedId && entry.id && String(entry.id) === lastSavedId){
-        wrap.classList.add('prov-card-emerald-glow');
-        setTimeout(function(){ wrap.classList.remove('prov-card-emerald-glow'); try{ sessionStorage.removeItem('mittagio_last_saved_offer_id'); }catch(e){} }, 1400);
-      }
-      list.appendChild(wrap);
-    });
-
-    /* "Weiteres Gericht planen" entfernt – Nutzer nutzt gelbes Plus oder Wochenplan-Karte */
-
-    var draftDays = getWeekDraftDays();
-    var masterBar = document.getElementById('weekMasterActivateBar');
-    var btnMaster = document.getElementById('btnWeekMasterActivate');
-    if(masterBar && btnMaster){
-      if(draftDays.length > 0){
-        masterBar.style.display = 'block';
-        var total = (draftDays.length * 4.99).toFixed(2).replace('.', ',');
-        btnMaster.textContent = 'Gesamte Auswahl aktivieren (' + draftDays.length + ' × 4,99 €)';
-        btnMaster.onclick = function(){ if(typeof haptic === 'function') haptic(10); bulkActivateWeekDrafts(); };
-      } else {
-        masterBar.style.display = 'none';
-      }
-    }
-
-    if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-    if(typeof lucide !== 'undefined') lucide.createIcons();
+    /* KW-Board: Einziges Layout [cite: 2026-03-02 – weekDays/weekList entfernt] */
+    if (boardWrap) boardWrap.style.display = 'flex';
+    setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
+    if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
   }
 
   function getWeekDraftDays(){
@@ -12628,16 +12342,16 @@
         list.appendChild(btn);
       });
     }
-    bd.style.display = 'block';
+    show(bd);
+    show(sheet, 'flex');
     bd.classList.add('active');
-    sheet.style.display = 'flex';
     sheet.classList.add('active');
   }
   function closeWeekTemplatesSheet(){
     var bd = document.getElementById('weekTemplatesBd');
     var sheet = document.getElementById('weekTemplatesSheet');
-    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
-    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd) { hide(bd); bd.classList.remove('active'); }
+    if (sheet) { hide(sheet); sheet.classList.remove('active'); }
   }
   function showWeekTemplatePreview(templateId){
     var tpl = getWeekTemplates().find(function(t){ return t.id === templateId; });
@@ -12648,8 +12362,8 @@
     var title = document.getElementById('weekTemplatePreviewTitle');
     var daysEl = document.getElementById('weekTemplatePreviewDays');
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    if (bd) { bd.style.display = 'block'; bd.classList.add('active'); }
-    if (sheet) { sheet.style.display = 'flex'; sheet.classList.add('active'); }
+    if (bd) { show(bd); bd.classList.add('active'); }
+    if (sheet) { show(sheet, 'flex'); sheet.classList.add('active'); }
     if (title) title.textContent = tpl.name || 'Vorschau';
     if (daysEl) {
       daysEl.innerHTML = '';
@@ -12683,8 +12397,8 @@
     _weekTemplatePreviewId = null;
     var bd = document.getElementById('weekTemplatePreviewBd');
     var sheet = document.getElementById('weekTemplatePreviewSheet');
-    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
-    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd) { hide(bd); bd.classList.remove('active'); }
+    if (sheet) { hide(sheet); sheet.classList.remove('active'); }
   }
   if (typeof window !== 'undefined') {
     window.openWeekTemplatesSheet = openWeekTemplatesSheet;
@@ -14699,11 +14413,6 @@
     btnWeekBack.onclick=()=> showProviderHome();
   }
   /* btnProviderWeekFooter: Bindung in renderWeekPlanBoard (Activation-Merge) [cite: 2026-02-25] */
-  var weekHeaderBackBtn = document.getElementById('weekHeaderBackBtn');
-  if(weekHeaderBackBtn && !weekHeaderBackBtn._bound){
-    weekHeaderBackBtn._bound = true;
-    weekHeaderBackBtn.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else if(typeof showProviderHome==='function') showProviderHome(); };
-  }
   const btnWeekRefresh = document.getElementById('btnWeekRefresh');
   if(btnWeekRefresh){
     btnWeekRefresh.onclick=()=>{ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };

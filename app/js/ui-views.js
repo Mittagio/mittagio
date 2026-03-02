@@ -80,7 +80,7 @@
     var sel = '.view.active .dynamic-header .prov-page-header-title, .view.active .dynamic-header .system-header-title, .view.active .dynamic-header h1';
     var el = document.querySelector(sel);
     if(el) el.textContent = String(title);
-    var weekTitle = document.getElementById('weekHeaderTitle');
+    var weekTitle = document.getElementById('weekHeaderTitleText');
     if(weekTitle && document.querySelector('.view.active#v-provider-week')) weekTitle.textContent = String(title);
   }
 
