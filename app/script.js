@@ -17928,7 +17928,9 @@
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
       setWizardContent(sheet);
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(box && box.isConnected) box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      /* Fallback: is-open falls rAF nicht läuft (Tab im Hintergrund, langsame Geräte) [cite: Schwarzer Screen Fix 2026-03-02] */
+      setTimeout(function(){ if(box && box.isConnected && !box.classList.contains('is-open')) box.classList.add('is-open'); }, 200);
       /* openToPillar: Scroll zu Säulen-Bereich (Vor Ort, Abholnummer, Mehrweg) [cite: Event-Leitungen 2026-02-26] */
       var openToPillarVal = w.ctx && w.ctx.openToPillar;
       if(openToPillarVal){
