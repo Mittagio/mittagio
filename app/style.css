@@ -1684,11 +1684,12 @@
     }
     body.wizard-inserat-open #wizard .wizard-scroll,
     body.wizard-inserat-open #wizard #wContent { background: #ffffff !important; }
+    /* Backdrop HINTER Wizard – elementFromPoint traf sonst #wbd (schwarzer Screen) [cite: Schwarzer Screen Fix 2026-03-02] */
     body.wizard-inserat-open #wbd {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
-      z-index: 29999 !important;
+      z-index: 1 !important;
     }
     body.wizard-inserat-open .bottom-nav {
       display: none !important;
