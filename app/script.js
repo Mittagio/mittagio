@@ -6212,22 +6212,7 @@
   function openCreateFlowSheet(){
     if(typeof haptic === 'function') haptic(10);
     const sheet = document.getElementById('createFlowSheet');
-    const hint = document.getElementById('createFlowDateHint');
-
-    if(sheet && hint){
-      if(createFlowPreselectedDate){
-        const d = new Date(createFlowPreselectedDate);
-        const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
-        const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
-        hint.innerHTML = '<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
-        hint.style.display = 'inline-flex';
-        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
-      } else {
-        hint.style.display = 'none';
-      }
-
-      populateCreateFlowRenner();
-
+    if(sheet){
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
       document.body.classList.add('create-flow-open');
@@ -6268,7 +6253,112 @@
       openDishFlow(date, ep);
     };
   }
-  
+
+  /* Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] */
+  function vibrate(arr){ try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(arr) ? arr : [arr]); } catch(e){} }
+  function getDishesFromPast(days){
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var out = [];
+    for(var i = 0; i < (days || 42); i++){
+      var d = new Date();
+      d.setDate(d.getDate() - i);
+      var key = typeof isoDate === 'function' ? isoDate(d) : (d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+      var entries = w[key] || [];
+      var pid = typeof providerId === 'function' ? providerId() : '';
+      entries.forEach(function(e){ if(e.providerId === pid && e.cookbookId) out.push({ cookbookId: e.cookbookId, day: key, dish: e.dish, price: e.price }); });
+    }
+    return out;
+  }
+  function shuffleArray(arr){ var a = (arr || []).slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function startSlotAnimation(slotEl){
+    if(!slotEl) return Promise.resolve();
+    slotEl.classList.add('slot-machine-text');
+    slotEl.textContent = '🎰';
+    return new Promise(function(r){ setTimeout(r, 800); });
+  }
+  function applyKILogic(){
+    var dishes = getDishesFromPast(42);
+    if(dishes.length === 0){ var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); }); dishes = cb.map(function(c){ return { cookbookId: c.id, dish: c.dish, price: c.price }; }); }
+    var shuffled = shuffleArray(dishes);
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    keys.forEach(function(k){ w[k] = []; });
+    shuffled.slice(0, keys.length * 2).forEach(function(d, i){
+      var dayKey = keys[i % keys.length];
+      if(!w[dayKey]) w[dayKey] = [];
+      if(w[dayKey].length < 3) w[dayKey].push({ providerId: pid, cookbookId: d.cookbookId, dish: d.dish, price: d.price });
+    });
+    if(typeof save === 'function') save(LS.week, w);
+    if(typeof week !== 'undefined') week = w;
+  }
+  function applySurpriseLogic(){
+    var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+    if(cb.length === 0) return;
+    var shuffled = shuffleArray(cb);
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    keys.forEach(function(k, i){
+      var dish = shuffled[i % shuffled.length];
+      if(!w[k]) w[k] = [];
+      w[k] = [{ providerId: pid, cookbookId: dish.id, dish: dish.dish, price: dish.price }];
+    });
+    if(typeof save === 'function') save(LS.week, w);
+    if(typeof week !== 'undefined') week = w;
+  }
+  function applySeasonLogic(){
+    var m = (new Date()).getMonth() + 1;
+    var setKey = (m >= 3 && m <= 5) ? 'fruhling' : (m >= 6 && m <= 8) ? 'sommer' : (m >= 9 && m <= 11) ? 'herbst' : 'winter';
+    if(typeof applySaisonSystemSet === 'function') applySaisonSystemSet(setKey);
+  }
+  function animateWeekFill(){
+    var grid = document.getElementById('kwGrid');
+    if(!grid) return;
+    var slots = grid.querySelectorAll('.kw-day-card');
+    slots.forEach(function(s){ s.classList.remove('pop-in', 'sparkle-arrival'); s.classList.add('day-slot'); });
+    slots.forEach(function(slot, index){
+      setTimeout(function(){
+        slot.classList.add('pop-in');
+        vibrate(10);
+        if(index === slots.length - 1) slot.classList.add('sparkle-arrival');
+      }, index * 100);
+    });
+  }
+  async function triggerMagic(mode){
+    vibrate([20, 50]);
+    var overlay = document.getElementById('magicOverlay');
+    var statusText = document.getElementById('magicStatusText');
+    var slot = document.getElementById('magicSlotMachine');
+    if(overlay && typeof hide === 'function') overlay.classList.remove('is-hidden');
+    if(mode === 'ki'){
+      if(statusText) statusText.textContent = '🤖 KI würfelt Woche neu...';
+      await new Promise(function(r){ setTimeout(r, 1200); });
+      applyKILogic();
+    } else if(mode === 'surprise'){
+      if(statusText) statusText.textContent = '✨ Jackpot zieht...';
+      await startSlotAnimation(slot);
+      applySurpriseLogic();
+    } else if(mode === 'season'){
+      if(statusText) statusText.textContent = '🥗 Saison-Check...';
+      await new Promise(function(r){ setTimeout(r, 800); });
+      applySeasonLogic();
+    }
+    if(overlay) overlay.classList.add('is-hidden');
+    closeCreateFlowSheet();
+    if(typeof showProviderWeek === 'function') showProviderWeek();
+    if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    setTimeout(function(){ animateWeekFill(); }, 80);
+    if(typeof showToast === 'function') showToast('Magic angewendet ✨');
+  }
+  if(typeof window !== 'undefined') window.triggerMagic = triggerMagic;
+  document.querySelectorAll('.magic-card[data-magic]').forEach(function(card){
+    card.onclick = function(){
+      var mode = card.getAttribute('data-magic');
+      if(mode && typeof triggerMagic === 'function') triggerMagic(mode);
+    };
+  });
+
   // Offer More Menu
   function openOfferMoreMenu(offerId){
     const offer = offers.find(o => o.id === offerId);
@@ -16494,7 +16584,13 @@
     c.style.transition='opacity 0.2s ease, transform 0.2s ease';
     c.innerHTML='';
     c.appendChild(node);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ c.style.opacity='1'; c.style.transform='translateY(0)'; }); });
+    function showContent(){
+      c.style.opacity='1';
+      c.style.transform='translateY(0)';
+    }
+    requestAnimationFrame(function(){ requestAnimationFrame(showContent); });
+    /* Fallback: Falls rAF nicht läuft (z.B. Tab im Hintergrund), Inhalt trotzdem sichtbar machen [cite: Mastercard Step1 Fix 2026-03-02] */
+    setTimeout(showContent, 150);
   }
 
   function rebuildWizard(){

@@ -3093,27 +3093,42 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Deine Renner oben, Footer Airbnb-Style (2 massive schwarze Buttons) [cite: 2026-02-21] -->
+<!-- Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
-<div class="sheet sheet--kitchen create-flow-selection-pane" id="createFlowSheet">
-  <div class="handle"></div>
-  <div class="create-flow-selection-body">
-    <div class="renner-scroll-area">
-      <h2 class="section-title create-flow-title">Deine Renner</h2>
-      <div id="createFlowRennerSection" class="create-flow-renner-section">
-        <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
-        <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
-      </div>
-      <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
+<div class="sheet sheet--kitchen create-flow-selection-pane bottom-sheet" id="createFlowSheet">
+  <div class="sheet-header">
+    <div class="drag-handle"></div>
+    <h3>Was gibt's Neues?</h3>
+  </div>
+  <div class="magic-grid">
+    <div class="magic-card card-surprise" data-magic="surprise">
+      <div class="magic-icon">✨</div>
+      <span>Überraschung</span>
     </div>
-    <footer class="system-bottom-nav">
-      <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook">
-        <span>📖</span> Kochbuch
-      </button>
-      <button class="nav-btn-primary nav-btn-equal" type="button" id="createNewListing">
-        + Neues Gericht
-      </button>
-    </footer>
+    <div class="magic-card card-season" data-magic="season">
+      <div class="magic-icon">🥗</div>
+      <span>Saison-Held</span>
+    </div>
+    <div class="magic-card card-ki" data-magic="ki">
+      <div class="magic-icon">🤖</div>
+      <span>KI-Modus</span>
+    </div>
+  </div>
+  <footer class="system-bottom-nav create-flow-footer-fallback">
+    <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook">
+      <span>📖</span> Kochbuch
+    </button>
+    <button class="nav-btn-primary nav-btn-equal" type="button" id="createNewListing">
+      + Neues Gericht
+    </button>
+  </footer>
+</div>
+
+<div id="magicOverlay" class="magic-overlay is-hidden">
+  <div class="magic-content">
+    <div id="magicSlotMachine" class="slot-machine"></div>
+    <div id="magicStatusText">KI berechnet...</div>
+    <div class="magic-loader"></div>
   </div>
 </div>
 

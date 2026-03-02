@@ -1629,12 +1629,25 @@
     #createFlowBd { z-index: 499; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.5); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
     #createFlowSheet { z-index: 500 !important; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; border-radius: 0; margin: 0 !important; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 -10px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; overflow: hidden; }
+    #createFlowSheet .magic-grid { flex: 1; min-height: 0; }
     #createFlowSheet.active { transform: translateY(0); }
     #createFlowSheet.sheet--kitchen .handle { background: rgba(0,0,0,0.15); width: 40px; height: 4px; border-radius: 2px; margin: 8px auto 4px; }
     #createFlowSheet .create-flow-selection-body { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
     #createFlowSheet .renner-scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px 16px; }
     #createFlowSheet .section-title.create-flow-title { font-size: var(--size-h2); font-weight: var(--weight-heavy); color: var(--color-title); margin: 0 0 16px; }
     .create-flow-hint { font-size: 13px; color: #64748b; margin-top: 8px; }
+    /* Magic-Three: S25 Premium Grid [cite: 2026-03-02] */
+    #createFlowSheet .sheet-header { padding: 16px 20px 12px; text-align: center; flex-shrink: 0; }
+    #createFlowSheet .sheet-header .drag-handle { width: 40px; height: 4px; background: rgba(0,0,0,0.15); border-radius: 2px; margin: 0 auto 12px; }
+    #createFlowSheet .sheet-header h3 { margin: 0; font-size: 20px; font-weight: 900; color: #0f172a; }
+    .magic-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 20px; background: #f8f8f8; flex: 1; min-height: 0; overflow-y: auto; }
+    .magic-card { height: 160px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 8px 20px rgba(0,0,0,0.1); cursor: pointer; -webkit-tap-highlight-color: transparent; border: none; }
+    .magic-card:active { transform: scale(0.9); }
+    .card-surprise { background: linear-gradient(135deg, #a855f7, #ec4899); }
+    .card-season { background: linear-gradient(135deg, #22c55e, #10b981); }
+    .card-ki { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+    .magic-icon { font-size: 32px; margin-bottom: 10px; }
+    #createFlowSheet .create-flow-footer-fallback { flex-shrink: 0; }
     /* SYSTEM FOOTER – bündig S25-Rand, 2 massive schwarze Buttons gleich groß [cite: 2026-02-21] */
     .system-bottom-nav { position: relative; bottom: auto; left: 0; right: 0; width: 100%; background: #fff; border-top: 1px solid #f1f5f9; padding: 12px 24px calc(12px + env(safe-area-inset-bottom)) 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 !important; border-radius: 0 !important; flex-shrink: 0; z-index: 10; }
     .system-bottom-nav .nav-btn-primary { background: #222222; color: #ffffff; height: 48px; min-height: 48px; padding: 0 24px; border-radius: 8px; font-weight: 700; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; transition: transform 0.1s, opacity 0.2s; -webkit-tap-highlight-color: transparent; }
@@ -1692,6 +1705,23 @@
     .renner-speed-tile .renner-speed-top-badge { position: absolute; top: 8px; right: 8px; z-index: 2; padding: 4px 10px; border-radius: 10px; background: #FFD700; color: #1a1a1a; font-size: 11px; font-weight: 900; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(255,215,0,0.4); animation: rennerBadgePulse 1.8s ease-in-out infinite; }
     @keyframes rennerBadgePulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.06); opacity: 0.95; } }
     .create-flow-renner-empty { display: none; text-align: center; padding: 24px 16px; color: #64748b; font-size: 14px; }
+    /* Magic Overlay: Slot-Machine & Animation [cite: S25 Premium 2026-03-02] */
+    .magic-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 20001; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: opacity 0.25s ease; }
+    .magic-overlay.is-hidden { display: none !important; pointer-events: none; }
+    .magic-overlay:not(.is-hidden) { display: flex !important; }
+    .magic-content { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 32px; }
+    #magicSlotMachine { font-size: 24px; font-weight: 900; color: #FFD700; text-transform: uppercase; letter-spacing: 2px; min-height: 40px; }
+    #magicStatusText { font-size: 16px; font-weight: 700; color: #fff; }
+    .magic-loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #FFD700; border-radius: 50%; animation: magicSpin 0.8s linear infinite; }
+    @keyframes magicSpin { to { transform: rotate(360deg); } }
+    .slot-machine-text { animation: slotShuffle 0.1s infinite; }
+    @keyframes slotShuffle { 0% { transform: translateY(-5px) skewX(-5deg); filter: blur(1px); } 50% { transform: translateY(5px) skewX(5deg); filter: blur(2px); } 100% { transform: translateY(-5px) skewX(-5deg); filter: blur(1px); } }
+    /* S25 Premium: day-slot Pop-In & Sparkle [cite: 2026-03-02] */
+    .kw-day-card.day-slot { opacity: 0; transform: scale(0.8) translateY(40px); transition: none; }
+    .kw-day-card.day-slot.pop-in { opacity: 1 !important; transform: scale(1) translateY(0) !important; transition: opacity 0.5s ease-out, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .kw-day-card.sparkle-arrival { position: relative; overflow: hidden; }
+    .kw-day-card.sparkle-arrival::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%); transform: scale(0); animation: flashImpact 0.7s ease-out forwards; pointer-events: none; z-index: 10; }
+    @keyframes flashImpact { 0% { transform: scale(0); opacity: 1; } 40% { opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
     #wizard.sheet--kitchen{
       background:var(--provider-bg, #F5F5F7) !important;
@@ -3306,6 +3336,11 @@
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;
     }
+    /* InseratCard: sheet ist direktes Kind von #wContent, liquid-master-panel darin [cite: Mastercard Step1 Fix 2026-03-02] */
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .inserat-card-sheet{
+      flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+    }
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .inserat-card-sheet > .liquid-master-panel,
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .liquid-master-panel{
       flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
     }
