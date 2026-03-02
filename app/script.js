@@ -11972,18 +11972,26 @@
     if (magicList && magicList.children && magicList.children.length === 0) populateWeekMagicSheetList();
     if (bd && sheet){ show(bd); show(sheet, 'flex'); bd.classList.add('active'); sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
   }
+  /** Magic-Button: öffnet Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
+  function openWeekMagicThree(){
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    if (typeof createFlowPreselectedDate !== 'undefined') createFlowPreselectedDate = (keys && keys[0]) ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : null);
+    if (typeof createFlowOriginView !== 'undefined') createFlowOriginView = 'week';
+    if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+  }
+  if (typeof window !== 'undefined') window.openWeekMagicThree = openWeekMagicThree;
   function closeWeekMagicSheet(){
     var bd = document.getElementById('weekMagicSheetBd');
     var sheet = document.getElementById('weekMagicSheet');
     if (bd){ hide(bd); bd.classList.remove('active'); }
     if (sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
-  /** FAB beim Öffnen des Wochenplans sicher binden (Schnellaktionen-Sheet) */
+  /** FAB beim Öffnen des Wochenplans: Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
   function ensureWeekMagicFabBound(){
     var fab = document.getElementById('weekMagicFab');
     if (fab && !fab._magicBound) {
       fab._magicBound = true;
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
+      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
     }
   }
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
@@ -12053,7 +12061,7 @@
     if (fab) {
       fab.onclick = function(){
         try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
-        if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
+        if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
       };
     }
     var kebabBtn = document.getElementById('btnWeekKebab');
@@ -16553,18 +16561,13 @@
   function setWizardContent(node){
     const c = document.getElementById('wContent');
     if(!c) return;
-    c.style.opacity='0';
-    c.style.transform='translateY(8px)';
-    c.style.transition='opacity 0.2s ease, transform 0.2s ease';
     c.innerHTML='';
     c.appendChild(node);
-    function showContent(){
-      c.style.opacity='1';
-      c.style.transform='translateY(0)';
-    }
-    requestAnimationFrame(function(){ requestAnimationFrame(showContent); });
-    /* Fallback: Falls rAF nicht läuft (z.B. Tab im Hintergrund), Inhalt trotzdem sichtbar machen [cite: Mastercard Step1 Fix 2026-03-02] */
-    setTimeout(showContent, 150);
+    /* Kein opacity:0-Start – verhindert schwarzen Screen durch Backdrop-Durchscheinen [cite: Schwarzer Screen Fix 2026-03-02] */
+    c.style.opacity='1';
+    c.style.transform='translateY(0)';
+    c.style.transition='';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(c.isConnected){ c.style.transition='opacity 0.2s ease, transform 0.2s ease'; } }); });
   }
 
   function rebuildWizard(){

@@ -1663,13 +1663,13 @@
     body.wizard-inserat-open #app { visibility: hidden !important; pointer-events: none !important; }
     body.cookbook-from-dashboard #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
-    /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28, Final-Fix 2026-03-01] */
+    /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28, Final-Fix 2026-03-01, Schwarzer Screen Fix 2026-03-02] */
     body.wizard-inserat-open #wizard {
       display: flex !important;
       flex-direction: column !important;
       visibility: visible !important;
       opacity: 1 !important;
-      z-index: 99999 !important;
+      z-index: 30000 !important;
       transform: none !important;
       position: fixed !important;
       top: 0 !important;
@@ -1680,12 +1680,15 @@
       max-height: 100vh !important;
       width: 100vw !important;
       background: #ffffff !important;
+      isolation: isolate !important;
     }
+    body.wizard-inserat-open #wizard .wizard-scroll,
+    body.wizard-inserat-open #wizard #wContent { background: #ffffff !important; }
     body.wizard-inserat-open #wbd {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
-      z-index: 99998 !important;
+      z-index: 29999 !important;
     }
     body.wizard-inserat-open .bottom-nav {
       display: none !important;
@@ -7871,7 +7874,7 @@
       }
       /* Nur .kw-board-scroll scrollt – View und Body ohne Scroll, Header bleibt oben [cite: 2026-03-02] */
       #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; overflow-x:hidden !important; display:flex !important; flex-direction:column !important; }
-      body.provider-week-active{ overflow:hidden !important; overflow-x:hidden !important; }
+      body.provider-week-active:not(.wizard-inserat-open){ overflow:hidden !important; overflow-x:hidden !important; }
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
       body.provider-week-active main{ padding-top:0 !important; padding-left:0 !important; padding-right:0 !important; max-width:none !important; overflow-x:hidden !important; }
