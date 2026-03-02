@@ -11607,7 +11607,8 @@
       var topRenner = renner.slice(0, 8);
       rennerScroll.innerHTML = topRenner.map(function(c){
         var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-        return '<div class="renner-card" data-cookbook-id="' + esc(String(c.id)) + '" role="button" tabindex="0" aria-label="' + esc(c.dish || 'Gericht') + ' – Schnell zuweisen"><img src="' + esc(imgUrl) + '" alt=""></div>';
+        var name = (c.dish || 'Gericht').substring(0, 14) + ((c.dish || '').length > 14 ? '…' : '');
+        return '<div class="renner-card" data-cookbook-id="' + esc(String(c.id)) + '" role="button" tabindex="0" aria-label="' + esc(c.dish || 'Gericht') + ' – Schnell zuweisen"><div class="renner-card-img-wrap"><img src="' + esc(imgUrl) + '" alt=""></div><span class="renner-card-name">' + esc(name) + '</span></div>';
       }).join('');
       rennerScroll.querySelectorAll('.renner-card').forEach(function(card){
         var cookbookId = card.getAttribute('data-cookbook-id');
@@ -11684,7 +11685,8 @@
         var top2 = veggieSuggestions.slice(0, 2);
         var btnsHtml = top2.map(function(v){
           var imgUrl = v.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-          return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><img src="' + esc(imgUrl) + '" alt=""></button>';
+          var vName = (v.dish || 'Gericht').substring(0, 12) + ((v.dish || '').length > 12 ? '…' : '');
+          return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><div class="veggie-sog-btn-img"><img src="' + esc(imgUrl) + '" alt=""></div><span class="veggie-sog-btn-name">' + esc(vName) + '</span></button>';
         }).join('');
         sogSlot.innerHTML = '<span class="veggie-sog-text">+ Vegetarisches Gericht ergänzen? \uD83C\uDF3F</span>' + btnsHtml;
         sogSlot.querySelectorAll('.veggie-sog-btn').forEach(function(btn){

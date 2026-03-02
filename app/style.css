@@ -1639,6 +1639,9 @@
     body.create-flow-open #providerNavWrap,
     body.wizard-inserat-open #providerNavWrap { display: none !important; }
     body.wizard-inserat-open #cookbookFooterWrap { display: none !important; }
+    /* Wochenplan-UI ausblenden wenn Mastercard offen [cite: Regression 2026-03-02] */
+    body.wizard-inserat-open #weekViewFooter,
+    body.wizard-inserat-open #weekMagicFab { display: none !important; }
     body.cookbook-from-dashboard #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
     /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28, Final-Fix 2026-03-01] */
@@ -7544,19 +7547,28 @@
       #v-provider-week .week-overview-scroll{ -webkit-overflow-scrolling:touch; }
       #v-provider-week .week-overview-cta-wrap .week-edit-primary{ min-height:56px; }
       /* ========== KW-Board (High-End Wochenplan) ========== */
-      /* KW-Navigation Header [cite: 2026-03-02] */
-      #v-provider-week .kw-nav-container{ display:flex; flex-direction:column; align-items:center; padding:12px 0; background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); border-bottom:1px solid #ebebeb; position:sticky; top:0; z-index:100; flex-shrink:0; }
-      #v-provider-week .kw-selector{ display:flex; align-items:center; gap:20px; }
-      #v-provider-week .kw-display{ font-size:18px; font-weight:800; margin:0; color:#222222; }
-      #v-provider-week .date-range{ font-size:12px; color:#717171; margin-top:4px; }
-      #v-provider-week .nav-arrow{ background:none; border:none; font-size:20px; color:#222222; cursor:pointer; padding:5px 10px; min-height:44px; min-width:44px; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+      /* Header-Diät: Wochenplan/KW-Zeile oben ausblenden, kompakter Header [cite: 2026-03-02] */
+      #v-provider-week #weekHeaderTitleText,
+      #v-provider-week #weekHeaderKWTrigger,
+      #v-provider-week .week-header-kw-badge{ display:none !important; }
+      #v-provider-week .prov-page-header-left[data-reset-view="week"]{ display:none !important; }
+      #v-provider-week .week-header-compact{ padding:calc(6px + env(safe-area-inset-top, 0)) 16px 8px !important; min-height:48px !important; }
+      #v-provider-week .week-header-back-btn{ width:40px !important; height:40px !important; min-width:40px !important; min-height:40px !important; margin-right:4px !important; }
+      /* KW-Navigation: dezent, ~30% kleiner, Steuerungs-Element [cite: 2026-03-02] */
+      #v-provider-week .kw-nav-container{ display:flex; flex-direction:column; align-items:center; padding:6px 0 8px; background:rgba(255,255,255,0.85); backdrop-filter:blur(10px); border-bottom:1px solid #ebebeb; position:sticky; top:0; z-index:100; flex-shrink:0; }
+      #v-provider-week .kw-selector{ display:flex; align-items:center; gap:12px; }
+      #v-provider-week .kw-display{ font-size:13px; font-weight:700; margin:0; color:#717171; }
+      #v-provider-week .date-range{ font-size:9px; color:#94a3b8; margin-top:2px; }
+      #v-provider-week .nav-arrow{ background:none; border:none; font-size:14px; color:#717171; cursor:pointer; padding:4px 8px; min-height:36px; min-width:36px; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
       #v-provider-week .nav-arrow:active{ opacity:0.7; }
       /* Renner-Karussell */
-      #v-provider-week .renner-scroll{ display:flex; overflow-x:auto; gap:12px; padding:16px; scrollbar-width:none; flex-shrink:0; -webkit-overflow-scrolling:touch; }
+      #v-provider-week .renner-scroll{ display:flex; overflow-x:auto; gap:12px; padding:10px 16px 12px; scrollbar-width:none; flex-shrink:0; -webkit-overflow-scrolling:touch; }
       #v-provider-week .renner-scroll::-webkit-scrollbar{ display:none; }
-      #v-provider-week .renner-card{ flex:0 0 70px; height:70px; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; transition:transform 0.2s; }
+      #v-provider-week .renner-card{ flex:0 0 70px; display:flex; flex-direction:column; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; transition:transform 0.2s; }
       #v-provider-week .renner-card:active{ transform:scale(0.96); }
+      #v-provider-week .renner-card .renner-card-img-wrap{ width:70px; height:70px; flex-shrink:0; position:relative; overflow:hidden; }
       #v-provider-week .renner-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+      #v-provider-week .renner-card .renner-card-name{ font-size:10px; color:#717171; line-height:1.2; padding:4px 4px 6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70px; }
       /* Tages-Timeline vertikal */
       #v-provider-week .day-section{ padding:0 16px 24px; }
       #v-provider-week .day-label{ font-size:12px; font-weight:700; color:#717171; text-transform:uppercase; margin-bottom:8px; }
@@ -7570,8 +7582,10 @@
       #v-provider-week .veggie-sog-slot{ background:rgba(16,185,129,0.08); border:1px dashed #10b981; border-radius:12px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; cursor:pointer; transition:background 0.2s; }
       #v-provider-week .veggie-sog-slot:active{ background:rgba(16,185,129,0.14); }
       #v-provider-week .veggie-sog-text{ font-size:14px; font-weight:700; color:#0f172a; flex:1; min-width:0; }
-      #v-provider-week .veggie-sog-btn{ flex:0 0 70px; height:70px; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; }
-      #v-provider-week .veggie-sog-btn img{ width:100%; height:100%; object-fit:cover; }
+      #v-provider-week .veggie-sog-btn{ flex:0 0 70px; display:flex; flex-direction:column; border-radius:12px; overflow:hidden; background:#eee; border:1px solid #ebebeb; cursor:pointer; }
+      #v-provider-week .veggie-sog-btn .veggie-sog-btn-img{ width:70px; height:56px; flex-shrink:0; overflow:hidden; }
+      #v-provider-week .veggie-sog-btn img{ width:100%; height:100%; object-fit:cover; display:block; }
+      #v-provider-week .veggie-sog-btn .veggie-sog-btn-name{ font-size:10px; color:#717171; line-height:1.2; padding:2px 4px 4px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70px; }
       /* KW-Leiste: flacher und subtiler [cite: 2026-02-20] */
       #v-provider-week .kw-carousel{ display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; scroll-padding:0 16px; padding:6px 16px 8px; scrollbar-width:none; }
       #v-provider-week .kw-carousel::-webkit-scrollbar{ display:none; }
