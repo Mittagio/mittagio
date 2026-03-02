@@ -204,7 +204,12 @@
         const providerMainViews = ['v-provider-home','v-provider-pickups','v-provider-week','v-provider-cookbook','v-provider-profile','v-provider-billing'];
         const canRestore = lastMode === 'provider' && lastView && providerMainViews.indexOf(lastView) !== -1 && document.getElementById(lastView);
         if(canRestore){
-          showView(lastView);
+          /* Wochenplan: immer über showProviderWeek, damit history.pushState garantiert [cite: 2026-03-02] */
+          if(lastView === 'v-provider-week'){
+            if(typeof showProviderWeek === 'function') showProviderWeek();
+          } else {
+            showView(lastView);
+          }
           var navGo = (lastView === 'v-provider-home') ? 'provider-home' : (lastView === 'v-provider-pickups') ? 'provider-pickups' : (lastView === 'v-provider-week') ? 'provider-week' : (lastView === 'v-provider-cookbook') ? 'provider-cookbook' : (lastView === 'v-provider-profile' || lastView === 'v-provider-billing') ? 'provider-profile' : 'provider-home';
           setProviderNavActive(navGo);
           var headerTitles = { 'v-provider-home':'Meine Küche', 'v-provider-pickups':'Abholnummern', 'v-provider-week':'Wochenplan', 'v-provider-cookbook':'Mein Kochbuch', 'v-provider-profile':'Mein Profil', 'v-provider-billing':'Mein Profil' };
@@ -598,7 +603,7 @@
     if (preselectDay && typeof preselectDay === 'string') { window.weekPlanDay = preselectDay; if (typeof getWeekIndexForDate === 'function') window.weekPlanKWIndex = Math.max(0, getWeekIndexForDate(preselectDay)); }
     if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) window.weekPlanKWIndex = preselectKW;
     window.weekPlanMode = 'overview';
-    /* Handy-Back-Taste: Vor Wochenplan immer Dashboard-State im Stack, damit popstate zum Dashboard führt [cite: Plan Wochenplan 2026-02-25] */
+    /* Handy-Back-Taste: Vor Wochenplan immer Dashboard-State im Stack, damit popstate zum Dashboard führt [cite: Plan Wochenplan 2026-02-25, 2026-03-02] */
     if (typeof history !== 'undefined' && (!history.state || history.state.section !== 'dashboard')) {
       if (typeof history.pushState === 'function') history.pushState({ section: 'dashboard', view: 'provider-home', mode: typeof window.mode !== 'undefined' ? window.mode : 'provider' }, '', location.pathname);
     }

@@ -1262,10 +1262,6 @@
           <div class="kw-grid" id="kwGrid"></div>
         </div>
         <div class="kw-action-bar-fixed" id="kwActionBarFixed" style="display:none;"></div>
-        <!-- Magic FAB: schwebend unten rechts über Tab-Bar [cite: 2026-02-20] -->
-        <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
-          <span class="week-magic-fab-icon">✨</span>
-        </button>
       </div>
     </section>
 
@@ -3442,6 +3438,10 @@
     </footer>
   </div>
   <div id="fly-animation-container" style="position:fixed; z-index:99999; pointer-events:none; top:0; left:0; right:0; bottom:0;"></div>
+  <!-- Magic FAB: Body-Level für viewport-fixed (kein transform/filter-Ancestor) [cite: 2026-03-02] -->
+  <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
+    <span class="week-magic-fab-icon">✨</span>
+  </button>
   <!-- Wochenplan-Footer: Body-Level, Safe-Area, nur bei provider-week-active [cite: 2026-02-25] -->
   <footer id="weekViewFooter" class="week-view-footer-fixed">
     <div class="footer-content-wrapper">
