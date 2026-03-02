@@ -7289,6 +7289,7 @@
     /* Wochenplan: Layer-Hierarchie + Beweis-Modus [cite: Ultimative Klick-Stabilität 2026-02-26] */
     #v-provider-week{ position:relative; z-index:1; }
     #weekMagicFab{ display:none !important; }
+    /* Kebab Body-Portal: außerhalb Header, kein backdrop-filter-Konflikt [cite: Option C 2026-03-02] */
     .week-kebab-dropdown{ position:fixed !important; z-index:9999 !important; }
     #v-provider-week.view{ display:none; }
     #v-provider-week.view.active{
@@ -7811,12 +7812,24 @@
       #btnWeekKebab:active{ background:rgba(0,0,0,0.08); transform:scale(0.96); }
       #v-provider-week .week-kebab-trigger i,
       #btnWeekKebab i{ flex-shrink:0; width:22px; height:22px; color:inherit; }
-      /* Bottom-Sheet-Style: weiß, 16px Radius, 56px Zeilen, Montserrat fett, Safe-Area, z-index 9999 über Content [cite: 2026-02-23, Universal-Linker 2026-02-26] */
+      /* Body-Portal: Glassmorphism, Scale-Pop-In, Silicon Valley Elevation [cite: Option C 2026-03-02] */
+      #weekKebabDropdown.app-dropdown{
+        position:fixed !important; top:calc(60px + env(safe-area-inset-top, 0)) !important; right:15px !important; left:auto !important; bottom:auto !important;
+        width:220px; min-width:220px;
+        background:rgba(255,255,255,0.95); backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px);
+        border-radius:18px; box-shadow:0 15px 35px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.3);
+        padding:8px 0; z-index:10000 !important;
+        transform-origin:top right; transition:transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+        opacity:0; transform:scale(0.8);
+      }
+      #weekKebabDropdown.app-dropdown.is-visible{ opacity:1; transform:scale(1); }
       .week-kebab-dropdown{ position:fixed !important; top:calc(60px + env(safe-area-inset-top, 0)) !important; right:16px !important; left:auto !important; bottom:auto !important; background:#ffffff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.12); border:1px solid rgba(0,0,0,0.06); padding:8px 0 calc(8px + env(safe-area-inset-bottom, 0)); z-index:9999 !important; min-width:220px; }
       .week-kebab-separator{ border-top:1px solid #ebebeb; margin:6px 12px; }
       .week-kebab-item{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 20px; border:none; border-radius:0; background:transparent; font-family:'Montserrat','Inter',sans-serif; font-size:15px; font-weight:700; color:#222222; cursor:pointer; text-align:left; transition:background 0.2s; }
       .week-kebab-item i{ flex-shrink:0; width:20px !important; height:20px !important; color:#222222; }
       .week-kebab-item:active{ background:#f1f5f9; }
+      .dropdown-item{ padding:14px 20px; font-weight:600; color:#222; display:flex; align-items:center; gap:12px; width:100%; min-height:56px; border:none; border-radius:0; background:transparent; font-family:'Montserrat','Inter',sans-serif; font-size:15px; cursor:pointer; text-align:left; transition:background 0.2s; }
+      .dropdown-item:active{ background:#f0f0f0; }
       /* Verschieben-Sheet (Long-Press) */
       .kw-move-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1100; display:flex; align-items:flex-end; justify-content:center; padding:0 20px  calc(80px + env(safe-area-inset-bottom)); animation:fadeIn 0.2s ease; }
       .kw-move-sheet{ background:#fff; border-radius:24px 24px 0 0; padding:24px max(20px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; max-height:70vh; overflow:auto; box-shadow:0 -8px 32px rgba(0,0,0,0.12); box-sizing:border-box; }
