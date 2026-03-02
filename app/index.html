@@ -1279,32 +1279,28 @@
           <div class="kw-grid" id="kwGrid"></div>
         </div>
         <div class="kw-action-bar-fixed" id="kwActionBarFixed" style="display:none;"></div>
-        <!-- Magic FAB: schwebend unten rechts über Tab-Bar [cite: 2026-02-20] -->
-        <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
-          <span class="week-magic-fab-icon">✨</span>
-        </button>
       </div>
     </section>
 
-    <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] -->
-    <div class="backdrop" id="kwSelectorBd" style="display:none; z-index:1185;" onclick="closeKWSelector()"></div>
-    <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:1186; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
+    <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] – z-index über weekViewFooter (10000) -->
+    <div class="backdrop" id="kwSelectorBd" style="display:none; z-index:10100;" onclick="closeKWSelector()"></div>
+    <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:10101; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
       <div class="week-magic-sheet-handle"></div>
       <h3 class="week-magic-sheet-title">Kalenderwoche wählen</h3>
       <div id="kwSelectorList" class="kw-selector-list kw-selector-list-horizontal"></div>
     </div>
 
-    <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] -->
-    <div class="backdrop" id="weekMagicSheetBd" style="display:none; z-index:1188;" onclick="closeWeekMagicSheet()"></div>
-    <div id="weekMagicSheet" class="week-magic-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:20px 20px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:1189; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
+    <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] – z-index über Footer -->
+    <div class="backdrop" id="weekMagicSheetBd" style="display:none; z-index:10102;" onclick="closeWeekMagicSheet()"></div>
+    <div id="weekMagicSheet" class="week-magic-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:20px 20px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:10103; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
       <div class="week-magic-sheet-handle"></div>
       <h3 class="week-magic-sheet-title">Schnellaktionen</h3>
       <div id="weekMagicSheetList" class="week-magic-sheet-list"></div>
     </div>
 
-    <!-- Wochen-Vorlagen: Bottom-Sheet (Glas) + Vorschau-Overlay -->
-    <div class="backdrop" id="weekTemplatesBd" style="display:none; z-index:1190;" onclick="if(typeof closeWeekTemplatesSheet==='function') closeWeekTemplatesSheet();"></div>
-    <div id="weekTemplatesSheet" class="week-templates-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; max-height:70vh; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.92); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:1191; display:none; flex-direction:column; overflow:hidden;">
+    <!-- Wochen-Vorlagen: Bottom-Sheet (Glas) + Vorschau-Overlay – z-index über Footer -->
+    <div class="backdrop" id="weekTemplatesBd" style="display:none; z-index:10104;" onclick="if(typeof closeWeekTemplatesSheet==='function') closeWeekTemplatesSheet();"></div>
+    <div id="weekTemplatesSheet" class="week-templates-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; max-height:70vh; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.92); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:10105; display:none; flex-direction:column; overflow:hidden;">
       <div class="week-templates-sheet-handle" style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:12px auto 8px;"></div>
       <h3 style="margin:0 20px 12px; font-size:18px; font-weight:800; color:#0f172a;">Woche aus Vorlage füllen</h3>
       <div id="weekTemplatesList" style="flex:1; overflow-y:auto; padding:0 20px 24px; display:flex; flex-direction:column; gap:10px;"></div>
@@ -3438,6 +3434,10 @@
     </footer>
   </div>
   <div id="fly-animation-container" style="position:fixed; z-index:99999; pointer-events:none; top:0; left:0; right:0; bottom:0;"></div>
+  <!-- Magic FAB: Body-Level für viewport-fixed (kein transform/filter-Ancestor) [cite: 2026-03-02] -->
+  <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
+    <span class="week-magic-fab-icon">✨</span>
+  </button>
   <!-- Wochenplan-Footer: Body-Level, Safe-Area, nur bei provider-week-active [cite: 2026-02-25] -->
   <footer id="weekViewFooter" class="week-view-footer-fixed">
     <div class="footer-content-wrapper">

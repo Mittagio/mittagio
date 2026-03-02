@@ -7244,7 +7244,8 @@
 
     /* Wochenplan: Layer-Hierarchie + Beweis-Modus [cite: Ultimative Klick-Stabilität 2026-02-26] */
     #v-provider-week{ position:relative; z-index:1; }
-    #weekMagicFab, .week-kebab-dropdown{ position:fixed !important; z-index:9999 !important; }
+    #weekMagicFab{ display:none !important; }
+    .week-kebab-dropdown{ position:fixed !important; z-index:9999 !important; }
     #v-provider-week.view{ display:none; }
     #v-provider-week.view.active{
       display:flex !important; flex-direction:column !important; min-height:100vh; min-height:100dvh; height:100vh; height:100dvh;
@@ -7284,7 +7285,8 @@
     #weekHeaderKWTrigger{ position:relative !important; z-index:10 !important; display:inline-flex !important; align-items:center; justify-content:center; gap:6px; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; flex:1; align-self:stretch; width:100%; height:100%; min-height:48px; -webkit-tap-highlight-color:transparent; pointer-events:auto !important; transition:opacity 0.15s ease, transform 0.15s ease; }
     #v-provider-week .week-header-kw-trigger:active,
     #weekHeaderKWTrigger:active{ opacity:0.9; transform:scale(0.98); }
-    #v-provider-week .week-header-compact{ background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:1050; }
+    #v-provider-week .week-header-compact{ flex-shrink:0 !important; background:rgba(245,245,240,0.95) !important; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); font-family:'Montserrat',sans-serif; position:sticky; top:0; z-index:1050; transition:box-shadow 0.2s ease; }
+    #v-provider-week .week-header-compact.week-header-scrolled{ box-shadow:0 2px 8px rgba(0,0,0,0.06); }
     #v-provider-week .week-header-title-left,
     #v-provider-week .prov-page-header-title{ margin:0; font-family:'Montserrat','Inter',sans-serif !important; font-weight:900 !important; font-size:20px !important; letter-spacing:-0.03em; color:#0f172a !important; text-align:left; }
     #v-provider-week .week-header-actions{ display:flex; align-items:center; gap:8px; margin-left:auto; }
@@ -7706,8 +7708,7 @@
       /* Smart-Save-Blase: Plopp & Schwebe [cite: 2026-02-18, 2026-02-26] */
       .smart-save-bubble{ position:fixed; background:white; color:#10b981; padding:6px 12px; border-radius:20px; font-weight:900; font-size:14px; box-shadow:0 4px 15px rgba(0,0,0,0.1); pointer-events:none; z-index:10002; animation:bubbleRise 0.8s ease-out forwards; }
       @keyframes bubbleRise{ 0%{ transform:translateY(0) scale(0.5); opacity:0; } 30%{ transform:translateY(-20px) scale(1.1); opacity:1; } 100%{ transform:translateY(-60px) scale(1); opacity:0; } }
-      /* Magic FAB: klickbar über Bottom-Nav, feste Position, Pointer-Events [cite: Agent 2026-02-25] */
-      #v-provider-week .week-magic-fab,
+      /* Magic FAB: Body-Level, viewport-fixed, klickbar über Footer [cite: 2026-03-02] */
       #weekMagicFab{
         position:fixed !important;
         bottom:calc(20px + env(safe-area-inset-bottom, 0) + 60px) !important;
@@ -7718,9 +7719,8 @@
         pointer-events:auto !important;
         transition:transform 0.2s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
       }
-      #v-provider-week .week-magic-fab:active,
       #weekMagicFab:active{ transform:scale(0.95); }
-      #v-provider-week .week-magic-fab-icon{ font-size:24px; pointer-events:none; }
+      #weekMagicFab .week-magic-fab-icon{ font-size:24px; pointer-events:none; }
       /* Magic Sheet */
       .week-magic-sheet-handle{ width:36px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:10px auto 12px; }
       .week-magic-sheet-title{ margin:0 20px 16px; font-size:17px; font-weight:800; color:#0f172a; }
@@ -7763,13 +7763,12 @@
       #v-provider-week .kw-action-bar-fixed .btn i{ opacity:0.9; }
       /* Preview-Mode: Palette + FAB + Footer ausblenden [cite: 2026-02-18] */
       body.week-preview-mode #v-provider-week #kwBoardHeader{ display:none !important; }
-      body.week-preview-mode #v-provider-week .week-magic-fab{ display:none !important; }
+      body.week-preview-mode #weekMagicFab{ display:none !important; }
       body.week-preview-mode #weekViewFooter{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekKebab{ display:none !important; }
       body.week-preview-mode #v-provider-week #btnWeekPreviewClose{ display:inline-flex !important; align-items:center; justify-content:center; }
       /* Druck: nur Wochenplan-Content (Grid), Navigation/Header ausblenden [cite: 2026-02-18, 2026-02-23] */
       @media print{
-        #v-provider-week .week-magic-fab,
         #v-provider-week #kwBoardHeader,
         #v-provider-week .kw-cookbook-strip-wrap,
         #weekViewFooter,
@@ -7781,8 +7780,8 @@
         #v-provider-week .kw-board-scroll{ padding-bottom:24px !important; }
         #v-provider-week .kw-grid{ break-inside:avoid; }
       }
-      /* Nur .kw-board-scroll scrollt – View und Body ohne Scroll, kein horizontales Ziehen */
-      #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; overflow-x:hidden !important; }
+      /* Nur .kw-board-scroll scrollt – View und Body ohne Scroll, Header bleibt oben [cite: 2026-03-02] */
+      #v-provider-week.view.active{ overflow:hidden !important; height:100vh; height:100dvh; max-height:100dvh; overflow-x:hidden !important; display:flex !important; flex-direction:column !important; }
       body.provider-week-active{ overflow:hidden !important; overflow-x:hidden !important; }
       /* Wochenplan fullscreen: Topbar ausblenden, main ohne horizontales Scroll – applike */
       body.provider-week-active .topbar{ display:none !important; }
@@ -7792,13 +7791,14 @@
       #weekViewFooter{ display:none !important; }
       body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
       #weekViewFooter.week-footer-hidden{ display:none !important; }
-      /* Magic FAB: über Footer (z-index 10050), klickbar [cite: 2026-02-25 Fehlersuche] */
-      body.provider-week-active #v-provider-week .week-magic-fab,
-      body.provider-week-active #weekMagicFab{ z-index:9999 !important; pointer-events:auto !important; }
+      /* Magic FAB: Body-Level, viewport-fixed, über Footer (z-index 10050) [cite: 2026-03-02] */
+      #weekMagicFab{ display:none !important; }
+      /* FAB: 16px Abstand über Footer-Button (54px + 16px padding ≈ 86px) [cite: 2026-02-23, 2026-03-02] */
+      body.provider-week-active #weekMagicFab{ display:flex !important; z-index:10050 !important; pointer-events:auto !important; bottom:calc(86px + env(safe-area-inset-bottom, 0)) !important; }
       /* Wochenplan-Footer: Airbnb-Standard – weiß, #ebebeb-Linie, Safe-Area [cite: 2026-02-23, 2026-02-25] */
-      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom) !important; box-sizing:border-box; }
+      .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding-bottom:env(safe-area-inset-bottom, 0px) !important; box-sizing:border-box; }
       .week-view-footer-fixed .footer-content-wrapper{ padding:16px 20px; display:flex; flex-direction:column; align-items:center; gap:8px; }
-      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; margin-bottom:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
+      .week-view-footer-fixed .btn-airbnb-primary{ width:100%; height:54px; min-height:54px; margin:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; }
       .week-view-footer-fixed .btn-airbnb-primary:active{ transform:scale(0.98); }
       .week-view-footer-fixed .footer-subtext{ font-size:11px; color:#717171; margin:0; line-height:1.3; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
