@@ -177,6 +177,10 @@
     providerRef.loggedIn = true;
     providerRef.email = email;
     providerRef.current_session_id = newSessionId;
+    saveFn(LSref.provider, providerRef);
+    if(email === 'demo@mittagio.de' && typeof window.seedDemoProvider === 'function'){
+      window.seedDemoProvider();
+    }
     if(email === 'demo@mittagio.de'){
       var demoProfile = loadFn('mittagio_demo_provider_profile', null);
       if(demoProfile){

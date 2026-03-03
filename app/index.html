@@ -1358,16 +1358,18 @@
         </div>
         <div id="cookbookList" style="display:none; gap:16px;"></div>
 
-        <div id="cookbookEmpty" style="text-align:center; padding:80px 24px; display:none;">
-          <div style="width:96px; height:96px; background:rgba(255,255,255,0.6); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.5); border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 32px rgba(0,0,0,0.08); font-size:48px;">📖</div>
-          <h2 style="font-size:24px; font-weight:800; color:#1D1D1F; margin-bottom:8px;">Dein Kochbuch ist noch leer</h2>
-          <p style="color:#86868B; font-size:14px; line-height:1.5; margin-bottom:24px; max-width:280px; margin-left:auto; margin-right:auto;">Entdecke 200 Klassiker im Mittagio-Archiv.</p>
-          <button class="btn-primary" id="btnCookbookEmptyImport" type="button" style="width:100%; min-height:56px; border-radius:24px; font-size:15px; font-weight:800; background:#222222; color:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.2); margin-bottom:12px;">
-            Jetzt 200 Gerichte gratis laden
-          </button>
-          <button class="btn-primary" id="btnCookbookEmptyAdd" type="button" style="width:100%; min-height:52px; border-radius:24px; font-size:14px; font-weight:700; background:#FACC15; color:#1a1a1a; border:none; box-shadow:0 4px 20px rgba(250,204,21,0.4);">
-            Jetzt erstes Gericht inserieren
-          </button>
+        <div id="cookbookEmpty" class="mt-state-empty" style="display:none;" role="status" aria-live="polite">
+          <div class="mt-state-empty-icon">📖</div>
+          <h2 class="mt-state-empty-title">Dein Kochbuch ist noch leer</h2>
+          <p class="mt-state-empty-desc">Entdecke 200 Klassiker im Mittagio-Archiv oder lege dein erstes Gericht an.</p>
+          <div class="mt-state-empty-actions">
+            <button class="btn-primary mt-state-empty-btn mt-state-empty-btn-primary" id="btnCookbookEmptyImport" type="button">
+              Jetzt 200 Gerichte gratis laden
+            </button>
+            <button class="btn-primary mt-state-empty-btn mt-state-empty-btn-secondary" id="btnCookbookEmptyAdd" type="button">
+              Jetzt erstes Gericht inserieren
+            </button>
+          </div>
         </div>
       </div>
     </section>

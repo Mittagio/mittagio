@@ -1268,6 +1268,16 @@
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill.on{ background:#0f172a; color:#fff; box-shadow:0 2px 8px rgba(15,23,42,0.25); }
     #v-provider-cookbook .cookbook-category-pills .cookbook-cat-pill:active{ transform:scale(0.96); }
     #v-provider-cookbook #btnCookbookEmptyAdd{ background:#FACC15 !important; color:#1a1a1a !important; box-shadow:0 4px 20px rgba(250,204,21,0.4) !important; }
+    /* mt-state-empty: Kochbuch Empty State – sichtbar, ansprechend, nie „doof“ [cite: 2026-03-03] */
+    #v-provider-cookbook .mt-state-empty{ flex-direction:column; align-items:center; justify-content:center; min-height:280px; padding:48px 24px 80px; text-align:center; }
+    #v-provider-cookbook .mt-state-empty-icon{ width:96px; height:96px; background:rgba(255,255,255,0.8); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.6); border-radius:50%; margin:0 auto 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 32px rgba(0,0,0,0.08); font-size:48px; line-height:1; }
+    #v-provider-cookbook .mt-state-empty-title{ font-size:22px; font-weight:800; color:#1D1D1F; margin:0 0 8px; letter-spacing:-0.02em; }
+    #v-provider-cookbook .mt-state-empty-desc{ color:#64748b; font-size:15px; line-height:1.5; margin:0 0 28px; max-width:280px; }
+    #v-provider-cookbook .mt-state-empty-actions{ display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; }
+    #v-provider-cookbook .mt-state-empty-btn{ width:100%; min-height:56px; border-radius:20px; font-size:15px; font-weight:800; border:none; cursor:pointer; transition:transform 0.12s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent; }
+    #v-provider-cookbook .mt-state-empty-btn:active{ transform:scale(0.98); }
+    #v-provider-cookbook .mt-state-empty-btn-primary{ background:#1a1a1a; color:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+    #v-provider-cookbook .mt-state-empty-btn-secondary{ background:#FACC15; color:#1a1a1a; box-shadow:0 4px 20px rgba(250,204,21,0.4); }
     /* Cookbook Magic Ingest Overlay – wenn ausgeblendet, keine Blockade [cite: 2026-02-25] */
     .cookbook-ingest-overlay{
       position:fixed; inset:0; z-index:2000; background:#09090b;

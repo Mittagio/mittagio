@@ -949,6 +949,7 @@
 
     return { cookbook: demoCookbook.length, offers: demoOffers.length, week: Object.keys(weekEntries).length, orders: demoOrders.length, transactions: demoTransactions.length };
   }
+  if(typeof window !== 'undefined') window.seedDemoProvider = seedDemoProvider;
 
   // --- Test-Funktion für Abholnummer-Logik ---
   function testPickupCodeLogic(){
@@ -6209,7 +6210,8 @@
     var emptyEl = document.getElementById('createFlowRennerEmpty');
     if(!grid) return;
     var pid = typeof providerId === 'function' ? providerId() : '';
-    var mine = (cookbook||[]).filter(function(c){ return String(c.providerId)===String(pid); });
+    var cb = (typeof load === 'function' && typeof LS !== 'undefined') ? load(LS.cookbook, []) : (typeof cookbook !== 'undefined' ? cookbook : []);
+    var mine = (cb||[]).filter(function(c){ return String(c.providerId)===String(pid); });
     mine.sort(function(a,b){
       var au = a.lastUsed || 0, bu = b.lastUsed || 0;
       if(bu!==au) return bu-au;
@@ -15353,7 +15355,23 @@
     const emptyEl = document.getElementById('cookbookEmpty');
     const pillsWrap = document.getElementById('cookbookCategoryPills');
     const scrollWrap = document.getElementById('cookbookScrollWrap');
-    if(!pillsWrap) return;
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var mineEarly = cookbook.filter(function(x){ return String(x.providerId) === String(pid); });
+    if(!pillsWrap){
+      if(mineEarly.length === 0){
+        var emptyFallback = document.getElementById('cookbookEmpty');
+        var magFallback = document.getElementById('cookbookMagazine');
+        var boxFallback = document.getElementById('cookbookList');
+        if(emptyFallback){ emptyFallback.style.display = 'flex'; emptyFallback.classList.add('mt-state-empty'); }
+        if(magFallback) magFallback.style.display = 'none';
+        if(boxFallback) boxFallback.style.display = 'none';
+        var btnImportFb = document.getElementById('btnCookbookEmptyImport');
+        var btnEmptyFb = document.getElementById('btnCookbookEmptyAdd');
+        if(btnImportFb && !btnImportFb._bound){ btnImportFb._bound = true; btnImportFb.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof showCookbookIngestPriceModal === 'function') showCookbookIngestPriceModal(function(price){ if(typeof loadMasterDishes === 'function') loadMasterDishes(function(list){ if(list.length === 0){ if(typeof showToast === 'function') showToast('Keine Gerichte geladen'); return; } if(typeof runCookbookIngest === 'function') runCookbookIngest(list, price); }); }); }; };
+        if(btnEmptyFb && !btnEmptyFb._bound){ btnEmptyFb._bound = true; btnEmptyFb.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof openDishFlow === 'function') openDishFlow(null, 'cookbook'); }; };
+      }
+      return;
+    }
 
     (function wireCookbookHeader(){
       var titleWrap = document.getElementById('cookbookTitleWrap');
@@ -15417,7 +15435,7 @@
       });
     }
 
-    const mine = cookbook.filter(x=>x.providerId===providerId());
+    const mine = cookbook.filter(function(x){ return String(x.providerId) === String(pid); });
     var filtered = mine;
     if(cookbookCategory && cookbookCategory!=='Alle'){
       filtered = mine.filter(function(x){
@@ -15447,7 +15465,7 @@
       var footerWrapEmpty = document.getElementById('cookbookFooterWrap');
       if(footerWrapEmpty) footerWrapEmpty.style.display = 'none';
       if(mine.length === 0){
-        if(emptyEl){ emptyEl.style.display = 'block'; }
+        if(emptyEl){ emptyEl.style.display = 'flex'; emptyEl.classList.add('mt-state-empty'); }
         if(magazineEl){ magazineEl.style.display = 'none'; }
         if(box){ box.style.display = 'none'; }
         var btnImport = document.getElementById('btnCookbookEmptyImport');
