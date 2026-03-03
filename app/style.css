@@ -1650,6 +1650,7 @@
     .system-bottom-nav .nav-btn-equal { flex: 1; min-width: 0; }
     body.create-flow-open #providerNavWrap,
     body.wizard-inserat-open #providerNavWrap { display: none !important; }
+    body.create-flow-open #fabProviderAddOffer { display: none !important; }
     body.wizard-inserat-open #cookbookFooterWrap { display: none !important; }
     /* Wochenplan-UI ausblenden wenn Mastercard offen [cite: Regression 2026-03-02] */
     body.wizard-inserat-open #weekViewFooter,
