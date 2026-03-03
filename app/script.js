@@ -1206,7 +1206,7 @@
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
       btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
-      btn.onclick = function(){ createFlowPreselectedDate = null; createFlowOriginView = 'dashboard'; if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' }); else if(typeof openDishFlow === 'function') openDishFlow(); };
+      btn.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
       mainEl.appendChild(btn);
     } else {
       if(existing) existing.remove();
@@ -6212,14 +6212,24 @@
   function openCreateFlowSheet(){
     if(typeof haptic === 'function') haptic(10);
     const sheet = document.getElementById('createFlowSheet');
-    if(sheet){
-      document.getElementById('createFlowBd').classList.add('active');
-      sheet.classList.add('active');
-      document.body.classList.add('create-flow-open');
-      var pn = document.getElementById('providerNavWrap');
-      if(pn && document.body.classList.contains('provider-mode')) pn.style.setProperty('display', 'none', 'important');
-      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    if(!sheet) return;
+    var dashWrap = document.getElementById('createFlowDashboardContent');
+    var weekWrap = document.getElementById('createFlowWeekContent');
+    var ep = (typeof createFlowOriginView !== 'undefined') ? createFlowOriginView : 'dashboard';
+    if(ep === 'week'){
+      if(dashWrap) dashWrap.style.display = 'none';
+      if(weekWrap) weekWrap.style.display = 'flex';
+    } else {
+      if(dashWrap) dashWrap.style.display = 'flex';
+      if(weekWrap) weekWrap.style.display = 'none';
+      if(typeof populateCreateFlowRenner === 'function') populateCreateFlowRenner();
     }
+    document.getElementById('createFlowBd').classList.add('active');
+    sheet.classList.add('active');
+    document.body.classList.add('create-flow-open');
+    var pn = document.getElementById('providerNavWrap');
+    if(pn && document.body.classList.contains('provider-mode')) pn.style.setProperty('display', 'none', 'important');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   
   function closeCreateFlowSheet(){
@@ -10528,8 +10538,8 @@
         try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
         createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
         createFlowOriginView = 'dashboard';
-        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
-        else if(typeof openDishFlow === 'function') openDishFlow();
+        if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+        else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
       };
       btnFirstDishToday.onkeydown = function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); btnFirstDishToday.click(); } };
     }
@@ -10597,8 +10607,8 @@
             try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
             createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
             createFlowOriginView = 'dashboard';
-            if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
-            else if(typeof openDishFlow === 'function') openDishFlow();
+            if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+            else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
           };
         }
       }

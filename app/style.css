@@ -1628,8 +1628,12 @@
     /* Inseratsauswahl-Sheet (createFlowBd/createFlowSheet) – Deckelung Thekenrenner [cite: Beweis-Modus 2026-02-26] */
     #createFlowBd { z-index: 499; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
-    #createFlowSheet { z-index: 500 !important; position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s; }
+    #createFlowSheet { z-index: 500 !important; position: fixed; inset: 0; display: flex; flex-direction: column; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s; }
     #createFlowSheet.active { pointer-events: auto; opacity: 1; visibility: visible; }
+    #createFlowDashboardContent { display: none; flex-direction: column; position: absolute; bottom: 0; left: 0; right: 0; max-height: 85vh; background: #fff; border-radius: 24px 24px 0 0; overflow-y: auto; padding: 20px 20px 0; padding-bottom: max(24px, env(safe-area-inset-bottom)); pointer-events: auto; }
+    #createFlowDashboardContent .sheet-header { padding: 0 0 16px; text-align: center; }
+    #createFlowDashboardContent .sheet-header h3 { margin: 0; font-size: 20px; font-weight: 900; color: #0f172a; }
+    #createFlowWeekContent { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0; pointer-events: auto; }
     #createFlowSheet .ghost-options-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; pointer-events: auto; }
     .ghost-option { font-size: 28px; font-weight: 800; color: white; margin: 30px 0; text-align: center; text-shadow: 0 0 20px rgba(255,255,255,0.4); cursor: pointer; transition: transform 0.3s, opacity 0.3s; animation: ghost-float 3s ease-in-out infinite; -webkit-tap-highlight-color: transparent; }
     .ghost-option:nth-child(1) { animation-delay: 0s; }

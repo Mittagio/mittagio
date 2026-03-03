@@ -3092,13 +3092,27 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Magic-Three: Ghost-UI – schwebende Begriffe [cite: Ghost-Magic 2026-03-02] -->
+<!-- CreateFlowSheet: Dashboard = Renner+Neues Gericht | Week = Magic Three [cite: 2026-03-02] -->
 <div class="backdrop magic-active-bg" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
-<div class="ghost-magic-sheet" id="createFlowSheet">
-  <div class="ghost-options-wrap">
-    <div class="ghost-option" data-magic="surprise">✨ Überraschung</div>
-    <div class="ghost-option" data-magic="season">🥗 Saison</div>
-    <div class="ghost-option" data-magic="ki">🤖 KI-Modus</div>
+<div class="create-flow-sheet-wrapper" id="createFlowSheet">
+  <!-- Dashboard-Modus: Renner (Bestseller) + Neues Gericht -->
+  <div class="create-flow-dashboard-content" id="createFlowDashboardContent">
+    <div class="sheet-header">
+      <h3>Was gibt's Neues?</h3>
+    </div>
+    <div class="create-flow-renner-section">
+      <div class="create-flow-renner-heading">Deine Renner (Bestseller)</div>
+      <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner. Erstelle Gerichte im Kochbuch.</div>
+      <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
+    </div>
+  </div>
+  <!-- Week-Modus: Ghost Magic (Überraschung, Saison, KI-Modus) -->
+  <div class="create-flow-week-content" id="createFlowWeekContent">
+    <div class="ghost-options-wrap">
+      <div class="ghost-option" data-magic="surprise">✨ Überraschung</div>
+      <div class="ghost-option" data-magic="season">🥗 Saison</div>
+      <div class="ghost-option" data-magic="ki">🤖 KI-Modus</div>
+    </div>
   </div>
   <footer class="create-flow-footer-ghost" id="createFlowFooterGhost">
     <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook"><span>📖</span> Kochbuch</button>
