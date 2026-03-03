@@ -21,11 +21,11 @@ Technisch: `shareWeekPlan()` baut nur **aktivierte (live)** Gerichte der aktuell
 ## Regel: Öffentliche Kunden-Ansicht (#/plan/[Anbieter-ID])
 
 - **Inhalt:** Alle aktivierten Gerichte (Status: Grün) der aktuellen Woche.
-- **Design:** Clean, mobil, mit **Originalbildern** und den **3 Säulen** unter dem Bild: 🍴 (Vor Ort), 🧾 (Abholnummer), 🔄 (Mehrweg).
+- **Design:** Clean, mobil, mit **Originalbildern**.
 - **Preise:** Nur der **Verkaufspreis** wird angezeigt – **keine** Gebühren-Logik (4,99 € / 0,89 €) für den Kunden.
 - Wenn kein Snapshot vorhanden (z. B. anderer Gerät/Link abgelaufen): Hinweis „Wochenplan nicht verfügbar“ + Link „Zur App“.
 
-Technisch: Beim Öffnen von `#/plan/[id]` wird `showPlanPublicView(id)` aufgerufen, liest `localStorage.getItem('public_plan_' + id)` und rendert die Karten mit Bild, 3 Säulen, Gerichtsname, Tag, Preis.
+Technisch: Beim Öffnen von `#/plan/[id]` wird `showPlanPublicView(id)` aufgerufen, liest `localStorage.getItem('public_plan_' + id)` und rendert die Karten mit Bild, Gerichtsname, Tag, Preis.
 
 ---
 
@@ -41,5 +41,5 @@ Technisch: Beim Öffnen von `#/plan/[id]` wird `showPlanPublicView(id)` aufgeruf
 | Thema              | Umsetzung |
 |--------------------|-----------|
 | Share-API          | `navigator.share` mit title „Unser Wochenplan ist online!“, url `#/plan/[providerId]` |
-| Öffentliche Ansicht| Read-Only, 3 Säulen, nur Verkaufspreis, Snapshot aus localStorage |
+| Öffentliche Ansicht| Read-Only, nur Verkaufspreis, Snapshot aus localStorage |
 | OG-Vorschau         | Feste og:meta in HTML; provider-spezifisch optional per Server |

@@ -21,7 +21,7 @@
   <meta property="twitter:title" content="Mittagio | In 30s zum Inserat" />
   <meta property="twitter:description" content="Die App für Metzger &amp; Gastro. 4,99 € pro Inserat. 🍴 🧾 🔄" />
   <meta property="twitter:image" content="https://www.mittagio.de/assets/og-preview.png" />
-  <!-- Build: 2026-02-04 -->
+  <!-- Build: 2026-03-01 (Final-Fix: Wizard physisch, Power-Bar aktiv) -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
@@ -29,9 +29,26 @@
   <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260301">
 </head>
 <body>
+<!-- Wizard physisch zuerst – nie durch Cache/Deployment verloren [cite: 2026-03-01] -->
+<div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.classList.contains('active')){ if(w.getAttribute('data-flow')==='listing'&&typeof history!=='undefined'&&history.length>1){ history.back(); } else if(w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function'){ closeMastercard(); } else if(typeof closeWizard==='function'){ closeWizard(); } } }"></div>
+<div class="sheet sheet--kitchen" id="wizard">
+  <div class="handle"></div>
+  <div class="sheet-body wizard-sheet-body">
+    <div class="wizard" id="wBox">
+      <div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div>
+      <div class="wizard-scroll">
+        <div class="w-top"><div class="w-title" id="wTitle">Setup</div><div class="w-step" id="wStep">Schritt 1 von 5</div></div>
+        <div class="w-q" id="wQ">…</div>
+        <p class="w-help" id="wHelp"></p>
+        <div id="wContent"></div>
+        <div class="wizard-footer" id="wizardFooter" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Print-Branding: Oben Anbietername, unten Powered by metallio.de – nur bei Druck sichtbar [cite: 2026-02-26] -->
 <div id="print-only-branding" style="display:none; position:absolute; left:-9999px;">
   <div class="print-header"><h1 id="print-merchant-name">Wochenplan</h1></div>
@@ -1227,36 +1244,36 @@
     </section>
 
     <section class="view onboarding-view" id="v-provider-week">
+      <!-- Header wie Meine Küche / Mein Kochbuch [cite: 2026-02-18, 2026-03-02] -->
       <header class="week-header-compact week-header-minimal prov-page-header dynamic-header system-header" id="weekHeaderCompact">
         <div class="prov-page-header-row week-header-row">
-          <button type="button" id="weekHeaderBackBtn" class="week-header-back-btn" aria-label="Zurück zum Dashboard" style="flex-shrink:0; width:44px; height:44px; min-width:44px; min-height:44px; display:flex; align-items:center; justify-content:center; background:none; border:none; padding:0; cursor:pointer; margin-right:8px; border-radius:12px; color:#0f172a;"><i data-lucide="chevron-left" style="width:24px;height:24px;"></i></button>
-          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0; display:flex; align-items:center; gap:8px;">
-            <span class="week-header-title-text" id="weekHeaderTitleText">Wochenplan</span>
-            <button type="button" class="week-header-kw-trigger" id="weekHeaderKWTrigger" aria-label="Kalenderwoche wählen">
-              <span class="week-header-kw-badge" id="weekHeaderKWBadge">KW 8</span>
-            </button>
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+            <h1 class="prov-page-header-title system-header-title" id="weekHeaderTitleText">Mein Wochenplan</h1>
           </div>
           <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
             <button type="button" id="btnWeekPreviewClose" class="week-preview-close-btn" style="display:none; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:rgba(0,0,0,0.08); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;">Schließen</button>
+            <button type="button" id="btnWeekHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
+            <button type="button" id="btnWeekHeaderShare" title="Teilen" aria-label="Teilen" class="prov-page-header-action" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;"><i data-lucide="share-2" style="width:20px; height:20px;"></i></button>
             <button type="button" id="btnWeekKebab" class="week-kebab-trigger" title="Menü" aria-label="Menü" aria-haspopup="true" aria-expanded="false"><i data-lucide="more-vertical"></i></button>
-            <div id="weekKebabDropdown" class="week-kebab-dropdown week-kebab-bottom-sheet" style="display:none;">
-              <button type="button" class="week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:20px;height:20px;"></i> Teilen</button>
-              <button type="button" class="week-kebab-item" id="weekKebabScreenshot"><i data-lucide="eye" style="width:20px;height:20px;"></i> Wochenplan Vorschau</button>
-              <button type="button" class="week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:20px;height:20px;"></i> Drucken</button>
-              <div class="week-kebab-separator" role="separator"></div>
-              <button type="button" class="week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:20px;height:20px;"></i> Eigene Vorlage speichern</button>
-            </div>
           </div>
           <button type="button" class="week-header-done-btn" id="weekHeaderDoneBtn" style="display:none;" aria-label="Fertig">Fertig</button>
         </div>
       </header>
 
-      <!-- KW-Board: Inspirations-Slider + Elastic 7-Tage-Grid [cite: 2026-02-21] -->
+      <!-- KW-Board: KW-Navigation + Renner-Karussell + vertikale Tages-Timeline [cite: 2026-03-02] -->
       <div id="kwBoardWrap" style="display:flex; flex-direction:column; flex:1; min-height:0; position:relative;">
-        <div class="kw-board-header" id="kwBoardHeader">
-          <h2 class="kw-board-strip-title" id="kwBoardStripTitle">Wochen-Gerichte</h2>
-          <div id="kwCookbookStripWrap" class="kw-cookbook-strip-wrap kw-inspirations-slider"></div>
+        <div class="kw-nav-container" id="kwNavContainer">
+          <div class="kw-selector">
+            <button type="button" class="nav-arrow" id="kwNavPrev" aria-label="Vorherige Woche">&lt;</button>
+            <div class="kw-display-wrap" style="display:flex; align-items:center; justify-content:center; gap:6px; flex:1;">
+              <h2 class="kw-display" id="kwDisplay">KW 10</h2>
+              <span id="kwBackToNowHint" class="kw-back-to-now-hint is-hidden" aria-label="Zur aktuellen Woche springen" title="Zur aktuellen Woche">Heute</span>
+            </div>
+            <button type="button" class="nav-arrow" id="kwNavNext" aria-label="Nächste Woche">&gt;</button>
+          </div>
+          <p class="date-range" id="kwDateRange">02.03. – 08.03.</p>
         </div>
+        <div id="rennerScroll" class="renner-scroll" role="list"></div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
           <div class="kw-board-swipe-inner" id="kwBoardSwipeInner">
@@ -1294,8 +1311,8 @@
       <h3 style="margin:0 20px 12px; font-size:18px; font-weight:800; color:#0f172a;">Woche aus Vorlage füllen</h3>
       <div id="weekTemplatesList" style="flex:1; overflow-y:auto; padding:0 20px 24px; display:flex; flex-direction:column; gap:10px;"></div>
     </div>
-    <div class="backdrop" id="weekTemplatePreviewBd" style="display:none; z-index:1192;" onclick="if(typeof closeWeekTemplatePreview==='function') closeWeekTemplatePreview();"></div>
-    <div id="weekTemplatePreviewSheet" style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:360px; max-height:80vh; overflow:auto; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); border-radius:20px; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); z-index:1193; display:none; flex-direction:column;">
+    <div class="backdrop is-hidden" id="weekTemplatePreviewBd" style="z-index:10106;" onclick="if(typeof closeWeekTemplatePreview==='function') closeWeekTemplatePreview();"></div>
+    <div id="weekTemplatePreviewSheet" class="is-hidden" style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); width:90%; max-width:360px; max-height:80vh; overflow:auto; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); border-radius:20px; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,0.15); z-index:10107; flex-direction:column;">
       <h3 id="weekTemplatePreviewTitle" style="margin:0 0 12px; font-size:17px; font-weight:800; color:#0f172a;">Vorschau</h3>
       <div id="weekTemplatePreviewDays" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;"></div>
       <button type="button" id="weekTemplatePreviewApply" style="width:100%; min-height:52px; border-radius:16px; border:none; background:#10b981; color:#fff; font-size:16px; font-weight:800; cursor:pointer;">Anwenden</button>
@@ -3075,27 +3092,42 @@
   <button type="button" id="weekUndoBtn">Rückgängig</button>
 </div>
 
-<!-- Inseratsauswahl: Deine Renner oben, Footer Airbnb-Style (2 massive schwarze Buttons) [cite: 2026-02-21] -->
+<!-- Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] -->
 <div class="backdrop" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
-<div class="sheet sheet--kitchen create-flow-selection-pane" id="createFlowSheet">
-  <div class="handle"></div>
-  <div class="create-flow-selection-body">
-    <div class="renner-scroll-area">
-      <h2 class="section-title create-flow-title">Deine Renner</h2>
-      <div id="createFlowRennerSection" class="create-flow-renner-section">
-        <div id="createFlowRennerScroll" class="create-flow-renner-grid"></div>
-        <div id="createFlowRennerEmpty" class="create-flow-renner-empty">Noch keine Renner – leg Gerichte im Kochbuch an oder biete sie an.</div>
-      </div>
-      <div class="create-flow-hint hint" id="createFlowDateHint" style="display:none;"></div>
+<div class="sheet sheet--kitchen create-flow-selection-pane bottom-sheet" id="createFlowSheet">
+  <div class="sheet-header">
+    <div class="drag-handle"></div>
+    <h3>Was gibt's Neues?</h3>
+  </div>
+  <div class="magic-grid">
+    <div class="magic-card card-surprise" data-magic="surprise">
+      <div class="magic-icon">✨</div>
+      <span>Überraschung</span>
     </div>
-    <footer class="system-bottom-nav">
-      <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook">
-        <span>📖</span> Kochbuch
-      </button>
-      <button class="nav-btn-primary nav-btn-equal" type="button" id="createNewListing">
-        + Neues Gericht
-      </button>
-    </footer>
+    <div class="magic-card card-season" data-magic="season">
+      <div class="magic-icon">🥗</div>
+      <span>Saison-Held</span>
+    </div>
+    <div class="magic-card card-ki" data-magic="ki">
+      <div class="magic-icon">🤖</div>
+      <span>KI-Modus</span>
+    </div>
+  </div>
+  <footer class="system-bottom-nav create-flow-footer-fallback">
+    <button class="nav-btn-primary nav-btn-equal" type="button" id="openCookbook">
+      <span>📖</span> Kochbuch
+    </button>
+    <button class="nav-btn-primary nav-btn-equal" type="button" id="createNewListing">
+      + Neues Gericht
+    </button>
+  </footer>
+</div>
+
+<div id="magicOverlay" class="magic-overlay is-hidden">
+  <div class="magic-content">
+    <div id="magicSlotMachine" class="slot-machine"></div>
+    <div id="magicStatusText">KI berechnet...</div>
+    <div class="magic-loader"></div>
   </div>
 </div>
 
@@ -3232,27 +3264,6 @@
 
 <!-- Print view -->
 <div id="printView" class="print-view"></div>
-
-<!-- Provider Wizard sheet (single reusable) – Küchenmodus -->
-<div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function') closeMastercard(); else if(typeof closeWizard==='function') closeWizard(); }"></div>
-<div class="sheet sheet--kitchen" id="wizard">
-  <div class="handle"></div>
-  <div class="sheet-body wizard-sheet-body">
-    <div class="wizard" id="wBox">
-      <div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div>
-      <div class="wizard-scroll">
-        <div class="w-top">
-          <div class="w-title" id="wTitle">Setup</div>
-          <div class="w-step" id="wStep">Schritt 1 von 5</div>
-        </div>
-        <div class="w-q" id="wQ">…</div>
-        <p class="w-help" id="wHelp"></p>
-        <div id="wContent"></div>
-        <div class="wizard-footer" id="wizardFooter" style="display:none;"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Info-Legende Bottom-Sheet (Inseratcard Power-Bar ⓘ) -->
 <div class="backdrop" id="infoLegendBackdrop" style="z-index:1195; opacity:0; pointer-events:none; transition:opacity 0.25s ease; background:rgba(0,0,0,0.35); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);" onclick="if(typeof closeInfoLegendSheet==='function') closeInfoLegendSheet();"></div>
@@ -3423,7 +3434,7 @@
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=1.1"></script>
+<script src="script.js?v=20260301"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
@@ -3448,13 +3459,22 @@
   <button type="button" id="weekMagicFab" class="week-magic-fab" aria-label="Schnellaktionen" title="Schnellaktionen">
     <span class="week-magic-fab-icon">✨</span>
   </button>
-  <!-- Wochenplan-Footer: Body-Level, Safe-Area, nur bei provider-week-active [cite: 2026-02-25] -->
-  <footer id="weekViewFooter" class="week-view-footer-fixed">
+  <!-- Wochenplan-Footer: Airbnb-Style – Links Counter, Rechts schwarzer Button [cite: 2026-03-02] -->
+  <footer id="weekViewFooter" class="week-view-footer-fixed app-footer">
     <div class="footer-content-wrapper">
+      <span class="week-footer-counter" id="weekFooterCounter">0 Gerichte inserieren</span>
       <button type="button" id="btnWeekViewFooter" class="btn-airbnb-primary">
-        <span class="kw-activate-count-wrap">[<span id="kwActivateCount">0</span>] Gerichte jetzt aktivieren</span>
+        Woche jetzt inserieren
       </button>
     </div>
   </footer>
+  <!-- Kebab-Menü: Body-Portal (Option C) – schwebt über allem, kein backdrop-filter-Konflikt [cite: 2026-03-02] -->
+  <div id="weekKebabDropdown" class="app-dropdown week-kebab-dropdown is-hidden">
+    <button type="button" class="dropdown-item week-kebab-item" id="weekKebabShare"><i data-lucide="share-2" style="width:20px;height:20px;"></i> Teilen</button>
+    <button type="button" class="dropdown-item week-kebab-item" id="weekKebabScreenshot"><i data-lucide="eye" style="width:20px;height:20px;"></i> Wochenplan Vorschau</button>
+    <button type="button" class="dropdown-item week-kebab-item" id="weekKebabPdf"><i data-lucide="printer" style="width:20px;height:20px;"></i> Drucken</button>
+    <div class="week-kebab-separator" role="separator"></div>
+    <button type="button" class="dropdown-item week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:20px;height:20px;"></i> Eigene Vorlage speichern</button>
+  </div>
 </body>
 </html>

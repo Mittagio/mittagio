@@ -11,7 +11,7 @@ alwaysApply: false
 ### Aufbau des BottomSheets (Referenz)
 
 - **Oben:** Searchbar und Quick-Pick-Pills aus dem Kochbuch.
-- **Mittig:** Time-Picker (3 Standardzeiten) und Toggle-Icons für die 3 Säulen: 🍴 Vor Ort, 🧾 Abholnummer, 🔄 Mehrweg.
+- **Mittig:** Time-Picker (3 Standardzeiten) und Toggles für Vor Ort, Abholnummer, Mehrweg.
 - **Ganz unten:** Fixierter Action-Button: **„Jetzt für 4,99 € einplanen“**.
 
 ### Design
@@ -33,7 +33,7 @@ alwaysApply: false
 
 ### Bearbeiten
 
-- **Einfacher Tap** auf die Karte öffnet das BottomSheet **erneut mit den geladenen Daten** des jeweiligen Gerichts (Vorauswahl: Gericht, Zeit, 3 Säulen-Toggles).
+- **Einfacher Tap** auf die Karte öffnet das BottomSheet **erneut mit den geladenen Daten** des jeweiligen Gerichts (Vorauswahl: Gericht, Zeit, Toggles).
 
 ---
 
@@ -41,6 +41,6 @@ alwaysApply: false
 
 | Aktion        | Geste / Element | Verhalten                                      |
 |---------------|-----------------|------------------------------------------------|
-| Gericht hinzufügen | FAB / „+“       | BottomSheet öffnen (Searchbar, Pills, Time, 3 Säulen, CTA) |
+| Gericht hinzufügen | FAB / „+“       | BottomSheet öffnen (Searchbar, Pills, Time, Toggles, CTA) |
 | Gericht bearbeiten | Tap auf Karte   | BottomSheet mit geladenen Daten öffnen         |
 | Gericht löschen    | Swipe-Left      | Rotes Mülleimer-Icon freigeben → Löschen       |

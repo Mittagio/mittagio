@@ -15,31 +15,26 @@ Es gibt **nur eine** Darstellung der Inserat-Karte:
 
 **Legacy (nicht verwenden):** Das Provider-Sheet (**#psheet**) und die Funktion **openProviderOffer()** existieren noch im Code, sind aber **veraltet**. Neue Logik und neue UI dürfen **nicht** auf psheet oder `openProviderOffer` bauen. Alle Einstiege führen über `startListingFlow()` in die InseratCard im #wizard. Siehe **inserat-flow-stop-order.mdc**.
 
-Die zwei Modi werden **innerhalb** der einen InseratCard über Kontext gesteuert:
+Der **3-Schritt Mastercard-Flow** gilt für alle entryPoints. Footer in Schritt 1: Links „Speichern“ (Shortcut bei editOfferId/week/cookbook), Rechts „Weiter“ (Primary). Keine separaten Modi mehr.
 
-| Zustand | Steuerung | Bedeutung |
-|--------|-----------|-----------|
-| **MODE_AD** | `entryPoint === 'dashboard'` (oder Edit) | Buttons „mit Abholnummer“ (0,89 €) und „Nur Inserat“ (4,99 €) aktiv. |
-| **MODE_PLAN** | `entryPoint === 'cookbook'` oder `'week'` | Buttons „Im Kochbuch speichern“ / „Im Wochenplan speichern“, Gelb „Abbrechen“. |
-
-**Referenz im Code:** `app/index.html` – `buildListingStep()` (Action-Buttons, `isInserierenRoute`, `actionSection`).
+**Referenz im Code:** `app/script.js` – `buildListingStep()`, `startListingFlow()`, `showSpeichernShortcut`.
 
 ## 2. Entry Points
 
 Alle Einstiege landen in der **InseratCard im #wizard** (via `startListingFlow` → `buildListingStep()`):
 
-| Einstieg | Verhalten | Wo landet der Nutzer | Modus |
-|----------|-----------|----------------------|-------|
-| **New Dish** | „Neues Gericht erstellen“ → `openDishFlow` → `startListingFlow(ctx)`. Leer oder Draft-Overlay („Fortsetzen?“). | InseratCard im #wizard | MODE_AD |
-| **Renner (Bestseller)** | `startListingFlow({ dishId, date, entryPoint: 'dashboard', skipQuickPost: true })`. InseratCard mit Kochbuch-Daten. | InseratCard im #wizard | MODE_AD |
-| **Edit (bestehendes Inserat)** | `startListingFlow({ editOfferId: id })`. InseratCard mit Offer-Daten. | InseratCard im #wizard | MODE_AD |
-| **Kochbuch / Wochenplan** | `startListingFlow({ dishId, entryPoint: 'week'|'cookbook', date })`. | InseratCard im #wizard | MODE_PLAN |
+| Einstieg | Verhalten | Wo landet der Nutzer |
+|----------|-----------|----------------------|
+| **New Dish** | „Neues Gericht erstellen“ → `openDishFlow` → `startListingFlow(ctx)`. | InseratCard Step 1 im #wizard |
+| **Renner (Bestseller)** | `startListingFlow({ dishId, date, entryPoint: 'dashboard', skipQuickPost: true })`. | InseratCard Step 1 im #wizard |
+| **Edit (bestehendes Inserat)** | `startListingFlow({ editOfferId: id })`. | InseratCard Step 1 im #wizard |
+| **Kochbuch / Wochenplan** | `startListingFlow({ dishId, entryPoint: 'week'|'cookbook', date })`. | InseratCard Step 1 im #wizard |
 
 Blitz und alle anderen Aktionen, die früher psheet geöffnet haben, sollen ebenfalls über `startListingFlow` (ggf. mit `editOfferId` oder Kochbuch-Kontext) in die **gleiche** InseratCard münden – nicht in #psheet.
 
 ## 3. Component Rules
 
-- **Power-Bar:** (🍴, 🔄, 🕒, 🌾, ➕, ⓘ) in der InseratCard **immer sichtbar**. Siehe Blueprint in **inserat-flow-stop-order.mdc**.
+- **Power-Bar:** Icons in der InseratCard sichtbar. Siehe Blueprint in **inserat-flow-stop-order.mdc**.
 - **Preis-Button (Gelb):** Rechts in der Action-Row; Hero-Morph zum 4rem-Eingabefeld. Referenz: `buildListingStep()` in `app/index.html`.
 - **Universal-X:** Schließt den Flow mit der Pop-Away-Animation (Klasse `x-pop-away`).
 

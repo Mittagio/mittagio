@@ -46,15 +46,13 @@ Die InseratCard ist das universelle Herzstück der App. Sie ist die **einzige** 
 
 ## 2. Die zwei Modi (mode prop)
 
-Die Karte muss strikt zwischen diesen Zuständen unterscheiden:
+Der **3-Schritt Mastercard-Flow** gilt für alle Einstiege:
 
-| Modus | Bedeutung | Buttons | Preisübersicht ⓘ |
-|-------|-----------|---------|------------------|
-| **MODE_AD** (Verkauf) | Inserat erstellen/veröffentlichen | Grüner Button („mit Abholnummer“ – 0,89 € Gebühr für Kunden) und gelber Button („Nur Inserat“ – 4,99 € Fixpreis). | Sichtbar |
-| **MODE_PLAN** (Organisation/Kochbuch) | Gericht nur planen/speichern | „Gericht speichern“ (Grün) und „Datum für Wochenplan wählen“ (Blau). | Ausgeblendet |
-
-- **MODE_AD:** Preisübersicht und Gebühren-Infos sind sichtbar.
-- **MODE_PLAN:** Preisübersicht und Gebühren-Infos sind ausgeblendet.
+| Schritt | Inhalt |
+|---------|--------|
+| **Step 1 (STEP_EDIT)** | Dateneingabe. Footer: Links „Speichern“ (Shortcut bei editOfferId/week/cookbook), Rechts „Weiter“ (Primary). |
+| **Step 2 (STEP_MONEY)** | Monetarisierung: „mit Abholnummer“ (0,89 €) oder „Nur Inserat“ (4,99 €). |
+| **Step 3 (STEP_LIVE)** | Bestätigung, Belohnung, Marketing. |
 
 ---
 
@@ -77,7 +75,7 @@ Die Karte muss strikt zwischen diesen Zuständen unterscheiden:
 
 ## 5. Terminologie
 
-- **Erlaubt:** Abholnummer, InseratCard, MODE_AD, MODE_PLAN.
+- **Erlaubt:** Abholnummer, InseratCard, 3-Schritt Mastercard-Flow.
 - **Vermeiden:** Ticket, Code, Abholcode (für Endkunden-Kommunikation).
 
 ---
@@ -86,6 +84,5 @@ Die Karte muss strikt zwischen diesen Zuständen unterscheiden:
 
 - [ ] InseratCard wird im **#wizard** gerendert (buildListingStep).
 - [ ] **3 Säulen** (🍴, 🎫1️⃣, 🔄) sind in der Power-Bar vorhanden.
-- [ ] Saubere Trennung zwischen **MODE_AD** und **MODE_PLAN** (Buttons + Sichtbarkeit Preisübersicht).
-- [ ] Preisübersicht ⓘ im Plan-Modus **ausgeblendet**.
+- [ ] **3-Schritt Mastercard** (Edit → Money → Live) mit einheitlichem Footer.
 - [ ] Begriffe: **Abholnummer** verwenden, **Ticket**/ **Code** vermeiden.

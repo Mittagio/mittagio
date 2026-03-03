@@ -5,11 +5,11 @@ alwaysApply: true
 
 # Silent Defaults: Wochenplan & Dashboard (UI-Reduktion)
 
-**Dashboard** = Anbieterbereich **Meine Küche** (`v-provider-home`). **Layout bleibt unverändert.** Diese Regel betrifft nur die Anzeige der 3 Säulen-Icons.
+**Dashboard** = Anbieterbereich **Meine Küche** (`v-provider-home`). **Layout bleibt unverändert.** Diese Regel betrifft nur die Anzeige von Vor Ort / Abholnummer / Mehrweg.
 
 ## Grundprinzip
 
-Die drei Säulen **🍴 Vor Ort**, **🧾 Abholnummer**, **🔄 Mehrweg** sind im Anbieter-Profil als Standard hinterlegt. Im Wochenplan und auf dem Dashboard (Meine Küche) **nicht** auf jeder Karte wiederholen – nur anzeigen, wenn ein **spezifisches Gericht/Inserat** davon abweicht (Override).
+**Vor Ort**, **Abholnummer**, **Mehrweg** sind im Anbieter-Profil als Standard hinterlegt. Im Wochenplan und auf dem Dashboard (Meine Küche) **nicht** auf jeder Karte wiederholen – nur anzeigen, wenn ein **spezifisches Gericht/Inserat** davon abweicht (Override).
 
 - **Wochenplan**: `renderWeekPlan()` – `week-meal-badges` nur befüllen, wenn `entry.dineInPossible` / `entry.hasPickupCode` / `entry.reuse` gesetzt sind **und** vom Profil-Standard abweichen. Sonst `badgesHtml = ''`.
 - **Dashboard (Meine Küche, Aktive Angebote)**: `renderProviderHome()` – Pillars nur rendern, wenn `o.dineInPossible` / `o.hasPickupCode` / `o.reuse` vom Profil abweichen.

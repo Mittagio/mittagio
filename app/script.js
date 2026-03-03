@@ -65,6 +65,10 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+  /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
+  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
+  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
+  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
 
   // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
   function getTimeSlots(){
@@ -445,6 +449,7 @@
   }
   
   // addOrder, updateOrder, getOrderById, listActiveOrders, generatePickupCode, assignPickupCode, generateDishLetterPickupCode → js/app-logic.js
+  if(typeof window !== 'undefined'){ window.loadOrders = loadOrders; window.saveOrders = saveOrders; }
 
   // --- State ---
   let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
@@ -5620,16 +5625,8 @@
     };
   }
 
-  // Android Hardware-Back: Wizard sofort schließen [cite: Universal-Linker 2026-02-26]
+  // Android Hardware-Back: Kontextbasierte Zurück-Navigation [cite: History-Context 2026-02-26]
   window.addEventListener('popstate', function(e){
-    // Wizard/Mastercard sofort schließen bei Handy-Zurück
-    var wizardActive = document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active');
-    if (wizardActive && typeof window.closeListingFlow === 'function') {
-      try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
-      window.closeListingFlow();
-      e.preventDefault();
-      return;
-    }
     // AGB Onboarding Modal schließen
     if(document.getElementById('agbOnboardingSheet') && document.getElementById('agbOnboardingSheet').classList.contains('active')){
       closeAgbOnboardingModal();
@@ -5686,19 +5683,22 @@
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; }
         slider.setAttribute('data-inserat-step','1');
-        var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
-        if(airbnbFooter) airbnbFooter.style.display='none';
+        var f1=document.getElementById('mastercard-footer-step1');
+        var f2=document.getElementById('mastercard-footer-step2');
+        if(f1) f1.style.setProperty('display','flex','important');
+        if(f2) f2.style.setProperty('display','none','important');
         var sf = box.querySelector('[data-inserat-step="3"]');
-        if(sf) sf.style.display='none';
+        if(sf) sf.style.setProperty('display','none','important');
         wizardEl.classList.remove('inserat-step2-active');
         wizardEl.classList.remove('inserat-step3-active');
         e.preventDefault();
         return;
       }
     }
-    // Wizard schließen (Step 1 → Galerie/Dashboard) [cite: Navigations-Lock 2026-02-25]
-    // Zurück-Geste: Nur Inserat-Overlay schließen (#wizard.active entfernen), App nicht verlassen
+    // Wizard schließen (Step 1 → zurück in Kontext) [cite: History-Context 2026-02-26]
+    // Fall A: InseratCard offen → closeMastercardWithAnim, navigateAfterWizardExit(entryPoint); Haupt-Nav wieder sichtbar
     if(document.getElementById('wizard') && document.getElementById('wizard').classList.contains('active')){
+      window.__popstateWizardHandled = true;
       var wiz = document.getElementById('wizard');
       if(wiz.getAttribute('data-flow') === 'listing' && typeof closeMastercardWithAnim === 'function'){
         var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
@@ -5708,7 +5708,6 @@
         closeWizard();
       }
       e.preventDefault();
-      pushViewState(null, location.pathname);
       return;
     }
     // Sheet schließen
@@ -5813,6 +5812,12 @@
       } else if(providerView === 'v-provider-cookbook'){
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         showProviderHome();
+        e.preventDefault();
+        return;
+      } else if(providerView === 'v-provider-week'){
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
+        if(typeof closeWeekplanWithNativeAnim === 'function') closeWeekplanWithNativeAnim('dashboard');
+        else if(typeof showProviderHome === 'function') showProviderHome();
         e.preventDefault();
         return;
       } else if(providerView === 'v-provider-billing'){
@@ -6207,22 +6212,7 @@
   function openCreateFlowSheet(){
     if(typeof haptic === 'function') haptic(10);
     const sheet = document.getElementById('createFlowSheet');
-    const hint = document.getElementById('createFlowDateHint');
-
-    if(sheet && hint){
-      if(createFlowPreselectedDate){
-        const d = new Date(createFlowPreselectedDate);
-        const weekday = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d.getDay()];
-        const dateStr = d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.';
-        hint.innerHTML = '<i data-lucide="calendar" style="width:16px;height:16px;color:#64748b;flex-shrink:0;"></i><span>Für ' + weekday + ', ' + dateStr + '</span>';
-        hint.style.display = 'inline-flex';
-        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
-      } else {
-        hint.style.display = 'none';
-      }
-
-      populateCreateFlowRenner();
-
+    if(sheet){
       document.getElementById('createFlowBd').classList.add('active');
       sheet.classList.add('active');
       document.body.classList.add('create-flow-open');
@@ -6263,7 +6253,112 @@
       openDishFlow(date, ep);
     };
   }
-  
+
+  /* Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] */
+  function vibrate(arr){ try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(arr) ? arr : [arr]); } catch(e){} }
+  function getDishesFromPast(days){
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var out = [];
+    for(var i = 0; i < (days || 42); i++){
+      var d = new Date();
+      d.setDate(d.getDate() - i);
+      var key = typeof isoDate === 'function' ? isoDate(d) : (d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+      var entries = w[key] || [];
+      var pid = typeof providerId === 'function' ? providerId() : '';
+      entries.forEach(function(e){ if(e.providerId === pid && e.cookbookId) out.push({ cookbookId: e.cookbookId, day: key, dish: e.dish, price: e.price }); });
+    }
+    return out;
+  }
+  function shuffleArray(arr){ var a = (arr || []).slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function startSlotAnimation(slotEl){
+    if(!slotEl) return Promise.resolve();
+    slotEl.classList.add('slot-machine-text');
+    slotEl.textContent = '🎰';
+    return new Promise(function(r){ setTimeout(r, 800); });
+  }
+  function applyKILogic(){
+    var dishes = getDishesFromPast(42);
+    if(dishes.length === 0){ var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); }); dishes = cb.map(function(c){ return { cookbookId: c.id, dish: c.dish, price: c.price }; }); }
+    var shuffled = shuffleArray(dishes);
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    keys.forEach(function(k){ w[k] = []; });
+    shuffled.slice(0, keys.length * 2).forEach(function(d, i){
+      var dayKey = keys[i % keys.length];
+      if(!w[dayKey]) w[dayKey] = [];
+      if(w[dayKey].length < 3) w[dayKey].push({ providerId: pid, cookbookId: d.cookbookId, dish: d.dish, price: d.price });
+    });
+    if(typeof save === 'function') save(LS.week, w);
+    if(typeof week !== 'undefined') week = w;
+  }
+  function applySurpriseLogic(){
+    var cb = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+    if(cb.length === 0) return;
+    var shuffled = shuffleArray(cb);
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    keys.forEach(function(k, i){
+      var dish = shuffled[i % shuffled.length];
+      if(!w[k]) w[k] = [];
+      w[k] = [{ providerId: pid, cookbookId: dish.id, dish: dish.dish, price: dish.price }];
+    });
+    if(typeof save === 'function') save(LS.week, w);
+    if(typeof week !== 'undefined') week = w;
+  }
+  function applySeasonLogic(){
+    var m = (new Date()).getMonth() + 1;
+    var setKey = (m >= 3 && m <= 5) ? 'fruhling' : (m >= 6 && m <= 8) ? 'sommer' : (m >= 9 && m <= 11) ? 'herbst' : 'winter';
+    if(typeof applySaisonSystemSet === 'function') applySaisonSystemSet(setKey);
+  }
+  function animateWeekFill(){
+    var grid = document.getElementById('kwGrid');
+    if(!grid) return;
+    var slots = grid.querySelectorAll('.kw-day-card');
+    slots.forEach(function(s){ s.classList.remove('pop-in', 'sparkle-arrival'); s.classList.add('day-slot'); });
+    slots.forEach(function(slot, index){
+      setTimeout(function(){
+        slot.classList.add('pop-in');
+        vibrate(10);
+        if(index === slots.length - 1) slot.classList.add('sparkle-arrival');
+      }, index * 100);
+    });
+  }
+  async function triggerMagic(mode){
+    vibrate([20, 50]);
+    var overlay = document.getElementById('magicOverlay');
+    var statusText = document.getElementById('magicStatusText');
+    var slot = document.getElementById('magicSlotMachine');
+    if(overlay && typeof hide === 'function') overlay.classList.remove('is-hidden');
+    if(mode === 'ki'){
+      if(statusText) statusText.textContent = '🤖 KI würfelt Woche neu...';
+      await new Promise(function(r){ setTimeout(r, 1200); });
+      applyKILogic();
+    } else if(mode === 'surprise'){
+      if(statusText) statusText.textContent = '✨ Jackpot zieht...';
+      await startSlotAnimation(slot);
+      applySurpriseLogic();
+    } else if(mode === 'season'){
+      if(statusText) statusText.textContent = '🥗 Saison-Check...';
+      await new Promise(function(r){ setTimeout(r, 800); });
+      applySeasonLogic();
+    }
+    if(overlay) overlay.classList.add('is-hidden');
+    closeCreateFlowSheet();
+    if(typeof showProviderWeek === 'function') showProviderWeek();
+    if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    setTimeout(function(){ animateWeekFill(); }, 80);
+    if(typeof showToast === 'function') showToast('Magic angewendet ✨');
+  }
+  if(typeof window !== 'undefined') window.triggerMagic = triggerMagic;
+  document.querySelectorAll('.magic-card[data-magic]').forEach(function(card){
+    card.onclick = function(){
+      var mode = card.getAttribute('data-magic');
+      if(mode && typeof triggerMagic === 'function') triggerMagic(mode);
+    };
+  });
+
   // Offer More Menu
   function openOfferMoreMenu(offerId){
     const offer = offers.find(o => o.id === offerId);
@@ -9452,7 +9547,7 @@
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
-    if (e.target.closest('#weekHeaderKWTrigger') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-02-25]
+    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-03-02]
     var view = trig.getAttribute('data-reset-view');
     if(!view) return;
     e.preventDefault();
@@ -10937,6 +11032,67 @@
     overlay.onclick = function(e){ if (e.target === overlay) overlay.remove(); };
     document.body.appendChild(overlay);
   }
+  /** Smart-Veggie-Sog: Top-Veggie-Gerichte passend zum Hauptgericht (Kategorie-Paarung + Historien-Check). */
+  function getSmartVeggieSuggestions(dayKey, mainEntry){
+    var pid = typeof providerId === 'function' ? providerId() : '';
+    var cb = (typeof cookbook !== 'undefined' && cookbook) ? cookbook : [];
+    var mine = cb.filter(function(c){ return c.providerId === pid; });
+    var veggie = mine.filter(function(c){
+      var cat = (c.category || '').toLowerCase();
+      var name = (c.dish || '').toLowerCase();
+      return /vegan|veggie|vegetarisch/i.test(cat) || /salat|gemüse|tofu|pilz|spätzle|maultasche|suppe|bowl/i.test(name);
+    });
+    if (veggie.length === 0) return [];
+    var mainCb = mainEntry ? cookbook.find(function(c){ return String(c.id) === String(mainEntry.cookbookId); }) : null;
+    var mainCat = (mainCb && mainCb.category) ? mainCb.category.toLowerCase() : '';
+    var mainName = (mainCb && mainCb.dish || mainEntry && mainEntry.dish || '').toLowerCase();
+    var pairScores = {};
+    veggie.forEach(function(v){
+      var score = 0;
+      if (/rind|schwein|fleisch|rostbraten|gulasch|schnitzel/i.test(mainCat) || /rind|schwein|fleisch|rostbraten|gulasch|schnitzel/i.test(mainName)){
+        if (/spätzle|maultasche|käse|pilz/i.test((v.dish||'').toLowerCase()) || /spätzle|maultasche| Käse|pilz/i.test((v.category||'').toLowerCase())) score += 30;
+      }
+      if (/geflügel|huhn|pute/i.test(mainCat) || /geflügel|huhn|pute/i.test(mainName)){
+        if (/salat|bowl|gemüse|leicht/i.test((v.dish||'').toLowerCase())) score += 30;
+      }
+      if (/eintopf|suppe/i.test(mainCat) || /eintopf|suppe/i.test(mainName)){
+        if (/suppe|eintopf|gemüse/i.test((v.dish||'').toLowerCase())) score += 30;
+      }
+      pairScores[String(v.id)] = score;
+    });
+    var w = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
+    var offs = typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.offers, []) : (typeof offers !== 'undefined' ? offers : []);
+    var dayNum = 0;
+    if (dayKey && dayKey.length >= 10){
+      var fd = new Date(dayKey + 'T12:00:00');
+      dayNum = fd.getDay() || 7;
+    }
+    var histCount = {};
+    Object.keys(w || {}).forEach(function(dateKey){
+      var arr = Array.isArray(w[dateKey]) ? w[dateKey] : [];
+      var fd2 = new Date(dateKey + 'T12:00:00');
+      if ((fd2.getDay() || 7) !== dayNum) return;
+      arr.forEach(function(e){
+        if (e && e.providerId === pid && e.cookbookId){
+          var id = String(e.cookbookId);
+          if (veggie.some(function(v){ return String(v.id) === id; })) histCount[id] = (histCount[id] || 0) + 1;
+        }
+      });
+    });
+    (Array.isArray(offs) ? offs : []).forEach(function(o){
+      if (o && o.providerId === pid && o.day && o.cookbookId){
+        var fd2 = new Date(o.day + 'T12:00:00');
+        if ((fd2.getDay() || 7) !== dayNum) return;
+        var id = String(o.cookbookId);
+        if (veggie.some(function(v){ return String(v.id) === id; })) histCount[id] = (histCount[id] || 0) + 1;
+      }
+    });
+    veggie.forEach(function(v){
+      v._veggieScore = (pairScores[String(v.id)] || 0) + (histCount[String(v.id)] || 0) * 20 + (v.lastUsed ? Math.min(10, Math.floor((Date.now() - (typeof v.lastUsed === 'number' ? v.lastUsed : new Date(v.lastUsed).getTime())) / 86400000)) : 0);
+    });
+    veggie.sort(function(a,b){ return (b._veggieScore || 0) - (a._veggieScore || 0); });
+    return veggie.slice(0, 4);
+  }
   /** Smart Suggestions: Wochentag (z.B. Freitag = Fisch/veggie), Saison (Sommer = leicht, Winter = Eintopf), Renner (häufig inseriert). */
   function getSmartSuggestions(focusDayKey){
     var pid = typeof providerId === 'function' ? providerId() : '';
@@ -11037,16 +11193,21 @@
     return idx;
   }
   function openKWSelector(){
+    if (typeof console !== 'undefined' && console.log) console.log('KW Open triggered');
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
     var list = document.getElementById('kwSelectorList');
     var dateRangeEl = document.getElementById('kwSmartDateRange');
     var holidaysEl = document.getElementById('kwSmartHolidays');
-    if (!bd || !sheet || !list) return;
+    if (!bd || !sheet || !list) {
+      if (typeof console !== 'undefined' && console.warn) console.warn('KW Selector: missing element', { bd: !!bd, sheet: !!sheet, list: !!list });
+      return;
+    }
     if (typeof getWeekMonday !== 'function' || typeof getWeekDayKeys !== 'function' || typeof getISOWeek !== 'function') return;
     var pid = typeof providerId === 'function' ? providerId() : '';
     if (typeof haptic === 'function') haptic(6);
     list.innerHTML = '';
+    if (typeof getWeekMonday === 'function' && typeof getWeekDayKeys === 'function' && typeof getISOWeek === 'function') {
     for (var w = 0; w < 12; w++) {
       var monday = getWeekMonday(w);
       if (!monday || typeof monday.getFullYear !== 'function') continue;
@@ -11082,18 +11243,15 @@
       });
       holidaysEl.innerHTML = badges.join('');
     }
+    if (typeof show === 'function') { show(bd); show(sheet, 'flex'); }
     bd.classList.add('active');
     sheet.classList.add('active');
-    bd.style.setProperty('display', 'block', 'important');
-    bd.style.opacity = '1';
-    bd.style.pointerEvents = 'auto';
-    sheet.style.setProperty('display', 'flex', 'important');
   }
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
-    if (bd) { bd.classList.remove('active'); bd.style.display = 'none'; }
-    if (sheet) { sheet.classList.remove('active'); sheet.style.display = 'none'; }
+    if (bd){ hide(bd); bd.classList.remove('active'); }
+    if (sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
   function openAddDishToDaySheet(cookbookId, keys, grid){
     if (!keys || !keys.length || typeof addCookbookEntryToWeek !== 'function') return;
@@ -11179,7 +11337,7 @@
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
-  /** Aktualisiert den Wochenplan-Footer (Zähler + Klick-Handler). Wird von renderWeekPlanBoard und renderWeekPlan aufgerufen. weekIndex optional (sonst weekPlanKWIndex bzw. aus weekPlanDay). */
+  /** Aktualisiert den Wochenplan-Footer (Counter links, Button rechts). [cite: 2026-03-02] */
   function updateWeekViewFooter(weekIndex){
     var kwIdx = (weekIndex !== undefined && weekIndex !== null) ? weekIndex : ((typeof weekPlanDay !== 'undefined' && weekPlanDay && typeof getWeekIndexForDate === 'function') ? getWeekIndexForDate(weekPlanDay) : (typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0));
     var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(kwIdx) : [];
@@ -11193,15 +11351,17 @@
     }, 0);
     var weekFooter = document.getElementById('weekViewFooter');
     var btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
+    var weekFooterCounter = document.getElementById('weekFooterCounter');
     if (!weekFooter || !btnWeekViewFooter) return;
     var count = totalDraftDishes;
+    if (weekFooterCounter) weekFooterCounter.textContent = count + ' Gericht' + (count !== 1 ? 'e' : '') + ' inserieren';
+    btnWeekViewFooter.textContent = 'Woche jetzt inserieren';
     if (count > 0) {
-      btnWeekViewFooter.innerHTML = '<span class="kw-activate-count-wrap">[<span id="kwActivateCount">' + count + '</span>] Gerichte jetzt aktivieren</span>';
       btnWeekViewFooter.disabled = false;
       btnWeekViewFooter.classList.remove('kw-activation-disabled');
     } else {
-      weekFooter.classList.add('week-footer-hidden');
-      return;
+      btnWeekViewFooter.disabled = true;
+      btnWeekViewFooter.classList.add('kw-activation-disabled');
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
@@ -11493,9 +11653,19 @@
     setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
     var grid = document.getElementById('kwGrid');
     if (!grid) return;
-    /* Header: KW-Badge [cite: 2026-02-21] */
-    var kwBadge = document.getElementById('weekHeaderKWBadge');
-    if (kwBadge) kwBadge.textContent = getKWLabel(weekPlanKWIndex);
+    /* KW-Navigation [cite: 2026-03-02] */
+    var kwDisplay = document.getElementById('kwDisplay');
+    var kwDateRange = document.getElementById('kwDateRange');
+    var kwNavPrev = document.getElementById('kwNavPrev');
+    var kwNavNext = document.getElementById('kwNavNext');
+    if (kwDisplay) kwDisplay.textContent = getKWLabel(weekPlanKWIndex);
+    var backToNowHint = document.getElementById('kwBackToNowHint');
+    if (backToNowHint) { if (weekPlanKWIndex !== 0) show(backToNowHint); else hide(backToNowHint); }
+    var monday = getWeekMonday(weekPlanKWIndex);
+    var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+    if (kwDateRange) kwDateRange.textContent = (monday.getDate() + '.' + String(monday.getMonth() + 1).padStart(2, '0') + '. – ' + sunday.getDate() + '.' + String(sunday.getMonth() + 1).padStart(2, '0') + '.');
+    if (kwNavPrev && !kwNavPrev._bound){ kwNavPrev._bound = true; kwNavPrev.onclick = function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = Math.max(0, weekPlanKWIndex - 1); var k = getWeekDayKeys(weekPlanKWIndex); weekPlanDay = k[0]; renderWeekPlanBoard(); }; }
+    if (kwNavNext && !kwNavNext._bound){ kwNavNext._bound = true; kwNavNext.onclick = function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = weekPlanKWIndex + 1; var k = getWeekDayKeys(weekPlanKWIndex); weekPlanDay = k[0]; renderWeekPlanBoard(); }; }
     var btnPreviewClose = document.getElementById('btnWeekPreviewClose');
     if (btnPreviewClose && !btnPreviewClose._bound) {
       btnPreviewClose._bound = true;
@@ -11535,63 +11705,43 @@
     var defaultDineIn = p.dineInPossibleDefault !== false;
     var defaultPickup = !!p.abholnummerEnabledByDefault;
     var defaultReuse = !!p.reuseEnabledByDefault;
-    var stripWrap = document.getElementById('kwCookbookStripWrap');
-    var strip = document.getElementById('kwCookbookStrip');
-    if (stripWrap && !strip) {
-      strip = document.createElement('div');
-      strip.id = 'kwCookbookStrip';
-      strip.className = 'kw-cookbook-drag-strip';
-      strip.setAttribute('role', 'list');
-      stripWrap.appendChild(strip);
-    }
-    if (strip && stripWrap) {
-      var dismissed = window.__kwCookbookDismissedIds || {};
-      window.__kwCookbookDismissedIds = dismissed;
-      var focusDay = window.__kwSmartSuggestionFocusDay || weekPlanDay || (keys && keys[0]);
-      if (window.__kwSmartSuggestionFocusDay) window.__kwSmartSuggestionFocusDay = null;
-      var suggestions = typeof getSmartSuggestions === 'function' ? getSmartSuggestions(focusDay) : (cookbook || []).filter(function(c){ return c.providerId === providerId() && !dismissed[String(c.id)]; }).slice(0, 8);
-      strip.className = 'kw-cookbook-drag-strip kw-smart-suggestions-strip';
-      strip.innerHTML = suggestions.map(function(c){
-        var label = (c.dish || 'Gericht').substring(0, 12) + (c.dish && c.dish.length > 12 ? '…' : '');
-        var imgUrl = c.photoData || '';
-        var thumbStyle = imgUrl ? 'background-image:url(\'' + esc(imgUrl) + '\'); background-size:cover; background-position:center;' : 'background:linear-gradient(135deg,#e2e8f0,#cbd5e1);';
-        var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
-        return '<div class="kw-suggestion-card kw-suggestion-compact kw-cookbook-drag-pill" draggable="true" data-cookbook-id="' + esc(String(c.id)) + '" role="button">' +
-          '<span class="kw-pill-text kw-suggestion-name">' + esc(label) + '</span>' +
-          '<div class="kw-suggestion-thumb kw-suggestion-thumb-mini" style="' + thumbStyle + '"></div>' +
-          '<span class="kw-suggestion-price">' + esc(priceStr) + '</span>' +
-          '</div>';
+    /* Renner-Karussell: Deine Renner als Quick-Select [cite: 2026-03-02] */
+    var rennerScroll = document.getElementById('rennerScroll');
+    if (rennerScroll) {
+      var renner = (cookbook || []).filter(function(c){ return c.providerId === providerId(); });
+      renner.sort(function(a,b){ return (b.lastUsed || 0) - (a.lastUsed || 0); });
+      var topRenner = renner.slice(0, 8);
+      rennerScroll.innerHTML = topRenner.map(function(c){
+        var imgUrl = c.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+        var name = (c.dish || 'Gericht').substring(0, 14) + ((c.dish || '').length > 14 ? '…' : '');
+        return '<div class="renner-card" data-cookbook-id="' + esc(String(c.id)) + '" role="button" tabindex="0" aria-label="' + esc(c.dish || 'Gericht') + ' – Schnell zuweisen"><div class="renner-card-img-wrap"><img src="' + esc(imgUrl) + '" alt=""></div><span class="renner-card-name">' + esc(name) + '</span></div>';
       }).join('');
-      strip.querySelectorAll('.kw-suggestion-card').forEach(function(pill){
-        var cookbookId = pill.getAttribute('data-cookbook-id');
-        pill.ondragstart = function(e){
+      rennerScroll.querySelectorAll('.renner-card').forEach(function(card){
+        var cookbookId = card.getAttribute('data-cookbook-id');
+        card.ondragstart = function(e){
           e.dataTransfer.setData('text/plain', cookbookId);
           e.dataTransfer.effectAllowed = 'copy';
-          pill.classList.add('dragging');
           try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); } catch(err){}
           if(typeof haptic === 'function') haptic(6);
         };
-        pill.ondragend = function(){ pill.classList.remove('dragging'); };
-        pill.onclick = function(e){
+        card.onclick = function(e){
           e.preventDefault();
           if(typeof haptic === 'function') haptic(6);
           if(typeof openAddDishToDaySheet === 'function') openAddDishToDaySheet(cookbookId, keys, grid);
           else {
-            var emptySlots = grid.querySelectorAll('.kw-slot-empty');
+            var emptySlots = grid.querySelectorAll('.kw-slot-empty, .veggie-sog-slot');
             emptySlots.forEach(function(s){ s.classList.add('kw-slot-ghost-highlight'); });
             setTimeout(function(){ emptySlots.forEach(function(s){ s.classList.remove('kw-slot-ghost-highlight'); }); }, 2500);
           }
         };
       });
-      if(typeof lucide !== 'undefined' && lucide.createIcons) setTimeout(function(){ lucide.createIcons(); }, 50);
-      if(strip.scrollLeft !== undefined) strip.scrollLeft = 0;
     }
     var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
     grid.innerHTML = '';
     keys.forEach(function(key, dayIdx){
       var d = new Date(key + 'T12:00:00');
       var dayLabel = dayNames[dayIdx];
-      var dateLabel = d.getDate() + '.' + (d.getMonth() + 1) + '.';
+      var dateLabel = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.';
       var provEntries = (week[key] || []).filter(function(x){ return x.providerId === providerId(); });
       var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
       var items = liveOffers.length > 0 ? liveOffers : provEntries;
@@ -11600,15 +11750,16 @@
       var isFilled = items.length > 0;
       var isDayEmpty = items.length === 0;
       var card = document.createElement('div');
-      card.className = 'kw-day-card' + (isLive ? ' kw-day-has-live' : '') + (isToday ? ' kw-day-today' : '') + (isFilled ? ' kw-day-filled' : ' kw-day-empty');
+      card.className = 'kw-day-card day-section' + (isLive ? ' kw-day-has-live' : '') + (isToday ? ' kw-day-today' : '') + (isFilled ? ' kw-day-filled' : ' kw-day-empty');
       card.setAttribute('data-date', key);
       card.id = 'day-' + key;
-      var countHtml = isFilled ? ' <span class="kw-day-count">(' + items.length + ' Gericht' + (items.length !== 1 ? 'e' : '') + ')</span>' : '';
-      card.innerHTML = '<div class="kw-day-label">' + dayLabel + '</div><div class="kw-day-date">' + dateLabel + countHtml + '</div><div class="kw-slots"></div>';
+      card.innerHTML = '<div class="day-label kw-day-label">' + dayLabel + ' ' + dateLabel + '</div><div class="kw-slots"></div>';
       var slotsWrap = card.querySelector('.kw-slots');
-      /* Slots: flach, nur Name + Preis (Abholnummer aus Kachel entfernt) [cite: 2026-02-25] */
       var maxFilled = 5;
       var slot = 0;
+      var firstEntry = items[0];
+      var showVeggieSog = firstEntry && items.length < maxFilled;
+      var veggieSuggestions = showVeggieSog && typeof getSmartVeggieSuggestions === 'function' ? getSmartVeggieSuggestions(key, firstEntry) : [];
       for (slot = 0; slot < items.length && slot < maxFilled; slot++) {
         var entry = items[slot];
         if (entry) {
@@ -11616,22 +11767,42 @@
           var name = (cb && cb.dish) || entry.dish || 'Gericht';
           var price = (cb && cb.price) || entry.price || 0;
           var priceStr = typeof euro === 'function' ? euro(price) : (Number(price || 0).toFixed(2).replace('.', ',') + ' €');
-          var cat = (cb && cb.category) || '';
-          var catIcon = (cat === 'Vegan' || /vegan/i.test(cat)) ? '\uD83C\uDF31' : ((cat === 'Veggie' || /vegetarisch|veggie/i.test(cat)) ? '\uD83E\uDD66' : '\uD83E\uDD69');
-          var slotHtml = '<div class="kw-slot-flat prov-card kw-slot-bar kw-slot-compact" data-day="' + esc(key) + '" data-offer-id="' + (isLive && items[slot] && items[slot].id ? esc(String(items[slot].id)) : '') + '" data-cookbook-id="' + (entry.cookbookId ? esc(String(entry.cookbookId)) : '') + '" data-date="' + esc(key) + '"><span class="kw-slot-cat-icon" aria-hidden="true">' + catIcon + '</span><div class="kw-slot-flat-body"><span class="kw-slot-flat-title">' + esc(name) + '</span><span class="kw-slot-flat-price">' + esc(priceStr) + '</span></div></div>';
-          var slotWrap = document.createElement('div');
-          slotWrap.innerHTML = slotHtml;
-          var slotEl = slotWrap.firstElementChild || slotWrap;
-          slotEl.className = (slotEl.className || '') + ' kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
-          slotEl.setAttribute('data-day', key);
-          slotEl.setAttribute('data-slot', String(slot));
-          if (!isLive) slotEl.setAttribute('data-draft', '1');
-          slotEl.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotEl.classList.contains('kw-slot-swipe-delete') || slotEl.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
-          slotsWrap.appendChild(slotEl);
+          var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
+          var hasAbhol = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
+          var badgeHtml = hasAbhol ? '<span class="slot-abholnummer-badge">\uD83C\uDFAB1\uFE0F\u20E3</span>' : '';
+          var imgHtml = img ? '<img src="' + esc(img) + '" alt="">' : '';
+          var slotCard = document.createElement('div');
+          slotCard.className = 'slot-card kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
+          slotCard.setAttribute('data-day', key);
+          slotCard.setAttribute('data-slot', String(slot));
+          slotCard.setAttribute('data-offer-id', isLive && items[slot] && items[slot].id ? String(items[slot].id) : '');
+          slotCard.setAttribute('data-cookbook-id', entry.cookbookId ? String(entry.cookbookId) : '');
+          if (!isLive) slotCard.setAttribute('data-draft', '1');
+          slotCard.innerHTML = '<div class="slot-card-img-wrap">' + imgHtml + badgeHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div>';
+          slotCard.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotCard.classList.contains('kw-slot-swipe-delete') || slotCard.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
+          slotsWrap.appendChild(slotCard);
         }
       }
-      /* Ein leerer Slot pro Tag, sobald Platz (max 5 Gerichte) [cite: RESET WOCHENPLAN 2026-02-23] */
-      if (items.length < maxFilled) {
+      if (showVeggieSog && veggieSuggestions.length > 0) {
+        var sogSlot = document.createElement('div');
+        sogSlot.className = 'veggie-sog-slot kw-slot';
+        sogSlot.setAttribute('data-day', key);
+        sogSlot.setAttribute('data-sog', '1');
+        var top2 = veggieSuggestions.slice(0, 2);
+        var btnsHtml = top2.map(function(v){
+          var imgUrl = v.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+          var vName = (v.dish || 'Gericht').substring(0, 12) + ((v.dish || '').length > 12 ? '…' : '');
+          return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><div class="veggie-sog-btn-img"><img src="' + esc(imgUrl) + '" alt=""></div><span class="veggie-sog-btn-name">' + esc(vName) + '</span></button>';
+        }).join('');
+        sogSlot.innerHTML = '<span class="veggie-sog-text">+ Vegetarisches Gericht ergänzen? \uD83C\uDF3F</span>' + btnsHtml;
+        sogSlot.querySelectorAll('.veggie-sog-btn').forEach(function(btn){
+          var cid = btn.getAttribute('data-cookbook-id');
+          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof addCookbookEntryToWeek === 'function'){ addCookbookEntryToWeek(key, cid); renderWeekPlanBoard(); if(typeof showToast === 'function') showToast('Gericht eingetragen'); } };
+        });
+        sogSlot.onclick = function(e){ if(e.target.closest && e.target.closest('.veggie-sog-btn')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = key; if(typeof startListingFlow === 'function') startListingFlow({ date: key, entryPoint: 'week' }); };
+        slotsWrap.appendChild(sogSlot);
+      }
+      if (items.length < maxFilled && !showVeggieSog) {
         var empty = document.createElement('button');
         empty.type = 'button';
         empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
@@ -11639,6 +11810,15 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
+        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
+        slotsWrap.appendChild(empty);
+      } else if (items.length < maxFilled && showVeggieSog) {
+        var empty = document.createElement('button');
+        empty.type = 'button';
+        empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
+        empty.setAttribute('data-day', key);
+        empty.setAttribute('aria-label', 'Gericht hinzufügen');
+        empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">Gericht hinzufügen</span>';
         empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }
@@ -11675,9 +11855,9 @@
     }
     var btnKwSaveTemplate = document.getElementById('weekKebabSaveTemplate');
     if (btnKwSaveTemplate) btnKwSaveTemplate.onclick = function(){
-      if (typeof haptic === 'function') haptic(6);
+      if (typeof haptic === 'function') haptic(10);
       var kebabDrop = document.getElementById('weekKebabDropdown');
-      if (kebabDrop) kebabDrop.style.display = 'none';
+      if (kebabDrop && typeof hide === 'function') hide(kebabDrop);
       var keys = getWeekDayKeys(weekPlanKWIndex);
       var pid = typeof providerId === 'function' ? providerId() : '';
       var hasAny = false;
@@ -11689,16 +11869,16 @@
       if (id && typeof showToast === 'function') showToast('Vorlage gespeichert');
       if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
       var kd = document.getElementById('weekKebabDropdown');
-      if (kd) kd.style.display = 'none';
+      if (kd && typeof hide === 'function') hide(kd);
     };
     var btnKwLoadTemplate = document.getElementById('btnKwLoadTemplate');
     if (btnKwLoadTemplate) btnKwLoadTemplate.onclick = function(){ if (typeof haptic === 'function') haptic(6); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
     var btnKwPdf = document.getElementById('weekKebabPdf');
     var btnKwShare = document.getElementById('weekKebabShare');
-    if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof triggerPrint==='function')triggerPrint(); else if(typeof printWeekCard==='function')printWeekCard(); };
-    if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; if(typeof haptic==='function')haptic(6); if(typeof shareWeekPlanAsImage==='function') shareWeekPlanAsImage(); else if(typeof shareWeekPlan==='function') shareWeekPlan(); };
+    if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof triggerPrint==='function')triggerPrint(); else if(typeof printWeekCard==='function')printWeekCard(); };
+    if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof shareWeekPlanAsImage==='function') shareWeekPlanAsImage(); else if(typeof shareWeekPlan==='function') shareWeekPlan(); };
     var btnKwScreenshot = document.getElementById('weekKebabScreenshot');
-    if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d)d.style.display='none'; try { if(navigator.vibrate) navigator.vibrate(40); } catch(e){} if(typeof haptic==='function')haptic(6); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Wochenplan-Vorschau – Schließen zum Beenden'); };
+    if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); try { if(navigator.vibrate) navigator.vibrate(40); } catch(e){} if(typeof haptic==='function')haptic(10); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Wochenplan-Vorschau – Schließen zum Beenden'); };
     var monday = getWeekMonday(weekPlanKWIndex);
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
@@ -11809,90 +11989,98 @@
     var sheet = document.getElementById('weekMagicSheet');
     var magicList = document.getElementById('weekMagicSheetList');
     if (magicList && magicList.children && magicList.children.length === 0) populateWeekMagicSheetList();
-    if (bd && sheet){ bd.style.display = 'block'; bd.classList.add('active'); sheet.style.display = 'flex'; sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
+    if (bd && sheet){ show(bd); show(sheet, 'flex'); bd.classList.add('active'); sheet.classList.add('active'); if (typeof haptic === 'function') haptic(6); }
   }
+  /** Magic-Button: öffnet Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
+  function openWeekMagicThree(){
+    var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0) : [];
+    if (typeof createFlowPreselectedDate !== 'undefined') createFlowPreselectedDate = (keys && keys[0]) ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : null);
+    if (typeof createFlowOriginView !== 'undefined') createFlowOriginView = 'week';
+    if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+  }
+  if (typeof window !== 'undefined') window.openWeekMagicThree = openWeekMagicThree;
   function closeWeekMagicSheet(){
     var bd = document.getElementById('weekMagicSheetBd');
     var sheet = document.getElementById('weekMagicSheet');
-    if (bd && sheet){ bd.style.display = 'none'; bd.classList.remove('active'); sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd){ hide(bd); bd.classList.remove('active'); }
+    if (sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
-  /** FAB beim Öffnen des Wochenplans sicher binden (Schnellaktionen-Sheet) */
+  /** FAB beim Öffnen des Wochenplans: Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
   function ensureWeekMagicFabBound(){
     var fab = document.getElementById('weekMagicFab');
     if (fab && !fab._magicBound) {
       fab._magicBound = true;
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} openWeekMagicSheet(); };
+      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
     }
   }
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
   function ensureWeekHeaderKWTriggerBound(){
-    var kwTr = document.getElementById('weekHeaderKWTrigger');
-    if (kwTr && !kwTr._bound) {
-      kwTr._bound = true;
-      kwTr.onclick = function(e){
+    var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
+    if (kwEl && !kwEl._kwBound) {
+      kwEl._kwBound = true;
+      kwEl.style.cursor = 'pointer';
+      kwEl.onclick = function(e){
+        if (e.target.closest('.nav-arrow')) return;
         e.preventDefault();
         e.stopPropagation();
-        try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
-        if (typeof openKWSelector === 'function') openKWSelector();
+        if (weekPlanKWIndex !== 0) {
+          try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
+          if (typeof haptic === 'function') haptic(6);
+          weekPlanKWIndex = 0;
+          var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(0) : [];
+          weekPlanDay = keys && keys[0] ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: 0, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=0&day=' + weekPlanDay);
+        } else {
+          try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
+          if (typeof openKWSelector === 'function') openKWSelector();
+        }
       };
     }
   }
-  /** Kebab-Menü (⋮) beim Öffnen des Wochenplans binden, Haptik 40ms – überschreibt Bindung für konsistentes Feedback */
-  function ensureWeekKebabBound(){
-    var kebabBtn = document.getElementById('btnWeekKebab');
-    var kebabDrop = document.getElementById('weekKebabDropdown');
-    if (!kebabBtn || !kebabDrop) return;
-    kebabBtn._bound = true;
-    kebabBtn.onclick = function(e){
-      e.stopPropagation();
-      var opening = kebabDrop.style.display !== 'block';
-      try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
-      if (typeof haptic === 'function') haptic(6);
-      kebabDrop.style.display = opening ? 'block' : 'none';
-      kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
-      if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
-    };
-    var closeOnOutside = function(ev){
-      if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
-        kebabDrop.style.display = 'none';
-        kebabBtn.setAttribute('aria-expanded', 'false');
-      }
-    };
-    if (!document.__weekKebabCloseBound) {
-      document.__weekKebabCloseBound = true;
-      document.addEventListener('click', closeOnOutside);
-    }
-  }
-  /** Kebab-Menü (⋮) ein-/ausblenden – display: block/none, z-index 9999 [cite: Universal-Linker 2026-02-26] */
+  /** Kebab-Menü (⋮) ein-/ausblenden – show/hide, Body-Portal Option C [cite: Universal-Linker 2026-02-26, Option C 2026-03-02] */
   function toggleWeekKebabMenu(){
     var kebabBtn = document.getElementById('btnWeekKebab');
     var kebabDrop = document.getElementById('weekKebabDropdown');
     if (!kebabBtn || !kebabDrop) return;
-    var opening = kebabDrop.style.display !== 'block';
-    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(opening ? 40 : 5); } catch(err){}
+    var opening = kebabDrop.classList.contains('is-hidden');
+    try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(opening ? 20 : 5); } catch(err){}
     if (typeof haptic === 'function') haptic(6);
-    kebabDrop.style.display = opening ? 'block' : 'none';
+    if (opening) show(kebabDrop); else hide(kebabDrop);
     kebabBtn.setAttribute('aria-expanded', opening ? 'true' : 'false');
     if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
   if (typeof window !== 'undefined') window.toggleWeekKebabMenu = toggleWeekKebabMenu;
 
-  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: Universal-Linker 2026-02-26] */
+  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
   function initWeekPlanInteractions(){
-    var kwTr = document.getElementById('weekHeaderKWTrigger');
-    if (kwTr) {
-      kwTr.onclick = function(e){
+    var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
+    if (kwEl && !kwEl._kwBound) {
+      kwEl._kwBound = true;
+      kwEl.style.cursor = 'pointer';
+      kwEl.onclick = function(e){
+        if (e.target.closest('.nav-arrow')) return;
         e.preventDefault();
         e.stopPropagation();
-        try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
-        if (typeof openKWSelector === 'function') openKWSelector();
+        if (weekPlanKWIndex !== 0) {
+          try { if (navigator.vibrate) navigator.vibrate(40); } catch(err){}
+          if (typeof haptic === 'function') haptic(6);
+          weekPlanKWIndex = 0;
+          var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(0) : [];
+          weekPlanDay = keys && keys[0] ? keys[0] : (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+          if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: 0, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=0&day=' + weekPlanDay);
+        } else {
+          try { if (navigator.vibrate) navigator.vibrate(50); } catch(err){}
+          if (typeof openKWSelector === 'function') openKWSelector();
+        }
       };
     }
     var fab = document.getElementById('weekMagicFab');
     if (fab) {
       fab.onclick = function(){
         try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
-        if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
+        if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
       };
     }
     var kebabBtn = document.getElementById('btnWeekKebab');
@@ -11904,12 +12092,12 @@
       };
       if (!document.__weekKebabCloseBound) {
         document.__weekKebabCloseBound = true;
-        document.addEventListener('click', function(ev){
-          if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
-            kebabDrop.style.display = 'none';
-            kebabBtn.setAttribute('aria-expanded', 'false');
-          }
-        });
+      document.addEventListener('click', function(ev){
+        if (!kebabDrop.contains(ev.target) && ev.target !== kebabBtn) {
+          hide(kebabDrop);
+          kebabBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
       }
       kebabDrop.onclick = function(e){ e.stopPropagation(); };
     }
@@ -11974,320 +12162,11 @@
   function renderWeekPlan(){
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
-    const dayWrap = document.getElementById('weekDays');
-    const list = document.getElementById('weekList');
-    /* Nur KW-Board. Ohne weekDays/weekList → Board anzeigen. */
-    if(!dayWrap || !list){
-      if (boardWrap) boardWrap.style.display = 'flex';
-      setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
-      if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-      if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-      return;
-    }
-    if (boardWrap) boardWrap.style.display = 'none';
-    let actionsBar = document.getElementById('weekActionsBar');
-    let activateBlock = document.getElementById('weekActivateBlock');
-    const thumbZone = document.getElementById('weekThumbZone');
-    const headerTitle = document.getElementById('weekHeaderTitle');
-    const headerSubtitle = document.getElementById('weekHeaderSubtitle');
-    const headerDoneBtn = document.getElementById('weekHeaderDoneBtn');
-
-    if(weekPlanMode === 'overview'){
-      if(headerTitle) headerTitle.textContent = 'Wochenplan';
-      if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche im Überblick';
-      if(headerDoneBtn) headerDoneBtn.style.display = 'none';
-      dayWrap.style.display = 'none';
-      dayWrap.innerHTML = '';
-      var ir = document.getElementById('weekIndicatorRow');
-      if(ir) ir.style.display = 'none';
-      var todayKey = isoDate(new Date());
-      var hasDraftToday = false;
-      var draftCount4Weeks = typeof getWeekDraftDays === 'function' ? getWeekDraftDays().length : 0;
-      var dayCardsHtml = '';
-      for(var w = 0; w < 4; w++){
-        var weekStart = w * 7;
-        var weekLabel = 'KW ' + (w + 1);
-        var rowHtml = '<div class="week-overview-week-row" style="margin-bottom:16px;"><div class="week-overview-day-label" style="margin-bottom:8px;">' + weekLabel + '</div>';
-        for(var i = 0; i < 7; i++){
-          var idx = weekStart + i;
-          var d = new Date(); d.setDate(d.getDate() + idx);
-          var key = isoDate(d);
-          var entriesForDay = week[key] || [];
-          var provEntries = entriesForDay.filter(function(x){ return x.providerId === providerId(); });
-          var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === key; });
-          var isLive = liveOffers.length > 0;
-          if(key === todayKey && !isLive && provEntries.length > 0) hasDraftToday = true;
-          var label = weekDayShortLabel(d, idx);
-          var badge = isLive ? '<span class="week-overview-badge online">ONLINE</span>' : (provEntries.length ? '<span class="week-overview-badge draft">ENTWURF</span>' : '');
-          var names = [];
-          if(isLive){ liveOffers.forEach(function(o){ var cb = cookbook.find(function(c){ return String(c.id) === String(o.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (o.dish || 'Gericht')); }); }
-          else { provEntries.forEach(function(e){ var cb = cookbook.find(function(c){ return String(c.id) === String(e.cookbookId); }); names.push(cb && cb.dish ? esc(cb.dish) : (e.dish || 'Gericht')); }); }
-          var dishesHtml = names.length ? names.join(' · ') : '<span class="empty">—</span>';
-          rowHtml += '<div class="week-overview-day' + (isLive ? ' week-day-online' : '') + '" style="margin-bottom:8px;"><div class="week-overview-day-label">' + label + ' ' + badge + '</div><div class="week-overview-dishes' + (names.length ? '' : ' empty') + '">' + dishesHtml + '</div></div>';
-        }
-        rowHtml += '</div>';
-        dayCardsHtml += rowHtml;
-      }
-      list.innerHTML = '<div class="week-overview-scroll">' + (draftCount4Weeks > 0 ? '<p class="week-overview-draft-count" style="font-size:13px; font-weight:700; color:#64748b; margin-bottom:12px;">' + draftCount4Weeks + ' Entwurf' + (draftCount4Weeks !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen</p>' : '') + dayCardsHtml + '</div>';
-      list.classList.add('week-overview-list');
-      if(thumbZone){
-        thumbZone.innerHTML = '<div class="week-overview-cta-wrap"><button type="button" class="week-edit-primary" id="weekOverviewEditBtn"><i data-lucide="pencil" style="width:22px;height:22px;"></i> Plan bearbeiten</button></div><div class="week-actions-bar" id="weekOverviewActions" style="display:flex; align-items:center; gap:10px; margin-top:12px; flex-wrap:nowrap;"><button class="btn secondary" type="button" id="weekOverviewActivate" style="' + (hasDraftToday ? '' : 'display:none;') + ' flex:0 0 auto; min-height:48px; padding:0 16px; border-radius:14px; font-size:14px; font-weight:700;" onclick="activateWeekDay(isoDate(new Date())); renderWeekPlan();">Live</button><button class="btn secondary" type="button" id="weekOverviewPdf" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="printer" style="width:18px;height:18px;margin-right:6px;"></i>Drucken</button><button class="btn secondary" type="button" id="weekOverviewShare" style="flex:1; min-height:48px; border-radius:14px; font-size:14px; font-weight:700;"><i data-lucide="share-2" style="width:18px;height:18px;margin-right:6px;"></i>Teilen</button></div>';
-        var editBtn = document.getElementById('weekOverviewEditBtn');
-        if(editBtn) editBtn.onclick = function(){ weekPlanMode = 'edit'; renderWeekPlan(); };
-        var pdfBtn = document.getElementById('weekOverviewPdf');
-        if(pdfBtn) pdfBtn.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
-        var shareBtn = document.getElementById('weekOverviewShare');
-        if(shareBtn) shareBtn.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
-      }
-      if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-      if(typeof lucide !== 'undefined') lucide.createIcons();
-      return;
-    }
-
-    weekPlanMode = weekPlanMode || 'edit';
-    if(headerTitle) headerTitle.textContent = 'Wochenplan';
-    if(headerSubtitle) headerSubtitle.textContent = 'Deine Woche · Gerichte planen';
-    if(headerDoneBtn){ headerDoneBtn.style.display = 'block'; headerDoneBtn.onclick = function(){ weekPlanMode = 'overview'; renderWeekPlan(); }; }
-    dayWrap.style.display = '';
-    list.classList.remove('week-overview-list');
-    if(thumbZone) thumbZone.innerHTML = '<div id="weekMasterActivateBar" class="week-master-activate-bar" style="display:none;"><button type="button" class="week-master-btn" id="btnWeekMasterActivate"></button></div><div class="week-activate-block" id="weekActivateBlock" style="display:none;"><button type="button" class="week-activate-btn" id="btnWeekActivateThumb"><span class="week-activate-btn-text">Jetzt für 4,99 € aktivieren</span></button></div><div class="week-actions-bar" id="weekActionsBar" style="display:none; margin-top:12px;"><button class="btn secondary" type="button" id="btnWeekRefreshZone" style="flex:0 0 auto; min-height:52px; min-width:52px; padding:0; border-radius:14px;" aria-label="Aktualisieren"><i data-lucide="refresh-cw" style="width:22px;height:22px;"></i></button><button class="btn secondary" type="button" id="btnWeekPdf" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="printer" style="width:20px;height:20px;margin-right:8px;"></i>Drucken</button><button class="btn secondary" type="button" id="btnWeekShare" style="flex:1; min-height:52px; border-radius:14px; font-size:15px; font-weight:700;"><i data-lucide="share-2" style="width:20px;height:20px;margin-right:8px;"></i>Teilen</button></div>';
-    actionsBar = document.getElementById('weekActionsBar');
-    activateBlock = document.getElementById('weekActivateBlock');
-    var btnRefresh = document.getElementById('btnWeekRefreshZone');
-    if(btnRefresh) btnRefresh.onclick = function(){ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
-    var btnPdf = document.getElementById('btnWeekPdf');
-    if(btnPdf) btnPdf.onclick = function(){ if(typeof printWeekCard === 'function') printWeekCard(); };
-    var btnShare = document.getElementById('btnWeekShare');
-    if(btnShare) btnShare.onclick = function(){ if(typeof shareWeekPlan === 'function') shareWeekPlan(); };
-
-    var rangeStart = new Date();
-    var rangeEnd = new Date(); rangeEnd.setDate(rangeEnd.getDate() + 27);
-    var holidays = getGermanHolidaysForRange(rangeStart, rangeEnd, getBundeslandFromProvider());
-    dayWrap.innerHTML = '';
-    var weekIndicatorRow = document.getElementById('weekIndicatorRow');
-    if(!weekIndicatorRow){
-      weekIndicatorRow = document.createElement('div');
-      weekIndicatorRow.id = 'weekIndicatorRow';
-      weekIndicatorRow.className = 'week-indicator-row';
-      dayWrap.parentNode && dayWrap.parentNode.insertBefore(weekIndicatorRow, dayWrap.nextSibling);
-    }
-    var weekStatuses = [];
-    for(var w = 0; w < 4; w++){
-      var hasLive = false, hasDraft = false;
-      for(var di = 0; di < 7; di++){
-        var wd = new Date(); wd.setDate(wd.getDate() + w * 7 + di);
-        var k = isoDate(wd);
-        var provEntries = (week[k] || []).filter(function(x){ return x.providerId === providerId(); });
-        var liveOffers = offers.filter(function(o){ return o.providerId === providerId() && o.day === k; });
-        if(liveOffers.length > 0) hasLive = true;
-        else if(provEntries.length > 0) hasDraft = true;
-      }
-      weekStatuses.push(hasLive ? 'active' : (hasDraft ? 'draft' : 'empty'));
-    }
-    weekIndicatorRow.style.display = 'flex';
-    weekIndicatorRow.innerHTML = weekStatuses.map(function(s, w){
-      return '<button type="button" class="week-indicator-dot week-dot-' + s + '" data-week="' + w + '" aria-label="Woche ' + (w + 1) + '" aria-hidden="false"></button>';
-    }).join('');
-    for(var i = 0; i < 28; i++){
-      var d = new Date(); d.setDate(d.getDate() + i);
-      var key = isoDate(d);
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'week-day-pill' + (weekPlanDay === key ? ' active' : '') + (i === 0 ? ' week-day-pill-today' : '') + (holidays[key] ? ' week-day-pill-holiday' : '');
-      b.setAttribute('data-date', key);
-      if(holidays[key]) b.setAttribute('title', 'Feiertag: ' + holidays[key]);
-      b.textContent = weekDayShortLabel(d, i);
-      b.onclick = function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanDay = k; renderWeekPlan(); }; }(key);
-      dayWrap.appendChild(b);
-    }
-    weekIndicatorRow.querySelectorAll('.week-indicator-dot').forEach(function(btn){
-      var w = parseInt(btn.getAttribute('data-week'), 10);
-      btn.onclick = function(){
-        if(typeof haptic === 'function') haptic(6);
-        var idx = w * 7;
-        if(dayWrap.children[idx]) dayWrap.children[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      };
-    });
-    /* Haptic beim Einrasten im Snap-Carousel (Magic Slider) */
-    if(!dayWrap._hapticSnapAttached){
-      dayWrap._hapticSnapAttached = true;
-      var snapTimeout;
-      dayWrap.addEventListener('scroll', function(){
-        clearTimeout(snapTimeout);
-        snapTimeout = setTimeout(function(){ if(typeof haptic === 'function') haptic(6); }, 120);
-      }, { passive: true });
-      try { dayWrap.addEventListener('scrollend', function(){ if(typeof haptic === 'function') haptic(6); }, { passive: true }); } catch(e){}
-    }
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        dayWrap.scrollLeft = 0;
-      });
-    });
-
-    const dayEntries = week[weekPlanDay] || [];
-    const providerEntries = dayEntries.map((entry, idx)=>({entry, idx})).filter(x => x.entry.providerId === providerId());
-    const dayLiveOffers = offers.filter(o => o.providerId === providerId() && o.day === weekPlanDay);
-    const dayIsLive = dayLiveOffers.length > 0;
-
-    if(!providerEntries.length && !dayIsLive){
-      list.innerHTML = `
-        <div class="week-empty-state">
-          <div style="width:72px; height:72px; background:rgba(255,215,0,0.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-            <i data-lucide="calendar-plus" style="width:36px; height:36px; color:var(--brand,#FFD700);"></i>
-          </div>
-          <div class="week-empty-title">Noch kein Plan für diesen Tag</div>
-          <div class="week-empty-hint">Wähle ein Gericht aus dem Kochbuch oder lege ein neues an.</div>
-          <button class="btn-primary provider-add-plus-btn" type="button" id="btnWeekEmptyAdd" style="width:100%; max-width:280px; min-height:56px; border-radius:14px; margin-bottom:10px;">
-            <span class="plus-char" style="font-size:20px; line-height:1; color:#fff;">+</span>
-            <span>Gericht hinzufügen</span>
-          </button>
-          <button class="btn secondary" type="button" id="btnWeekEmptyNew" style="width:100%; max-width:280px; min-height:56px; border-radius:14px;">
-            Neues Gericht anlegen
-          </button>
-        </div>
-      `;
-      const btnWeekEmptyAdd = document.getElementById('btnWeekEmptyAdd');
-      if(btnWeekEmptyAdd) btnWeekEmptyAdd.onclick = () => { if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'week', date: typeof weekPlanDay !== 'undefined' ? weekPlanDay : (typeof isoDate === 'function' ? isoDate(new Date()) : '') }); };
-      const btnWeekEmptyNew = document.getElementById('btnWeekEmptyNew');
-      if(btnWeekEmptyNew) btnWeekEmptyNew.onclick = () => { if(typeof openDishFlow === 'function') openDishFlow(weekPlanDay, 'week'); };
-      if(actionsBar) actionsBar.style.display = 'none';
-      if(activateBlock) activateBlock.style.display = 'none';
-      if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-      if(typeof lucide !== 'undefined') lucide.createIcons();
-      return;
-    }
-
-    if(actionsBar) actionsBar.style.display = 'flex';
-    if(activateBlock) activateBlock.style.display = 'none';
-    list.innerHTML = '';
-
-    var statusBlock = document.createElement('div');
-    statusBlock.className = 'week-status-block';
-    var p = (provider && provider.profile) ? provider.profile : {};
-    var stdAbhol = !!p.abholnummerEnabledByDefault;
-    var stdMehrweg = !!p.reuseEnabledByDefault;
-    var stdVorOrt = p.dineInPossibleDefault !== false;
-    var profileStdHtml = '<div class="week-profile-std" style="font-size:11px; color:#94a3b8; margin-top:6px;">Standard: Abholnummer ' + (stdAbhol ? '✓' : '–') + ', Mehrweg ' + (stdMehrweg ? '✓' : '–') + ', Vor Ort ' + (stdVorOrt ? '✓' : '–') + '</div>';
-    if(dayIsLive){
-      statusBlock.innerHTML = '<div><div class="week-status-online"><span class="week-status-dot" style="background:#FFDE00;"></span><span>ONLINE</span></div>' + profileStdHtml + '</div><button type="button" class="btn secondary" style="min-height:40px; padding:0 14px; font-size:14px; font-weight:700; border-radius:12px;" onclick="shareWeekPlan()">Teilen</button>';
-    } else {
-      statusBlock.innerHTML = '<div><div class="week-status-draft"><span class="week-status-dot" style="background:#94a3b8;"></span><span>ENTWURF</span></div>' + profileStdHtml + '</div>';
-    }
-    list.appendChild(statusBlock);
-
-    if(!dayIsLive && weekSortMode){
-      var sortBar = document.createElement('div');
-      sortBar.className = 'week-sort-bar';
-      sortBar.innerHTML = '<div><span style="font-size:14px; font-weight:800; color:#1a1a1a;">Reihenfolge per Drag & Drop ändern</span><div class="week-status-activate-hint" style="margin-top:4px;">Zum Beenden auf „Fertig“ tippen.</div></div><button type="button" class="week-sort-done" id="weekSortDoneBtn">Fertig</button>';
-      list.appendChild(sortBar);
-      var weekSortDoneBtn = document.getElementById('weekSortDoneBtn');
-      if(weekSortDoneBtn) weekSortDoneBtn.onclick = function(){ weekSortMode = false; renderWeekPlan(); };
-      list.classList.add('week-sort-mode');
-    } else {
-      list.classList.remove('week-sort-mode');
-    }
-
-    var itemsToShow = dayIsLive ? dayLiveOffers : providerEntries.map(function(x){ return x.entry; });
-    var entryIndices = dayIsLive ? [] : providerEntries.map(function(x){ return x.idx; });
-
-    itemsToShow.forEach(function(entry, idx){
-      var cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); });
-      var name = (cb && cb.dish) || entry.dish || 'Gericht';
-      var price = (cb && cb.price) || entry.price || 0;
-      var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-      var weekIndex = entryIndices[idx];
-      var wrap = document.createElement('div');
-      wrap.className = 'week-meal-card-wrap' + (dayIsLive ? ' week-card-live' : ' week-card-offline');
-      if(entry.id) wrap.setAttribute('data-offer-id', String(entry.id));
-      if(!dayIsLive && weekSortMode){
-        wrap.draggable = true;
-        wrap.dataset.index = String(weekIndex);
-        var imgSort = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-        var thumbSort = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (imgSort ? ';background-image:url(\'' + esc(imgSort) + '\')' : '') + '"></div>';
-        wrap.innerHTML = '<div class="week-meal-card" style="display:flex; align-items:center;"><div class="week-meal-card-drag-handle"><i data-lucide="grip-vertical" style="width:24px;height:24px;"></i></div>' + thumbSort + '<div><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta"><span class="price-pill">' + euro(price) + '</span></div></div></div>';
-        wrap.ondragstart = function(e){ e.dataTransfer.setData('text/plain', weekIndex); e.dataTransfer.effectAllowed = 'move'; };
-        wrap.ondragover = function(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; var from = parseInt(e.dataTransfer.getData('text/plain'), 10); var to = parseInt(this.dataset.index, 10); if(from !== to){ this.classList.add('week-drag-over'); } };
-        wrap.ondragleave = function(){ this.classList.remove('week-drag-over'); };
-        wrap.ondrop = function(e){
-          e.preventDefault();
-          this.classList.remove('week-drag-over');
-          var fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
-          var toIndex = parseInt(this.dataset.index, 10);
-          if(fromIndex !== toIndex && !isNaN(fromIndex) && !isNaN(toIndex)) reorderWeekDay(weekPlanDay, fromIndex, toIndex);
-        };
-        list.appendChild(wrap);
-        return;
-      }
-      var swipeInner = document.createElement('div');
-      swipeInner.className = 'week-meal-card-swipe';
-      var card = document.createElement('div');
-      card.className = 'week-meal-card';
-      var onlineHtml = dayIsLive
-        ? '<span class="week-meal-online"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Online</span>'
-        : '<span style="font-size:12px; font-weight:700; color:#94a3b8;">Geplant</span>';
-      var p = (provider && provider.profile) ? provider.profile : {};
-      var defaultDineIn = p.dineInPossibleDefault !== false;
-      var defaultPickup = !!p.abholnummerEnabledByDefault;
-      var defaultReuse = !!p.reuseEnabledByDefault;
-      var entryDineIn = entry.dineInPossible !== false;
-      var entryPickup = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
-      var entryReuse = !!(entry.reuse && entry.reuse.enabled);
-      var hasTime = !!(entry.pickupWindow && String(entry.pickupWindow).trim()) || !!(entry.timeStart && entry.timeEnd);
-      var verdienstHtml = !dayIsLive ? '<div class="week-meal-verdienst" style="font-size:12px; margin-top:4px;">Verdienst ca. ' + euro(Math.max(0, (Number(price)||0) - 4.99)) + '</div>' : '';
-      var moveBtnHtml = !dayIsLive ? '<div style="margin-top:8px;"><button type="button" class="week-meal-move-btn" data-day="' + esc(weekPlanDay) + '" data-index="' + weekIndex + '" style="padding:0; background:none; border:none; font-size:12px; font-weight:700; color:#64748b; cursor:pointer; text-decoration:underline;">Verschieben</button></div>' : '';
-      var thumbHtml = '<div class="week-meal-thumb" style="width:56px;min-width:56px;height:56px;border-radius:12px;overflow:hidden;background:#e5e7eb;flex-shrink:0;background-size:cover;background-position:center' + (img ? ';background-image:url(\'' + esc(img) + '\')' : '') + '"></div>';
-      card.innerHTML = thumbHtml + '<div class="week-meal-content" style="flex:1;min-width:0; display:flex; flex-direction:column; align-items:stretch;"><div class="week-meal-name">' + esc(name) + '</div><div class="week-meal-meta" style="display:flex; align-items:center; justify-content:space-between; gap:8px;"><span style="flex-shrink:0;">' + onlineHtml + '</span><span class="price-pill week-meal-price-right">' + euro(price) + '</span></div>' + verdienstHtml + moveBtnHtml + '</div>';
-      card.style.cursor = 'pointer';
-      if(!dayIsLive){
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(e.target.closest && e.target.closest('.week-meal-move-btn')) return; if(hasTime){ if(typeof startListingFlow === 'function') startListingFlow({ date: weekPlanDay, entryPoint: 'week', dishId: entry.cookbookId || undefined }); } else { if(typeof openWeekTimeOverlay === 'function') openWeekTimeOverlay(weekPlanDay, weekIndex); } };
-        var swipeDel = document.createElement('div');
-        swipeDel.className = 'week-swipe-actions right';
-        swipeDel.innerHTML = '<i data-lucide="trash-2" style="width:22px;height:22px;"></i><span>Löschen</span>';
-        swipeDel.onclick = function(){ deletePlannedEntryWithUndo(weekPlanDay, weekIndex); };
-        var swipeCopy = document.createElement('div');
-        swipeCopy.className = 'week-swipe-actions left';
-        swipeCopy.innerHTML = '<i data-lucide="copy" style="width:22px;height:22px;"></i><span>Folgetag</span>';
-        swipeCopy.onclick = function(){ copyWeekEntryToNextDay(weekPlanDay, weekIndex); };
-        swipeInner.appendChild(swipeCopy);
-        swipeInner.appendChild(swipeDel);
-        swipeInner.appendChild(card);
-        card.querySelectorAll('.week-meal-move-btn').forEach(function(btn){
-          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); var d = btn.getAttribute('data-day'); var i = parseInt(btn.getAttribute('data-index'), 10); if(typeof openMoveWeekEntrySheet === 'function') openMoveWeekEntrySheet(d, i); };
-        });
-        attachSwipeToWeekCard(swipeInner, weekPlanDay, weekIndex);
-        attachLongPressToWeekCard(wrap);
-      } else {
-        card.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(weekJustSwiped) return; if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: entry.id || '', date: weekPlanDay, entryPoint: 'WEEKLY_PLAN_EDIT' }); };
-        swipeInner.appendChild(card);
-      }
-      wrap.appendChild(swipeInner);
-      var lastSavedId = '';
-      try { lastSavedId = sessionStorage.getItem('mittagio_last_saved_offer_id') || ''; } catch(e){}
-      if(lastSavedId && entry.id && String(entry.id) === lastSavedId){
-        wrap.classList.add('prov-card-emerald-glow');
-        setTimeout(function(){ wrap.classList.remove('prov-card-emerald-glow'); try{ sessionStorage.removeItem('mittagio_last_saved_offer_id'); }catch(e){} }, 1400);
-      }
-      list.appendChild(wrap);
-    });
-
-    /* "Weiteres Gericht planen" entfernt – Nutzer nutzt gelbes Plus oder Wochenplan-Karte */
-
-    var draftDays = getWeekDraftDays();
-    var masterBar = document.getElementById('weekMasterActivateBar');
-    var btnMaster = document.getElementById('btnWeekMasterActivate');
-    if(masterBar && btnMaster){
-      if(draftDays.length > 0){
-        masterBar.style.display = 'block';
-        var total = (draftDays.length * 4.99).toFixed(2).replace('.', ',');
-        btnMaster.textContent = 'Gesamte Auswahl aktivieren (' + draftDays.length + ' × 4,99 €)';
-        btnMaster.onclick = function(){ if(typeof haptic === 'function') haptic(10); bulkActivateWeekDrafts(); };
-      } else {
-        masterBar.style.display = 'none';
-      }
-    }
-
-    if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
-    if(typeof lucide !== 'undefined') lucide.createIcons();
+    /* KW-Board: Einziges Layout [cite: 2026-03-02 – weekDays/weekList entfernt] */
+    if (boardWrap) boardWrap.style.display = 'flex';
+    setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
+    if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
   }
 
   function getWeekDraftDays(){
@@ -12601,16 +12480,16 @@
         list.appendChild(btn);
       });
     }
-    bd.style.display = 'block';
+    show(bd);
+    show(sheet, 'flex');
     bd.classList.add('active');
-    sheet.style.display = 'flex';
     sheet.classList.add('active');
   }
   function closeWeekTemplatesSheet(){
     var bd = document.getElementById('weekTemplatesBd');
     var sheet = document.getElementById('weekTemplatesSheet');
-    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
-    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd) { hide(bd); bd.classList.remove('active'); }
+    if (sheet) { hide(sheet); sheet.classList.remove('active'); }
   }
   function showWeekTemplatePreview(templateId){
     var tpl = getWeekTemplates().find(function(t){ return t.id === templateId; });
@@ -12621,8 +12500,8 @@
     var title = document.getElementById('weekTemplatePreviewTitle');
     var daysEl = document.getElementById('weekTemplatePreviewDays');
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    if (bd) { bd.style.display = 'block'; bd.classList.add('active'); }
-    if (sheet) { sheet.style.display = 'flex'; sheet.classList.add('active'); }
+    if (bd) { show(bd); bd.classList.add('active'); }
+    if (sheet) { show(sheet, 'flex'); sheet.classList.add('active'); }
     if (title) title.textContent = tpl.name || 'Vorschau';
     if (daysEl) {
       daysEl.innerHTML = '';
@@ -12656,8 +12535,8 @@
     _weekTemplatePreviewId = null;
     var bd = document.getElementById('weekTemplatePreviewBd');
     var sheet = document.getElementById('weekTemplatePreviewSheet');
-    if (bd) { bd.style.display = 'none'; bd.classList.remove('active'); }
-    if (sheet) { sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if (bd) { hide(bd); bd.classList.remove('active'); }
+    if (sheet) { hide(sheet); sheet.classList.remove('active'); }
   }
   if (typeof window !== 'undefined') {
     window.openWeekTemplatesSheet = openWeekTemplatesSheet;
@@ -14672,11 +14551,6 @@
     btnWeekBack.onclick=()=> showProviderHome();
   }
   /* btnProviderWeekFooter: Bindung in renderWeekPlanBoard (Activation-Merge) [cite: 2026-02-25] */
-  var weekHeaderBackBtn = document.getElementById('weekHeaderBackBtn');
-  if(weekHeaderBackBtn && !weekHeaderBackBtn._bound){
-    weekHeaderBackBtn._bound = true;
-    weekHeaderBackBtn.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else if(typeof showProviderHome==='function') showProviderHome(); };
-  }
   const btnWeekRefresh = document.getElementById('btnWeekRefresh');
   if(btnWeekRefresh){
     btnWeekRefresh.onclick=()=>{ renderWeekPlan(); if(typeof showToast === 'function') showToast('Aktualisiert'); };
@@ -16272,18 +16146,39 @@
   /** Content-Safety: Scroll-Bereich erhält Platz für fixierten Footer – NUR Anbieter [cite: 2026-02-23] */
   function applyVendorFooterPadding(){
     if(!document.body.classList.contains('provider-mode')) return;
-    var footer=document.querySelector('#wizard .inserat-action-section .system-footer-merged, #wizard .inserat-action-section .inserat-step1-nav, #wizard .inserat-action-section .inserat-immo-footer');
+    var footer=document.querySelector('#wizard #mastercard-footer-step1 .system-footer-merged, #wizard #mastercard-footer-step1 .inserat-step1-nav, #wizard #mastercard-footer-step1 .inserat-immo-footer');
     var scrollArea=document.querySelector('#wizard .mastercard-scroll-area, #wizard .inserat-scroll-area');
     if(footer&&scrollArea){
       var h=footer.offsetHeight;
       scrollArea.style.paddingBottom=(h+16)+'px';
     }
   }
+  /** Emergency-Restore: Wizard-Infrastruktur sicherstellen [cite: 2026-02-28]
+   * Soll-Struktur – buildListingStep() und CSS arbeiten nahtlos zusammen. */
+  function ensureWizardInDom(){
+    if(!document.getElementById('wbd')){
+      var wbd = document.createElement('div');
+      wbd.id = 'wbd';
+      wbd.className = 'backdrop';
+      wbd.onclick = function(ev){ if(ev&&ev.target===wbd){ var w=document.getElementById('wizard'); if(w&&w.classList.contains('active')){ if(w.getAttribute('data-flow')==='listing'&&history.length>1){ history.back(); } else if(w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function'){ closeMastercard(); } else if(typeof closeWizard==='function'){ closeWizard(); } } } };
+      document.body.appendChild(wbd);
+    }
+    if(!document.getElementById('wizard')){
+      var wizard = document.createElement('div');
+      wizard.id = 'wizard';
+      wizard.className = 'sheet sheet--kitchen';
+      wizard.innerHTML = '<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div><div class="wizard-inner"><div class="w-top"><div class="w-title" id="wTitle">Setup</div><div class="w-step" id="wStep">Schritt 1 von 5</div></div><div id="wQ" class="wizard-question"></div><div id="wHelp" class="wizard-help"></div><div class="wizard-scroll"><div id="wContent"></div></div><div class="wizard-footer" id="wizardFooter" style="display:none;"></div></div></div></div>';
+      document.body.appendChild(wizard);
+    }
+  }
   function openWizard(){
+    ensureWizardInDom();
     const wbd = document.getElementById('wbd');
     const wizard = document.getElementById('wizard');
+    if(!wizard){ if(typeof console !== 'undefined' && console.warn) console.warn('WIZARD: #wizard nicht im DOM – wizard-inserat-open wird nicht gesetzt'); return; }
     if(wbd) wbd.classList.add('active');
-    if(wizard) wizard.classList.add('active');
+    wizard.classList.add('active');
+    if(typeof console !== 'undefined' && console.log) console.log('MASTER-WIZARD IS NOW LIVE');
     if(w && w.kind === 'listing'){
       if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
     }
@@ -16295,8 +16190,8 @@
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
-      /* Handy-Zurück: history.pushState damit popstate → closeListingFlow [cite: Event-Leitungen 2026-02-26] */
-      if(typeof pushViewState === 'function') pushViewState({ wizard: true, listing: true }, location.pathname);
+      /* History-Context: pushState für native Zurück-Geste → popstate schließt InseratCard [cite: History-Context 2026-02-26] */
+      if(typeof pushViewState === 'function') pushViewState({ view: 'inserat-card', wizard: true, listing: true }, location.pathname);
     } else {
       pushViewState({wizard: true}, location.pathname);
     }
@@ -16452,18 +16347,10 @@
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
-    /* Ausnahme: openToStep===2 ausschließlich für Bulk-Aktivierung (mehrere Daten) [cite: Master-Trichter 2026-02-26] */
-    if(context.openToStep === 2 && context.bulkDraftDates && context.bulkDraftDates.length){
-      startWizard('listing', context);
-      return;
-    }
+    /* 3-Schritt Mastercard: Alle Flows (auch Bulk) starten bei Schritt 1 [cite: FLOW FIX 2026-02-26] */
     /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
     try { localStorage.removeItem('wizard_draft'); } catch(e) {}
-    /* Wochenplan/Kochbuch „Neues Gericht“: immer InseratCard Schritt 1 (STEP_EDIT), nie openListingWizard [cite: FLOW FIX 2026-02-25] */
-    if(!context.editOfferId && !context.dishId && !context.fromCookbookId && context.entryPoint !== 'cookbook' && context.entryPoint !== 'week'){
-      openListingWizard(context);
-      return;
-    }
+    /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
 
@@ -16637,8 +16524,8 @@
       if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
       else if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault;
       if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
-      /* Master-Trichter Final-Seal: Jeder normale Klick (Edit, Wochenplan, Renner, Kochbuch) → Schritt 1. Ausnahme: openToStep===2 nur für Bulk-Aktivierung [cite: Master-Trichter 2026-02-26] */
-      if(!(ctx.openToStep === 2 && ctx.bulkDraftDates && ctx.bulkDraftDates.length)) w.inseratStep = 1;
+      /* 3-Schritt Mastercard: Immer Schritt 1 als Einstieg [cite: FLOW FIX 2026-02-26] */
+      w.inseratStep = 1;
       w.ctx = ctx;
       openWizard();
       openMastercard(w.data || { dish:'', price:0, category:'Fleisch', reuse:{enabled:true} });
@@ -16740,12 +16627,13 @@
   function setWizardContent(node){
     const c = document.getElementById('wContent');
     if(!c) return;
-    c.style.opacity='0';
-    c.style.transform='translateY(8px)';
-    c.style.transition='opacity 0.2s ease, transform 0.2s ease';
     c.innerHTML='';
     c.appendChild(node);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ c.style.opacity='1'; c.style.transform='translateY(0)'; }); });
+    /* Kein opacity:0-Start – verhindert schwarzen Screen durch Backdrop-Durchscheinen [cite: Schwarzer Screen Fix 2026-03-02] */
+    c.style.opacity='1';
+    c.style.transform='translateY(0)';
+    c.style.transition='';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(c.isConnected){ c.style.transition='opacity 0.2s ease, transform 0.2s ease'; } }); });
   }
 
   function rebuildWizard(){
@@ -17043,6 +16931,8 @@
   function buildListingStep(){
     setWizardNextDefault();
     w.step = 0;
+    /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
+    w.inseratStep = 1;
     setWizardHeader('', '');
     const profile = normalizeProviderProfile(provider.profile || {});
     const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
@@ -17078,13 +16968,9 @@
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
-      var isPlanMode = (entryPoint === 'week') || (entryPoint === 'cookbook' && w.ctx && w.ctx.dishId && !w.ctx.skipQuickPost);
-      var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
-      var isBulkActivate = !!(w.ctx && w.ctx.bulkDraftDates && w.ctx.bulkDraftDates.length);
-      var useTwoStepFlow = isBulkActivate || (!isPlanMode && !isFastTrack && (entryPoint === 'dashboard' || entryPoint === 'cookbook'));
-      if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
-      if((w.ctx && w.ctx.openToStep === 2) || isBulkActivate){ w.inseratStep = 2; }
-      var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
+      /* 3-Schritt Mastercard: Immer Editierung → Monetarisierung → Live [cite: FLOW FIX 2026-02-26] */
+      if(typeof w.inseratStep !== 'number') w.inseratStep = 1;
+      var inseratStep = Math.max(1, Math.min(3, w.inseratStep));
       if(inseratStep === 1){ try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){} }
       var listingDebounceTimer = null; /* Debounce f├╝r Autovervollst├ñndigung + Bildvorschl├ñge */
       var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
@@ -17117,12 +17003,11 @@
       }
       function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
 
-      // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 Ôåö Step 2) oder Step 1 nur (Plan-Mode) ==========
+      // ========== 3-SCHRITT MASTERCARD: Editierung → Monetarisierung → Live [cite: Drei-Schritte-Gesetz 2026-02-26] ==========
       var step1Container = box;
       var slider = null;
       var updateStep2ContextZoneRef = null;
-      if(useTwoStepFlow){
-        slider=document.createElement('div');
+      slider=document.createElement('div');
         slider.className='inserat-steps-slider';
         slider.setAttribute('data-inserat-step', String(inseratStep));
         var track=document.createElement('div');
@@ -17186,7 +17071,7 @@
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
           saveDraft();
-          var fb=box.querySelector('[data-inserat-step="2"] .btn-primary-black');
+          var fb=box.querySelector('#mastercard-footer-step2 .btn-primary-black');
           if(fb){
             fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
             fb.classList.toggle('inserat-footer-btn--499',type==='classic');
@@ -17251,7 +17136,8 @@
         btnFinish.textContent='Zum Dashboard';
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
-        step3Footer.classList.add('inserat-step1-nav');
+        step3Footer.classList.add('inserat-step1-nav', 'inserat-airbnb-footer');
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:1050; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         step3Pane.appendChild(step3Footer);
         btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
@@ -17263,10 +17149,6 @@
         step2Sweep.className='step2-slot-machine-sweep';
         step2Sweep.setAttribute('aria-hidden','true');
         box.appendChild(step2Sweep);
-      } else {
-        box.id='mastercard-step-edit';
-        box.classList.add('mastercard-step-center');
-      }
 
       {
 
@@ -17456,8 +17338,9 @@
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
-        if(typeof handleWizardExit==='function'){ handleWizardExit(box); return; }
-        var panel=box; if(panel&&!panel.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ panel.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); }, 280); }); } else { closeWizard(); }
+        /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
+        if(typeof history !== 'undefined' && history.length > 1){ history.back(); return; }
+        if(typeof closeListingFlow==='function') closeListingFlow();
       };
 
       const scrollArea=document.createElement('div');
@@ -17603,10 +17486,10 @@
       priceSection.appendChild(verdienstWrap);
       contentSheet.appendChild(priceSection);
 
-      // ========== 6. Power-Bar [cite: Regel 2026-02-23] Reihenfolge: ­ƒì┤ Vor Ort -> ­ƒöä Mehrweg -> ­ƒòÆ Abholzeit -> ­ƒî¥ Allergene -> Ô×ò Extras ==========
+      // ========== 6. Power-Bar: 6 Icons horizontal unter Preis [cite: Final-Fix 2026-03-01] 🍴🧾🔄🕒⚠️➕ ==========
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
-      powerBar.style.cssText='border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px;';
+      powerBar.style.cssText='display:flex !important; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-around; gap:8px; border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px; min-height:52px;';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
       var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
@@ -17627,7 +17510,7 @@
           openQuickAdjust(type==='zeit'?'time':(type==='allergene'?'allergens':'extras'));
         }
       }
-      function addPowerItem(emo, label, type, isActive){
+      function addPowerItem(emo, label, type, isActive, emojiOnly){
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='power-item status-pill inserat-soft-pill '+(isActive?'active':'inactive');
@@ -17636,17 +17519,17 @@
         btn.setAttribute('title',label);
         var labelText=label;
         if(type==='allergene'&&w.data.allergens&&w.data.allergens.length){ labelText=(w.data.allergens||[]).join(', '); }
-        btn.innerHTML='<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
+        btn.innerHTML=emojiOnly ? '<span class="inserat-pill-emo">'+emo+'</span>' : '<span class="inserat-pill-emo">'+emo+'</span><span class="power-item-label inserat-allergen-codes">'+labelText+'</span>';
         btn.onclick=function(){ handlePowerBarInteraction(type); };
         powerBar.appendChild(btn);
       }
       var hasAbholnummer=!!w.data.hasPickupCode;
-      addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn);
-      addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer);
-      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
-      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue);
-      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens);
-      addPowerItem('\u002B','Extras','extras',hasExtras);
+      addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn, true);
+      addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer, true);
+      addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse, true);
+      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue, false);
+      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens, false);
+      addPowerItem('\u002B','Extras','extras',hasExtras, false);
       var powerBarExtras=document.createElement('div');
       powerBarExtras.className='power-bar-extras';
       powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';
@@ -17817,7 +17700,7 @@
         var calcVal = document.getElementById('calc-val');
         if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
         var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
-        if(verdienstEl && !isPlanMode){
+        if(verdienstEl){
           var verdienst = Math.max(0, (price - 0.89) * 30);
           verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
           verdienstEl.style.display = price > 0 ? 'block' : 'none';
@@ -17851,7 +17734,7 @@
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
         if(price<=0) priceSection.classList.add('inserat-validation-error');
-        var targetBtn=btn||box.querySelector('#inserat-action-section .btn-primary-black')||box.querySelector('[data-inserat-step="2"] .btn-primary-black');
+        var targetBtn=btn||box.querySelector('#mastercard-footer-step1 .btn-primary-black')||box.querySelector('#mastercard-footer-step2 .btn-primary-black');
         if(targetBtn){
           targetBtn.classList.remove('btn-shake');
           targetBtn.offsetHeight;
@@ -17894,8 +17777,8 @@
         if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
       });
 
-      // 9. ACTION BUTTONS – updateWizardFooter zentral [cite: MASTER-CARD FIX 2026-02-23]
-      var isInserierenRoute = (entryPoint === 'dashboard' || entryPoint === 'week' || entryPoint === 'cookbook');
+      // 9. ACTION BUTTONS – 3-Schritt Mastercard: Speichern (Shortcut) + Weiter (Primary) [cite: FLOW FIX 2026-02-26]
+      var showSpeichernShortcut = !!(w.ctx && w.ctx.editOfferId) || entryPoint === 'week' || entryPoint === 'cookbook';
       function isPrimaryValid(){
         var d = !!(w.data.dish && String(w.data.dish).trim().length >= 2);
         var p = Number(w.data.price) > 0;
@@ -17904,7 +17787,7 @@
       }
       function updateWizardFooter(){
         var valid = isPrimaryValid();
-        var primaryBtn = box.querySelector('#inserat-action-section .btn-primary-black');
+        var primaryBtn = box.querySelector('#mastercard-footer-step1 .btn-primary-black');
         if (primaryBtn) {
           if (valid) {
             primaryBtn.classList.add('is-ready');
@@ -17929,196 +17812,103 @@
       }
       var primaryValid = isPrimaryValid();
 
-      /* Regel: Alle Gerichte nur in InseratCard Step 1 öffnen, dort bearbeiten; dann Speichern ODER Weiter je nach Entry [cite: 2026-02-25] */
-      /* Entry → Footer: dashboard (Neu/Renner) = Weiter | dashboard (Edit) = Speichern | cookbook = Speichern + Jetzt inserieren | week = Speichern | ACTIVE_LISTING/WEEKLY_PLAN_EDIT = Speichern */
+      /* 3-Schritt Mastercard: Footer außerhalb des Sliders – Viewport-treu [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
       const actionSection=document.createElement('section');
-      actionSection.id='inserat-action-section';
-      actionSection.className='inserat-action-section fixed-footer' + (!isPlanMode && isInserierenRoute ? ' inserat-action-pricing inserat-action-layer' : '') + (isFastTrack ? ' inserat-action-layer' : '') + (isPlanMode ? ' inserat-action-plan' : '');
+      actionSection.id='mastercard-footer-step1';
+      actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:500; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
 
-      if(isFastTrack){
-        /* Fast-Track: Änderungen speichern → direkt schließen (Step 2/3 entfällt) [cite: 3-Schritte-Flow 2026-02-26] */
-        var step1NavRow=document.createElement('div');
-        step1NavRow.className='inserat-step1-nav system-footer-merged app-footer-main inserat-airbnb-footer';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb;';
-        var btnSpeichern=document.createElement('button');
-        btnSpeichern.type='button';
-        btnSpeichern.id='btnNext';
-        btnSpeichern.className='btn-primary-black footer-main-button';
-        btnSpeichern.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnSpeichern.textContent='Speichern';
-        btnSpeichern.disabled=!primaryValid;
-        btnSpeichern.style.opacity=primaryValid?'1':'0.3';
-        btnSpeichern.style.pointerEvents=primaryValid?'auto':'none';
-        if(primaryValid) btnSpeichern.classList.add('is-ready');
-        btnSpeichern.onclick=function(){
+      var step1NavRow=document.createElement('div');
+      step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      if(showSpeichernShortcut){
+        var linkSpeichern=document.createElement('button');
+        linkSpeichern.type='button';
+        linkSpeichern.id='btnSpeichernKochbuch';
+        linkSpeichern.className='inserat-footer-link btn-secondary-link';
+        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
+        linkSpeichern.textContent=(w.ctx&&w.ctx.editOfferId)?'Änderungen speichern':(entryPoint==='week'?'Speichern':'Im Kochbuch speichern');
+        linkSpeichern.disabled=!primaryValid;
+        linkSpeichern.style.opacity=primaryValid?'1':'0.3';
+        linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
+        linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           hapticLight();
-          var o=previewOfferFromWizard();
-          var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
-          if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
-          var published=typeof publishOffer==='function'?publishOffer(o):null;
-          closeWizard(true);
-          if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
-          else if(typeof showProviderHome==='function') showProviderHome();
-        };
-        step1NavRow.appendChild(btnSpeichern);
-        actionSection.appendChild(step1NavRow);
-      } else if(isPlanMode){
-        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
-        var planNavRow=document.createElement('div');
-        planNavRow.className='app-footer-main';
-        planNavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
-        var btnWeekPlan=document.createElement('button');
-        btnWeekPlan.type='button';
-        btnWeekPlan.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
-        btnWeekPlan.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnWeekPlan.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
-        btnWeekPlan.disabled=!primaryValid;
-        btnWeekPlan.style.opacity=primaryValid?'1':'0.3';
-        btnWeekPlan.style.pointerEvents=primaryValid?'auto':'none';
-        btnWeekPlan.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+          if(w.ctx&&w.ctx.editOfferId){
+            var o=previewOfferFromWizard();
+            var offerId=(w.ctx.editOfferId)||(o&&o.id)||null;
+            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
+            if(typeof publishOffer==='function') publishOffer(o);
+            closeWizard(true);
+            if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
+            else if(typeof showProviderHome==='function') showProviderHome();
+            return;
+          }
           if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(entryPoint === 'cookbook' && id){
+          var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
+          if(entryPoint==='cookbook'&&id){
             closeWizard(true);
             if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖');
             if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-          } else if(id && w.data.day){
+            return;
+          }
+          if(id&&w.data.day){
             if(!week[w.data.day]) week[w.data.day]=[];
             var c=cookbook.find(function(x){ return x.id===id; });
             if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
             save(LS.week, week);
             closeWizard(true);
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
-          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
-        };
-        planNavRow.appendChild(btnWeekPlan);
-        actionSection.appendChild(planNavRow);
-      } else if(entryPoint === 'dashboard' || entryPoint === 'cookbook'){
-        /* Master-Trichter: Edit = Änderungen speichern | Neu = links Speichern (Kochbuch), rechts Weiter [cite: Master-Trichter 2026-02-26] */
-        var step1NavRow=document.createElement('div');
-        step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px;';
-        var isEditMode=!!(w.ctx&&w.ctx.editOfferId);
-        var footerBtnText=isEditMode?'Änderungen speichern':'Weiter';
-        if(!isEditMode && !(w.ctx&&w.ctx.fromCookbookFooter)){
-          var linkSpeichern=document.createElement('button');
-          linkSpeichern.type='button';
-          linkSpeichern.id='btnSpeichernKochbuch';
-          linkSpeichern.className='inserat-footer-link btn-secondary-link';
-          linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
-          linkSpeichern.textContent='Speichern';
-          linkSpeichern.disabled=!primaryValid;
-          linkSpeichern.style.opacity=primaryValid?'1':'0.3';
-          linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
-          linkSpeichern.onclick=function(){
-            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-            hapticLight();
-            if(typeof haptic==='function') haptic(50);
-            var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
-            if(id){ closeWizard(true); if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('dashboard'); }
-          };
-          step1NavRow.appendChild(linkSpeichern);
-        }
-        var btnWeiter=document.createElement('button');
-        btnWeiter.type='button';
-        btnWeiter.id='btnNext';
-        btnWeiter.className='btn-primary-black footer-main-button';
-        btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
-        btnWeiter.textContent=footerBtnText;
-        btnWeiter.disabled=true;
-        btnWeiter.style.opacity='0.3';
-        btnWeiter.style.pointerEvents='none';
-        btnWeiter.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          hapticLight();
-          if(isEditMode){
-            var o=previewOfferFromWizard();
-            var offerId=(w.ctx&&w.ctx.editOfferId)||(o&&o.id)||null;
-            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
-            var published=typeof publishOffer==='function'?publishOffer(o):null;
-            closeWizard(true);
-            if(typeof showProviderHome==='function') showProviderHome();
             return;
           }
-          if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
-          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-          w.inseratStep=2; saveDraft();
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
-          if(typeof window.bridgeToPremiumMonetization==='function'){
-            window.bridgeToPremiumMonetization();
-          } else if(slider){
-            try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
-            var sweepEl=box.querySelector('.step2-slot-machine-sweep');
-            if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
-            slider.setAttribute('data-inserat-step','2');
-            var wizardEl=document.getElementById('wizard');
-            if(wizardEl) wizardEl.classList.add('inserat-step2-active');
-            var f=box.querySelector('[data-inserat-step="2"]'); if(f) f.style.display='flex';
-          } else { rebuildWizard(); }
+          if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
         };
-        step1NavRow.appendChild(btnWeiter);
-        actionSection.appendChild(step1NavRow);
-      } else {
-        /* Plan-Mode: Nur Primär-Button, ohne Abbrechen [cite: MASTER-CARD FIX 2026-02-23] */
-        var planRow=document.createElement('div');
-        planRow.className='app-footer-main';
-        planRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:center;';
-        var btnEinplanen=document.createElement('button');
-        btnEinplanen.type='button';
-        btnEinplanen.className='btn-primary-black';
-        btnEinplanen.style.cssText='flex:1; height:48px; min-width:180px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:white; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;';
-        btnEinplanen.textContent=(entryPoint === 'week' ? 'Speichern' : 'Im Kochbuch speichern');
-        btnEinplanen.disabled=!primaryValid;
-        btnEinplanen.style.opacity=primaryValid?'1':'0.3';
-        btnEinplanen.style.pointerEvents=primaryValid?'auto':'none';
-        btnEinplanen.className='btn-primary-black' + (primaryValid ? ' is-ready' : '');
-        btnEinplanen.onclick=function(){
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          if(typeof haptic==='function') haptic(50);
-          var id=saveToCookbookFromWizard();
-          if(entryPoint === 'cookbook' && id){
-            closeWizard(true);
-            if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖');
-            if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-          } else if(id && w.data.day){
-            if(!week[w.data.day]) week[w.data.day]=[];
-            var c=cookbook.find(function(x){ return x.id===id; });
-            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
-            save(LS.week, week);
-            closeWizard(true);
-            showSaveSuccessSheet({
-              title:'Im Wochenplan gespeichert',
-              sub:'Dein Gericht ist im Wochenplan eingetragen.',
-              dishName: w.data.dish||'',
-              price: w.data.price,
-              imageUrl: w.data.photoData||'',
-              savedEntryId: id,
-              savedDay: w.data.day,
-              onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); },
-              onLive: null
-            });
-          } else if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
-        };
-        planRow.appendChild(btnEinplanen);
-        actionSection.appendChild(planRow);
+        step1NavRow.appendChild(linkSpeichern);
       }
-      step1Container.appendChild(actionSection);
+      var btnWeiter=document.createElement('button');
+      btnWeiter.type='button';
+      btnWeiter.id='btnNext';
+      btnWeiter.className='btn-primary-black footer-main-button';
+      btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+      btnWeiter.textContent='Weiter';
+      btnWeiter.disabled=true;
+      btnWeiter.style.opacity='0.3';
+      btnWeiter.style.pointerEvents='none';
+      btnWeiter.onclick=function(){
+        if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+        hapticLight();
+        if(typeof handlePriceFastInsert==='function') handlePriceFastInsert(box);
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+        w.inseratStep=2; saveDraft();
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
+        /* Legacy bridgeToPremiumMonetization entfernt – InseratCard bleibt im #wizard [cite: STOP-ORDER] */
+        if(slider){
+          try{ history.pushState({inseratStep:2},'','#'); }catch(e){}
+          var sweepEl=box.querySelector('.step2-slot-machine-sweep');
+          if(sweepEl){ sweepEl.classList.remove('animate'); sweepEl.offsetHeight; sweepEl.classList.add('animate'); sweepEl.addEventListener('animationend',function onSweepEnd(){ sweepEl.removeEventListener('animationend',onSweepEnd); sweepEl.classList.remove('animate'); },{once:true}); }
+          slider.setAttribute('data-inserat-step','2');
+          var wizardEl=document.getElementById('wizard');
+          if(wizardEl) wizardEl.classList.add('inserat-step2-active');
+          if(typeof updateFooterVisibility==='function') updateFooterVisibility();
+        } else { rebuildWizard(); }
+      };
+      step1NavRow.appendChild(btnWeiter);
+      actionSection.appendChild(step1NavRow);
+      /* Footer außerhalb des Sliders – nicht an step1Container [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
 
       if(slider){
         box.appendChild(slider);
+        box.appendChild(actionSection);
         var airbnbFooter=document.createElement('div');
-        airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.setAttribute('data-inserat-step','2');
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; position:fixed; left:0; right:0; bottom:0; z-index:500; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
+        airbnbFooter.id='mastercard-footer-step2';
+        airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:500; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
-        linkZurueck.className='inserat-footer-link';
+        linkZurueck.className='inserat-footer-link btn-secondary-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
-        linkZurueck.className='btn-secondary-link';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); airbnbFooter.style.display='none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display='none'; var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(typeof updateFooterVisibility==='function') updateFooterVisibility(); var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display','none','important'); var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
@@ -18159,7 +17949,7 @@
         airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         box.appendChild(airbnbFooter);
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} airbnbFooter.style.display=s===2?'flex':'none'; var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.display=s===3?'flex':'none'; };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); });
       }
@@ -18204,7 +17994,9 @@
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
       setWizardContent(sheet);
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ box.classList.add('is-open'); if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); }); });
+      /* Sofort is-open setzen – kein rAF/setTimeout, verhindert schwarzen Screen [cite: Schwarzer Screen Fix 2026-03-02] */
+      if(box && box.isConnected) box.classList.add('is-open');
+      requestAnimationFrame(function(){ if(typeof applyVendorFooterPadding==='function') applyVendorFooterPadding(); });
       /* openToPillar: Scroll zu Säulen-Bereich (Vor Ort, Abholnummer, Mehrweg) [cite: Event-Leitungen 2026-02-26] */
       var openToPillarVal = w.ctx && w.ctx.openToPillar;
       if(openToPillarVal){
@@ -18249,8 +18041,8 @@
     w = w || {};
     w.kind = 'listing';
     w.step = 0;
-    /* Neues Gericht / openListingWizard: immer Step 1, kein alter inseratStep [cite: FLOW FIX 2026-02-25] */
-    if(!(w.ctx && w.ctx.editOfferId)) w.inseratStep = 1;
+    /* 3-Schritt Mastercard: Immer Step 1 als Einstieg für alle Flows (auch Edit, Bulk) [cite: 2026-02-28] */
+    w.inseratStep = 1;
     var d = newDish || {};
     if(d.dish !== undefined || d.providerId !== undefined){
       w.data = Object.assign({}, w.data, d);
@@ -18603,10 +18395,12 @@
     slider.setAttribute('data-inserat-step', '3');
     var wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.classList.add('inserat-step3-active');
-    var airbnbFooter = box.querySelector('[data-inserat-step="2"]');
+    var f1 = document.getElementById('mastercard-footer-step1');
+    var f2 = document.getElementById('mastercard-footer-step2');
+    if(f1) f1.style.setProperty('display','none','important');
+    if(f2) f2.style.setProperty('display','none','important');
     var step3Footer = box.querySelector('[data-inserat-step="3"]');
-    if(airbnbFooter) airbnbFooter.style.display = 'none';
-    if(step3Footer){ step3Footer.style.display = 'flex'; }
+    if(step3Footer) step3Footer.style.setProperty('display','flex','important');
   }
 
   /** Sharing: navigator.share oder WhatsApp-Fallback [cite: 2026-02-21] */

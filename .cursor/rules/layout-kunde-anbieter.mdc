@@ -16,8 +16,8 @@ alwaysApply: true
 ## Kundenseite (Customer Mode)
 
 - Discover/Entdecken, Gericht-Detailansicht, Favoriten/Mittagsbox, Profil (Kundenkontext).
-- Design-Vorgaben: Clean, modern, keine Schiefertafeln. 3 Säulen (🍴 Vor Ort, 🔄 Mehrweg, 🧾 Abholnummer) wie in `docs/GERICHT_DETAILANSICHT_KONZEPT.md` und Favoritenseiten-Spec.
-- Referenzdokumente: `docs/GERICHT_DETAILANSICHT_KONZEPT.md`, `docs/FAVORITENSEITE_MASTER.md`, **`docs/FAVORITEN_LAYOUT_REGEL.md`** (strikte Layout-Regel: 2×2 Grid, homogene Kacheln, Header + Share, 3 Säulen unter Bild, Abholnummer #FFD700, keine Schiefertafeln).
+- Design-Vorgaben: Clean, modern, keine Schiefertafeln. Referenz: `docs/GERICHT_DETAILANSICHT_KONZEPT.md` und Favoritenseiten-Spec.
+- Referenzdokumente: `docs/GERICHT_DETAILANSICHT_KONZEPT.md`, `docs/FAVORITENSEITE_MASTER.md`, **`docs/FAVORITEN_LAYOUT_REGEL.md`** (strikte Layout-Regel: 2×2 Grid, homogene Kacheln, Header + Share, Abholnummer #FFD700, keine Schiefertafeln).
 
 ## Anbieterseite (Provider Mode)
 

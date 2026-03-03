@@ -10,19 +10,16 @@ Die **InseratCard** ist das universelle Herzstück der App: die **einzige** Komp
 ## Aufbau (Top-to-Bottom)
 
 1. **Header-Bild (190px):** Bündig oben. „Foto ändern“-Modul; im Live-Zustand pulsierender Live-Badge („LIVE“ + grüner Punkt).
-2. **Power-Bar:** Direkt unter dem Bild. Icons 20 % kleiner. **3 Säulen (Pflicht):**
-   - 🍴 Vor Ort (immer aktiv, 0 €)
-   - 🎫1️⃣ Abholnummer (zeigt Buchung mit Abholnummer)
-   - 🔄 Mehrweg (Toggle)
-   - Zusätzlich: 🕒 Uhrzeit, 🌾 Allergene, ⓘ Info am Ende.
+2. **Power-Bar:** Icons für Vor Ort, Abholnummer, Mehrweg, Uhrzeit, Allergene, Info.
 3. **Content-Block:** Titel (Midnight Blue, fett), Beschreibung (grau), Action-Row: links Vegetarisch-Pill, rechts **gelber Preis-Button**.
 
-## Zwei Modi (strikt trennen)
+## 3-Schritt Mastercard-Flow
 
-| Modus | Buttons | Preisübersicht ⓘ |
-|-------|--------|-------------------|
-| **MODE_AD** (Verkauf) | „mit Abholnummer“ (0,89 €) + „Nur Inserat“ (4,99 €) | Sichtbar |
-| **MODE_PLAN** (Kochbuch/Wochenplan) | „Gericht speichern“ (Grün), „Datum für Wochenplan wählen“ (Blau) | **Ausgeblendet** |
+| Schritt | Inhalt |
+|---------|--------|
+| **Step 1** | Dateneingabe. Footer: Speichern (Shortcut bei edit/week/cookbook) + Weiter (Primary). |
+| **Step 2** | Monetarisierung: „mit Abholnummer“ (0,89 €) oder „Nur Inserat“ (4,99 €). |
+| **Step 3** | Bestätigung, Belohnung, Marketing. |
 
 ## Interaktions-Physik (S25)
 
@@ -45,9 +42,7 @@ Die **InseratCard** ist das universelle Herzstück der App: die **einzige** Komp
 ## Checkliste vor Änderungen an Listing/Inserat-UI
 
 - [ ] InseratCard im **#wizard**? (buildListingStep)
-- [ ] **3 Säulen** (🍴, 🎫1️⃣, 🔄) in der Power-Bar?
-- [ ] **MODE_AD** vs. **MODE_PLAN** sauber getrennt (Buttons + Sichtbarkeit Preisübersicht)?
-- [ ] Preisübersicht ⓘ im Plan-Modus **ausgeblendet**?
+- [ ] **3-Schritt Mastercard** (Edit → Money → Live) mit einheitlichem Footer?
 - [ ] Nur **Abholnummer**, nie Ticket/Code?
 
 **Vollständige Spec:** [docs/specs/inseratcard-architektur.md](../docs/specs/inseratcard-architektur.md)
