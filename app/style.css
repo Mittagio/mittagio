@@ -96,8 +96,7 @@
     }
     /* Step 2 Inserieren-Button: Bleibt schwarz/gelb – keine is-ready-Logik */
     .app-footer-main .footer-btn-primary { pointer-events: auto !important; }
-    /* Init-Gate: kein Flackern – Body wird von script.js nach View-Switch sichtbar geschaltet */
-    body { visibility: hidden; }
+    /* Init-Gate: entfernt – verursachte weiße Seite bei ORB/Blocking. Sichtbarkeit jetzt via early-visibility.js + initApp */
     :root{
       /* Mittagio High-End Farbpalette */
       --bg:#FFFFFF; /* Native App: reine Leinwand, kein Beige [cite: Tabula Rasa] */

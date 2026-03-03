@@ -20155,5 +20155,5 @@
     initApp();
   }
   /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
-  setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 2000);
+  setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 500);
 }
