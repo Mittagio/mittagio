@@ -1259,18 +1259,24 @@
         </div>
         <div id="kwBoardScroll" class="kw-board-scroll">
           <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
-          <div class="kw-grid" id="kwGrid"></div>
+          <div class="kw-board-swipe-inner" id="kwBoardSwipeInner">
+            <div class="kw-grid" id="kwGrid"></div>
+          </div>
         </div>
         <div class="kw-action-bar-fixed" id="kwActionBarFixed" style="display:none;"></div>
       </div>
     </section>
 
-    <!-- KW-Selector: Bottom-Sheet für Kalenderwoche [cite: 2026-02-21] – z-index über weekViewFooter (10000) -->
+    <!-- Smart Time Sheet: Full-Height Bottom Sheet für Kalenderwoche + Feiertage [cite: 2026-03-02] -->
     <div class="backdrop" id="kwSelectorBd" style="display:none; z-index:10100;" onclick="closeKWSelector()"></div>
-    <div id="kwSelectorSheet" class="week-magic-sheet kw-selector-sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:10101; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
-      <div class="week-magic-sheet-handle"></div>
-      <h3 class="week-magic-sheet-title">Kalenderwoche wählen</h3>
-      <div id="kwSelectorList" class="kw-selector-list kw-selector-list-horizontal"></div>
+    <div id="kwSelectorSheet" class="kw-smart-time-sheet" style="position:fixed; left:0; right:0; bottom:0; top:0; height:100vh; height:100dvh; border-radius:0; background:#fff; z-index:10101; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
+      <div class="kw-smart-time-sheet-handle"></div>
+      <div class="kw-smart-time-sheet-header">
+        <h3 class="kw-smart-time-sheet-title">Kalenderwoche wählen</h3>
+        <div id="kwSmartDateRange" class="kw-smart-date-range"></div>
+        <div id="kwSmartHolidays" class="kw-smart-holidays"></div>
+      </div>
+      <div id="kwSelectorList" class="kw-selector-list kw-selector-list-vertical"></div>
     </div>
 
     <!-- Week Magic Sheet: Vorlage, Lücke finden, Woche füllen [cite: 2026-02-20] – z-index über Footer -->

@@ -10727,6 +10727,8 @@
     d.setDate(d.getDate() - daysBack);
     return d;
   }
+  var holidays2026 = {'2026-01-01':'Neujahr','2026-01-06':'Heilige Drei Könige','2026-03-08':'Internationaler Frauentag','2026-04-03':'Karfreitag','2026-04-05':'Ostersonntag','2026-04-06':'Ostermontag','2026-05-01':'Tag der Arbeit','2026-05-14':'Christi Himmelfahrt','2026-05-24':'Pfingstsonntag','2026-05-25':'Pfingstmontag','2026-06-04':'Fronleichnam','2026-08-15':'Mariä Himmelfahrt','2026-09-20':'Weltkindertag','2026-10-03':'Tag der Deutschen Einheit','2026-10-31':'Reformationstag','2026-11-01':'Allerheiligen','2026-11-18':'Buß- und Bettag','2026-12-25':'1. Weihnachtstag','2026-12-26':'2. Weihnachtstag'};
+  var holidayEmojis = {'2026-04-03':'✝️','2026-04-05':'🐣','2026-04-06':'🐣','2026-05-01':'👷','2026-05-14':'⬆️','2026-05-25':'🕊️','2026-10-03':'🇩🇪','2026-12-25':'🎄','2026-12-26':'🎄'};
   function getEasterSunday(year){
     var a = year % 19, b = Math.floor(year/100), c = year % 100;
     var d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
@@ -11038,6 +11040,8 @@
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
     var list = document.getElementById('kwSelectorList');
+    var dateRangeEl = document.getElementById('kwSmartDateRange');
+    var holidaysEl = document.getElementById('kwSmartHolidays');
     if (!bd || !sheet || !list) return;
     if (typeof getWeekMonday !== 'function' || typeof getWeekDayKeys !== 'function' || typeof getISOWeek !== 'function') return;
     var pid = typeof providerId === 'function' ? providerId() : '';
@@ -11059,12 +11063,25 @@
       })(w);
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'week-magic-sheet-btn kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
+      btn.className = 'kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
       btn.innerHTML = 'KW ' + getISOWeek(monday) + ': ' + fromStr + ' – ' + toStr + (hasPlanned ? ' <span class="kw-selector-dot"></span>' : '');
       btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
       list.appendChild(btn);
     }
-    /* KW-Selector Fix: .active überspringt display:none !important [cite: Universal-Linker 2026-02-26] */
+    if (dateRangeEl) {
+      var curMon = getWeekMonday(weekPlanKWIndex);
+      var curSun = new Date(curMon.getFullYear(), curMon.getMonth(), curMon.getDate() + 6);
+      dateRangeEl.textContent = curMon.getDate() + '.' + (curMon.getMonth() + 1) + '.' + curMon.getFullYear() + ' – ' + curSun.getDate() + '.' + (curSun.getMonth() + 1) + '.' + curSun.getFullYear();
+    }
+    if (holidaysEl && typeof holidays2026 !== 'undefined') {
+      var keys = getWeekDayKeys(weekPlanKWIndex);
+      var badges = [];
+      keys.forEach(function(key){
+        var name = holidays2026[key];
+        if (name) { var em = (typeof holidayEmojis !== 'undefined' && holidayEmojis[key]) ? holidayEmojis[key] + ' ' : ''; badges.push('<span class="kw-smart-holiday-badge">' + em + name + '</span>'); }
+      });
+      holidaysEl.innerHTML = badges.join('');
+    }
     bd.classList.add('active');
     sheet.classList.add('active');
     bd.style.setProperty('display', 'block', 'important');
@@ -11465,6 +11482,8 @@
   }
   if (typeof window !== 'undefined') window.closeCookbookWithNativeAnim = closeCookbookWithNativeAnim;
   function renderWeekPlanBoard(){
+    if (typeof window !== 'undefined' && typeof window.weekPlanKWIndex === 'number') weekPlanKWIndex = window.weekPlanKWIndex;
+    if (typeof window !== 'undefined' && typeof window.weekPlanDay === 'string') weekPlanDay = window.weekPlanDay;
     updateSessionActivity();
     week = load(LS.week, {});
     offers = load(LS.offers, []);
@@ -11901,6 +11920,53 @@
       scrollEl._weekHeaderScrollBound = true;
       scrollEl.addEventListener('scroll', function(){
         headerEl.classList.toggle('week-header-scrolled', scrollEl.scrollTop > 4);
+      }, { passive: true });
+    }
+    /* Swipe-Geste: horizontaler Wochenwechsel, 80px Threshold, Bounce-Back [cite: 2026-03-02] */
+    var swipeInner = document.getElementById('kwBoardSwipeInner');
+    if (scrollEl && swipeInner && !scrollEl._weekSwipeBound) {
+      scrollEl._weekSwipeBound = true;
+      var swipeStartX = 0, swipeStartY = 0, swipeLastDx = 0, swipeCommitted = false, SWIPE_THRESHOLD = 80, COMMIT_THRESHOLD = 15;
+      scrollEl.addEventListener('touchstart', function(e){
+        if (e.touches.length !== 1) return;
+        swipeStartX = e.touches[0].clientX;
+        swipeStartY = e.touches[0].clientY;
+        swipeLastDx = 0;
+        swipeCommitted = false;
+        swipeInner.classList.add('kw-swipe-active');
+      }, { passive: true });
+      scrollEl.addEventListener('touchmove', function(e){
+        if (e.touches.length !== 1) return;
+        var dx = e.touches[0].clientX - swipeStartX;
+        var dy = e.touches[0].clientY - swipeStartY;
+        if (!swipeCommitted) {
+          if (Math.abs(dx) > COMMIT_THRESHOLD && Math.abs(dx) > Math.abs(dy)) swipeCommitted = true;
+          else return;
+        }
+        e.preventDefault();
+        swipeLastDx = dx;
+        var clamp = Math.max(-120, Math.min(120, dx));
+        swipeInner.style.transform = 'translateX(' + clamp + 'px)';
+      }, { passive: false });
+      scrollEl.addEventListener('touchend', function(e){
+        var dx = swipeLastDx;
+        swipeInner.classList.remove('kw-swipe-active');
+        if (swipeCommitted && Math.abs(dx) > SWIPE_THRESHOLD) {
+          try { if (navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          var nextKW = dx > 0 ? weekPlanKWIndex - 1 : weekPlanKWIndex + 1;
+          if (nextKW >= 0 && nextKW < 8) {
+            if (typeof haptic === 'function') haptic(6);
+            weekPlanKWIndex = nextKW;
+            if (typeof window !== 'undefined') window.weekPlanKWIndex = nextKW;
+            var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(nextKW) : [];
+            if (keys.length && keys.indexOf(weekPlanDay) === -1) { weekPlanDay = keys[0]; if (typeof window !== 'undefined') window.weekPlanDay = keys[0]; }
+            if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter(nextKW);
+            if (typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: weekPlanKWIndex, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + weekPlanKWIndex + '&day=' + weekPlanDay);
+            if (typeof showProviderWeek === 'function') showProviderWeek(null, weekPlanKWIndex);
+          }
+        }
+        swipeInner.style.transform = '';
+        swipeStartX = 0;
       }, { passive: true });
     }
   }
