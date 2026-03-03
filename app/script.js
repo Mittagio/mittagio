@@ -6259,8 +6259,8 @@
     createNewListingBtn.onclick = function(){
       var date = createFlowPreselectedDate;
       var ep = createFlowOriginView || 'dashboard';
-      closeCreateFlowSheet();
-      openDishFlow(date, ep);
+      if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+      if(typeof openDishFlow === 'function') openDishFlow(date, ep);
     };
   }
 
@@ -9832,7 +9832,7 @@
   }
   
   function renderProviderHome(){
-    closeQuickPostSheet();
+    if(typeof window.closeQuickPostSheet === 'function') window.closeQuickPostSheet();
     updateSessionActivity();
 
     // Oben kein leerer Screen: Scroll sofort auf 0
@@ -12201,6 +12201,7 @@
     if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
     if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
   }
+  if(typeof window !== 'undefined') window.renderWeekPlan = renderWeekPlan;
 
   function getWeekDraftDays(){
     var out = [];
@@ -15754,6 +15755,7 @@
     if(bd) bd.classList.remove('active');
     if(sheet) sheet.classList.remove('active');
   }
+  if(typeof window !== 'undefined') window.closeQuickPostSheet = closeQuickPostSheet;
 
   function openQuickPostSheet(entryId, date){
     // Suche im Kochbuch nach dem Gericht
@@ -16360,7 +16362,18 @@
     if(entryPoint) ctx.entryPoint = entryPoint;
     startListingFlow(ctx);
   }
-  
+  if(typeof window !== 'undefined') window.openDishFlow = openDishFlow;
+
+  /* Provider-Render-Funktionen für ui-navigation.js explizit exponieren */
+  if(typeof window !== 'undefined'){
+    window.renderProviderHome = renderProviderHome;
+    window.renderProviderPickups = renderProviderPickups;
+    window.renderProviderProfile = renderProviderProfile;
+    window.renderBilling = renderBilling;
+    window.renderCookbook = renderCookbook;
+    window.renderWeekPlanBoard = renderWeekPlanBoard;
+  }
+
   /**
    * MASTER INSERATSFLOW - Einziger Entry-Point
    * Wird IMMER verwendet für:
