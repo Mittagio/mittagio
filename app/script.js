@@ -1206,7 +1206,7 @@
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
       btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
-      btn.onclick = function(){ createFlowPreselectedDate = null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+      btn.onclick = function(){ createFlowPreselectedDate = null; createFlowOriginView = 'dashboard'; if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' }); else if(typeof openDishFlow === 'function') openDishFlow(); };
       mainEl.appendChild(btn);
     } else {
       if(existing) existing.remove();
@@ -6325,37 +6325,59 @@
       }, index * 100);
     });
   }
-  async function triggerMagic(mode){
-    vibrate([20, 50]);
-    var overlay = document.getElementById('magicOverlay');
-    var statusText = document.getElementById('magicStatusText');
-    var slot = document.getElementById('magicSlotMachine');
-    if(overlay && typeof hide === 'function') overlay.classList.remove('is-hidden');
+  function runParticleFlow(clickX, clickY, mode){
+    var grid = document.getElementById('kwGrid');
+    if(!grid) return;
+    var slots = grid.querySelectorAll('.kw-day-card');
+    var color = mode === 'surprise' ? '#a855f7' : mode === 'season' ? '#22c55e' : '#3b82f6';
+    var count = Math.min(slots.length, 12);
+    for(var i = 0; i < count; i++){
+      (function(idx){
+        var p = document.createElement('div');
+        p.className = 'ghost-particle';
+        p.style.cssText = 'position:fixed; left:' + clickX + 'px; top:' + clickY + 'px; width:8px; height:8px; border-radius:50%; background:' + color + '; box-shadow:0 0 12px ' + color + '; pointer-events:none; z-index:9999;';
+        document.body.appendChild(p);
+        var target = slots[idx];
+        if(!target){ p.remove(); return; }
+        var tr = target.getBoundingClientRect();
+        var tx = tr.left + tr.width / 2 - 4;
+        var ty = tr.top + tr.height / 2 - 4;
+        p.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: 'translate(' + (tx - clickX) + 'px,' + (ty - clickY) + 'px) scale(0.3)', opacity: 0 }], { duration: 600 + idx * 50, delay: idx * 80, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).finished.then(function(){
+          p.remove();
+          target.classList.add('pop-in');
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
+          if(idx === slots.length - 1) target.classList.add('sparkle-arrival');
+        });
+      })(i);
+    }
+  }
+  async function triggerMagic(mode, ev){
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 10, 30]); }catch(e){}
+    var clickedEl = ev && ev.currentTarget;
+    if(clickedEl) clickedEl.classList.add('ghost-dissolve');
     if(mode === 'ki'){
-      if(statusText) statusText.textContent = '🤖 KI würfelt Woche neu...';
-      await new Promise(function(r){ setTimeout(r, 1200); });
+      await new Promise(function(r){ setTimeout(r, 400); });
       applyKILogic();
     } else if(mode === 'surprise'){
-      if(statusText) statusText.textContent = '✨ Jackpot zieht...';
-      await startSlotAnimation(slot);
+      await new Promise(function(r){ setTimeout(r, 400); });
       applySurpriseLogic();
     } else if(mode === 'season'){
-      if(statusText) statusText.textContent = '🥗 Saison-Check...';
-      await new Promise(function(r){ setTimeout(r, 800); });
+      await new Promise(function(r){ setTimeout(r, 400); });
       applySeasonLogic();
     }
-    if(overlay) overlay.classList.add('is-hidden');
     closeCreateFlowSheet();
     if(typeof showProviderWeek === 'function') showProviderWeek();
     if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-    setTimeout(function(){ animateWeekFill(); }, 80);
+    var clickX = ev && ev.clientX ? ev.clientX : window.innerWidth / 2;
+    var clickY = ev && ev.clientY ? ev.clientY : window.innerHeight / 2;
+    setTimeout(function(){ runParticleFlow(clickX, clickY, mode); }, 100);
     if(typeof showToast === 'function') showToast('Magic angewendet ✨');
   }
   if(typeof window !== 'undefined') window.triggerMagic = triggerMagic;
-  document.querySelectorAll('.magic-card[data-magic]').forEach(function(card){
-    card.onclick = function(){
-      var mode = card.getAttribute('data-magic');
-      if(mode && typeof triggerMagic === 'function') triggerMagic(mode);
+  document.querySelectorAll('.ghost-option[data-magic]').forEach(function(opt){
+    opt.onclick = function(e){
+      var mode = opt.getAttribute('data-magic');
+      if(mode && typeof triggerMagic === 'function') triggerMagic(mode, e);
     };
   });
 
@@ -10506,8 +10528,8 @@
         try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
         createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
         createFlowOriginView = 'dashboard';
-        if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
-        else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
+        else if(typeof openDishFlow === 'function') openDishFlow();
       };
       btnFirstDishToday.onkeydown = function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); btnFirstDishToday.click(); } };
     }
@@ -10573,8 +10595,9 @@
         if(btnProviderEmptyAddDish){
           btnProviderEmptyAddDish.onclick = () => {
             try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-            if(typeof openCreateFlowSheet === 'function'){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; openCreateFlowSheet(); }
-            else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+            createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
+            createFlowOriginView = 'dashboard';
+            if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
             else if(typeof openDishFlow === 'function') openDishFlow();
           };
         }
@@ -17181,8 +17204,8 @@
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
-      overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); cameraInput.click(); } };
-      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; cameraInput.click(); };
+      overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); } };
+      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
       function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
@@ -17352,14 +17375,14 @@
       /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-content-sheet';
-      contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1;';
+      contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1; box-shadow:none;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:8px 0; border-bottom:1px solid #f2f2f2;';
+      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:16px 0;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17398,7 +17421,7 @@
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
       descWrap.className='inserat-desc-wrap';
-      descWrap.style.cssText='width:100%; padding:6px 0 8px 0; border-bottom:1px solid #f2f2f2;';
+      descWrap.style.cssText='width:100%; padding:8px 0 16px 0;';
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
@@ -17409,10 +17432,10 @@
       descWrap.appendChild(descriptionTextarea);
       contentSheet.appendChild(descWrap);
 
-      // ========== 4. Kategorie-Pills (Green Categories: Fleisch, Veggie, Vegan) [cite: 2026-02-23] ==========
+      // ========== 4. Kategorie-Pills (Fleisch, Veggie, Vegan) – direkt unter Bild [cite: 2026-03-02] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:8px; margin-bottom:0; padding-top:8px; align-items:center; width:100%; border-top:1px solid #f2f2f2;';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:16px; margin-bottom:0; padding-top:16px; align-items:center; width:100%;';
       var catValues=['Fleisch','Veggie','Vegan'];
       var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
@@ -17427,18 +17450,19 @@
         b.type='button';
         b.className='pill power-item category-pill'+(w.data.category===c?' active':'');
         b.style.cssText='min-height:40px; padding:8px 14px; border-radius:12px; border:none; font-size:13px; font-weight:700; cursor:pointer;';
-        if(w.data.category===c){ b.style.background='#222222'; b.style.color='#ffffff'; } else { b.style.background='#f2f2f2'; b.style.color='#6b7280'; }
+        if(w.data.category===c){ b.style.background='#222222'; b.style.color='#ffffff'; } else { b.style.background='#F5F5F5'; b.style.color='#6b7280'; }
         b.innerHTML='<span style="font-size:14px;">'+(catEmojis[i]||'')+'</span> ' + c;
         b.setAttribute('title',c);
         b.dataset.category=c;
         b.onclick=function(){
+          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
           hapticLight();
           var cat=this.dataset.category;
           w.data.category=cat;
           saveDraft();
           categoryPills.querySelectorAll('.category-pill').forEach(function(p){
             p.classList.remove('active');
-            p.style.background='#f2f2f2';
+            p.style.background='#F5F5F5';
             p.style.color='#6b7280';
           });
           this.classList.add('active');
@@ -17448,17 +17472,13 @@
         categoryPills.appendChild(b);
       });
       pillGroup.appendChild(categoryPills);
-      contentSheet.appendChild(pillGroup);
-
-      var systemDivider=document.createElement('div');
-      systemDivider.className='minimal-divider mastercard-step-edit-divider system-divider';
-      systemDivider.style.cssText='width:40px; height:2px; background:#f1f5f9; margin:5px auto 6px; border-radius:2px;';
-      contentSheet.appendChild(systemDivider);
+      pillGroup.classList.add('pill-intro-run');
+      contentSheet.insertBefore(pillGroup, contentSheet.firstChild);
 
       // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:8px; margin-top:4px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:16px; margin-top:16px;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper';
       priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
@@ -17484,19 +17504,19 @@
       verdienstWrap.className = 'inserat-verdienst-vorschau';
       verdienstWrap.style.cssText = 'display:none; font-size:13px; margin-top:6px;';
       priceSection.appendChild(verdienstWrap);
-      contentSheet.appendChild(priceSection);
 
-      // ========== 6. Power-Bar: 6 Icons horizontal unter Preis [cite: Final-Fix 2026-03-01] 🍴🧾🔄🕒⚠️➕ ==========
+      // ========== 6. Power-Bar: 5 Universal-Icons (🕒♻️🌿🍴➕) [cite: Silicon Valley 2026-03-02] ==========
+      // Reihenfolge: Pills → Name → Desc → PowerBar → Preis (Preis direkt über Footer)
       const powerBar=document.createElement('div');
       powerBar.className='inserat-power-bar inserat-unified-pills inserat-soft-shell power-bar-module';
-      powerBar.style.cssText='display:flex !important; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-around; gap:8px; border-top:1px solid #f2f2f2; padding-top:12px; margin-top:4px; min-height:52px;';
+      powerBar.style.cssText='display:flex !important; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-around; gap:8px; padding-top:16px; margin-top:16px; min-height:52px;';
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
       var hasTimeValue=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd);
       var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
       var hasExtras=!!(w.data.extras&&w.data.extras.length);
       function handlePowerBarInteraction(type){
-        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); }catch(e){}
         hapticLight();
         var item=powerBar.querySelector('.power-item[data-type="'+type+'"]');
         if(item){ item.classList.add('press-anim'); setTimeout(function(){ item.classList.remove('press-anim'); }, 200); }
@@ -17707,6 +17727,7 @@
         }
       };
       contentSheet.appendChild(powerBar);
+      contentSheet.appendChild(priceSection);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       box.appendChild(quickAdjustPanel);
       inputDish.addEventListener('keydown', function(){
