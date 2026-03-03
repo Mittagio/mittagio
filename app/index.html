@@ -1276,7 +1276,15 @@
         </div>
         <div id="rennerScroll" class="renner-scroll" role="list"></div>
         <div id="kwBoardScroll" class="kw-board-scroll">
-          <div id="kwEmptyWeekTemplateCta" class="kw-empty-week-template-cta" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; padding:24px; pointer-events:none; z-index:2;"><div style="pointer-events:auto;"><button type="button" id="btnKwLoadTemplate" class="kw-load-template-btn" style="display:inline-flex; align-items:center; gap:10px; min-height:56px; padding:0 28px; border-radius:20px; border:2px solid rgba(14,165,233,0.4); background:rgba(255,255,255,0.95); backdrop-filter:blur(12px); color:#0c4a6e; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(14,165,233,0.15);"><span style="font-size:22px;">📂</span><span>Vorlage laden</span></button></div></div>
+          <div id="kwEmptyWeekTemplateCta" class="empty-state-launchpad kw-magic-empty-state is-hidden">
+            <div class="empty-state-launchpad-icon" aria-hidden="true">✨</div>
+            <div class="placeholder-cards-wrap">
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+              <div class="placeholder-card"></div>
+            </div>
+            <p class="empty-state-launchpad-hint">Tippe hier, um deine Woche zu füllen</p>
+          </div>
           <div class="kw-board-swipe-inner" id="kwBoardSwipeInner">
             <div class="kw-grid" id="kwGrid"></div>
           </div>

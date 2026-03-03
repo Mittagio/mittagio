@@ -6260,8 +6260,8 @@
     createNewListingBtn.onclick = function(){
       var date = createFlowPreselectedDate;
       var ep = createFlowOriginView || 'dashboard';
-      if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
-      if(typeof openDishFlow === 'function') openDishFlow(date, ep);
+      if(typeof window.closeCreateFlowSheet === 'function') window.closeCreateFlowSheet();
+      if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
     };
   }
 
@@ -11392,10 +11392,10 @@
     btnWeekViewFooter.textContent = 'Woche jetzt inserieren';
     if (count > 0) {
       btnWeekViewFooter.disabled = false;
-      btnWeekViewFooter.classList.remove('kw-activation-disabled');
+      btnWeekViewFooter.classList.remove('kw-activation-disabled', 'week-footer-pulse-empty');
     } else {
       btnWeekViewFooter.disabled = true;
-      btnWeekViewFooter.classList.add('kw-activation-disabled');
+      btnWeekViewFooter.classList.add('kw-activation-disabled', 'week-footer-pulse-empty');
     }
     weekFooter.classList.remove('week-footer-hidden');
     btnWeekViewFooter.onclick = function(){
@@ -11885,7 +11885,16 @@
     var emptyCta = document.getElementById('kwEmptyWeekTemplateCta');
     if (emptyCta) {
       var isEmpty = typeof isWeekEmpty === 'function' && isWeekEmpty(weekPlanKWIndex);
-      emptyCta.style.display = isEmpty ? 'flex' : 'none';
+      if (isEmpty) { if (typeof show === 'function') show(emptyCta, 'flex'); } else { if (typeof hide === 'function') hide(emptyCta); }
+      if (!emptyCta._magicEmptyBound) {
+        emptyCta._magicEmptyBound = true;
+        var triggerGhostMagic = function(){ if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof window.openCreateFlowSheet === 'function') window.openCreateFlowSheet(); };
+        emptyCta.onclick = function(){
+          try { if (navigator.vibrate) navigator.vibrate(15); } catch(err){}
+          if (typeof haptic === 'function') haptic(15);
+          triggerGhostMagic();
+        };
+      }
     }
     var btnKwSaveTemplate = document.getElementById('weekKebabSaveTemplate');
     if (btnKwSaveTemplate) btnKwSaveTemplate.onclick = function(){
@@ -11905,8 +11914,6 @@
       var kd = document.getElementById('weekKebabDropdown');
       if (kd && typeof hide === 'function') hide(kd);
     };
-    var btnKwLoadTemplate = document.getElementById('btnKwLoadTemplate');
-    if (btnKwLoadTemplate) btnKwLoadTemplate.onclick = function(){ if (typeof haptic === 'function') haptic(6); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
     var btnKwPdf = document.getElementById('weekKebabPdf');
     var btnKwShare = document.getElementById('weekKebabShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof triggerPrint==='function')triggerPrint(); else if(typeof printWeekCard==='function')printWeekCard(); };

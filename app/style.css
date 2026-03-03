@@ -1629,7 +1629,7 @@
     #createFlowBd.active { opacity: 1; pointer-events: auto; }
     #createFlowSheet { z-index: 500 !important; position: fixed; inset: 0; display: flex; flex-direction: column; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s; }
     #createFlowSheet.active { pointer-events: auto; opacity: 1; visibility: visible; }
-    #createFlowDashboardContent { display: none; flex-direction: column; position: absolute; bottom: 0; left: 0; right: 0; max-height: 85vh; background: #fff; border-radius: 24px 24px 0 0; overflow-y: auto; padding: 20px 20px 0; padding-bottom: max(24px, env(safe-area-inset-bottom)); pointer-events: auto; }
+    #createFlowDashboardContent { display: none; flex-direction: column; position: absolute; bottom: 0; left: 0; right: 0; max-height: 85vh; min-height: calc(100vh - 160px); background: #fff; border-radius: 24px 24px 0 0; overflow-y: auto; padding: 20px 20px 0; padding-bottom: max(24px, env(safe-area-inset-bottom)); pointer-events: auto; }
     #createFlowDashboardContent .sheet-header { padding: 0 0 16px; text-align: center; }
     #createFlowDashboardContent .sheet-header h3 { margin: 0; font-size: 20px; font-weight: 900; color: #0f172a; }
     #createFlowWeekContent { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0; pointer-events: auto; }
@@ -7680,7 +7680,17 @@
       #v-provider-week .kw-board-scroll{ flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:12px max(12px, env(safe-area-inset-left)) calc(160px + env(safe-area-inset-bottom, 0)) max(12px, env(safe-area-inset-right)); position:relative; background:#f8fafc; }
       #v-provider-week .kw-board-swipe-inner{ transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change:transform; }
       #v-provider-week .kw-board-swipe-inner.kw-swipe-active{ transition:none; }
-      #v-provider-week .kw-empty-week-template-cta{ display:flex; align-items:center; justify-content:center; }
+      /* Empty State Launchpad: Silicon Valley – keine Schatten, feine Linien, reinweiß [cite: 2026-03-03] */
+      #v-provider-week .empty-state-launchpad{ position:absolute; inset:0; flex:1; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:24px; cursor:pointer; -webkit-tap-highlight-color:transparent; background:#FFFFFF; }
+      #v-provider-week .empty-state-launchpad.is-hidden{ display:none !important; pointer-events:none; }
+      #v-provider-week .empty-state-launchpad.is-visible-flex{ display:flex !important; }
+      #v-provider-week .empty-state-launchpad-icon{ font-size:48px; line-height:1; animation:empty-launchpad-float 2.5s ease-in-out infinite; }
+      @keyframes empty-launchpad-float{ 0%, 100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+      #v-provider-week .placeholder-cards-wrap{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+      #v-provider-week .placeholder-card{ width:80px; height:100px; border:1px solid #ebebeb; border-radius:12px; background:#FFFFFF; flex-shrink:0; }
+      #v-provider-week .empty-state-launchpad-hint{ font-family:Inter,sans-serif; font-size:16px; color:#666; margin:0; text-align:center; }
+      #v-provider-week .empty-state-secondary{ font-family:Inter,sans-serif; font-size:14px; font-weight:600; padding:10px 20px; border-radius:12px; border:1px solid #ebebeb; background:#FFFFFF; color:#666; cursor:pointer; transition:transform 0.2s; }
+      #v-provider-week .empty-state-secondary:active{ transform:scale(0.98); }
       #v-provider-week .kw-load-template-btn:active{ transform:scale(0.98); }
       #v-provider-week .kw-grid.kw-template-apply .kw-day-card,
       #v-provider-week .kw-grid.kw-grid-just-applied .kw-day-card{ animation: kwTemplateDayIn 0.5s ease-out forwards; opacity:0; }
@@ -7930,6 +7940,8 @@
       .week-view-footer-fixed .week-footer-counter{ font-size:14px; font-weight:600; color:#717171; }
       .week-view-footer-fixed .btn-airbnb-primary{ height:48px; min-height:48px; padding:0 24px; margin:0; border-radius:8px; border:none; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:600; cursor:pointer; display:flex; justify-content:center; align-items:center; transition:transform 0.1s ease; -webkit-tap-highlight-color:transparent; flex-shrink:0; }
       .week-view-footer-fixed .btn-airbnb-primary:active{ transform:scale(0.98); }
+      .week-view-footer-fixed .btn-airbnb-primary.week-footer-pulse-empty{ animation:week-footer-pulse-soft 2s ease-in-out infinite; }
+      @keyframes week-footer-pulse-soft{ 0%, 100%{ opacity:0.85; box-shadow:none; } 50%{ opacity:1; box-shadow:0 0 0 2px rgba(34,34,34,0.2); } }
       .week-view-footer-fixed .footer-subtext{ font-size:11px; color:#717171; margin:0; line-height:1.3; }
       /* Dashboard: Dein Wochenplan – klare Trennung von KPIs, App-Kasten, S25-Safe */
       #providerWeekSection .prov-card{ padding:var(--card-padding, 20px); border-radius:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:none; background:#fff; }
