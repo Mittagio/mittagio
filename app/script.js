@@ -19910,6 +19910,7 @@
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
+    document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
     renderChips();
 
   // init nav bindings
@@ -19974,7 +19975,6 @@
     setMode(mode);
     if(mode==='provider') providerScrollReset();
   }
-  document.body.style.visibility = 'visible'; /* Init-Gate: nach View-Switch anzeigen */
   window.addEventListener('hashchange', function(){
     var m = (location.hash || '').match(/^#\/plan\/(.+)$/);
     if(m && typeof showPlanPublicView === 'function') showPlanPublicView(decodeURIComponent(m[1]));
@@ -20154,4 +20154,6 @@
   } else {
     initApp();
   }
+  /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
+  setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 2000);
 }
