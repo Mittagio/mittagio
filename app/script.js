@@ -1206,7 +1206,7 @@
       btn.type = 'button';
       btn.setAttribute('aria-label', 'Inserat erstellen');
       btn.innerHTML = '<span class="plus-char" style="font-size:28px; line-height:1; color:#1a1a1a;">+</span>';
-      btn.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
+      btn.onclick = function(){ createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null; createFlowOriginView = 'dashboard'; if(typeof window.openCreateFlowSheet === 'function') window.openCreateFlowSheet(); };
       mainEl.appendChild(btn);
     } else {
       if(existing) existing.remove();
@@ -6241,6 +6241,7 @@
     createFlowPreselectedDate = null;
     createFlowOriginView = 'dashboard';
   }
+  if(typeof window !== 'undefined'){ window.openCreateFlowSheet = openCreateFlowSheet; window.closeCreateFlowSheet = closeCreateFlowSheet; }
   
   // Create Flow Handlers - Footer Airbnb-Style: beide massive schwarze Buttons
   const openCookbookBtn = document.getElementById('openCookbook');
@@ -11842,7 +11843,7 @@
         empty.setAttribute('data-day', key);
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
-        empty.innerHTML = '<span class="kw-slot-empty-icon">' + (isDayEmpty ? '' : '+') + '</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
+        empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
         empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       } else if (items.length < maxFilled && showVeggieSog) {
