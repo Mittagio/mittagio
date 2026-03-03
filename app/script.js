@@ -11241,8 +11241,8 @@
     if (typeof haptic === 'function') haptic(6);
     list.innerHTML = '';
     if (typeof getWeekMonday === 'function' && typeof getWeekDayKeys === 'function' && typeof getISOWeek === 'function') {
-    for (var w = 0; w < 12; w++) {
-      var monday = getWeekMonday(w);
+    for (var kw = 0; kw < 12; kw++) {
+      var monday = getWeekMonday(kw);
       if (!monday || typeof monday.getFullYear !== 'function') continue;
       var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
       var fromStr = monday.getDate() + '.' + (monday.getMonth() + 1) + '.';
@@ -11254,12 +11254,12 @@
           var lo = (offers || []).filter(function(o){ return o.providerId === pid && o.day === key; });
           return pe.length > 0 || lo.length > 0;
         });
-      })(w);
+      })(kw);
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'kw-selector-item' + (w === weekPlanKWIndex ? ' kw-selector-active' : '');
+      btn.className = 'kw-selector-item' + (kw === weekPlanKWIndex ? ' kw-selector-active' : '');
       btn.innerHTML = 'KW ' + getISOWeek(monday) + ': ' + fromStr + ' – ' + toStr + (hasPlanned ? ' <span class="kw-selector-dot"></span>' : '');
-      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(w);
+      btn.onclick = (function(k){ return function(){ if(typeof haptic === 'function') haptic(6); weekPlanKWIndex = k; var keys = getWeekDayKeys(k); if(keys.indexOf(weekPlanDay) === -1) weekPlanDay = keys[0]; closeKWSelector(); if(typeof pushViewState === 'function') pushViewState({ section: 'week', view: 'provider-week', mode: typeof mode !== 'undefined' ? mode : 'provider', week: k, day: weekPlanDay }, (typeof location !== 'undefined' && location.pathname) + '?week=' + k + '&day=' + weekPlanDay); renderWeekPlanBoard(); }; })(kw);
       list.appendChild(btn);
     }
     if (dateRangeEl) {
@@ -18511,11 +18511,11 @@
     const d = normalizeOffer(offer);
     const dish = (d.dish || d.title || 'Gericht').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
-    const w = window.open('', '_blank', 'width=400,height=520');
-    if(!w) return;
+    const win = window.open('', '_blank', 'width=400,height=520');
+    if(!win) return;
     const qrHtml = '<!DOCTYPE html><html><head><title>QR-Code – Mittagio</title><style>body{font-family:\'Montserrat\',\'Inter\',sans-serif;margin:24px;text-align:center;} .logo{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;} .slogan{font-size:12px;color:#6b7280;} img{margin:16px 0;} .dish{font-size:16px;font-weight:700;margin-top:8px;}</style></head><body><div class="logo">Mittagio</div><div class="slogan">Zeit gespart mit der Abholnummer</div><img src="' + qrImg + '" alt="QR-Code" width="200" height="200" /><div class="dish">' + dish + '</div><p style="font-size:11px;color:#9ca3af;margin-top:16px;">Scannen &rarr; Gericht öffnen &amp; Abholnummer sichern</p><script>window.onload=function(){window.print();};<' + '/script></body></html>';
-    w.document.write(qrHtml);
-    w.document.close();
+    win.document.write(qrHtml);
+    win.document.close();
   }
 
   function drawOfferSocialFallback(ctx, size, d){
