@@ -592,7 +592,7 @@
     setProviderNavActive('provider-pickups');
     showView(views.providerPickups);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Abholnummern');
-    renderProviderPickups();
+    if(typeof renderProviderPickups === 'function') renderProviderPickups();
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
     pushViewState({section: 'pickups', view: 'provider-pickups', mode: window.mode}, location.pathname);

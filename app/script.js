@@ -568,16 +568,16 @@
   let billingFilter = 'month';
   let billingMonth = '2026-01';
 
-  // --- Seed: Keine weiteren Demo-Anbieter (nur Thomas Kurz über seedDemoProvider) ---
+  // --- Seed: Keine weiteren Demo-Anbieter (nur demo@mittagio.de über seedDemoProvider) ---
   function seed(){
     offers = [];
     save(LS.offers, offers);
   }
 
-  // --- Beispieldaten: Keine weiteren Demo-Anbieter (nur Thomas Kurz über seedDemoProvider). ---
+  // --- Beispieldaten: Keine weiteren Demo-Anbieter (nur demo@mittagio.de über seedDemoProvider). ---
   function seedExampleData(){
     const today = isoDate(new Date());
-    const providerNames = []; // Alle Demo-Anbieter außer Thomas Kurz entfernt
+    const providerNames = []; // Alle Demo-Anbieter außer demo@mittagio.de entfernt
 
     const dishTemplates = [
       // Verschiedene Kategorien
@@ -747,27 +747,27 @@
     return {providers: providerNames.length, cookbook: newCookbook.length, offers: newOffers.length, orders: newOrders.length};
   }
 
-  /** Demo-Anbieter: Metzgerei Thomas Kurz (Live-Check). Echte Adresse, Mittagstisch-Angebote. Login: thomas@thomas-kurz.de oder demo@mittagio.de */
+  /** Demo-Anbieter: Metzgerei Mitagio. Login: demo@mittagio.de. Kochbuch: 15 Gerichte. Wochenplan: 4 Wochen mit je 4 aktiven Gerichten/Tag. 20 Inserate, 2 Abholnummern heute. */
   function seedDemoProvider(){
-    const DEMO_EMAIL = 'thomas@thomas-kurz.de';
+    const DEMO_EMAIL = 'demo@mittagio.de';
     const demoProviderId = 'prov_' + btoa(unescape(encodeURIComponent(DEMO_EMAIL))).slice(0, 16);
     const today = isoDate(new Date());
     const profile = {
-      name: 'Metzgerei Thomas Kurz',
-      address: 'Johann-Philipp-Palm-Straße 27, 73614 Schorndorf',
-      street: 'Johann-Philipp-Palm-Straße 27',
-      zip: '73614',
-      city: 'Schorndorf',
+      name: 'Metzgerei Mitagio',
+      address: 'Musterstraße 1, 70173 Stuttgart',
+      street: 'Musterstraße 1',
+      zip: '70173',
+      city: 'Stuttgart',
       mealWindow: '11:30 – 14:00',
       mealStart: '11:30',
       mealEnd: '14:00',
-      phone: '(07181) 94950',
-      email: 'info@thomas-kurz.de',
-      website: 'https://thomas-kurz.de',
+      phone: '',
+      email: 'demo@mittagio.de',
+      website: '',
       distanceKm: 0.2,
       logoData: ''
     };
-    /* Metzgerei Thomas Kurz: 40 Gerichte im Kochbuch, 3 Tagesinserate (heute), 1 Woche voll mit je 3 Tagesessen. */
+    /* Demo: 15 Gerichte im Kochbuch, 4 Wochen mit je 4 aktiven Gerichten pro Tag. */
     const demoCookbookTemplates = [
       { dish: 'Steak in Pfifferling-Rahmsoße mit Spirelli und Salat', category: 'Mit Fleisch', price: 9.50, img: 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Kartoffelsuppe mit Würstchen', category: 'Mit Fleisch', price: 8.50, img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=60' },
@@ -813,7 +813,8 @@
       { dish: 'Forelle blau', category: 'Fisch', price: 10.40, img: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?auto=format&fit=crop&w=1200&q=60' },
       { dish: 'Power-Smoothie Bowl', category: 'Vegan', price: 6.90, img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60' }
     ];
-    const demoCookbook = demoCookbookTemplates.map((t, i) => ({
+    const demoCookbookTemplates15 = demoCookbookTemplates.slice(0, 15);
+    const demoCookbook = demoCookbookTemplates15.map((t, i) => ({
       id: cryptoId(),
       providerId: demoProviderId,
       dish: t.dish,
@@ -825,7 +826,7 @@
       photoData: t.img,
       hasPickupCode: true,
       dineInPossible: true,
-      createdAt: Date.now() - (45 - i) * 3600000,
+      createdAt: Date.now() - (15 - i) * 3600000,
       lastUsed: i < 8 ? Date.now() - (8 - i) * 86400000 : null
     }));
     cookbook = [...demoCookbook];
@@ -833,39 +834,42 @@
 
     var demoOffers = [];
     var weekEntries = {};
-    for(var dayOffset = 0; dayOffset < 7; dayOffset++){
+    for(var dayOffset = 0; dayOffset < 28; dayOffset++){
       const d = new Date(); d.setDate(d.getDate() + dayOffset);
       const dayKey = isoDate(d);
       var dayOffers = [];
       var dayWeekEntries = [];
-      for(var mealIdx = 0; mealIdx < 3; mealIdx++){
-        const cb = demoCookbook[(dayOffset * 3 + mealIdx) % demoCookbook.length];
+      var hasOffers = dayOffset < 5;
+      for(var mealIdx = 0; mealIdx < 4; mealIdx++){
+        const cb = demoCookbook[(dayOffset * 4 + mealIdx) % demoCookbook.length];
         var offerId = cryptoId();
-        dayOffers.push({
-          id: offerId,
-          providerId: demoProviderId,
-          providerName: profile.name,
-          providerStreet: profile.street,
-          providerZip: profile.zip,
-          providerCity: profile.city,
-          providerLogoData: profile.logoData,
-          address: profile.address,
-          dish: cb.dish,
-          category: cb.category,
-          price: cb.price,
-          pickupWindow: profile.mealWindow,
-          day: dayKey,
-          imageUrl: cb.photoData,
-          hasPickupCode: true,
-          dineInPossible: true,
-          distanceKm: profile.distanceKm,
-          allergens: [],
-          extras: [],
-          reuse: { enabled: false, deposit: 0 },
-          active: true,
-          createdAt: Date.now()
-        });
-        dayWeekEntries.push({ providerId: demoProviderId, dish: cb.dish, cookbookId: cb.id, price: cb.price, active: true });
+        if(hasOffers){
+          dayOffers.push({
+            id: offerId,
+            providerId: demoProviderId,
+            providerName: profile.name,
+            providerStreet: profile.street,
+            providerZip: profile.zip,
+            providerCity: profile.city,
+            providerLogoData: profile.logoData,
+            address: profile.address,
+            dish: cb.dish,
+            category: cb.category,
+            price: cb.price,
+            pickupWindow: profile.mealWindow,
+            day: dayKey,
+            imageUrl: cb.photoData,
+            hasPickupCode: true,
+            dineInPossible: true,
+            distanceKm: profile.distanceKm,
+            allergens: [],
+            extras: [],
+            reuse: { enabled: false, deposit: 0 },
+            active: true,
+            createdAt: Date.now()
+          });
+        }
+        dayWeekEntries.push({ providerId: demoProviderId, dish: cb.dish, cookbookId: cb.id, price: cb.price, active: hasOffers });
       }
       demoOffers = demoOffers.concat(dayOffers);
       weekEntries[dayKey] = dayWeekEntries;
@@ -875,6 +879,43 @@
 
     week = { ...weekEntries };
     save(LS.week, week);
+
+    var todayOffers = demoOffers.filter(function(o){ return o.day === today; });
+    var demoOrders = [];
+    if(todayOffers.length >= 2){
+      for(var oi = 0; oi < 2; oi++){
+        var offer = todayOffers[oi];
+        var codeStr = (oi + 1) + 'A';
+        var priceCents = Math.round((offer.price || 9.50) * 100);
+        demoOrders.push({
+          id: cryptoId(),
+          createdAt: Date.now() - (oi + 1) * 60000,
+          updatedAt: Date.now() - (oi + 1) * 60000,
+          dishId: offer.id,
+          dishName: offer.dish,
+          providerId: demoProviderId,
+          providerName: profile.name,
+          providerAddress: profile.address,
+          quantity: 1,
+          unitPrice: priceCents,
+          total: priceCents,
+          totalCents: priceCents,
+          fulfillType: 'PICKUP',
+          status: 'PAID',
+          currency: 'EUR',
+          pickupCode: codeStr,
+          pickupCodeActivatedAt: Date.now() - (oi + 1) * 60000,
+          pickupDate: today,
+          pickupWindow: profile.mealWindow,
+          dishLetter: 'A',
+          runningNumber: oi + 1,
+          offerId: offer.id,
+          isGuest: false
+        });
+      }
+    }
+    var existingOrders = loadOrders().filter(function(o){ return o.providerId !== demoProviderId || o.pickupDate !== today; });
+    saveOrders(existingOrders.concat(demoOrders));
 
     var demoTransactions = [
       { id: cryptoId(), vendor_id: demoProviderId, inserat_id: 'Abrechnung Jan 2026', total_amount: 24.95, timestamp: new Date(Date.now() - 7 * 24 * 3600000).toISOString() },
@@ -887,7 +928,7 @@
 
     save('mittagio_demo_provider_profile', profile);
     var p = load(LS.provider, {});
-    var isDemoLogin = p && (p.email === DEMO_EMAIL || p.email === 'demo@mittagio.de');
+    var isDemoLogin = p && p.email === DEMO_EMAIL;
     if(isDemoLogin){
       p.profile = p.profile || {};
       p.profile.name = profile.name;
@@ -906,7 +947,7 @@
       provider = p;
     }
 
-    return { cookbook: demoCookbook.length, offers: demoOffers.length, week: 7, transactions: demoTransactions.length };
+    return { cookbook: demoCookbook.length, offers: demoOffers.length, week: Object.keys(weekEntries).length, orders: demoOrders.length, transactions: demoTransactions.length };
   }
 
   // --- Test-Funktion für Abholnummer-Logik ---
@@ -1582,7 +1623,7 @@
   let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
   const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], 'Mit Fleisch': ['Fleisch','Mit Fleisch'], Veggie: ['Veggie'], Vegan: ['Vegan'], Fisch: ['Fisch'] };
   
-  // Location-Autofill: Nur Schorndorf-Umgebung (Demo: Kurz + Fritz)
+  // Location-Autofill: Nur Schorndorf-Umgebung (Demo)
   const locationSuggestions = [
     'Schorndorf', '73614', '73614 Schorndorf',
     'Schorndorf-Weiler', 'Winterbach', 'Remshalden', 'Urbach', 'Plüderhausen',
@@ -13633,7 +13674,7 @@
     var inserateCount = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === pid; }).length;
     var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
     var todayOrders = typeof loadOrders === 'function' ? loadOrders().filter(function(o){ var offer = (typeof offers !== 'undefined' ? offers : []).find(function(off){ return off.id === o.dishId || off.providerId === o.providerId; }); return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID'; }) : [];
-    var tagesumsatzCents = todayOrders.reduce(function(s, o){ return s + (o.totalCents || 0); }, 0);
+    var tagesumsatzCents = todayOrders.reduce(function(s, o){ return s + (o.totalCents || o.total || 0); }, 0);
     var nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
     var statKochbuch = document.getElementById('accountStatKochbuch');
     var statInserate = document.getElementById('accountStatInserate');
@@ -16743,7 +16784,7 @@
       const box=document.createElement('div');
       const input=document.createElement('input');
       input.className='field';
-      input.placeholder='z.B. Metzgerei Kurz';
+      input.placeholder='z.B. Meine Küche';
       input.value = w.data.name || '';
       input.oninput=()=>{ w.data.name=input.value; };
       box.appendChild(input);
@@ -19557,10 +19598,10 @@
   }
   
   // --- boot ---
-  // Einziger Demo-Anbieter: Thomas Kurz (40 Kochbuch, 3 Tagesinserate heute, 1 Woche × 3 Tagesessen). Kundenansicht zeigt nur ihn.
+  // Einziger Demo-Anbieter: demo@mittagio.de (15 Kochbuch, 4 Wochen × 4 Gerichte/Tag). Kundenansicht zeigt nur ihn.
   if(offers.length === 0){
     seedExampleData(); // Leer – keine weiteren Demo-Anbieter
-    seedDemoProvider(); // Metzgerei Thomas Kurz. Login: thomas@thomas-kurz.de oder demo@mittagio.de
+    seedDemoProvider(); // Demo: demo@mittagio.de. 15 Gerichte, 4 Wochen mit 4 aktiven Gerichten/Tag.
   }
   offers = offers.map(normalizeOffer);
   save(LS.offers, offers);

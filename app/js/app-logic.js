@@ -177,7 +177,7 @@
     providerRef.loggedIn = true;
     providerRef.email = email;
     providerRef.current_session_id = newSessionId;
-    if(email === 'demo@mittagio.de' || email === 'thomas@thomas-kurz.de'){
+    if(email === 'demo@mittagio.de'){
       var demoProfile = loadFn('mittagio_demo_provider_profile', null);
       if(demoProfile){
         providerRef.profile = providerRef.profile || {};
