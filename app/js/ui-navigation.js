@@ -215,12 +215,12 @@
           var headerTitles = { 'v-provider-home':'Meine Küche', 'v-provider-pickups':'Abholnummern', 'v-provider-week':'Wochenplan', 'v-provider-cookbook':'Mein Kochbuch', 'v-provider-profile':'Mein Profil', 'v-provider-billing':'Mein Profil' };
           if(typeof setProviderPageHeader === 'function' && headerTitles[lastView]) setProviderPageHeader(headerTitles[lastView]);
           requestAnimationFrame(function(){
-            if(lastView === 'v-provider-home') renderProviderHome();
-            else if(lastView === 'v-provider-pickups') renderProviderPickups();
-            else if(lastView === 'v-provider-week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else renderWeekPlan(); }
-            else if(lastView === 'v-provider-cookbook') renderCookbook();
-            else if(lastView === 'v-provider-profile') renderProviderProfile();
-            else if(lastView === 'v-provider-billing') renderBilling();
+            if(lastView === 'v-provider-home' && typeof renderProviderHome === 'function') renderProviderHome();
+            else if(lastView === 'v-provider-pickups' && typeof renderProviderPickups === 'function') renderProviderPickups();
+            else if(lastView === 'v-provider-week'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderWeekPlan === 'function') renderWeekPlan(); }
+            else if(lastView === 'v-provider-cookbook' && typeof renderCookbook === 'function') renderCookbook();
+            else if(lastView === 'v-provider-profile' && typeof renderProviderProfile === 'function') renderProviderProfile();
+            else if(lastView === 'v-provider-billing' && typeof renderBilling === 'function') renderBilling();
             var scrollEl = getScrollElForView ? getScrollElForView(lastView) : null;
             var savedScroll = null;
             try { savedScroll = sessionStorage.getItem(RESTORE_SCROLL_KEY + '_' + lastView); } catch(s){}
@@ -570,7 +570,7 @@
     setTimeout(scrollProviderHomeToTop, 150);
     requestAnimationFrame(function(){ requestAnimationFrame(scrollProviderHomeToTop); });
     if(window.mode === 'provider' && provider && provider.loggedIn){
-      startConnectivityCheck();
+      if(typeof window.startConnectivityCheck === 'function') window.startConnectivityCheck();
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     }
     const providerNavBackRow = document.getElementById('providerNavBackRow');
@@ -632,7 +632,7 @@
     setProviderNavActive('provider-cookbook');
     showView(views.providerCookbook);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Kochbuch');
-    renderCookbook();
+    if(typeof renderCookbook === 'function') renderCookbook();
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(typeof renderCookbook === 'function') renderCookbook(); }); });
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'none';
@@ -644,7 +644,7 @@
     showView(views.providerProfile);
     if(typeof setProviderPageHeader === 'function') setProviderPageHeader('Mein Profil');
     window.showProviderProfileSub(null);
-    renderProviderProfile();
+    if(typeof renderProviderProfile === 'function') renderProviderProfile();
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 80);
     const providerNavBackRow = document.getElementById('providerNavBackRow');
     if(providerNavBackRow) providerNavBackRow.style.display = 'block';
@@ -654,7 +654,7 @@
     if(!checkSessionValidity()) return;
     setProviderNavActive('provider-profile');
     showView(views.providerBilling);
-    renderBilling();
+    if(typeof renderBilling === 'function') renderBilling();
     pushViewState({section: 'billing', view: 'provider-billing', mode: window.mode}, location.pathname);
   }
 

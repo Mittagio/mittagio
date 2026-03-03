@@ -19745,6 +19745,7 @@
       updateStatusIndicator('offline');
     });
   }
+  if(typeof window !== 'undefined') window.startConnectivityCheck = startConnectivityCheck;
   
   // Connectivity-Check stoppen
   function stopConnectivityCheck(){
