@@ -6290,12 +6290,15 @@
   if(btnNewDish){
     btnNewDish.onclick = function(e){
       if(e) e.preventDefault();
+      if(typeof console !== 'undefined' && console.log) console.log('🚀 V45 Final: Inserat wird direkt gestartet...');
       var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
       window.provider = window.provider || (function(){ try{ var j = localStorage.getItem(lsKey); return j ? JSON.parse(j) : null; } catch(x){ return null; } })() || { loggedIn: true, id: 'p1' };
       if(typeof provider !== 'undefined') provider = window.provider;
       var wizard = document.getElementById('wizard');
       var wbd = document.getElementById('wbd');
       if(wizard && wbd){
+        var allSheets = document.querySelectorAll('.backdrop, .sheet');
+        for(var i = 0; i < allSheets.length; i++) allSheets[i].classList.remove('active');
         wizard.setAttribute('data-flow', 'listing');
         wbd.classList.add('active');
         wizard.classList.add('active');
