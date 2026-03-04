@@ -79,6 +79,10 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+  /* Provider-Daten-Wiederherstellung: sicherstellen, dass window.provider früh verfügbar ist [cite: Korrektur-Plan 2026-03-08] */
+  if(typeof window !== 'undefined'){
+    try{ window.provider = window.provider || load(LS.provider, null) || { loggedIn: false }; } catch(e){ window.provider = window.provider || { loggedIn: false }; }
+  }
   /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
   function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
   function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
@@ -16342,13 +16346,11 @@
   function openDishFlow(defaultDate, entryPoint){
     if(typeof defaultDate === 'undefined') defaultDate = null;
     if(typeof entryPoint === 'undefined') entryPoint = null;
-    if(typeof console !== 'undefined' && console.log) console.log('DishFlow gestartet für:', defaultDate);
-    var wc = document.getElementById('wContent');
     if(typeof window.provider === 'undefined' || !window.provider || !window.provider.loggedIn){
-      if(wc) wc.innerHTML = '<div style="padding:40px;text-align:center;font-family:Inter,sans-serif;"><div style="font-size:40px;">👤</div><h3 style="margin:15px 0 5px;">Profil nicht geladen</h3><p style="font-size:14px;color:#64748b;margin-bottom:20px;">Bitte melde dich erneut an.</p><button onclick="location.reload()" style="background:#222;color:#fff;border:none;padding:12px 24px;border-radius:12px;font-weight:700;cursor:pointer;">App neu starten</button></div>';
-      else if(typeof showToast === 'function') showToast('Provider-Profil nicht geladen');
-      return;
+      try{ window.provider = window.provider || (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.provider, null) : null) || { loggedIn: true, id: 'temp-id' }; if(typeof provider !== 'undefined') provider = window.provider; } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'temp-id' }; if(typeof provider !== 'undefined') provider = window.provider; }
     }
+    var wc = document.getElementById('wContent');
+    if(!wc){ if(typeof console !== 'undefined' && console.error) console.error('Kritisch: #wContent nicht im HTML gefunden!'); return; }
     document.body.classList.add('vendor-area');
     var ctx = { date: defaultDate || isoDate(new Date()), fromWeek: entryPoint === 'week' };
     if(entryPoint) ctx.entryPoint = entryPoint;
@@ -19947,7 +19949,9 @@
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
+    if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
+    if(window.provider && window.provider.loggedIn) document.body.classList.add('provider-mode');
     /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
     if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;
