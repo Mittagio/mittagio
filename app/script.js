@@ -1,5 +1,7 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
+  /** Stub: startListingFlow früh auf window – wird später durch echte Implementierung ersetzt [cite: Flow-Fix 2026-03-02] */
+  if (typeof window !== 'undefined') { window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); }; }
   /** DEBUG_WEEKPLAN: In Konsole setzen (window.DEBUG_WEEKPLAN=true) für FAB/KW/Footer-Klick-Logs [cite: 2026-02-25] */
   /** User-Interaction Unlock: navigator.vibrate nur nach erstem Klick (Blocked call beheben) [cite: 2026-02-25] */
   function vibrate(ms){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
@@ -6274,6 +6276,8 @@
       var ep = createFlowOriginView || 'dashboard';
       if(typeof window.closeCreateFlowSheet === 'function') window.closeCreateFlowSheet();
       if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
+      else if(typeof startListingFlow === 'function') startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
+      else if(typeof window !== 'undefined' && typeof window.startListingFlow === 'function') window.startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
     };
   }
 
@@ -16295,7 +16299,8 @@
     document.body.classList.add('vendor-area');
     var ctx = { date: defaultDate || isoDate(new Date()), fromWeek: entryPoint === 'week' };
     if(entryPoint) ctx.entryPoint = entryPoint;
-    startListingFlow(ctx);
+    var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window !== 'undefined' && typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
+    if(fn) fn(ctx); else if(typeof console !== 'undefined' && console.warn) console.warn('[openDishFlow] startListingFlow nicht verfügbar');
   }
   if(typeof window !== 'undefined') window.openDishFlow = openDishFlow;
 

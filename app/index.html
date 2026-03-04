@@ -3104,7 +3104,7 @@
 </div>
 
 <!-- CreateFlowSheet: Dashboard = Renner+Neues Gericht | Week = Magic Three [cite: 2026-03-02] -->
-<div class="backdrop magic-active-bg" id="createFlowBd" onclick="closeCreateFlowSheet()"></div>
+<div class="backdrop magic-active-bg" id="createFlowBd" onclick="if(typeof window.closeCreateFlowSheet==='function')window.closeCreateFlowSheet()"></div>
 <div class="create-flow-sheet-wrapper" id="createFlowSheet">
   <!-- Dashboard-Modus: Renner (Bestseller) + Neues Gericht -->
   <div class="create-flow-dashboard-content" id="createFlowDashboardContent">
