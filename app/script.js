@@ -1,5 +1,6 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
+  if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
   /** Stub: startListingFlow früh auf window – wird später durch echte Implementierung ersetzt [cite: Flow-Fix 2026-03-02] */
   if (typeof window !== 'undefined') {
     window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); };
@@ -16352,6 +16353,7 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
+  if (typeof console !== 'undefined' && console.log) console.log('[script.js] PRE startListingFlow assign');
   try {
     if(typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;
@@ -20131,6 +20133,12 @@
   }
 
   setupLiveSync();
+  }
+  /* Flow-Sicherung: startListingFlow auf window setzen falls noch nicht geschehen [cite: Flow-Fix 2026-03-02] */
+  if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
+    window.startListingFlow = startListingFlow;
+    var _pend = window.__pendingStartListingFlow;
+    if(Array.isArray(_pend) && _pend.length){ while(_pend.length){ var _c = _pend.shift(); startListingFlow(_c); } }
   }
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', initApp);
