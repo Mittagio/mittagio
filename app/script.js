@@ -6283,19 +6283,36 @@
   
   const createNewListingBtn = document.getElementById('createNewListing');
   if(createNewListingBtn){
-    createNewListingBtn.onclick = function(){
-      var date = (typeof createFlowPreselectedDate !== 'undefined') ? createFlowPreselectedDate : null;
-      var ep = (typeof createFlowOriginView !== 'undefined') ? createFlowOriginView : 'dashboard';
-      var sheet = document.getElementById('createFlowSheet');
-      var bd = document.getElementById('createFlowBd');
-      if(sheet) sheet.classList.remove('active');
-      if(bd) bd.classList.remove('active');
-      document.body.classList.remove('create-flow-open');
-      requestAnimationFrame(function(){
-        if(typeof console !== 'undefined' && console.log) console.log('🚀 Starte Mastercard-Flow für:', date, 'ab:', ep);
-        if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
-        else if(typeof startListingFlow === 'function') startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
+    createNewListingBtn.onclick = function(e){
+      if(e) e.preventDefault();
+      if(typeof console !== 'undefined' && console.log) console.log('🛠️ V44-Execution: Resetting Sheets...');
+      var date = (typeof createFlowPreselectedDate !== 'undefined' && createFlowPreselectedDate) ? createFlowPreselectedDate : '';
+      if(!date){
+        var d = new Date();
+        date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+      var ep = (typeof createFlowOriginView !== 'undefined' && createFlowOriginView) ? createFlowOriginView : 'dashboard';
+      var idsToClean = ['createFlowSheet', 'createFlowBd', 'wbd', 'wizard'];
+      idsToClean.forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) el.classList.remove('active', 'is-visible', 'is-open');
       });
+      document.body.classList.remove('create-flow-open', 'wizard-inserat-open');
+      setTimeout(function(){
+        var wbd = document.getElementById('wbd');
+        var wizard = document.getElementById('wizard');
+        if(wbd && wizard){
+          wizard.setAttribute('data-flow', 'listing');
+          wbd.classList.add('active');
+          wizard.classList.add('active');
+          document.body.classList.add('wizard-inserat-open');
+          if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
+          else if(typeof startListingFlow === 'function') startListingFlow({ date: date, entryPoint: ep });
+          if(typeof console !== 'undefined' && console.log) console.log('✅ V44: Flow gestartet.');
+        } else {
+          if(typeof console !== 'undefined' && console.error) console.error('❌ V44-Error: Wizard-DOM nicht bereit.');
+        }
+      }, 60);
     };
   }
 

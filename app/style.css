@@ -1700,6 +1700,24 @@
       opacity: 1 !important;
       z-index: 1 !important;
     }
+    /* V44-Safety: Erzwingt Sichtbarkeit ohne Z-Index Krieg [cite: 2026-03-08] */
+    body.wizard-inserat-open #wbd.active {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    body.wizard-inserat-open #wizard.active {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+    /* V44: Mehr Kontrast für Icons auf S25 Display */
+    #wizard[data-flow="listing"] .inserat-pill-emo {
+      font-weight: 900;
+      filter: saturate(1.2) drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+    }
     body.wizard-inserat-open .bottom-nav {
       display: none !important;
     }
