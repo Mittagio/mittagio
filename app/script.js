@@ -1,7 +1,7 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   /** Stub: startListingFlow früh auf window – wird später durch echte Implementierung ersetzt [cite: Flow-Fix 2026-03-02] */
-  if (typeof window !== 'undefined') { window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); }; }
+  if (typeof window !== 'undefined') { window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); }; if(typeof console !== 'undefined' && console.log) console.log('[script.js] Zeile 1–50 erreicht'); }
   /** DEBUG_WEEKPLAN: In Konsole setzen (window.DEBUG_WEEKPLAN=true) für FAB/KW/Footer-Klick-Logs [cite: 2026-02-25] */
   /** User-Interaction Unlock: navigator.vibrate nur nach erstem Klick (Blocked call beheben) [cite: 2026-02-25] */
   function vibrate(ms){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(ms) ? ms : [ms]); } catch(e){} }
@@ -16340,7 +16340,7 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
-  if(typeof window !== 'undefined') window.startListingFlow = startListingFlow;
+  try { if(typeof window !== 'undefined'){ window.startListingFlow = startListingFlow; if(typeof console !== 'undefined' && console.log) console.log('[script.js] startListingFlow auf window gesetzt'); } } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
 
   /** Single-Source API: Ein Tool für Neu, Edit, Kochbuch [cite: 2026-02-23] */
   function openUniversalEditor(data){
