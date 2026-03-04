@@ -10562,7 +10562,6 @@
     // Wochenplan-Button: Text mit Anzahl geplanter Gerichte (nächste 7 Tage)
     const btnWeekPlanText = document.getElementById('btnDashboardOpenWeekPlanText');
     if(btnWeekPlanText){
-      const pid = providerId();
       let weekPlannedCount = 0;
       for(let i = 0; i < 7; i++){
         const d = new Date();
@@ -10587,73 +10586,36 @@
       btnFirstDishToday.onkeydown = function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); btnFirstDishToday.click(); } };
     }
     
-    // Post-Onboarding Dashboard State (if just completed onboarding)
+    // Empty Dashboard State – High-End wie providerActiveListingsEmptyCard [cite: Gemini]
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
     if(providerEmptyDashboard){
       const hasAnyData = mineActive.length > 0 || cookbook.length > 0;
-      const justCompletedOnboarding = provider.onboardingCompleted && !provider.onboardingShown && cookbook.length > 0;
-      
-      if(justCompletedOnboarding){
-        // Show post-onboarding state
-        providerEmptyDashboard.style.display = 'block';
+      providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+      providerEmptyDashboard.className = 'empty-state-container provider-empty-state';
+      if(!hasAnyData){
         providerEmptyDashboard.innerHTML = `
-          <div style="font-weight:600; font-size:18px; margin-bottom:8px; line-height:1.3;">Gericht erstellt</div>
-          <div class="hint" style="font-size:14px; line-height:1.4; margin-bottom:16px; color:var(--muted);">
-            Dein Gericht ist gespeichert. Veröffentliche es, um sichtbar zu werden.
-          </div>
-          <button class="btn-primary" type="button" id="btnPostOnboardingPublish" style="width:100%; min-height:56px; margin-bottom:12px;">
-            Gericht veröffentlichen
-          </button>
-          <button class="btn secondary" type="button" id="btnPostOnboardingPlan" style="width:100%; min-height:44px;">
-            Weiter planen
-          </button>
-        `;
-        
-        const btnPublish = document.getElementById('btnPostOnboardingPublish');
-        const btnPlan = document.getElementById('btnPostOnboardingPlan');
-        if(btnPublish){
-          const savedDish = cookbook.find(c => c.providerId === providerId());
-          if(savedDish){
-            btnPublish.onclick = () => {
-              openDishFlow(); // Unified Flow: Heute
-            };
-          }
-        }
-        if(btnPlan) btnPlan.onclick = () => showProviderCookbook();
-        
-        // Mark onboarding as shown
-        provider.onboardingShown = true;
-        save(LS.provider, provider);
-      } else {
-        // Normal empty state – High-End wie providerActiveListingsEmptyCard [cite: Gemini]
-        providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
-        providerEmptyDashboard.className = 'empty-state-container provider-empty-state';
-        if(!hasAnyData){
-          providerEmptyDashboard.innerHTML = `
-            <div class="empty-state-inner">
-              <div class="empty-state-icon" aria-hidden="true">🥘</div>
-              <h2 class="empty-state-title">Noch kein Angebot für heute?</h2>
-              <p class="empty-state-text">Erstelle in weniger als 30 Sekunden dein erstes Inserat und erreiche Kunden in deiner Nähe.</p>
-              <button type="button" class="btn-primary-large" id="btnProviderEmptyAddDish" style="width:100%; max-width:320px; min-height:56px;">Jetzt für 4,99 € inserieren</button>
-              <div class="empty-state-pricing-hint">
-                <span>Inserat: 4,99 €</span>
-                <span class="divider">|</span>
-                <span>Abholnummer: +0,89 €</span>
-              </div>
+          <div class="empty-state-inner">
+            <div class="empty-state-icon" aria-hidden="true">🥘</div>
+            <h2 class="empty-state-title">Noch kein Angebot für heute?</h2>
+            <p class="empty-state-text">Erstelle in weniger als 30 Sekunden dein erstes Inserat und erreiche Kunden in deiner Nähe.</p>
+            <button type="button" class="btn-primary-large" id="btnProviderEmptyAddDish" style="width:100%; max-width:320px; min-height:56px;">Jetzt für 4,99 € inserieren</button>
+            <div class="empty-state-pricing-hint">
+              <span>Inserat: 4,99 €</span>
+              <span class="divider">|</span>
+              <span>Abholnummer: +0,89 €</span>
             </div>
-          `;
-        }
-        
-        const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
-        if(btnProviderEmptyAddDish){
-          btnProviderEmptyAddDish.onclick = () => {
-            try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-            createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
-            createFlowOriginView = 'dashboard';
-            if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
-            else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
-          };
-        }
+          </div>
+        `;
+      }
+      const btnProviderEmptyAddDish = document.getElementById('btnProviderEmptyAddDish');
+      if(btnProviderEmptyAddDish){
+        btnProviderEmptyAddDish.onclick = () => {
+          try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
+          createFlowPreselectedDate = typeof isoDate === 'function' ? isoDate(new Date()) : null;
+          createFlowOriginView = 'dashboard';
+          if(typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+          else if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', date: createFlowPreselectedDate });
+        };
       }
     }
     

@@ -205,7 +205,6 @@
     if(showToastFn) showToastFn('Erfolgreich eingeloggt! 🎉', 2000);
     if(typeof updateProfileViewFn === 'function') updateProfileViewFn();
     if(setModeFn) setModeFn('provider', { skipView: true });
-    providerRef.onboardingCompleted = true;
     saveFn(LSref.provider, providerRef);
     if(showProviderHomeFn) showProviderHomeFn();
     /* Mastercard nur bei Nutzerklick (Dashboard + oder Bearbeiten) – kein Auto-Open nach Login [cite: MASTER-UI FIX 2026-02-23] */
