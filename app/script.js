@@ -9890,7 +9890,8 @@
     
     const profile = normalizeProviderProfile(provider.profile || {});
     const todayKey = isoDate(new Date());
-    const mineAll = offers.filter(o => o.providerId === providerId());
+    const pid = typeof providerId === 'function' ? providerId() : (function(){ const e = (provider && provider.email) || 'provider'; return 'prov_' + btoa(unescape(encodeURIComponent(e))).slice(0,16); })();
+    const mineAll = offers.filter(o => o.providerId === pid);
     const mineActive = mineAll.filter(o => o.active !== false);
     const mineToday = mineAll.filter(o => o.day === todayKey);
     
@@ -9908,7 +9909,7 @@
     // Kunden-Nachfrage: Request-Count aus LocalStorage
     const requestCountEl = document.getElementById('providerRequestCount');
     if(requestCountEl){
-      const requestCount = parseInt(localStorage.getItem(`provider_${providerId()}_requests`) || '0', 10);
+      const requestCount = parseInt(localStorage.getItem(`provider_${pid}_requests`) || '0', 10);
       requestCountEl.textContent = requestCount;
       
       // Sektion nur anzeigen wenn Requests vorhanden
@@ -9929,7 +9930,7 @@
       // 1. Daten berechnen
       const todayOrders = loadOrders().filter(o => {
         const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
-        return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+        return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID';
       });
       const tagesumsatzCents = todayOrders.reduce((sum, o) => sum + (o.totalCents || 0), 0);
       const tagesumsatzEuro = (tagesumsatzCents / 100).toFixed(2);
@@ -10005,8 +10006,6 @@
       if(kpiKochbuchCount) kpiKochbuchCount.textContent = cookbookCount;
       const providerCookbookTiles = document.getElementById('providerCookbookTiles');
       if(providerCookbookTiles){
-        const pid = providerId();
-        const todayKey = isoDate(new Date());
         const mine = (cookbook||[]).filter(c=>c.providerId===pid);
         const topN = mine.slice().sort((a,b)=>(b.lastUsed||0)-(a.lastUsed||0) || (b.createdAt||0)-(a.createdAt||0)).slice(0,6);
         providerCookbookTiles.innerHTML = '';
@@ -10337,7 +10336,7 @@
         const withCodeToday = mineToday.filter(o => o.hasPickupCode).length;
         const nextPickup = loadOrders().filter(o => {
           const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
-          return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID';
+          return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID';
         }).sort((a,b) => (a.etaTime || '').localeCompare(b.etaTime || ''))[0];
         
         let html = `
@@ -10352,7 +10351,7 @@
         if(nextPickup && nextPickup.etaTime){
           const pickupCount = loadOrders().filter(o => {
             const offer = offers.find(off => off.id === o.dishId || off.providerId === o.providerId);
-            return offer && offer.providerId === providerId() && offer.day === todayKey && o.status === 'PAID' && o.etaTime === nextPickup.etaTime;
+            return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID' && o.etaTime === nextPickup.etaTime;
           }).length;
           html += `
             <div style="margin-top:8px; padding:10px; background:#f8f7f3; border-radius:12px;">
