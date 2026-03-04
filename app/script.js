@@ -19869,6 +19869,9 @@
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
+    /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
+    if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){ window.startListingFlow = startListingFlow; }
+    if(typeof openDishFlow === 'function' && typeof window !== 'undefined'){ window.openDishFlow = openDishFlow; }
     renderChips();
 
   // init nav bindings
