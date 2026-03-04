@@ -16346,8 +16346,15 @@
   function openDishFlow(defaultDate, entryPoint){
     if(typeof defaultDate === 'undefined') defaultDate = null;
     if(typeof entryPoint === 'undefined') entryPoint = null;
-    if(typeof window.provider === 'undefined' || !window.provider || !window.provider.loggedIn){
-      try{ window.provider = window.provider || (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.provider, null) : null) || { loggedIn: true, id: 'temp-id' }; if(typeof provider !== 'undefined') provider = window.provider; } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'temp-id' }; if(typeof provider !== 'undefined') provider = window.provider; }
+    /* Brücken-Fix: window.provider sicherstellen – First-Class-Citizen für Daten-Resilienz */
+    if(!window.provider || !window.provider.loggedIn){
+      try{
+        window.provider = (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.provider, null) : null) || JSON.parse(localStorage.getItem(LS.provider || 'mittagio_provider_v1') || 'null') || { loggedIn: true, id: 'temp-provider' };
+      } catch(e){
+        window.provider = window.provider || { loggedIn: true, id: 'temp-provider' };
+      }
+      /* Synchronisation für Funktionen, die auf lokale 'provider' Variable zugreifen */
+      if(typeof provider !== 'undefined') provider = window.provider;
     }
     var wc = document.getElementById('wContent');
     if(!wc){ if(typeof console !== 'undefined' && console.error) console.error('Kritisch: #wContent nicht im HTML gefunden!'); return; }
@@ -17595,9 +17602,9 @@
       addPowerItem('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn, true);
       addPowerItem('\uD83D\uDCFE','Abholnummer','abholnummer',hasAbholnummer, true);
       addPowerItem('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse, true);
-      addPowerItem('\uD83D\uDCEB','Abholzeit','zeit',hasTimeValue, false);
-      addPowerItem('\u26A0\uFE0F','Allergene','allergene',hasAllergens, false);
-      addPowerItem('\u002B','Extras','extras',hasExtras, false);
+      addPowerItem('\uD83D\uDD52','Abholzeit','zeit',hasTimeValue, false);
+      addPowerItem('\uD83C\uDF3F','Allergene','allergene',hasAllergens, false);
+      addPowerItem('\u2795','Extras','extras',hasExtras, false);
       var powerBarExtras=document.createElement('div');
       powerBarExtras.className='power-bar-extras';
       powerBarExtras.style.cssText='width:100%; display:flex; flex-direction:column; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f2f2f2;';
