@@ -1667,6 +1667,9 @@
     body.wizard-inserat-open #weekMagicFab { display: none !important; }
     /* Nuclear: #app komplett ausblenden – verhindert schwarzen Screen durch Stacking [cite: 2026-03-02] */
     body.wizard-inserat-open #app { visibility: hidden !important; pointer-events: none !important; }
+    /* CreateFlow/Sheets HINTER Wizard – verhindert Überlagerung [cite: Mastercard Fix 2026-03-02] */
+    body.wizard-inserat-open #createFlowBd,
+    body.wizard-inserat-open #createFlowSheet { z-index: 1 !important; pointer-events: none !important; }
     body.cookbook-from-dashboard #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
     /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28, Final-Fix 2026-03-01, Schwarzer Screen Fix 2026-03-02] */
@@ -1675,7 +1678,7 @@
       flex-direction: column !important;
       visibility: visible !important;
       opacity: 1 !important;
-      z-index: 30000 !important;
+      z-index: 99999 !important;
       transform: none !important;
       position: fixed !important;
       top: 0 !important;
