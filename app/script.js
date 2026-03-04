@@ -6213,7 +6213,7 @@
           return;
         }
         closeCreateFlowSheet();
-        startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
+        if(typeof startListingFlow === 'function') startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
       };
       tile.onclick = function(e){ e.preventDefault(); e.stopPropagation(); doOpen(); };
       tile.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doOpen(); } };
@@ -6412,7 +6412,7 @@
     const actions = [
       {label: 'Bearbeiten', action: () => {
         closeCreateFlowSheet(); // Falls offen
-        startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+        if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
       }},
       {label: 'Duplizieren', action: () => {
         const newOffer = {...offer, id: cryptoId(), createdAt: Date.now()};
@@ -10365,7 +10365,7 @@
           if(el.tagName !== 'BUTTON'){
             el.onclick = () => {
               const offerId = el.dataset.offerId;
-              startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+              if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
             };
           }
         });
@@ -10685,7 +10685,7 @@
         <button class="btn secondary" type="button" id="btnWeekAdd">Inserat hinzufügen</button>
       `;
       const addBtn = document.getElementById('btnWeekAdd');
-      if(addBtn) addBtn.onclick=()=> startListingFlow({});
+      if(addBtn) addBtn.onclick=()=> { if(typeof startListingFlow === 'function') startListingFlow({}); };
       return;
     }
     list.innerHTML = items.map(i=>`• ${esc(i.dish)}`).join('<br>');
@@ -11350,7 +11350,7 @@
       if (typeof showToast === 'function') showToast('Kein Gericht zum Aktivieren gefunden.');
       return;
     }
-    startListingFlow({
+    if(typeof startListingFlow === 'function') startListingFlow({
       dishId: cookbookId,
       date: firstDate,
       entryPoint: 'dashboard',
@@ -16334,6 +16334,7 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
+  if(typeof window !== 'undefined') window.startListingFlow = startListingFlow;
 
   /** Single-Source API: Ein Tool für Neu, Edit, Kochbuch [cite: 2026-02-23] */
   function openUniversalEditor(data){
