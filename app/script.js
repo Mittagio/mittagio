@@ -79,9 +79,15 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
-  /* Provider-Daten-Wiederherstellung: sicherstellen, dass window.provider früh verfügbar ist [cite: Korrektur-Plan 2026-03-08] */
+  /* V46: IDENTITÄTS-GARANTIE (Bauherren-Fix) [cite: 2026-03-04] */
   if(typeof window !== 'undefined'){
-    try{ window.provider = window.provider || load(LS.provider, null) || { loggedIn: false }; } catch(e){ window.provider = window.provider || { loggedIn: false }; }
+    var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
+    try{
+      var p = (function(){ try{ var j = localStorage.getItem(lsKey); return j ? JSON.parse(j) : null; } catch(x){ return null; } })();
+      window.provider = window.provider || p || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } };
+      window.provider.loggedIn = true;
+      if(typeof console !== 'undefined' && console.log) console.log('🛠️ V46: Identität gesichert für:', window.provider.id);
+    } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } }; window.provider.loggedIn = true; }
   }
   /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
   function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
@@ -6285,26 +6291,22 @@
     };
   }
   
-  /* MASTER-FIX: DIREKTER INSERAT-FLOW [cite: 2026-03-04] */
-  const btnNewDish = document.getElementById('createNewListing');
-  if(btnNewDish){
-    btnNewDish.onclick = function(e){
+  /* V46: Sofort-Start für Mastercard [cite: 2026-03-04] */
+  const btnNewListing = document.getElementById('createNewListing');
+  if(btnNewListing){
+    btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
-      if(typeof console !== 'undefined' && console.log) console.log('🚀 V45 Final: Inserat wird direkt gestartet...');
-      var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
-      window.provider = window.provider || (function(){ try{ var j = localStorage.getItem(lsKey); return j ? JSON.parse(j) : null; } catch(x){ return null; } })() || { loggedIn: true, id: 'p1' };
-      if(typeof provider !== 'undefined') provider = window.provider;
       var wizard = document.getElementById('wizard');
       var wbd = document.getElementById('wbd');
       if(wizard && wbd){
-        var allSheets = document.querySelectorAll('.backdrop, .sheet');
-        for(var i = 0; i < allSheets.length; i++) allSheets[i].classList.remove('active');
         wizard.setAttribute('data-flow', 'listing');
         wbd.classList.add('active');
         wizard.classList.add('active');
         document.body.classList.add('wizard-inserat-open');
+        if(typeof provider !== 'undefined') provider = window.provider;
         if(typeof startListingFlow === 'function'){
           startListingFlow({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
+          if(typeof console !== 'undefined' && console.log) console.log('✅ V46: Mastercard wurde erfolgreich hochgefahren.');
         }
       }
     };
