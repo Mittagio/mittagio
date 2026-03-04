@@ -16348,8 +16348,8 @@
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
     /* 3-Schritt Mastercard: Alle Flows (auch Bulk) starten bei Schritt 1 [cite: FLOW FIX 2026-02-26] */
-    /* RADIKALE BEREINIGUNG: Kein Draft – immer frischer Start zu InseratCard Schritt 1 [cite: 2026-02-26] */
-    try { localStorage.removeItem('wizard_draft'); } catch(e) {}
+    /* Draft nur bei neuem Start entfernen – bei Restoration behalten [cite: User-Request 2026-03-05] */
+    if(!context.restore){ try { localStorage.removeItem('wizard_draft'); } catch(e) {} }
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
@@ -16489,8 +16489,28 @@
           };
         }
       } 
-      // Case 3: Neues Gericht – Mehrweg standardmäßig aktiv [cite: SLIM-DESIGN 2026-02-23]
-      else {
+      // Case 3a: Restoration – Draft aus localStorage laden [cite: User-Request 2026-03-05]
+      else if(ctx.restore){
+        try {
+          var draft = JSON.parse(localStorage.getItem('wizard_draft') || '{}');
+          if(draft && draft.data && typeof draft.data === 'object'){
+            w.data = Object.assign({
+              providerId: providerId(),
+              dish: '', category: 'Fleisch', price: 0,
+              pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
+              hasPickupCode: !!profile.abholnummerEnabledByDefault,
+              dineInPossible: true,
+              allergens: [], wantsAllergens: false,
+              extras: [], reuse: { enabled: true, deposit: 5 },
+              photoData: '', photoDataIsStandard: false, cookbookId: null,
+              day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
+            }, draft.data);
+            if(draft.ctx && typeof draft.ctx === 'object') w.ctx = Object.assign({}, w.ctx, draft.ctx);
+          } else { ctx.restore = false; }
+        } catch(e){ ctx.restore = false; }
+      }
+      // Case 3b: Neues Gericht – Mehrweg standardmäßig aktiv [cite: SLIM-DESIGN 2026-02-23]
+      if(!ctx.restore && !ctx.editOfferId && !ctx.dishId && !ctx.fromCookbookId){
         const defaultVorOrt = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
         const defaultAbholnummer = !!profile.abholnummerEnabledByDefault;
         w.data = {
@@ -16975,7 +16995,7 @@
       collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
-      const saveDraft = () => { /* Kein Draft mehr – radikale Bereinigung [cite: 2026-02-26] */ };
+      const saveDraft = () => { try { if(w && w.data) localStorage.setItem('wizard_draft', JSON.stringify({ data: w.data, ctx: w.ctx || {} })); } catch(e){} };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
@@ -19966,7 +19986,12 @@
     else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
   });
   
-  /* WIZARD RESTORATION: Deaktiviert – Mastercard nur bei Nutzerklick (Dashboard + / Bearbeiten) [cite: MASTER-UI FIX 2026-02-23] */
+  /* WIZARD RESTORATION: Mastercard wiederherstellen wenn zuvor offen (z.B. nach Refresh) [cite: User-Request 2026-03-05] */
+  if(mode === 'provider' && provider.loggedIn && localStorage.getItem('mittagio_wizard_open') === 'true'){
+    setTimeout(function(){
+      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', restore: true });
+    }, 300);
+  }
   
   // Connectivity-Check starten wenn Provider-Modus
   if(mode === 'provider' && provider.loggedIn){
