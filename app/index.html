@@ -32,6 +32,8 @@
   <link rel="stylesheet" href="style.css?v=20260301">
 </head>
 <body>
+<!-- Flow-Stub: startListingFlow sofort verfügbar – script.js kann langsam laden [cite: Flow-Fix 2026-03-02] -->
+<script>window.startListingFlow=window.startListingFlow||function(){if(typeof console!=="undefined"&&console.warn)console.warn("[startListingFlow] Noch nicht geladen – script.js lädt noch");};</script>
 <script src="js/early-visibility.js"></script>
 <!-- Wizard physisch zuerst – nie durch Cache/Deployment verloren [cite: 2026-03-01] -->
 <div class="backdrop" id="wbd" onclick="if(event.target===this){ var w=document.getElementById('wizard'); if(w&&w.classList.contains('active')){ if(w.getAttribute('data-flow')==='listing'&&typeof history!=='undefined'&&history.length>1){ history.back(); } else if(w.getAttribute('data-flow')==='listing'&&typeof closeMastercard==='function'){ closeMastercard(); } else if(typeof closeWizard==='function'){ closeWizard(); } } }"></div>
@@ -3442,7 +3444,7 @@
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260301"></script>
+<script src="script.js?v=20260302"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
