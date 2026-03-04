@@ -10685,7 +10685,7 @@
     const today = new Date();
     let selectedDay = providerWeekDay || isoDate(today);
     
-    const pid = typeof providerId === 'function' ? providerId() : '';
+    const pid = typeof providerId === 'function' ? providerId() : (function(){ const e = (provider && provider.email) || 'provider'; return 'prov_' + btoa(unescape(encodeURIComponent(e))).slice(0,16); })();
     dayWrap.innerHTML = '';
     for(let i = 0; i < 7; i++){
       const d = new Date(today);
@@ -10706,8 +10706,8 @@
       dayWrap.appendChild(b);
     }
     
-    const offersForDay = offers.filter(function(o){ return o.providerId === providerId() && o.active !== false && o.day === selectedDay; });
-    const weekEntries = (week[selectedDay] || []).filter(function(x){ return x.providerId === providerId() && x.active !== false; });
+    const offersForDay = offers.filter(function(o){ return o.providerId === pid && o.active !== false && o.day === selectedDay; });
+    const weekEntries = (week[selectedDay] || []).filter(function(x){ return x.providerId === pid && x.active !== false; });
     const totalPlanned = offersForDay.length + weekEntries.length;
     
     var allOrdersForSold = (typeof loadOrders === 'function' ? loadOrders() : []) || [];
@@ -10718,7 +10718,7 @@
       if(hasOnline) dishRows.push('<p class="week-preview-section-label">Aktiv &amp; Online</p>');
       offersForDay.forEach(function(o){
         var dishName = (typeof esc === 'function' ? esc(o.dish || 'Gericht') : (o.dish || 'Gericht').replace(/</g,'&lt;'));
-        var soldCount = allOrdersForSold.filter(function(ord){ var o2 = (offers || []).find(function(x){ return x.id === ord.dishId || x.id === ord.offerId; }); return o2 && String(o2.providerId) === String(providerId()) && String((o2.dish || '').trim()) === String((o.dish || '').trim()); }).length;
+        var soldCount = allOrdersForSold.filter(function(ord){ var o2 = (offers || []).find(function(x){ return x.id === ord.dishId || x.id === ord.offerId; }); return o2 && String(o2.providerId) === String(pid) && String((o2.dish || '').trim()) === String((o.dish || '').trim()); }).length;
         var soldBox = soldCount > 0 ? '<div class="week-preview-dish-sold"><span>Verkauft</span><span class="week-preview-dish-sold-num">' + soldCount + '</span></div>' : '';
         var imgSrc = (o.imageUrl || o.img || '').toString().trim();
         var thumbHtml = '<div class="week-preview-dish-thumb">' + (imgSrc ? '<img src="' + (typeof esc === 'function' ? esc(imgSrc) : String(imgSrc).replace(/"/g,'&quot;')) + '" alt="" loading="lazy"/>' : '') + '</div>';
