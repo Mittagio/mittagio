@@ -16343,6 +16343,9 @@
    */
   function startListingFlow(context = {}){
     if(typeof console !== 'undefined' && console.log) console.log('[startListingFlow] called', context);
+    // #region agent log
+    try{ fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:startListingFlow',message:'entry',data:{hasProvider:!!provider,loggedIn:!!(provider&&provider.loggedIn),blocked:!(provider&&provider.loggedIn)},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{}); }catch(e){}
+    // #endregion
     if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] blockiert: nicht eingeloggt'); return; }
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
@@ -20168,12 +20171,25 @@
 
   /* WIZARD RESTORATION: Mastercard auf load-Event öffnen [cite: Plan Mastercard-Fix 2026-03-06] */
   window.addEventListener('load', function(){
-    if(mode === 'provider' && provider && provider.loggedIn){
+    // #region agent log
+    try{ fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:restore-load',message:'load handler',data:{mode:mode,loggedIn:!!(provider&&provider.loggedIn),cond:mode==='provider'&&!!(provider&&provider.loggedIn)},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{}); }catch(e){}
+    console.log('[mittagio-restore] load handler', { mode: mode, windowMode: window.mode, isProvider: (typeof window.mode !== 'undefined' ? window.mode : mode) === 'provider', loggedIn: !!(provider && provider.loggedIn) });
+    // #endregion
+    var isProvider = (typeof window.mode !== 'undefined' ? window.mode : mode) === 'provider';
+    if(isProvider && provider && provider.loggedIn){
       var hadWizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
       if(hadWizardOpen){ try{ window.__pendingStartListingFlow = []; } catch(e){} }
+      console.log('[mittagio-restore] condition OK, scheduling', { hadWizardOpen: !!hadWizardOpen });
       setTimeout(function(){
-        if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
+        // #region agent log
+        try{ fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:restore-timeout',message:'timeout callback',data:{hasStartListingFlow:typeof startListingFlow==='function'},timestamp:Date.now(),hypothesisId:'H4'})}).catch(()=>{}); }catch(e){}
+        var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
+        console.log('[mittagio-restore] timeout', { hasFn: !!fn, hadWizardOpen: !!hadWizardOpen });
+        // #endregion
+        if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
       }, 100);
+    } else {
+      console.log('[mittagio-restore] condition FAILED – no restore', { isProvider: !!isProvider, hasProvider: !!provider, loggedIn: !!(provider && provider.loggedIn) });
     }
   });
 }

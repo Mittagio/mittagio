@@ -41,6 +41,7 @@
     if(real&&real!==stub&&typeof real==="function"){ real(ctx); return; }
     window.__pendingStartListingFlow.push(ctx||{});
     if(typeof console!=="undefined"&&console.warn) console.warn("[startListingFlow] Noch nicht geladen – wird nachgeliefert");
+    try{ fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'index.html:stub',message:'stub called',data:{pendingLen:(window.__pendingStartListingFlow||[]).length},timestamp:Date.now(),hypothesisId:'H5'})}).catch(function(){}); }catch(e){}
     var attempts=0,maxAttempts=60;
     function poll(){ attempts++; var r=window.startListingFlow; if(r&&r!==stub&&typeof r==="function"){ while(window.__pendingStartListingFlow&&window.__pendingStartListingFlow.length){ r(window.__pendingStartListingFlow.shift()); } return; } if(attempts<maxAttempts) setTimeout(poll,500); }
     setTimeout(poll,500);
@@ -3458,7 +3459,7 @@
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260306"></script>
+<script src="script.js?v=20260307"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
