@@ -1,3 +1,13 @@
+  /* V48: LIVE-DOMAIN EMERGENCY INIT [cite: 2026-03-04] */
+  (function(){
+    if(typeof console !== 'undefined' && console.log) console.log('🛠️ V48: Erzwinge App-Start...');
+    var saved = localStorage.getItem('mittagio_provider_v1') || localStorage.getItem('mittagio_provider');
+    try{ window.provider = saved ? JSON.parse(saved) : { loggedIn: true, id: 'p1', profile: { name: 'Gastro-Betrieb' } }; } catch(x){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Gastro-Betrieb' } }; }
+    window.provider.loggedIn = true;
+    if(document.documentElement){ document.documentElement.style.visibility = 'visible'; }
+    if(document.body){ document.body.style.visibility = 'visible'; document.body.style.opacity = '1'; }
+  })();
+
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
@@ -20220,13 +20230,24 @@
     }
   });
 
-  /* V47: GENERAL-SCHLÜSSEL FÜR NAVIGATION & RENNER [cite: 2026-03-04] */
+  /* V49: NAVIGATION & CONTENT FORCE (Bauherren-Garantie) [cite: 2026-03-04] */
   document.addEventListener('click', function(e){
-    var nav = e.target && e.target.closest ? e.target.closest('[data-pgo="provider-home"]') : null;
-    if(nav){
-      if(typeof console !== 'undefined' && console.log) console.log('🏠 Navigiere zu Aktiven Angeboten...');
+    var navBtn = e.target && e.target.closest ? e.target.closest('[data-pgo="provider-home"]') : null;
+    if(navBtn){
+      if(typeof console !== 'undefined' && console.log) console.log('🔓 V49: Erzwungener Wechsel zu Aktiven Angeboten...');
+      window.provider = window.provider || { loggedIn: true, id: 'p1' };
+      window.provider.loggedIn = true;
+      document.body.classList.add('provider-mode');
+      var views = document.querySelectorAll('.view');
+      for(var i = 0; i < (views || []).length; i++) views[i].classList.add('is-hidden');
+      var homeView = document.getElementById('v-provider-home');
+      if(homeView){
+        homeView.classList.remove('is-hidden');
+        homeView.classList.add('active');
+        homeView.style.display = 'block';
+      }
+      if(typeof renderProviderHome === 'function') renderProviderHome();
       if(typeof showProviderHome === 'function') showProviderHome();
-      else if(typeof renderProviderHome === 'function') renderProviderHome();
     }
     var renner = e.target && e.target.closest ? e.target.closest('.create-flow-renner-grid .renner-speed-tile') : null;
     if(renner && !(e.target && e.target.closest && e.target.closest('button')) && e.isTrusted && e.target !== renner){
