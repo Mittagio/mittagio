@@ -6285,34 +6285,40 @@
   if(createNewListingBtn){
     createNewListingBtn.onclick = function(e){
       if(e) e.preventDefault();
-      if(typeof console !== 'undefined' && console.log) console.log('🛠️ V44-Execution: Resetting Sheets...');
-      var date = (typeof createFlowPreselectedDate !== 'undefined' && createFlowPreselectedDate) ? createFlowPreselectedDate : '';
-      if(!date){
-        var d = new Date();
-        date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      var wContent = document.getElementById('wContent');
+      var wizard = document.getElementById('wizard');
+      var wbd = document.getElementById('wbd');
+      if(wContent){
+        wContent.innerHTML = '<div class="s25-loader-container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px;gap:15px;"><div class="s25-spinner"></div><span style="font-size:14px;font-weight:700;color:#94a3b8;">Inserat wird vorbereitet...</span></div>';
       }
+      var date = (typeof createFlowPreselectedDate !== 'undefined' && createFlowPreselectedDate) ? createFlowPreselectedDate : '';
+      if(!date) date = new Date().toISOString().split('T')[0];
       var ep = (typeof createFlowOriginView !== 'undefined' && createFlowOriginView) ? createFlowOriginView : 'dashboard';
-      var idsToClean = ['createFlowSheet', 'createFlowBd', 'wbd', 'wizard'];
-      idsToClean.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el) el.classList.remove('active', 'is-visible', 'is-open');
-      });
-      document.body.classList.remove('create-flow-open', 'wizard-inserat-open');
+      document.body.classList.remove('create-flow-open');
+      var sheet = document.getElementById('createFlowSheet');
+      var createBd = document.getElementById('createFlowBd');
+      if(sheet) sheet.classList.remove('active');
+      if(createBd) createBd.classList.remove('active');
+      if(wbd && wizard){
+        var allSheets = document.querySelectorAll('.backdrop, .sheet');
+        for(var i = 0; i < allSheets.length; i++) allSheets[i].classList.remove('active');
+        wizard.setAttribute('data-flow', 'listing');
+        wbd.classList.add('active');
+        wizard.classList.add('active');
+        document.body.classList.add('wizard-inserat-open');
+      }
       setTimeout(function(){
-        var wbd = document.getElementById('wbd');
-        var wizard = document.getElementById('wizard');
-        if(wbd && wizard){
-          wizard.setAttribute('data-flow', 'listing');
-          wbd.classList.add('active');
-          wizard.classList.add('active');
-          document.body.classList.add('wizard-inserat-open');
+        try{
+          if(typeof window.provider === 'undefined') throw new Error('Provider-Daten nicht geladen');
           if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
-          else if(typeof startListingFlow === 'function') startListingFlow({ date: date, entryPoint: ep });
-          if(typeof console !== 'undefined' && console.log) console.log('✅ V44: Flow gestartet.');
-        } else {
-          if(typeof console !== 'undefined' && console.error) console.error('❌ V44-Error: Wizard-DOM nicht bereit.');
+          else if(typeof window.startListingFlow === 'function') window.startListingFlow({ date: date, entryPoint: ep });
+        } catch(err){
+          if(typeof console !== 'undefined' && console.error) console.error('🔥 V45-Error:', err);
+          if(wContent){
+            wContent.innerHTML = '<div style="padding:30px;text-align:center;"><div style="font-size:40px;margin-bottom:10px;">⚠️</div><div style="font-weight:800;margin-bottom:5px;">Hoppla!</div><div style="font-size:13px;color:#64748b;">' + (err.message || 'Fehler beim Laden.') + '</div><button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;background:#222;color:#fff;border-radius:8px;border:none;font-weight:700;">Neu laden</button></div>';
+          }
         }
-      }, 60);
+      }, 80);
     };
   }
 
