@@ -5,7 +5,11 @@
     window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); };
     window.addEventListener('load', function flowAssignOnLoad(){
       try {
-        if(typeof startListingFlow === 'function'){ window.startListingFlow = startListingFlow; if(typeof console !== 'undefined' && console.log) console.log('[script.js] startListingFlow auf window (load)'); }
+        if(typeof startListingFlow === 'function'){
+          window.startListingFlow = startListingFlow;
+          if(typeof console !== 'undefined' && console.log) console.log('[script.js] startListingFlow auf window (load)');
+          var p=window.__pendingStartListingFlow; if(Array.isArray(p)&&p.length){ while(p.length){ var c=p.shift(); startListingFlow(c); } }
+        }
         if(typeof openDishFlow === 'function'){ window.openDishFlow = openDishFlow; }
       } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[Flow] load-Zuweisung:', e); }
     });
@@ -16348,7 +16352,14 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
-  try { if(typeof window !== 'undefined'){ window.startListingFlow = startListingFlow; if(typeof console !== 'undefined' && console.log) console.log('[script.js] startListingFlow auf window gesetzt'); } } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
+  try {
+    if(typeof window !== 'undefined'){
+      window.startListingFlow = startListingFlow;
+      if(typeof console !== 'undefined' && console.log) console.log('[script.js] startListingFlow auf window gesetzt');
+      var pending=window.__pendingStartListingFlow;
+      if(Array.isArray(pending)&&pending.length){ while(pending.length){ var c=pending.shift(); startListingFlow(c); } }
+    }
+  } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
 
   /** Single-Source API: Ein Tool für Neu, Edit, Kochbuch [cite: 2026-02-23] */
   function openUniversalEditor(data){
@@ -19878,7 +19889,10 @@
   function initApp(){
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
     /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
-    if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){ window.startListingFlow = startListingFlow; }
+    if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
+      window.startListingFlow = startListingFlow;
+      var pend=window.__pendingStartListingFlow; if(Array.isArray(pend)&&pend.length){ while(pend.length){ var cx=pend.shift(); startListingFlow(cx); } }
+    }
     if(typeof openDishFlow === 'function' && typeof window !== 'undefined'){ window.openDishFlow = openDishFlow; }
     renderChips();
 

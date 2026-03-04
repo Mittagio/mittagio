@@ -35,11 +35,13 @@
 <!-- Flow-Stub: startListingFlow sofort verfügbar – script.js kann langsam laden [cite: Flow-Fix 2026-03-02] -->
 <script>
 (function(){
+  window.__pendingStartListingFlow=window.__pendingStartListingFlow||[];
   var stub=function(ctx){
-    if(typeof console!=="undefined"&&console.warn) console.warn("[startListingFlow] Noch nicht geladen – prüfe erneut...");
     var real=window.startListingFlow;
     if(real&&real!==stub&&typeof real==="function"){ real(ctx); return; }
-    setTimeout(function(){ var r=window.startListingFlow; if(r&&r!==stub&&typeof r==="function"){ r(ctx); return; } setTimeout(function(){ var r2=window.startListingFlow; if(r2&&r2!==stub&&typeof r2==="function") r2(ctx); }, 700); }, 400);
+    window.__pendingStartListingFlow.push(ctx||{});
+    if(typeof console!=="undefined"&&console.warn) console.warn("[startListingFlow] Noch nicht geladen – wird nachgeliefert");
+    setTimeout(function(){ var r=window.startListingFlow; if(r&&r!==stub&&typeof r==="function"){ while(window.__pendingStartListingFlow&&window.__pendingStartListingFlow.length){ var c=window.__pendingStartListingFlow.shift(); r(c); } return; } setTimeout(function(){ var r2=window.startListingFlow; if(r2&&r2!==stub&&typeof r2==="function"){ while(window.__pendingStartListingFlow&&window.__pendingStartListingFlow.length){ var c2=window.__pendingStartListingFlow.shift(); r2(c2); } } }, 800); }, 500);
   };
   window.startListingFlow=window.startListingFlow||stub;
 })();
@@ -3454,7 +3456,7 @@
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260304"></script>
+<script src="script.js?v=20260305"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
