@@ -9792,3 +9792,12 @@
   width: 100%;
   max-width: 400px;
 }
+
+/* FORCE TOP LAYER FOR MASTERCARD [cite: 2026-03-04] */
+body.wizard-inserat-open #wizard {
+  display: flex !important;
+  z-index: 100000 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background: #fff !important;
+}

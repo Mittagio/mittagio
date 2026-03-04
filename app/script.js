@@ -6225,19 +6225,25 @@
       var priceStr = typeof euro === 'function' ? euro(c.price || 0) : (Number(c.price || 0).toFixed(2).replace('.', ',') + ' €');
       tile.innerHTML = '<span class="renner-speed-top-badge">TOP</span><div class="renner-speed-img-wrap"><img src="' + imgEsc + '" alt=""></div><div class="renner-speed-body"><div class="renner-speed-name">' + nameEsc + '</div><div class="renner-speed-price-wrap"><span class="renner-speed-price">' + priceStr + '</span></div></div>';
       var doOpen = function(){
-        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-        if(typeof haptic === 'function') haptic(10);
-        var date = createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
-        var ep = createFlowOriginView || 'dashboard';
-        if(ep === 'week' && date){
-          closeCreateFlowSheet();
-          if(typeof addCookbookEntryToWeek === 'function') addCookbookEntryToWeek(date, c.id);
-          if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-          if(typeof showToast === 'function') showToast((c.dish || 'Gericht') + ' eingetragen');
-          return;
+        try {
+          if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+          if(typeof haptic === 'function') haptic(10);
+          if(typeof console !== 'undefined' && console.log) console.log('Renner ausgewählt:', c.dish);
+          var date = createFlowPreselectedDate || (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+          var ep = createFlowOriginView || 'dashboard';
+          if(ep === 'week' && date){
+            if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+            if(typeof addCookbookEntryToWeek === 'function') addCookbookEntryToWeek(date, c.id);
+            if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+            if(typeof showToast === 'function') showToast((c.dish || 'Gericht') + ' eingetragen');
+            return;
+          }
+          if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+          if(typeof startListingFlow === 'function') startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
+        } catch(err){
+          if(typeof console !== 'undefined' && console.error) console.error('Fehler beim Renner-Klick:', err);
+          if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
         }
-        closeCreateFlowSheet();
-        if(typeof startListingFlow === 'function') startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
       };
       tile.onclick = function(e){ e.preventDefault(); e.stopPropagation(); doOpen(); };
       tile.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doOpen(); } };
@@ -6291,22 +6297,22 @@
     };
   }
   
-  /* V46: Sofort-Start für Mastercard [cite: 2026-03-04] */
+  /* REPARATUR V46.1: SICHTBARKEITS-GARANTIE [cite: 2026-03-04] */
   const btnNewListing = document.getElementById('createNewListing');
   if(btnNewListing){
     btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
+      if(typeof console !== 'undefined' && console.log) console.log('🚀 V46.1: Erzwinge Mastercard Sichtbarkeit...');
       var wizard = document.getElementById('wizard');
       var wbd = document.getElementById('wbd');
       if(wizard && wbd){
         wizard.setAttribute('data-flow', 'listing');
+        document.body.classList.add('wizard-inserat-open');
         wbd.classList.add('active');
         wizard.classList.add('active');
-        document.body.classList.add('wizard-inserat-open');
         if(typeof provider !== 'undefined') provider = window.provider;
         if(typeof startListingFlow === 'function'){
           startListingFlow({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
-          if(typeof console !== 'undefined' && console.log) console.log('✅ V46: Mastercard wurde erfolgreich hochgefahren.');
         }
       }
     };
@@ -20212,6 +20218,23 @@
         var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
         if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
       }, 250);
+    }
+  });
+
+  /* REPARATUR: NAVIGATION FIX (Kreditkarte / Aktive Angebote) [cite: 2026-03-04] */
+  document.addEventListener('click', function(e){
+    var navBtn = e.target && e.target.closest ? e.target.closest('[data-pgo="provider-home"]') : null;
+    if(navBtn){
+      if(typeof console !== 'undefined' && console.log) console.log('🎯 Navigation zu Aktiven Angeboten...');
+      if(typeof showProviderHome === 'function'){
+        showProviderHome();
+      } else {
+        var views = document.querySelectorAll('.view');
+        for(var i = 0; i < (views || []).length; i++) views[i].classList.add('is-hidden');
+        var home = document.getElementById('v-provider-home');
+        if(home){ home.classList.remove('is-hidden'); home.classList.add('active'); }
+        if(typeof renderProviderHome === 'function') renderProviderHome();
+      }
     }
   });
 }
