@@ -16324,7 +16324,8 @@
    * @param {string} [context.editOfferId] - Offer ID (wenn bearbeiten)
    */
   function startListingFlow(context = {}){
-    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
+    if(typeof console !== 'undefined' && console.log) console.log('[startListingFlow] called', context);
+    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] blockiert: nicht eingeloggt'); return; }
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
@@ -16371,6 +16372,7 @@
   }
 
   function startWizard(kind, ctx={}){
+    if(typeof console !== 'undefined' && console.log) console.log('[startWizard] kind=', kind);
     w = { kind, step:0, data:{}, ctx };
     const wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.setAttribute('data-flow', kind === 'listing' ? 'listing' : (kind || ''));
@@ -16388,7 +16390,8 @@
       
       // Case 1: Edit existing offer
       if(ctx.editOfferId){
-        const existing = offers.find(o=>o.id===ctx.editOfferId);
+        const offerList = (typeof offers !== 'undefined' && Array.isArray(offers)) ? offers : [];
+        const existing = offerList.find(o=>o.id===ctx.editOfferId);
         if(existing){
           const o = normalizeOffer(existing);
           w.data = {
