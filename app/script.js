@@ -19986,11 +19986,16 @@
     else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
   });
   
-  /* WIZARD RESTORATION: Mastercard wiederherstellen wenn zuvor offen (z.B. nach Refresh) [cite: User-Request 2026-03-05] */
-  if(mode === 'provider' && provider.loggedIn && localStorage.getItem('mittagio_wizard_open') === 'true'){
+  /* WIZARD RESTORATION: Mastercard öffnen bei Provider-Load [cite: User-Request 2026-03-05, Fix 2026-03-06]
+   * - Hatte Mastercard offen (mittagio_wizard_open): Mit Draft wiederherstellen
+   * - Sonst: Frische Mastercard öffnen (wie 03.03. – Nutzer sieht InseratCard sofort)
+   */
+  if(mode === 'provider' && provider.loggedIn){
+    var hadWizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
+    if(hadWizardOpen){ try{ window.__pendingStartListingFlow = []; } catch(e){} }
     setTimeout(function(){
-      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', restore: true });
-    }, 300);
+      if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
+    }, hadWizardOpen ? 300 : 400);
   }
   
   // Connectivity-Check starten wenn Provider-Modus
