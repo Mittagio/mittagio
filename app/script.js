@@ -6284,12 +6284,18 @@
   const createNewListingBtn = document.getElementById('createNewListing');
   if(createNewListingBtn){
     createNewListingBtn.onclick = function(){
-      var date = createFlowPreselectedDate;
-      var ep = createFlowOriginView || 'dashboard';
-      if(typeof window.closeCreateFlowSheet === 'function') window.closeCreateFlowSheet();
-      if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
-      else if(typeof startListingFlow === 'function') startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
-      else if(typeof window !== 'undefined' && typeof window.startListingFlow === 'function') window.startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
+      var date = (typeof createFlowPreselectedDate !== 'undefined') ? createFlowPreselectedDate : null;
+      var ep = (typeof createFlowOriginView !== 'undefined') ? createFlowOriginView : 'dashboard';
+      var sheet = document.getElementById('createFlowSheet');
+      var bd = document.getElementById('createFlowBd');
+      if(sheet) sheet.classList.remove('active');
+      if(bd) bd.classList.remove('active');
+      document.body.classList.remove('create-flow-open');
+      requestAnimationFrame(function(){
+        if(typeof console !== 'undefined' && console.log) console.log('🚀 Starte Mastercard-Flow für:', date, 'ab:', ep);
+        if(typeof window.openDishFlow === 'function') window.openDishFlow(date, ep);
+        else if(typeof startListingFlow === 'function') startListingFlow({ date: date || (typeof isoDate === 'function' ? isoDate(new Date()) : ''), entryPoint: ep || 'dashboard' });
+      });
     };
   }
 
