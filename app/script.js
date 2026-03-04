@@ -70,6 +70,14 @@
   function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
   if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
 
+  /** Provider-ID (stabil pro E-Mail) – früh definiert, auf window exponiert, verhindert ReferenceErrors [cite: Bereinigung 2026-03-04] */
+  function providerId(){
+    const p = (typeof provider !== 'undefined' && provider) ? provider : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.provider, null) : null);
+    const e = (p && p.email) || 'provider';
+    return 'prov_' + btoa(unescape(encodeURIComponent(e))).slice(0, 16);
+  }
+  if(typeof window !== 'undefined') window.providerId = providerId;
+
   // Abholzeit-Slots 11:00–14:30 im 15-Minuten-Takt (zentral für Cart + Checkout)
   function getTimeSlots(){
     const slots = [];
@@ -5759,53 +5767,14 @@
       pushViewState(null, location.pathname);
       return;
     }
-    // Onboarding back navigation
+    // Onboarding-Redirect: Alle Onboarding-Views führen zum Dashboard [cite: Bereinigung 2026-03-04]
     const currentView = document.querySelector('.view.active');
     if(currentView && currentView.id.startsWith('v-provider-onboarding')){
-      if(currentView.id === 'v-provider-onboarding-preview'){
-        showOnboardingBusiness();
-        e.preventDefault();
-        pushViewState(null, location.pathname);
-        return;
-      } else if(currentView.id === 'v-provider-onboarding-business'){
-        showOnboardingSignup();
-        e.preventDefault();
-        pushViewState(null, location.pathname);
-        return;
-      } else if(currentView.id === 'v-provider-onboarding-signup'){
-        showOnboardingEntry(!!onboardingDraftDish);
-        e.preventDefault();
-        pushViewState(null, location.pathname);
-        return;
-      } else if(currentView.id === 'v-provider-onboarding-first-dish'){
-        showOnboardingEntry(!!onboardingDraftDish);
-        e.preventDefault();
-        pushViewState(null, location.pathname);
-        return;
-      } else if(currentView.id === 'v-provider-onboarding-entry'){
-        // Animation für 3-Punkt-Erklärung
-        setTimeout(() => {
-          const points = document.querySelectorAll('#onboardingExplanationPoints .onboarding-point');
-          points.forEach((point, index) => {
-            setTimeout(() => {
-              point.style.opacity = '1';
-              point.style.transform = 'translateY(0)';
-            }, index * 200);
-          });
-          // Icons aktualisieren
-          if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 100);
-        }, 100);
-        // Exit onboarding, go to login or customer mode
-        if(provider.loggedIn){
-          showProviderHome();
-        } else {
-          setMode('customer');
-          showProfile();
-        }
-        e.preventDefault();
-        pushViewState(null, location.pathname);
-        return;
-      }
+      if(provider && provider.loggedIn && typeof showProviderHome === 'function') showProviderHome();
+      else { setMode('customer'); if(typeof showProfile === 'function') showProfile(); }
+      e.preventDefault();
+      pushViewState(null, location.pathname);
+      return;
     }
     
     // In-App Navigation: Zurück zu vorheriger View innerhalb der App
@@ -8678,59 +8647,27 @@
     };
   }
 
-  // --- Hybrid Onboarding System ---
+  // --- Onboarding-Redirect: Alle Einstiege führen in Dashboard/InseratCard [cite: Bereinigung 2026-03-04] ---
   let onboardingDraftDish = load(LS.onboardingDraft, null);
   
-  function showOnboardingEntry(hasDraft = false){
-    showView(views.providerOnboardingEntry);
-    
-    // Show returning banner if draft exists
-    const entryPanel = document.getElementById('onboardingEntryPanel') || document.querySelector('#v-provider-onboarding-entry .panel');
-    if(hasDraft && onboardingDraftDish && entryPanel){
-      const banner = document.createElement('div');
-      banner.style.cssText = 'margin-bottom:24px; padding:16px; background:#f0f7f0; border-radius:12px; border:1px solid #4caf50;';
-      banner.innerHTML = `
-        <div style="font-weight:600; font-size:16px; margin-bottom:8px; color:#2e7d32;">Du hast ein Gericht vorbereitet</div>
-        <div style="font-size:14px; line-height:1.4; margin-bottom:12px; color:#666;">Möchtest du weitermachen?</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn secondary" type="button" id="btnOnboardingResume" style="flex:1; min-height:44px;">Weiter bearbeiten</button>
-          <button class="btn ghost" type="button" id="btnOnboardingDiscard" style="flex:1; min-height:44px;">Verwerfen</button>
-        </div>
-      `;
-      entryPanel.insertBefore(banner, entryPanel.firstChild);
-      
-      const btnResume = document.getElementById('btnOnboardingResume');
-      const btnDiscard = document.getElementById('btnOnboardingDiscard');
-      if(btnResume) btnResume.onclick = () => {
-        if(provider && provider.loggedIn){
-          if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: (onboardingDraftDish && onboardingDraftDish.dishName) ? onboardingDraftDish.dishName : undefined });
-        } else {
-          showOnboardingSignup();
-        }
-      };
-      if(btnDiscard) btnDiscard.onclick = () => {
-        onboardingDraftDish = null;
-        save(LS.onboardingDraft, null);
-        showOnboardingEntry(false);
-      };
-    }
+  function showOnboardingEntry(hasDraft){
+    if(provider && provider.loggedIn && hasDraft && onboardingDraftDish && typeof startListingFlow === 'function'){
+      startListingFlow({ entryPoint: 'dashboard', entryDishName: onboardingDraftDish.dishName || undefined });
+    } else if(typeof showProviderHome === 'function') showProviderHome();
   }
   
-  /** InseratCard-Enforcer: Alter First-Dish-Flow ist abgeschaltet. Jeder Aufruf leitet in die InseratCard um. [cite: Hard-Redirect] */
   function showOnboardingFirstDish(prefill){
     var entryDishName = (prefill && onboardingDraftDish && onboardingDraftDish.dishName) ? onboardingDraftDish.dishName : undefined;
     if(provider && provider.loggedIn && typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard', entryDishName: entryDishName });
-    else showOnboardingEntry(!!onboardingDraftDish);
+    else if(typeof showProviderHome === 'function') showProviderHome();
   }
   
   function showOnboardingSignup(){
-    showView(views.providerOnboardingSignup);
-    pushViewState({onboarding: 'signup'}, location.pathname);
+    if(typeof showProviderHome === 'function') showProviderHome();
   }
   
   function showOnboardingBusiness(){
-    showView(views.providerOnboardingBusiness);
-    pushViewState({onboarding: 'business'}, location.pathname);
+    if(typeof showProviderHome === 'function') showProviderHome();
   }
   
   // Onboarding-Preview: 5-Ebenen-InseratCard-Struktur [cite: 2026-02-18]
@@ -8763,26 +8700,7 @@
   }
 
   function showOnboardingPreview(dishId){
-    showView(views.providerOnboardingPreview);
-    pushViewState({onboarding: 'preview'}, location.pathname);
-    
-    const savedDish = dishId ? cookbook.find(c => c.id === dishId) : cookbook.find(c => c.providerId === providerId());
-    const previewCard = document.getElementById('onboardingPreviewCard');
-    if(previewCard && (savedDish || onboardingDraftDish)){
-      const dish = savedDish || {
-        dish: onboardingDraftDish.dishName,
-        category: onboardingDraftDish.dishDiet || 'Veggie',
-        photoData: onboardingDraftDish.photoData || null
-      };
-      
-      const preview = createOnboardingPreviewCard(dish, savedDish, onboardingDraftDish);
-      previewCard.innerHTML = '';
-      previewCard.appendChild(preview);
-      
-      if(typeof lucide !== 'undefined'){
-        setTimeout(function(){ lucide.createIcons(); }, 50);
-      }
-    }
+    if(typeof showProviderHome === 'function') showProviderHome();
   }
   
   // Direkt-Sprung S25: Einstieg führt immer in die InseratCard (Wizard), nie ins Onboarding. [cite: InseratCard-Enforcer]
@@ -10297,10 +10215,6 @@
         }
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       }
-
-      // CTA-Button: Neues Gericht inserieren (wie FAB → openDishFlow)
-      const btnProviderDashboardCTA = document.getElementById('btnProviderDashboardCTA');
-      if(btnProviderDashboardCTA) btnProviderDashboardCTA.onclick = function(){ openDishFlow(); };
 
       // Live Abholnummern: Pills (Referenz 97525 – erste gelb #ffde00, rest grau)
       const providerNextPickupPills = document.getElementById('providerNextPickupPills');
@@ -14879,13 +14793,6 @@
     let shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
     if(!hasAbholnummer) shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
     if(navigator.share){ navigator.share({ title: `Heute bei ${providerName}`, text: shareText, url: shareUrl }).then(() => showToast('Tagesessen geteilt!')).catch((err) => { if(err.name !== 'AbortError'){ copyToClipboard(shareText); showToast('Link kopiert!'); } }); } else { copyToClipboard(shareText); showToast('Link kopiert!'); }
-  }
-
-  // Provider ID (for demo)
-  function providerId(){
-    // stable per email
-    const e = provider.email || 'provider';
-    return 'prov_' + btoa(unescape(encodeURIComponent(e))).slice(0,16);
   }
 
   // --- Cookbook ---
