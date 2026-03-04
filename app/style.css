@@ -9793,11 +9793,24 @@
   max-width: 400px;
 }
 
-/* FORCE TOP LAYER FOR MASTERCARD [cite: 2026-03-04] */
+/* V47 VISUAL FORCE [cite: 2026-03-04] */
 body.wizard-inserat-open #wizard {
   display: flex !important;
-  z-index: 100000 !important;
-  opacity: 1 !important;
+  z-index: 99999 !important;
   visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
   background: #fff !important;
+}
+
+body.wizard-inserat-open #wbd {
+  display: block !important;
+  z-index: 99998 !important;
+  opacity: 1 !important;
+}
+
+/* S25 PREMIUM ICONS: Kräftig & Aussagekräftig [cite: 2026-03-03] */
+.power-item .inserat-pill-emo {
+  font-size: 30px !important;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)) saturate(1.3);
 }

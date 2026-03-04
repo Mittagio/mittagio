@@ -79,14 +79,14 @@
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
-  /* V46: IDENTITÄTS-GARANTIE (Bauherren-Fix) [cite: 2026-03-04] */
+  /* V47: ABSOLUTE IDENTITÄTS-GARANTIE [cite: 2026-03-04] */
   if(typeof window !== 'undefined'){
     var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
     try{
       var p = (function(){ try{ var j = localStorage.getItem(lsKey); return j ? JSON.parse(j) : null; } catch(x){ return null; } })();
       window.provider = window.provider || p || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } };
       window.provider.loggedIn = true;
-      if(typeof console !== 'undefined' && console.log) console.log('🛠️ V46: Identität gesichert für:', window.provider.id);
+      if(typeof console !== 'undefined' && console.log) console.log('🛠️ V47: Identität gesichert für:', window.provider.id);
     } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } }; window.provider.loggedIn = true; }
   }
   /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
@@ -6297,22 +6297,21 @@
     };
   }
   
-  /* REPARATUR V46.1: SICHTBARKEITS-GARANTIE [cite: 2026-03-04] */
+  /* V47: Mastercard-Start via openDishFlow [cite: 2026-03-04] */
   const btnNewListing = document.getElementById('createNewListing');
   if(btnNewListing){
     btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
-      if(typeof console !== 'undefined' && console.log) console.log('🚀 V46.1: Erzwinge Mastercard Sichtbarkeit...');
+      if(typeof console !== 'undefined' && console.log) console.log('🚀 V47: Mastercard-Start...');
       var wizard = document.getElementById('wizard');
       var wbd = document.getElementById('wbd');
       if(wizard && wbd){
         wizard.setAttribute('data-flow', 'listing');
-        document.body.classList.add('wizard-inserat-open');
         wbd.classList.add('active');
         wizard.classList.add('active');
-        if(typeof provider !== 'undefined') provider = window.provider;
-        if(typeof startListingFlow === 'function'){
-          startListingFlow({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
+        document.body.classList.add('wizard-inserat-open');
+        if(typeof openDishFlow === 'function'){
+          openDishFlow(new Date().toISOString().split('T')[0], 'dashboard');
         }
       }
     };
@@ -20221,20 +20220,18 @@
     }
   });
 
-  /* REPARATUR: NAVIGATION FIX (Kreditkarte / Aktive Angebote) [cite: 2026-03-04] */
+  /* V47: GENERAL-SCHLÜSSEL FÜR NAVIGATION & RENNER [cite: 2026-03-04] */
   document.addEventListener('click', function(e){
-    var navBtn = e.target && e.target.closest ? e.target.closest('[data-pgo="provider-home"]') : null;
-    if(navBtn){
-      if(typeof console !== 'undefined' && console.log) console.log('🎯 Navigation zu Aktiven Angeboten...');
-      if(typeof showProviderHome === 'function'){
-        showProviderHome();
-      } else {
-        var views = document.querySelectorAll('.view');
-        for(var i = 0; i < (views || []).length; i++) views[i].classList.add('is-hidden');
-        var home = document.getElementById('v-provider-home');
-        if(home){ home.classList.remove('is-hidden'); home.classList.add('active'); }
-        if(typeof renderProviderHome === 'function') renderProviderHome();
-      }
+    var nav = e.target && e.target.closest ? e.target.closest('[data-pgo="provider-home"]') : null;
+    if(nav){
+      if(typeof console !== 'undefined' && console.log) console.log('🏠 Navigiere zu Aktiven Angeboten...');
+      if(typeof showProviderHome === 'function') showProviderHome();
+      else if(typeof renderProviderHome === 'function') renderProviderHome();
+    }
+    var renner = e.target && e.target.closest ? e.target.closest('.create-flow-renner-grid .renner-speed-tile') : null;
+    if(renner && !(e.target && e.target.closest && e.target.closest('button')) && e.isTrusted && e.target !== renner){
+      if(typeof console !== 'undefined' && console.log) console.log('✨ Renner ausgewählt...');
+      try{ var ce = new MouseEvent('click', { bubbles: true }); renner.dispatchEvent(ce); } catch(x){}
     }
   });
 }
