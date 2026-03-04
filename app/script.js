@@ -9694,7 +9694,11 @@
     var b = e.target.closest('button');
     if(!b) return;
     var go = b.dataset.pgo;
-    if(go==='provider-home' && typeof showProviderHome==='function'){ showProviderHome(); if(typeof haptic==='function') haptic(6); }
+    if(go==='provider-home'){
+      if(typeof showProviderHome==='function') showProviderHome();
+      else if(typeof showView==='function'){ showView('v-provider-home'); if(typeof renderProviderHome==='function') renderProviderHome(); }
+      if(typeof haptic==='function') haptic(6);
+    }
     if(go==='provider-pickups' && typeof showProviderPickups==='function'){ showProviderPickups(); if(typeof haptic==='function') haptic(6); }
     if(go==='provider-week' && typeof showProviderWeek==='function'){ if(typeof haptic==='function') haptic(6); showProviderWeek(); }
     if(go==='provider-cookbook' && typeof showProviderCookbook==='function'){ showProviderCookbook(); if(typeof haptic==='function') haptic(6); }
@@ -16335,13 +16339,21 @@
    *                                  Wenn vom Wochenplan: Gewählter Tag
    */
   /** entryPoint: 'dashboard' | 'cookbook' | 'week' – steuert Primär-/Sekundär-Buttons im Glass-Express (Action-Controller). */
-  function openDishFlow(defaultDate = null, entryPoint = null){
-    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); return; }
+  function openDishFlow(defaultDate, entryPoint){
+    if(typeof defaultDate === 'undefined') defaultDate = null;
+    if(typeof entryPoint === 'undefined') entryPoint = null;
+    if(typeof console !== 'undefined' && console.log) console.log('DishFlow gestartet für:', defaultDate);
+    var wc = document.getElementById('wContent');
+    if(typeof window.provider === 'undefined' || !window.provider || !window.provider.loggedIn){
+      if(wc) wc.innerHTML = '<div style="padding:40px;text-align:center;font-family:Inter,sans-serif;"><div style="font-size:40px;">👤</div><h3 style="margin:15px 0 5px;">Profil nicht geladen</h3><p style="font-size:14px;color:#64748b;margin-bottom:20px;">Bitte melde dich erneut an.</p><button onclick="location.reload()" style="background:#222;color:#fff;border:none;padding:12px 24px;border-radius:12px;font-weight:700;cursor:pointer;">App neu starten</button></div>';
+      else if(typeof showToast === 'function') showToast('Provider-Profil nicht geladen');
+      return;
+    }
     document.body.classList.add('vendor-area');
     var ctx = { date: defaultDate || isoDate(new Date()), fromWeek: entryPoint === 'week' };
     if(entryPoint) ctx.entryPoint = entryPoint;
     var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window !== 'undefined' && typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
-    if(fn) fn(ctx); else if(typeof console !== 'undefined' && console.warn) console.warn('[openDishFlow] startListingFlow nicht verfügbar');
+    if(fn){ fn(ctx); } else { if(typeof console !== 'undefined' && console.error) console.error('startListingFlow nicht gefunden!'); }
   }
   if(typeof window !== 'undefined') window.openDishFlow = openDishFlow;
 
