@@ -9885,3 +9885,18 @@ body.wizard-inserat-open #wbd {
   z-index: 999999 !important;
   background: rgba(0,0,0,0.5) !important;
 }
+
+/* V52: ULTIMATE LAYER-FIX [cite: 2026-03-05] */
+#wizard, #wbd {
+  transition: none !important;
+}
+
+body.wizard-inserat-open #wizard {
+  display: flex !important;
+  background: #ffffff !important;
+}
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
