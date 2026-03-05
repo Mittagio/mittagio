@@ -17153,6 +17153,15 @@
   // ============================================================
   function buildListingStep(){
     if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-7] buildListingStep aufgerufen | w.data.dish=', w && w.data ? w.data.dish : 'n/a');
+    /* DEBUG-BANNER: 3 Sekunden sichtbar wenn buildListingStep läuft [REMOVE AFTER FIX] */
+    try {
+      var _dbg = document.createElement('div');
+      _dbg.id = '_debug_bls';
+      _dbg.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:60px!important;background:#10b981!important;z-index:99999999!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:18px!important;font-weight:900!important;color:white!important;';
+      _dbg.textContent = '✅ buildListingStep LÄUFT!';
+      document.body.appendChild(_dbg);
+      setTimeout(function(){ var e=document.getElementById('_debug_bls'); if(e) e.parentNode.removeChild(e); }, 4000);
+    } catch(e){}
     setWizardNextDefault();
     w.step = 0;
     /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
