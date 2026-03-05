@@ -8679,8 +8679,8 @@
   // Session-Validität prüfen (bei App-Start und regelmäßig) – nutzt checkSingleSession
   function checkSessionValidity(){
     if(mode !== 'provider' || !provider.loggedIn) return true;
-    /* Live-Seite: Kein Backend – Session-Check überspringen, sonst weiße Seite [cite: Weisser-Screen-Fix 2026-03-07] */
-    if(typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))) return true;
+    /* Live-Seite + localhost: Kein Backend – Session-Check überspringen [cite: Weisser-Screen-Fix 2026-03-07] */
+    if(typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) return true;
     if(!checkSingleSession()) return false;
     const currentSessionId = getCookie(SESSION_COOKIE_NAME) || load('mittagio_current_session_id', null);
     const storedSession = load(LS.providerSession, null);
@@ -20116,8 +20116,10 @@
     if(typeof openDishFlow === 'function' && typeof window !== 'undefined'){ window.openDishFlow = openDishFlow; }
     renderChips();
 
-  // init nav bindings
-  if(mode==='provider' && !provider.loggedIn) mode='customer';
+  // init nav bindings – window.provider.loggedIn als Fallback (V47/V48 Bypass) [cite: 2026-03-17]
+  var _effectiveLoggedIn = (provider && provider.loggedIn) || (window.provider && window.provider.loggedIn);
+  if(_effectiveLoggedIn && !provider.loggedIn){ provider.loggedIn = true; } // Lokale Variable synchronisieren
+  if(mode==='provider' && !_effectiveLoggedIn) mode='customer';
   if(mode==='start') mode='customer';
   // Auto-Login Wiedererkennung: user_role === 'provider' → direkt Dashboard, Discovery überspringen [cite: Agent-Modus]
   try {
