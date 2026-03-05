@@ -105,6 +105,44 @@
   function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
   if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
 
+  // --- Helper: openWizard (missing in codebase) ---
+  function openWizard(){
+    var wbd = document.getElementById('wbd');
+    var wizard = document.getElementById('wizard');
+
+    if(!wbd){
+      wbd = document.createElement('div');
+      wbd.id = 'wbd';
+      wbd.className = 'backdrop';
+      document.body.appendChild(wbd);
+    }
+    if(!wizard){
+      wizard = document.createElement('div');
+      wizard.id = 'wizard';
+      wizard.className = 'sheet sheet--kitchen';
+      wizard.innerHTML =
+        '<div class="handle"></div>' +
+        '<div class="sheet-body wizard-sheet-body">' +
+          '<div class="wizard" id="wBox">' +
+            '<div id="wContent"></div>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(wizard);
+    }
+
+    wizard.setAttribute('data-flow', 'listing');
+    wizard.style.cssText = 'display:flex!important;visibility:visible!important;opacity:1!important;z-index:1000000!important;position:fixed!important;inset:0!important;background:#fff!important;transform:translateY(0)!important;';
+    if(wbd) wbd.classList.add('active');
+    wizard.classList.add('active');
+    document.body.classList.add('wizard-inserat-open', 'vendor-area');
+    var wc = document.getElementById('wContent');
+    if(wc && (!wc.innerHTML || wc.innerHTML.trim() === '')){
+      wc.innerHTML = '<div style="padding:24px;text-align:center;color:#64748b">Lade Inserat…</div>';
+    }
+    if(typeof console !== 'undefined' && console.log) console.log('[openWizard] wizard sichtbar | wbd=', !!wbd, '| wizard=', !!wizard, '| body.wizard-inserat-open=', document.body.classList.contains('wizard-inserat-open'));
+  }
+  if (typeof window !== 'undefined') window.openWizard = openWizard;
+
   /** Provider-ID (stabil pro E-Mail) – früh definiert, auf window exponiert, verhindert ReferenceErrors [cite: Bereinigung 2026-03-04] */
   function providerId(){
     const p = (typeof provider !== 'undefined' && provider) ? provider : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.provider, null) : null);
@@ -20499,3 +20537,51 @@
     }
   }catch(e){}
 })();
+
+/* === FIX: replace index.html stub with real forceOpenMastercard === */
+if (typeof window !== "undefined") {
+
+  if (typeof startListingFlow === "function") {
+    window.startListingFlow = startListingFlow;
+  }
+
+  window.forceOpenMastercard = function(ctx) {
+    if(typeof console !== 'undefined' && console.log) console.log('[forceOpenMastercard] aufgerufen | ctx=', ctx);
+
+    var defaultCtx = {
+      date: new Date().toISOString().slice(0,10),
+      entryPoint: "dashboard"
+    };
+
+    var finalCtx = (ctx && typeof ctx === "object")
+      ? Object.assign({}, defaultCtx, ctx)
+      : defaultCtx;
+
+    // Direkt startWizard+buildListingStep aufrufen (sicherster Pfad)
+    try {
+      if(typeof startWizard === 'function'){
+        console.log('[forceOpenMastercard] rufe startWizard direkt');
+        // Wizard-DOM sicherstellen und öffnen
+        if (typeof window.openWizard === "function") window.openWizard();
+        startWizard('listing', finalCtx);
+        console.log('[forceOpenMastercard] startWizard ausgeführt');
+        return;
+      }
+    } catch(e){ console.error('[forceOpenMastercard] startWizard Fehler:', e); }
+
+    // Fallback: startListingFlow
+    if (typeof window.startListingFlow === "function") {
+      if (typeof window.openWizard === "function") window.openWizard();
+      try {
+        console.log('[forceOpenMastercard] Fallback: startListingFlow | finalCtx=', finalCtx);
+        window.startListingFlow(finalCtx);
+      } catch(e) {
+        console.error('[forceOpenMastercard] startListingFlow Fehler:', e);
+      }
+      return;
+    }
+
+    console.error("[forceOpenMastercard] weder startWizard noch startListingFlow verfügbar");
+  };
+
+}
