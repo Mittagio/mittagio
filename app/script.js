@@ -1,3 +1,25 @@
+  /* DIAG-LOAD: Zeigt 15s ob neues Script geladen wurde */
+  (function(){
+    try{
+      var _l=document.createElement('div');
+      _l.style.cssText='position:fixed!important;bottom:80px!important;left:0!important;width:100vw!important;height:40px!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:14px!important;font-weight:900!important;color:#fff!important;background:#0f172a!important;';
+      _l.textContent='✅ Script v20260323 geladen | Klick auf + → Neues Gericht getestet?';
+      document.body?document.body.appendChild(_l):(document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(_l);}));
+      window.addEventListener('load',function(){if(!document.body.contains(_l))document.body.appendChild(_l);});
+      setTimeout(function(){try{_l.remove();}catch(e){}},15000);
+    }catch(e){}
+    /* window.onerror: Zeigt JS-Fehler sichtbar an */
+    window.onerror=function(msg,src,line,col,err){
+      try{
+        var _e=document.createElement('div');
+        _e.style.cssText='position:fixed!important;top:0!important;left:0!important;width:100vw!important;z-index:2147483647!important;padding:8px!important;font-size:13px!important;font-weight:700!important;color:#fff!important;background:#dc2626!important;word-break:break-all!important;';
+        _e.textContent='JS ERROR: '+msg+' (Z.'+line+')';
+        document.body.appendChild(_e);
+        setTimeout(function(){try{_e.remove();}catch(e){}},30000);
+      }catch(x){}
+      return false;
+    };
+  })();
   /* V48: LIVE-DOMAIN EMERGENCY INIT [cite: 2026-03-04] */
   (function(){
     if(typeof console !== 'undefined' && console.log) console.log('🛠️ V48: Erzwinge App-Start...');
