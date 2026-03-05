@@ -20296,17 +20296,24 @@
   /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
   setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 500);
 
-  /* WIZARD RESTORATION: Mastercard auf load-Event öffnen [cite: Plan Mastercard-Fix 2026-03-06] */
+  /* WIZARD RESTORATION: Mastercard bei Provider-Load immer öffnen (wie 03.03.) [cite: Plan Mastercard-Fix 2026-03-06] */
   window.addEventListener('load', function(){
     var isProvider = (typeof window.mode !== 'undefined' ? window.mode : mode) === 'provider';
     var bodyIsProvider = document.body && document.body.classList.contains('provider-mode');
-    if((isProvider || bodyIsProvider) && provider && provider.loggedIn){
+    var p = (typeof provider !== 'undefined' && provider) ? provider : null;
+    var wp = (typeof window !== 'undefined' && window.provider) ? window.provider : null;
+    var loggedIn = (wp && wp.loggedIn) || (p && p.loggedIn);
+    var canProceed = (isProvider || bodyIsProvider) && loggedIn;
+    if(canProceed){
       var hadWizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
       if(hadWizardOpen){ try{ window.__pendingStartListingFlow = []; } catch(e){} }
       setTimeout(function(){
-        var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
-        if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
-      }, 250);
+        if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
+        else {
+          var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
+          if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
+        }
+      }, hadWizardOpen ? 300 : 400);
     }
   });
 
