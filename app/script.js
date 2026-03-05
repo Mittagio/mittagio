@@ -11,6 +11,7 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
+  if (typeof console !== 'undefined' && console.log) console.log('[DEBUG-0] v20260308 – Wenn du das siehst, ist die neue Version aktiv!');
   /** Stub: startListingFlow früh auf window – wird später durch echte Implementierung ersetzt [cite: Flow-Fix 2026-03-02] */
   if (typeof window !== 'undefined') {
     window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); };
