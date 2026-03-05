@@ -6322,11 +6322,13 @@
     };
   }
   
-  /* V47: Mastercard-Start via openDishFlow [cite: 2026-03-04] */
+  /* V47/V53: Mastercard-Start – Create-Flow zuerst schließen, dann forceOpenMastercard [cite: 2026-03-06] */
   const btnNewListing = document.getElementById('createNewListing');
   if(btnNewListing){
     btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
+      if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+      if(typeof window.forceOpenMastercard === 'function'){ window.forceOpenMastercard(); return; }
       if(typeof console !== 'undefined' && console.log) console.log('🚀 V47: Mastercard-Start...');
       var wizard = document.getElementById('wizard');
       var wbd = document.getElementById('wbd');
@@ -6335,9 +6337,7 @@
         wbd.classList.add('active');
         wizard.classList.add('active');
         document.body.classList.add('wizard-inserat-open');
-        if(typeof openDishFlow === 'function'){
-          openDishFlow(new Date().toISOString().split('T')[0], 'dashboard');
-        }
+        if(typeof openDishFlow === 'function') openDishFlow(new Date().toISOString().split('T')[0], 'dashboard');
       }
     };
   }
@@ -20283,6 +20283,7 @@
 
   /* V52: ABSOLUTE WIZARD-REPARATUR [cite: 2026-03-05] */
   window.forceOpenMastercard = function(){
+    if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
     if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
     var wbd = document.getElementById('wbd');
     if(!wbd){
@@ -20313,7 +20314,15 @@
     }
   };
   var _mainBtn = document.getElementById('createNewListing');
-  if(_mainBtn){
-    _mainBtn.onclick = function(e){ if(e) e.preventDefault(); if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard(); };
-  }
+  if(_mainBtn) _mainBtn.onclick = function(e){ if(e) e.preventDefault(); if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard(); };
+  /* V53: Event-Delegation – createNewListing-Klick immer abfangen (auch bei dynamisch ersetztem Button) */
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('#createNewListing') : null;
+    if(btn){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+      if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard();
+    }
+  }, true);
 }
