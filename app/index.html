@@ -34,19 +34,26 @@
 <body>
 <!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05] -->
 <script>
+window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
+
 (function(){
-  window.__pendingStartListingFlow=window.__pendingStartListingFlow||[];
-  var stub=function(ctx){
-    var real=window.startListingFlow;
-    if(real&&real!==stub&&typeof real==="function"){ real(ctx); return; }
-    window.__pendingStartListingFlow.push(ctx||{});
-    if(typeof console!=="undefined"&&console.debug) console.debug("[startListingFlow] Wird nachgeliefert nach Laden von script.js");
-    var attempts=0,maxAttempts=60;
-    function poll(){ attempts++; var r=window.startListingFlow; if(r&&r!==stub&&typeof r==="function"){ while(window.__pendingStartListingFlow&&window.__pendingStartListingFlow.length){ r(window.__pendingStartListingFlow.shift()); } return; } if(attempts<maxAttempts) setTimeout(poll,500); }
-    setTimeout(poll,500);
-  };
-  window.startListingFlow=window.startListingFlow||stub;
-  /* forceOpenMastercard-Stub: Wizard sichtbar machen, dann startListingFlow – wird von script.js ersetzt */
+  function stub(ctx){
+    window.__pendingStartListingFlow.push(ctx || {});
+    setTimeout(function(){
+      if (typeof window.startListingFlow === "function" && window.startListingFlow !== stub) {
+        var q = window.__pendingStartListingFlow.splice(0);
+        for (var i = 0; i < q.length; i++) {
+          try { window.startListingFlow(q[i] || {}); } catch(e) {}
+        }
+      }
+    }, 50);
+  }
+
+  if(!window.startListingFlow){
+    window.startListingFlow = stub;
+  }
+})();
+/* forceOpenMastercard-Stub: Wizard sichtbar machen, dann startListingFlow – wird von script.js ersetzt */
   window.forceOpenMastercard=window.forceOpenMastercard||function(ctx){
     var wbd=document.getElementById('wbd'),wizard=document.getElementById('wizard');
     if(!wbd){ wbd=document.createElement('div'); wbd.id='wbd'; wbd.className='backdrop'; document.body.appendChild(wbd); }
@@ -58,7 +65,6 @@
     var c=ctx&&typeof ctx==='object'?Object.assign({},ctx):{date:new Date().toISOString().split('T')[0],entryPoint:'dashboard'};
     if(typeof window.startListingFlow==='function') window.startListingFlow(c);
   };
-})();
 </script>
 <script src="js/early-visibility.js"></script>
 <!-- Wizard physisch zuerst – nie durch Cache/Deployment verloren [cite: 2026-03-01] -->
