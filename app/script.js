@@ -519,21 +519,21 @@
     reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
+  /* Weisser-Screen-Fix: V47-Garantie nicht überschreiben – loggedIn immer true auf Live [cite: 2026-03-06] */
+  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))){
+    provider.loggedIn = true;
+    provider.onboardingCompleted = provider.onboardingCompleted !== false;
+    provider.id = provider.id || 'p1';
+    provider.email = provider.email || 'demo@mittagio.de';
+    if(!provider.profile) provider.profile = { name: 'Mein Betrieb' };
+  }
   if(typeof window !== 'undefined') window.provider = provider;
   // V50: ABSOLUTE ENTRIEGELUNG (VIP-Bypass) – Live-Seite ohne localStorage [cite: 2026-03-05]
   if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))){
-    if(!provider.loggedIn || !provider.email){
-      provider.loggedIn = true;
-      provider.onboardingCompleted = true;
-      provider.id = provider.id || 'p1';
-      provider.email = provider.email || 'demo@mittagio.de';
-      if(!provider.profile) provider.profile = { name: 'Mein Betrieb' };
-      if(typeof window !== 'undefined') window.provider = provider;
-      mode = 'provider';
-      if(typeof window !== 'undefined') window.mode = mode;
-      if(document.body) document.body.classList.add('provider-mode');
-      if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff für Live-Seite erzwungen.');
-    }
+    mode = 'provider';
+    if(typeof window !== 'undefined') window.mode = mode;
+    if(document.body) document.body.classList.add('provider-mode');
+    if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff für Live-Seite erzwungen.');
   }
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
