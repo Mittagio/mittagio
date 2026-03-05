@@ -16521,6 +16521,8 @@
   /* V52: forceOpenMastercard FRÜH – unabhängig von initApp, optional ctx [cite: Live-Fix 2026-03-04, Renner-Fix 2026-03-05] */
   if(typeof window !== 'undefined'){
     window.forceOpenMastercard = function(ctx){
+      // DEBUG STEP A (V52 – inside IIFE, has direct access to startListingFlow)
+      try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A-V52: forceOpenMastercard (IIFE)'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},3000); }catch(e){}
       if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-5] forceOpenMastercard aufgerufen | ctx=', JSON.stringify(ctx || {}));
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
@@ -20481,80 +20483,4 @@
   }
 })();
 
-// --- FIX: override index.html stubs with real functions (must run at end) ---
-(function(){
-  if (typeof window === 'undefined') return;
-
-  // 1) Export real startListingFlow to window (override stub)
-  try {
-    if (typeof startListingFlow === 'function') {
-      window.startListingFlow = startListingFlow;
-    }
-  } catch(e){}
-
-  // 2) Create a real forceOpenMastercard and override stub
-  window.forceOpenMastercard = function(ctx){
-    // DEBUG STEP A
-    try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A: forceOpenMastercard'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},3000); }catch(e){}
-    try{
-      // Ensure wizard DOM exists
-      var wbd = document.getElementById('wbd');
-      if(!wbd){
-        wbd = document.createElement('div');
-        wbd.id = 'wbd';
-        wbd.className = 'backdrop';
-        document.body.appendChild(wbd);
-      }
-
-      var wizard = document.getElementById('wizard');
-      if(!wizard){
-        wizard = document.createElement('div');
-        wizard.id = 'wizard';
-        wizard.className = 'sheet sheet--kitchen active';
-        wizard.innerHTML =
-          '<div class="handle"></div>' +
-          '<div class="sheet-body wizard-sheet-body">' +
-            '<div class="wizard" id="wBox">' +
-              '<div id="wContent"></div>' +
-            '</div>' +
-          '</div>';
-        document.body.appendChild(wizard);
-      }
-
-      // Open wizard
-      wbd.classList.add('active');
-      wizard.classList.add('active');
-      document.body.classList.add('wizard-inserat-open', 'vendor-area');
-
-      // Never show blank screen
-      var wc = document.getElementById('wContent');
-      if(wc && (!wc.innerHTML || wc.innerHTML.trim() === '')){
-        wc.innerHTML = '<div style="padding:20px;text-align:center">Lade Inserat…</div>';
-      }
-
-      // Start listing flow
-      var defaultCtx = { date: new Date().toISOString().slice(0,10), entryPoint: 'dashboard' };
-      var finalCtx = (ctx && typeof ctx === 'object') ? Object.assign({}, defaultCtx, ctx) : defaultCtx;
-
-      if (typeof window.startListingFlow === 'function') {
-        window.startListingFlow(finalCtx);
-      } else if (typeof startListingFlow === 'function') {
-        startListingFlow(finalCtx);
-      }
-    }catch(err){
-      console.error('forceOpenMastercard override failed', err);
-    }
-  };
-
-  // 3) Flush queue created by early stubs (if any)
-  try{
-    if(window.__pendingStartListingFlow && window.__pendingStartListingFlow.length && typeof window.startListingFlow === 'function'){
-      var q = window.__pendingStartListingFlow.splice(0);
-      for(var i=0;i<q.length;i++){
-        try{ window.startListingFlow(q[i] || {}); }catch(e){}
-      }
-    }
-  }catch(e){}
-})();
-
-/* forceOpenMastercard wird jetzt innerhalb der IIFE definiert (Zeile ~18290) */
+/* forceOpenMastercard und startListingFlow sind innerhalb der IIFE definiert (V52, Zeile ~16521) */
