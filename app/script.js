@@ -5931,7 +5931,8 @@
 
   /** Quick-Edit: Klick auf belegte Kachel öffnet InseratCard für Preis/Bild [cite: Gemini 5-Säulen] */
   function openQuickEdit(dishId){
-    if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: String(dishId), entryPoint: 'ACTIVE_LISTING' });
+    if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: String(dishId), entryPoint: 'ACTIVE_LISTING' });
+    else if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: String(dishId), entryPoint: 'ACTIVE_LISTING' });
   }
   if(typeof window !== 'undefined') window.openQuickEdit = openQuickEdit;
 
@@ -5950,7 +5951,8 @@
       ev.preventDefault();
       ev.stopPropagation();
       try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-      if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+      if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+      else if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
     }, true);
   })();
 
@@ -6481,7 +6483,8 @@
     const actions = [
       {label: 'Bearbeiten', action: () => {
         closeCreateFlowSheet(); // Falls offen
-        if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+        if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+        else if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
       }},
       {label: 'Duplizieren', action: () => {
         const newOffer = {...offer, id: cryptoId(), createdAt: Date.now()};
@@ -10154,7 +10157,8 @@
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId, entryPoint: 'ACTIVE_LISTING' });
+              if(offerId && typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: offerId, entryPoint: 'ACTIVE_LISTING' });
+              else if(offerId && typeof startListingFlow === 'function') startListingFlow({ editOfferId: offerId, entryPoint: 'ACTIVE_LISTING' });
             };
           })(String(o.id));
           var lastSavedId = '';
@@ -10236,7 +10240,8 @@
                 if(typeof showToast === 'function') showToast('Wieder verfügbar');
                 if(typeof renderProviderHome === 'function') renderProviderHome();
               } else {
-                if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: offer.id, entryPoint: 'ACTIVE_LISTING' });
+                if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: offer.id, entryPoint: 'ACTIVE_LISTING' });
+                else if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: offer.id, entryPoint: 'ACTIVE_LISTING' });
               }
             }
           }, { passive: false });
@@ -10253,7 +10258,8 @@
               var id = card.getAttribute('data-offer-id');
               var pillar = pillarEl.getAttribute('data-pillar');
               try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
+              if(id && typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
+              else if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
               return;
             }
             var card = ev.target.closest('.prov-card[data-offer-id]');
@@ -10263,7 +10269,8 @@
               ev.preventDefault();
               ev.stopPropagation();
               try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
-              startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+              if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+              else startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
             }
           });
           providerActiveListings.addEventListener('keydown', function(ev){
@@ -10275,7 +10282,8 @@
                 ev.preventDefault();
                 var id = card.getAttribute('data-offer-id');
                 var pillar = pillarEl.getAttribute('data-pillar');
-                if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
+                if(id && typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
+                else if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING', openToPillar: pillar || undefined });
               }
               return;
             }
@@ -10283,7 +10291,8 @@
             if(!card) return;
             ev.preventDefault();
             var id = card.getAttribute('data-offer-id');
-            if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+            if(id && typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
+            else if(id && typeof startListingFlow === 'function') startListingFlow({ editOfferId: id, entryPoint: 'ACTIVE_LISTING' });
           });
         }
         if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
@@ -10438,7 +10447,8 @@
           if(el.tagName !== 'BUTTON'){
             el.onclick = () => {
               const offerId = el.dataset.offerId;
-              if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+              if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
+              else if(typeof startListingFlow === 'function') startListingFlow({editOfferId: offerId, entryPoint: 'ACTIVE_LISTING'});
             };
           }
         });
@@ -16423,7 +16433,10 @@
    */
   function startListingFlow(context){
     if(!context) context = {};
-    if(!provider || !provider.loggedIn){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] blockiert: nicht eingeloggt'); return; }
+    /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
+    var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
+    var canProceed = p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn));
+    if(!canProceed){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] blockiert: nicht eingeloggt'); return; }
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
