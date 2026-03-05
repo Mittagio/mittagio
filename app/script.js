@@ -6267,6 +6267,7 @@
             return;
           }
           if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+          if(typeof window.forceOpenMastercard === 'function'){ window.forceOpenMastercard({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false }); return; }
           if(typeof startListingFlow === 'function') startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
         } catch(err){
           if(typeof console !== 'undefined' && console.error) console.error('Fehler beim Renner-Klick:', err);
@@ -16440,9 +16441,9 @@
     }
   } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
 
-  /* V52: forceOpenMastercard FRÜH – unabhängig von initApp [cite: Live-Fix 2026-03-04] */
+  /* V52: forceOpenMastercard FRÜH – unabhängig von initApp, optional ctx [cite: Live-Fix 2026-03-04, Renner-Fix 2026-03-05] */
   if(typeof window !== 'undefined'){
-    window.forceOpenMastercard = function(){
+    window.forceOpenMastercard = function(ctx){
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
       var wbd = document.getElementById('wbd');
@@ -16466,8 +16467,10 @@
       if(wbd) wbd.classList.add('active');
       wizard.classList.add('active');
       document.body.classList.add('wizard-inserat-open', 'vendor-area');
+      var defaultCtx = { date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' };
+      var finalCtx = (ctx && typeof ctx === 'object') ? Object.assign({}, defaultCtx, ctx) : defaultCtx;
       var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
-      if(fn) fn({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
+      if(fn) fn(finalCtx);
       else {
         var wc = document.getElementById('wContent');
         if(wc) wc.innerHTML = '<div style="padding:20px; text-align:center;"><h3>Inserat wird geladen...</h3><p>Icons: 🕒 🔄 🌿 🍴 ➕</p></div>';

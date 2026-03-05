@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="style.css?v=20260301">
 </head>
 <body>
-<!-- Flow-Stub: startListingFlow sofort verfügbar – script.js kann langsam laden (bis 30s) [cite: Flow-Fix 2026-03-02] -->
+<!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05] -->
 <script>
 (function(){
   window.__pendingStartListingFlow=window.__pendingStartListingFlow||[];
@@ -46,6 +46,18 @@
     setTimeout(poll,500);
   };
   window.startListingFlow=window.startListingFlow||stub;
+  /* forceOpenMastercard-Stub: Wizard sichtbar machen, dann startListingFlow – wird von script.js ersetzt */
+  window.forceOpenMastercard=window.forceOpenMastercard||function(ctx){
+    var wbd=document.getElementById('wbd'),wizard=document.getElementById('wizard');
+    if(!wbd){ wbd=document.createElement('div'); wbd.id='wbd'; wbd.className='backdrop'; document.body.appendChild(wbd); }
+    if(!wizard){ wizard=document.createElement('div'); wizard.id='wizard'; wizard.className='sheet sheet--kitchen active'; wizard.innerHTML='<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-scroll"><div id="wContent"></div></div></div></div>'; document.body.appendChild(wizard); }
+    wizard.setAttribute('data-flow','listing'); wizard.style.cssText='display:flex!important;visibility:visible!important;opacity:1!important;z-index:1000000!important;position:fixed!important;inset:0!important;background:#fff!important;';
+    if(wbd) wbd.classList.add('active');
+    wizard.classList.add('active');
+    document.body.classList.add('wizard-inserat-open','vendor-area');
+    var c=ctx&&typeof ctx==='object'?Object.assign({},ctx):{date:new Date().toISOString().split('T')[0],entryPoint:'dashboard'};
+    if(typeof window.startListingFlow==='function') window.startListingFlow(c);
+  };
 })();
 </script>
 <script src="js/early-visibility.js"></script>
@@ -3458,7 +3470,7 @@
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260305"></script>
+<script src="script.js?v=20260306"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
