@@ -8637,6 +8637,8 @@
   // Session-Validität prüfen (bei App-Start und regelmäßig) – nutzt checkSingleSession
   function checkSessionValidity(){
     if(mode !== 'provider' || !provider.loggedIn) return true;
+    /* Live-Seite: Kein Backend – Session-Check überspringen, sonst weiße Seite [cite: Weisser-Screen-Fix 2026-03-07] */
+    if(typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))) return true;
     if(!checkSingleSession()) return false;
     const currentSessionId = getCookie(SESSION_COOKIE_NAME) || load('mittagio_current_session_id', null);
     const storedSession = load(LS.providerSession, null);
@@ -20066,6 +20068,7 @@
   }
   
   // Session-Validität prüfen BEVOR setMode aufgerufen wird (checkSingleSession)
+  // Live-Seite: Bypass – checkSessionValidity gibt dort immer true zurück [cite: Weisser-Screen-Fix 2026-03-07]
   if(mode === 'provider' && provider.loggedIn){
     if(!checkSessionValidity()){
       // Session ungültig, wurde bereits ausgeloggt
