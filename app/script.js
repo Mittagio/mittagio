@@ -16510,6 +16510,7 @@
   try {
     if(typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;
+      window.startWizard = startWizard;
       var pending=window.__pendingStartListingFlow;
       if(Array.isArray(pending)&&pending.length){ while(pending.length){ var c=pending.shift(); startListingFlow(c); } }
     }
@@ -16589,6 +16590,7 @@
 
   function startWizard(kind, ctx={}){
     if(typeof console !== 'undefined' && console.log) console.log('[startWizard] kind=', kind);
+    if(typeof window !== 'undefined') window.startWizard = startWizard;
     w = { kind, step:0, data:{}, ctx };
     const wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.setAttribute('data-flow', kind === 'listing' ? 'listing' : (kind || ''));
@@ -20557,21 +20559,21 @@ if (typeof window !== "undefined") {
       ? Object.assign({}, defaultCtx, ctx)
       : defaultCtx;
 
-    // Direkt startWizard+buildListingStep aufrufen (sicherster Pfad)
-    try {
-      if(typeof startWizard === 'function'){
-        console.log('[forceOpenMastercard] rufe startWizard direkt');
-        // Wizard-DOM sicherstellen und öffnen
-        if (typeof window.openWizard === "function") window.openWizard();
-        startWizard('listing', finalCtx);
+    // Wizard-DOM sicherstellen und öffnen
+    if (typeof window.openWizard === "function") window.openWizard();
+
+    // Direkt window.startWizard aufrufen (sicherster Pfad – aus IIFE exportiert)
+    if (typeof window.startWizard === "function") {
+      try {
+        console.log('[forceOpenMastercard] rufe window.startWizard direkt | finalCtx=', finalCtx);
+        window.startWizard('listing', finalCtx);
         console.log('[forceOpenMastercard] startWizard ausgeführt');
         return;
-      }
-    } catch(e){ console.error('[forceOpenMastercard] startWizard Fehler:', e); }
+      } catch(e){ console.error('[forceOpenMastercard] startWizard Fehler:', e); }
+    }
 
-    // Fallback: startListingFlow
+    // Fallback: window.startListingFlow
     if (typeof window.startListingFlow === "function") {
-      if (typeof window.openWizard === "function") window.openWizard();
       try {
         console.log('[forceOpenMastercard] Fallback: startListingFlow | finalCtx=', finalCtx);
         window.startListingFlow(finalCtx);
