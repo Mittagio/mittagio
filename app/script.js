@@ -16440,6 +16440,41 @@
     }
   } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
 
+  /* V52: forceOpenMastercard FRÜH – unabhängig von initApp [cite: Live-Fix 2026-03-04] */
+  if(typeof window !== 'undefined'){
+    window.forceOpenMastercard = function(){
+      if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+      if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
+      var wbd = document.getElementById('wbd');
+      if(!wbd){
+        wbd = document.createElement('div');
+        wbd.id = 'wbd';
+        wbd.className = 'backdrop';
+        wbd.onclick = function(ev){ if(ev && ev.target === wbd && typeof closeMastercard === 'function') closeMastercard(); };
+        document.body.appendChild(wbd);
+      }
+      var wizard = document.getElementById('wizard');
+      if(!wizard){
+        wizard = document.createElement('div');
+        wizard.id = 'wizard';
+        wizard.className = 'sheet sheet--kitchen active';
+        wizard.innerHTML = '<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div><div class="wizard-inner"><div class="w-top"><div class="w-title" id="wTitle">Setup</div><div class="w-step" id="wStep">Schritt 1 von 5</div></div><div id="wQ" class="wizard-question"></div><div id="wHelp" class="wizard-help"></div><div class="wizard-scroll"><div id="wContent"></div></div><div class="wizard-footer" id="wizardFooter" style="display:none;"></div></div></div></div>';
+        document.body.appendChild(wizard);
+      }
+      wizard.setAttribute('data-flow', 'listing');
+      wizard.style.cssText = 'display:flex !important; visibility:visible !important; opacity:1 !important; z-index:1000000 !important; position:fixed !important; inset:0 !important; background:#fff !important; transform:translateY(0) !important;';
+      if(wbd) wbd.classList.add('active');
+      wizard.classList.add('active');
+      document.body.classList.add('wizard-inserat-open', 'vendor-area');
+      var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
+      if(fn) fn({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
+      else {
+        var wc = document.getElementById('wContent');
+        if(wc) wc.innerHTML = '<div style="padding:20px; text-align:center;"><h3>Inserat wird geladen...</h3><p>Icons: 🕒 🔄 🌿 🍴 ➕</p></div>';
+      }
+    };
+  }
+
   /** Single-Source API: Ein Tool für Neu, Edit, Kochbuch [cite: 2026-02-23] */
   function openUniversalEditor(data){
     var ctx = {};
@@ -20285,38 +20320,7 @@
     }
   });
 
-  /* V52: ABSOLUTE WIZARD-REPARATUR [cite: 2026-03-05] */
-  window.forceOpenMastercard = function(){
-    if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
-    if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
-    var wbd = document.getElementById('wbd');
-    if(!wbd){
-      wbd = document.createElement('div');
-      wbd.id = 'wbd';
-      wbd.className = 'backdrop';
-      wbd.onclick = function(ev){ if(ev && ev.target === wbd && typeof closeMastercard === 'function') closeMastercard(); };
-      document.body.appendChild(wbd);
-    }
-    var wizard = document.getElementById('wizard');
-    if(!wizard){
-      wizard = document.createElement('div');
-      wizard.id = 'wizard';
-      wizard.className = 'sheet sheet--kitchen active';
-      document.body.appendChild(wizard);
-    }
-    wizard.innerHTML = '<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-progress-dots" id="wizardProgressDots" aria-hidden="true"></div><div class="wizard-inner"><div class="w-top"><div class="w-title" id="wTitle">Setup</div><div class="w-step" id="wStep">Schritt 1 von 5</div></div><div id="wQ" class="wizard-question"></div><div id="wHelp" class="wizard-help"></div><div class="wizard-scroll"><div id="wContent"></div></div><div class="wizard-footer" id="wizardFooter" style="display:none;"></div></div></div></div>';
-    wizard.setAttribute('data-flow', 'listing');
-    wizard.style.cssText = 'display:flex !important; visibility:visible !important; opacity:1 !important; z-index:1000000 !important; position:fixed !important; inset:0 !important; background:#fff !important; transform:translateY(0) !important;';
-    if(wbd) wbd.classList.add('active');
-    wizard.classList.add('active');
-    document.body.classList.add('wizard-inserat-open', 'vendor-area');
-    var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
-    if(fn) fn({ date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' });
-    else {
-      var wc = document.getElementById('wContent');
-      if(wc) wc.innerHTML = '<div style="padding:20px; text-align:center;"><h3>Inserat wird geladen...</h3><p>Icons: 🕒 🔄 🌿 🍴 ➕</p></div>';
-    }
-  };
+  /* V52: forceOpenMastercard bereits früh zugewiesen (nach startListingFlow) [cite: Live-Fix 2026-03-04] */
   var _mainBtn = document.getElementById('createNewListing');
   if(_mainBtn) _mainBtn.onclick = function(e){ if(e) e.preventDefault(); if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard(); };
   /* V53: Event-Delegation – createNewListing-Klick immer abfangen (auch bei dynamisch ersetztem Button) */
