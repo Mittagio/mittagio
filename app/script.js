@@ -20396,26 +20396,26 @@
   }, true);
 }
 
-// ✅ Flush pending listing flow calls created by index.html stub
+// Flush pending listing flow calls created by index.html stub
 (function flushPendingStartListingFlow(){
   try{
     if(typeof window === 'undefined') return;
     if(!window.__pendingStartListingFlow || !window.__pendingStartListingFlow.length) return;
 
-    // copy + clear queue first
     var q = window.__pendingStartListingFlow.slice();
     window.__pendingStartListingFlow.length = 0;
 
-    if(typeof console !== 'undefined' && console.log){
-      console.log('[flushPendingStartListingFlow] flushing', q.length, 'queued calls');
-    }
+    console.log('[flushPendingStartListingFlow] flushing', q.length, 'queued calls');
 
     if(typeof startListingFlow === 'function'){
       for(var i=0;i<q.length;i++){
         try{ startListingFlow(q[i] || {}); }
         catch(e){ console.error('[flushPendingStartListingFlow] item failed', e); }
       }
-    } else if(typeof window.startListingFlow === 'function' && window.startListingFlow !== flushPendingStartListingFlow){
+      return;
+    }
+
+    if(typeof window.startListingFlow === 'function'){
       for(var j=0;j<q.length;j++){
         try{ window.startListingFlow(q[j] || {}); }
         catch(e2){ console.error('[flushPendingStartListingFlow] window.startListingFlow item failed', e2); }
