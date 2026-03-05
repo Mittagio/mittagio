@@ -20562,20 +20562,36 @@ if (typeof window !== "undefined") {
     // Wizard-DOM sicherstellen und öffnen
     if (typeof window.openWizard === "function") window.openWizard();
 
-    // Direkt window.startWizard aufrufen (sicherster Pfad – aus IIFE exportiert)
+    console.log('[forceOpenMastercard] startWizard=', typeof window.startWizard, '| startListingFlow=', typeof window.startListingFlow, '| openMastercard=', typeof window.openMastercard);
+
+    // Weg 1: window.startWizard (direkt aus IIFE exportiert)
     if (typeof window.startWizard === "function") {
       try {
-        console.log('[forceOpenMastercard] rufe window.startWizard direkt | finalCtx=', finalCtx);
+        console.log('[forceOpenMastercard] rufe window.startWizard direkt');
         window.startWizard('listing', finalCtx);
-        console.log('[forceOpenMastercard] startWizard ausgeführt');
+        console.log('[forceOpenMastercard] startWizard OK');
         return;
       } catch(e){ console.error('[forceOpenMastercard] startWizard Fehler:', e); }
     }
 
-    // Fallback: window.startListingFlow
+    // Weg 2: window.openMastercard (direkt buildListingStep triggern)
+    if (typeof window.openMastercard === "function") {
+      try {
+        console.log('[forceOpenMastercard] rufe window.openMastercard direkt');
+        if(typeof window.w !== 'undefined' || true){
+          // w vorbereiten
+          window._fom_ctx = finalCtx;
+        }
+        window.openMastercard({ dish: '', price: 0, category: 'Fleisch', reuse: { enabled: true }, day: finalCtx.date }, finalCtx.entryPoint);
+        console.log('[forceOpenMastercard] openMastercard OK');
+        return;
+      } catch(e){ console.error('[forceOpenMastercard] openMastercard Fehler:', e); }
+    }
+
+    // Weg 3: window.startListingFlow
     if (typeof window.startListingFlow === "function") {
       try {
-        console.log('[forceOpenMastercard] Fallback: startListingFlow | finalCtx=', finalCtx);
+        console.log('[forceOpenMastercard] Fallback: startListingFlow');
         window.startListingFlow(finalCtx);
       } catch(e) {
         console.error('[forceOpenMastercard] startListingFlow Fehler:', e);
@@ -20583,7 +20599,7 @@ if (typeof window !== "undefined") {
       return;
     }
 
-    console.error("[forceOpenMastercard] weder startWizard noch startListingFlow verfügbar");
+    console.error("[forceOpenMastercard] KEIN PFAD verfügbar");
   };
 
 }
