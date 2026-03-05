@@ -567,12 +567,12 @@
     if(!provider.profile) provider.profile = { name: 'Mein Betrieb' };
   }
   if(typeof window !== 'undefined') window.provider = provider;
-  // V50: ABSOLUTE ENTRIEGELUNG (VIP-Bypass) – Live-Seite ohne localStorage [cite: 2026-03-05]
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))){
+  // V50: ABSOLUTE ENTRIEGELUNG (VIP-Bypass) – Live-Seite + localhost ohne localStorage [cite: 2026-03-05]
+  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
     mode = 'provider';
     if(typeof window !== 'undefined') window.mode = mode;
     if(document.body) document.body.classList.add('provider-mode');
-    if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff für Live-Seite erzwungen.');
+    if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff erzwungen (host=', location.hostname, ')');
   }
   if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-1] Provider: hostname=', location.hostname, '| provider.loggedIn=', !!provider.loggedIn, '| mode=', mode, '| window.provider.loggedIn=', window.provider ? !!window.provider.loggedIn : 'n/a', '| window.mode=', window.mode);
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
