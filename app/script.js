@@ -18288,31 +18288,6 @@
   }
   if(typeof window !== 'undefined') window.openMastercard = openMastercard;
 
-  // forceOpenMastercard INNERHALB der IIFE – direkter Zugriff auf startWizard/openMastercard
-  window.forceOpenMastercard = function(ctx) {
-    console.log('[forceOpenMastercard-IIFE] aufgerufen | ctx=', ctx);
-    var today = new Date();
-    var pad = function(n){ return n < 10 ? '0'+n : ''+n; };
-    var todayStr = today.getFullYear()+'-'+pad(today.getMonth()+1)+'-'+pad(today.getDate());
-    var finalCtx = ctx || { date: todayStr, entryPoint: 'dashboard' };
-    if(!finalCtx.date) finalCtx.date = todayStr;
-    if(!finalCtx.entryPoint) finalCtx.entryPoint = 'dashboard';
-    // Wizard öffnen (globaler Helper)
-    if(typeof window.openWizard === 'function') window.openWizard();
-    // Direkt startWizard aufrufen (IIFE-lokal – kein window. nötig)
-    try {
-      console.log('[forceOpenMastercard-IIFE] rufe startWizard | finalCtx=', finalCtx);
-      startWizard('listing', finalCtx);
-      console.log('[forceOpenMastercard-IIFE] startWizard OK');
-    } catch(e) {
-      console.error('[forceOpenMastercard-IIFE] startWizard Fehler:', e);
-      // letzter Fallback: openMastercard direkt
-      try {
-        openMastercard({ dish: '', price: 0, category: 'Fleisch', reuse: { enabled: true }, day: finalCtx.date }, finalCtx.entryPoint);
-      } catch(e2) { console.error('[forceOpenMastercard-IIFE] openMastercard Fehler:', e2); }
-    }
-  };
-
   function previewOfferFromWizard(){
     const p = normalizeProviderProfile(provider.profile||{});
     let pickupWindow = w.data.pickupWindow || p.mealWindow || DEFAULT_MEAL_WINDOW;
