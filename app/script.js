@@ -5803,8 +5803,11 @@
         var card = document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
         closeMastercardWithAnim(card);
       } else {
-        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
-        closeWizard();
+        try{
+          if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5);
+          if(typeof window.closeWizard === 'function') window.closeWizard();
+          else if(typeof window.closeMastercard === 'function') window.closeMastercard();
+        } catch(err){ if(typeof console !== 'undefined' && console.error) console.error('[popstate] closeWizard/closeMastercard:', err); }
       }
       e.preventDefault();
       return;
@@ -16258,6 +16261,7 @@
     if(clearDraft) localStorage.removeItem('wizard_draft');
     if(typeof window !== 'undefined') window._wizardInitialDataSnapshot = null;
   }
+  if(typeof window !== 'undefined') window.closeWizard = closeWizard;
   /** Rücksprung nach Schließen der InseratCard gemäß entryPoint [cite: 2026-02-16 Smart-Exit] */
   function navigateAfterWizardExit(entryPoint){
     var ep = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';

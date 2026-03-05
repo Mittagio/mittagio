@@ -4,9 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Mittagio – Dein Gericht online. In 30 Sekunden. Ohne Abo.</title>
+    <!-- Redirect zur Vanilla-App (app/index.html) – main.tsx existiert nicht im Deployment [cite: 2026-03-11] -->
+    <meta http-equiv="refresh" content="0;url=./app/" />
+    <script>location.replace('./app/' + (location.search || '') + (location.hash || ''));</script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <p>Weiterleitung zur <a href="./app/">Mittagio-App</a>...</p>
   </body>
 </html>
