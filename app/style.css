@@ -1894,25 +1894,26 @@
       align-items: center !important;
     }
     #wizard[data-flow="listing"] .mastercard-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      position: relative;
+      width: 100%;
+      min-height: 100%;
       background: #ffffff;
-      z-index: 20000;
+      z-index: 1;
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
       border-radius: 0 !important;
-      transform: translateY(100%);
-      transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+      transform: none !important;
+      opacity: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
-    #wizard[data-flow="listing"] .mastercard-container.is-open,
-    body.wizard-inserat-open #wizard[data-flow="listing"] .mastercard-container {
-      transform: translateY(0);
+    #wizard[data-flow="listing"] .mastercard-container.is-open {
+      transform: none !important;
+      opacity: 1 !important;
     }
     #wizard[data-flow="listing"] .mastercard-container.slide-down {
-      transform: translateY(100%);
+      display: none !important;
     }
     /* mastercard-overlay: Hintergrund-Dimmer für Slide-Down [cite: 2026-02-21] */
     .mastercard-overlay {
