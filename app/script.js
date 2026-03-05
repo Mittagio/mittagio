@@ -5943,7 +5943,9 @@
     if(document._providerCardCapture) return;
     document._providerCardCapture = true;
     document.addEventListener('click', function(ev){
-      if(!document.body.classList.contains('provider-mode')) return;
+      var loggedIn = (window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn);
+      if(!loggedIn) return;
+      if(!document.body.classList.contains('provider-mode')) document.body.classList.add('provider-mode');
       var list = document.getElementById('providerActiveListings');
       if(!list || !list.contains(ev.target)) return;
       var card = ev.target.closest && ev.target.closest('.prov-card[data-offer-id]');
@@ -16441,7 +16443,23 @@
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
     var canProceed = p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn));
     if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-6] startListingFlow | canProceed=', canProceed, '| ctx=', JSON.stringify(context));
-    if(!canProceed){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] BLOCKIERT: nicht eingeloggt'); return; }
+    if(!canProceed){
+      if(typeof showToast === 'function') showToast('Bitte zuerst anmelden');
+      if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] BLOCKIERT: nicht eingeloggt');
+      var wc = document.getElementById('wContent');
+      if(wc){
+        wc.innerHTML = '<div style="padding:20px;text-align:center">' +
+          '<h3>Bitte zuerst anmelden</h3>' +
+          '<p style="opacity:.75">Du bist gerade nicht als Anbieter eingeloggt.</p>' +
+          '<button id="wizardLoginClose" class="btn btn-primary" style="margin-top:12px">Schließen</button>' +
+          '</div>';
+        setTimeout(function(){
+          var b = document.getElementById('wizardLoginClose');
+          if(b) b.onclick = function(){ if(typeof closeMastercard === 'function') closeMastercard(); };
+        }, 0);
+      }
+      return;
+    }
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
@@ -20047,7 +20065,9 @@
     if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-2] initApp startet | mode=', mode, '| provider.loggedIn=', typeof provider !== 'undefined' && provider ? !!provider.loggedIn : 'n/a');
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
-    if(window.provider && window.provider.loggedIn) document.body.classList.add('provider-mode');
+    if((window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn)){
+      document.body.classList.add('provider-mode');
+    }
     /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
     if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;
