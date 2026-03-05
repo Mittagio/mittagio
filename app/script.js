@@ -535,6 +535,7 @@
     if(document.body) document.body.classList.add('provider-mode');
     if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff für Live-Seite erzwungen.');
   }
+  if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-1] Provider: hostname=', location.hostname, '| provider.loggedIn=', !!provider.loggedIn, '| mode=', mode, '| window.provider.loggedIn=', window.provider ? !!window.provider.loggedIn : 'n/a', '| window.mode=', window.mode);
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
   if(typeof window !== 'undefined'){ window.customer = customer; window.cookbook = cookbook; window.week = week; }
@@ -16438,7 +16439,8 @@
     /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
     var canProceed = p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn));
-    if(!canProceed){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] blockiert: nicht eingeloggt'); return; }
+    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-6] startListingFlow | canProceed=', canProceed, '| ctx=', JSON.stringify(context));
+    if(!canProceed){ if(typeof showToast === 'function') showToast('Bitte zuerst anmelden'); if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] BLOCKIERT: nicht eingeloggt'); return; }
     document.body.classList.add('vendor-area');
     // Action-Controller: Herkunft für Button-Logik (Dashboard / Kochbuch / Wochenplan)
     if(!context.entryPoint) context.entryPoint = context.dishId ? 'cookbook' : (context.fromWeek ? 'week' : 'dashboard');
@@ -16459,6 +16461,7 @@
   /* V52: forceOpenMastercard FRÜH – unabhängig von initApp, optional ctx [cite: Live-Fix 2026-03-04, Renner-Fix 2026-03-05] */
   if(typeof window !== 'undefined'){
     window.forceOpenMastercard = function(ctx){
+      if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-5] forceOpenMastercard aufgerufen | ctx=', JSON.stringify(ctx || {}));
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
       var wbd = document.getElementById('wbd');
@@ -17090,6 +17093,7 @@
   // STEP_EDIT → STEP_MONEY → STEP_LIVE
   // ============================================================
   function buildListingStep(){
+    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-7] buildListingStep aufgerufen | w.data.dish=', w && w.data ? w.data.dish : 'n/a');
     setWizardNextDefault();
     w.step = 0;
     /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
@@ -20039,6 +20043,7 @@
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
+    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-2] initApp startet | mode=', mode, '| provider.loggedIn=', typeof provider !== 'undefined' && provider ? !!provider.loggedIn : 'n/a');
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
     if(window.provider && window.provider.loggedIn) document.body.classList.add('provider-mode');
@@ -20307,15 +20312,24 @@
     var wp = (typeof window !== 'undefined' && window.provider) ? window.provider : null;
     var loggedIn = (wp && wp.loggedIn) || (p && p.loggedIn);
     var canProceed = (isProvider || bodyIsProvider) && loggedIn;
+    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-3] Load-Event: isProvider=', isProvider, '| bodyIsProvider=', bodyIsProvider, '| loggedIn=', loggedIn, '| canProceed=', canProceed, '| forceOpenMastercard=', typeof window.forceOpenMastercard);
     if(canProceed){
       var hadWizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
       if(hadWizardOpen){ try{ window.__pendingStartListingFlow = []; } catch(e){} }
       setTimeout(function(){
+        var w = document.getElementById('wizard');
+        var wc = document.getElementById('wContent');
+        if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-4] Vor forceOpenMastercard: wizard=', !!w, '| wContent Kinder=', wc ? wc.children.length : 0);
         if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
         else {
           var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
           if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
         }
+        setTimeout(function(){
+          var w2 = document.getElementById('wizard');
+          var wc2 = document.getElementById('wContent');
+          if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-8] Nach 500ms: wizard aktiv=', w2 ? w2.classList.contains('active') : false, '| wContent Kinder=', wc2 ? wc2.children.length : 0);
+        }, 500);
       }, hadWizardOpen ? 300 : 400);
     }
   });
