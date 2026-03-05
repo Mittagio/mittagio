@@ -3352,6 +3352,14 @@
     #wizard[data-flow="listing"].sheet--kitchen .wizard {
       padding: 0 !important;
     }
+    /* wizard-inner: fehlende Flex-Kette – ohne das kollabiert alles auf 0 Höhe */
+    #wizard[data-flow="listing"].sheet--kitchen .wizard-inner {
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
     /* Neutralisierung des alten Wizards [cite: 2026-02-14] */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll {
       overflow: hidden !important; 
