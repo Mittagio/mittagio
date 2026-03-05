@@ -16477,7 +16477,7 @@
    */
   function startListingFlow(context){
     // DEBUG STEP B
-    try{ var _b=document.createElement('div'); _b.style.cssText='position:fixed!important;top:55px;left:0;width:100vw;height:50px;background:#f97316;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _b.textContent='B: startListingFlow'; document.body.appendChild(_b); setTimeout(function(){try{_b.remove();}catch(e){}},3000); }catch(e){}
+    try{ var _b=document.createElement('div'); _b.style.cssText='position:fixed!important;top:55px;left:0;width:100vw;height:50px;background:#f97316;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _b.textContent='B: startListingFlow'; document.body.appendChild(_b); setTimeout(function(){try{_b.remove();}catch(e){}},30000); }catch(e){}
     if(!context) context = {};
     /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
@@ -16522,7 +16522,7 @@
   if(typeof window !== 'undefined'){
     window.forceOpenMastercard = function(ctx){
       // DEBUG STEP A (V52 – inside IIFE, has direct access to startListingFlow)
-      try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A-V52: forceOpenMastercard (IIFE)'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},3000); }catch(e){}
+      try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A-V52: forceOpenMastercard (IIFE)'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},30000); }catch(e){}
       if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-5] forceOpenMastercard aufgerufen | ctx=', JSON.stringify(ctx || {}));
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
@@ -16594,7 +16594,7 @@
 
   function startWizard(kind, ctx={}){
     // DEBUG STEP C
-    try{ var _c=document.createElement('div'); _c.style.cssText='position:fixed!important;top:110px;left:0;width:100vw;height:50px;background:#eab308;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _c.textContent='C: startWizard kind='+kind; document.body.appendChild(_c); setTimeout(function(){try{_c.remove();}catch(e){}},3000); }catch(e){}
+    try{ var _c=document.createElement('div'); _c.style.cssText='position:fixed!important;top:110px;left:0;width:100vw;height:50px;background:#eab308;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _c.textContent='C: startWizard kind='+kind; document.body.appendChild(_c); setTimeout(function(){try{_c.remove();}catch(e){}},30000); }catch(e){}
     if(typeof console !== 'undefined' && console.log) console.log('[startWizard] kind=', kind);
     if(typeof window !== 'undefined') window.startWizard = startWizard;
     w = { kind, step:0, data:{}, ctx };
@@ -17166,7 +17166,7 @@
       _dbg.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:60px!important;background:#10b981!important;z-index:99999999!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:18px!important;font-weight:900!important;color:white!important;';
       _dbg.textContent = '✅ buildListingStep LÄUFT!';
       document.body.appendChild(_dbg);
-      setTimeout(function(){ var e=document.getElementById('_debug_bls'); if(e) e.parentNode.removeChild(e); }, 4000);
+      setTimeout(function(){ var e=document.getElementById('_debug_bls'); if(e) e.parentNode.removeChild(e); }, 30000);
     } catch(e){}
     setWizardNextDefault();
     w.step = 0;
@@ -20445,10 +20445,24 @@
   document.addEventListener('click', function(e){
     var btn = e.target && e.target.closest ? e.target.closest('#createNewListing') : null;
     if(btn){
+      /* DIAG-X: Zeigt 30s welcher Pfad aktiv ist */
+      try{
+        var _x=document.createElement('div');
+        _x.style.cssText='position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:60px!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:18px!important;font-weight:900!important;color:#fff!important;';
+        var fomExists=(typeof window.forceOpenMastercard==='function');
+        _x.style.background=fomExists?'#6d28d9':'#dc2626';
+        _x.textContent=fomExists?'DIAG-X: Capture-Handler FIRES, forceOM=FUNCTION':'DIAG-X: Capture-Handler FIRES, forceOM=UNDEFINED';
+        document.body.appendChild(_x);
+        setTimeout(function(){try{_x.remove();}catch(e){}},30000);
+      }catch(e){}
       e.preventDefault();
       e.stopPropagation();
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard();
+      else{
+        /* DIAG-FALLBACK: forceOpenMastercard fehlt – zeige Konsolen-Info */
+        try{console.error('[DIAG] window.forceOpenMastercard ist nicht definiert! Keys:', Object.keys(window).filter(function(k){return k.indexOf('force')>-1||k.indexOf('mastercard')>-1||k.indexOf('Mastercard')>-1;}));}catch(e){}
+      }
     }
   }, true);
 }
