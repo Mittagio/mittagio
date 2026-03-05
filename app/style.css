@@ -9861,7 +9861,7 @@ html, body {
   z-index: 9999;
 }
 
-/* V50: EDGE-TO-EDGE & VISIBILITY FIX [cite: 2026-03-05] */
+/* V51: ULTIMATIVE SICHTBARKEIT [cite: 2026-03-05] */
 html, body {
   background-color: #ffffff !important;
   height: 100% !important;
@@ -9869,10 +9869,19 @@ html, body {
   padding: 0 !important;
 }
 
-#wizard[data-flow="listing"] {
+body.wizard-inserat-open #wizard {
   display: flex !important;
-  z-index: 100000 !important;
-  background: #ffffff !important;
   visibility: visible !important;
   opacity: 1 !important;
+  transform: translateY(0) !important;
+  z-index: 1000000 !important;
+  background: #ffffff !important;
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+body.wizard-inserat-open #wbd {
+  display: block !important;
+  z-index: 999999 !important;
+  background: rgba(0,0,0,0.5) !important;
 }

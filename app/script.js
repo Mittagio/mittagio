@@ -16362,6 +16362,7 @@
   function openDishFlow(defaultDate, entryPoint){
     if(typeof defaultDate === 'undefined') defaultDate = null;
     if(typeof entryPoint === 'undefined') entryPoint = null;
+    if(typeof console !== 'undefined' && console.log) console.log('🛠️ V51: Starte Inserat-Inhalt...');
     /* Brücken-Fix: window.provider sicherstellen – First-Class-Citizen für Daten-Resilienz */
     if(!window.provider || !window.provider.loggedIn){
       try{
@@ -16373,7 +16374,16 @@
       if(typeof provider !== 'undefined') provider = window.provider;
     }
     var wc = document.getElementById('wContent');
-    if(!wc){ if(typeof console !== 'undefined' && console.error) console.error('Kritisch: #wContent nicht im HTML gefunden!'); return; }
+    if(!wc){
+      var wizard = document.getElementById('wizard');
+      if(!wizard){ if(typeof console !== 'undefined' && console.error) console.error('Kritisch: #wizard fehlt im DOM'); return; }
+      if(typeof console !== 'undefined' && console.warn) console.warn('V51: #wContent fehlte – wird generiert');
+      var scroll = wizard.querySelector('.wizard-scroll');
+      var newContent = document.createElement('div');
+      newContent.id = 'wContent';
+      if(scroll) scroll.appendChild(newContent); else wizard.appendChild(newContent);
+      wc = newContent;
+    }
     document.body.classList.add('vendor-area');
     var ctx = { date: defaultDate || isoDate(new Date()), fromWeek: entryPoint === 'week' };
     if(entryPoint) ctx.entryPoint = entryPoint;
