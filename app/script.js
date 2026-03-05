@@ -16476,6 +16476,8 @@
    * @param {string} [context.editOfferId] - Offer ID (wenn bearbeiten)
    */
   function startListingFlow(context){
+    // DEBUG STEP B
+    try{ var _b=document.createElement('div'); _b.style.cssText='position:fixed!important;top:55px;left:0;width:100vw;height:50px;background:#f97316;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _b.textContent='B: startListingFlow'; document.body.appendChild(_b); setTimeout(function(){try{_b.remove();}catch(e){}},3000); }catch(e){}
     if(!context) context = {};
     /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
@@ -16589,6 +16591,8 @@
   }
 
   function startWizard(kind, ctx={}){
+    // DEBUG STEP C
+    try{ var _c=document.createElement('div'); _c.style.cssText='position:fixed!important;top:110px;left:0;width:100vw;height:50px;background:#eab308;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _c.textContent='C: startWizard kind='+kind; document.body.appendChild(_c); setTimeout(function(){try{_c.remove();}catch(e){}},3000); }catch(e){}
     if(typeof console !== 'undefined' && console.log) console.log('[startWizard] kind=', kind);
     if(typeof window !== 'undefined') window.startWizard = startWizard;
     w = { kind, step:0, data:{}, ctx };
@@ -20490,6 +20494,8 @@
 
   // 2) Create a real forceOpenMastercard and override stub
   window.forceOpenMastercard = function(ctx){
+    // DEBUG STEP A
+    try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A: forceOpenMastercard'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},3000); }catch(e){}
     try{
       // Ensure wizard DOM exists
       var wbd = document.getElementById('wbd');
