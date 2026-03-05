@@ -1,11 +1,13 @@
 ---
-description: Projekt-Pfad – nur GitHub, nie Desktop.
+description: Projekt-Pfad – abhängig vom PC (siehe zwei-pcs-pfad-check).
 alwaysApply: true
 ---
 
 # Pfad-Regel (verbindlich)
 
-- **Einziger gültiger Projektpfad:** `C:\Users\quach\Documents\GitHub\mittagio`
+**Zuerst prüfen:** Siehe **zwei-pcs-pfad-check.mdc** – zu Sitzungsbeginn fragen: „Auf welchem PC arbeitest du?“
+
+- **PC 1 (GitHub):** `C:\Users\quach\Documents\GitHub\mittagio`
+- **PC 2 (Projekte):** `c:\Projekte\mittagio-clean`
 - **Nicht verwenden:** `c:\Users\quach\Desktop\Mittagio 13.02.2026\mittagio` (Desktop-Pfad – ignorieren/löschen)
-- Alle Befehle (Terminal, Dateipfade, Git) nur im GitHub-Ordner ausführen.
-- Bei geöffnetem Workspace auf dem Desktop: trotzdem alle Änderungen und Git-Operationen auf den GitHub-Pfad beziehen (Nutzer arbeitet dort).
+- Alle Befehle (Terminal, Dateipfade, Git) im jeweils gültigen Projektpfad ausführen.

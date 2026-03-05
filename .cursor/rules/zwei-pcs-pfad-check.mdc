@@ -1,0 +1,33 @@
+---
+description: Zwei-PCs-Check – vor Pull/Commit/Push immer fragen, auf welchem PC gearbeitet wird.
+alwaysApply: true
+---
+
+# Zwei-PCs-Regel (verbindlich)
+
+Der Nutzer arbeitet auf **zwei verschiedenen PCs** mit unterschiedlichen Projektpfaden. Um Fehler zu vermeiden, muss der Agent zu Beginn jeder Sitzung (oder vor Pull/Commit/Push) fragen:
+
+## Pflichtfrage zu Sitzungsbeginn
+
+**„Auf welchem PC arbeitest du?“**
+
+| Antwort | Projektpfad | Verwendung |
+|---------|-------------|------------|
+| **PC 1** / **GitHub** | `C:\Users\quach\Documents\GitHub\mittagio` | Alle Befehle, Git, Dateipfade |
+| **PC 2** / **Projekte** | `c:\Projekte\mittagio-clean` | Alle Befehle, Git, Dateipfade |
+
+## Wann fragen
+
+- Zu Beginn einer neuen Konversation
+- Vor `git pull`, `git push`, `git commit`
+- Wenn der Nutzer „pull“ oder Deployment-Arbeit erwähnt
+
+## Warum
+
+- Verhindert falsche Pfade (z. B. Desktop vs. GitHub)
+- Verhindert Git-Konflikte zwischen beiden Rechnern
+- „Wird nicht falsch“ – der richtige Workspace wird genutzt
+
+## Kurzformel
+
+**Zwei PCs → Erst fragen, dann handeln.**
