@@ -1,25 +1,3 @@
-  /* DIAG-LOAD: Zeigt 15s ob neues Script geladen wurde */
-  (function(){
-    try{
-      var _l=document.createElement('div');
-      _l.style.cssText='position:fixed!important;bottom:80px!important;left:0!important;width:100vw!important;height:40px!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:14px!important;font-weight:900!important;color:#fff!important;background:#0f172a!important;';
-      _l.textContent='✅ Script v20260323 geladen | Klick auf + → Neues Gericht getestet?';
-      document.body?document.body.appendChild(_l):(document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(_l);}));
-      window.addEventListener('load',function(){if(!document.body.contains(_l))document.body.appendChild(_l);});
-      setTimeout(function(){try{_l.remove();}catch(e){}},15000);
-    }catch(e){}
-    /* window.onerror: Zeigt JS-Fehler sichtbar an */
-    window.onerror=function(msg,src,line,col,err){
-      try{
-        var _e=document.createElement('div');
-        _e.style.cssText='position:fixed!important;top:0!important;left:0!important;width:100vw!important;z-index:2147483647!important;padding:8px!important;font-size:13px!important;font-weight:700!important;color:#fff!important;background:#dc2626!important;word-break:break-all!important;';
-        _e.textContent='JS ERROR: '+msg+' (Z.'+line+')';
-        document.body.appendChild(_e);
-        setTimeout(function(){try{_e.remove();}catch(e){}},30000);
-      }catch(x){}
-      return false;
-    };
-  })();
   /* V48: LIVE-DOMAIN EMERGENCY INIT [cite: 2026-03-04] */
   (function(){
     if(typeof console !== 'undefined' && console.log) console.log('🛠️ V48: Erzwinge App-Start...');
@@ -33,7 +11,6 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
-  if (typeof console !== 'undefined' && console.log) console.log('[DEBUG-0] v20260308 – Wenn du das siehst, ist die neue Version aktiv!');
   /** Stub: startListingFlow früh auf window – wird später durch echte Implementierung ersetzt [cite: Flow-Fix 2026-03-02] */
   if (typeof window !== 'undefined') {
     window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); };
@@ -596,7 +573,6 @@
     if(document.body) document.body.classList.add('provider-mode');
     if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff erzwungen (host=', location.hostname, ')');
   }
-  if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-1] Provider: hostname=', location.hostname, '| provider.loggedIn=', !!provider.loggedIn, '| mode=', mode, '| window.provider.loggedIn=', window.provider ? !!window.provider.loggedIn : 'n/a', '| window.mode=', window.mode);
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
   if(typeof window !== 'undefined'){ window.customer = customer; window.cookbook = cookbook; window.week = week; }
@@ -16499,12 +16475,10 @@
    */
   function startListingFlow(context){
     // DEBUG STEP B
-    try{ var _b=document.createElement('div'); _b.style.cssText='position:fixed!important;top:55px;left:0;width:100vw;height:50px;background:#f97316;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _b.textContent='B: startListingFlow'; document.body.appendChild(_b); setTimeout(function(){try{_b.remove();}catch(e){}},30000); }catch(e){}
     if(!context) context = {};
     /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
     var canProceed = p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn));
-    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-6] startListingFlow | canProceed=', canProceed, '| ctx=', JSON.stringify(context));
     if(!canProceed){
       if(typeof showToast === 'function') showToast('Bitte zuerst anmelden');
       if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] BLOCKIERT: nicht eingeloggt');
@@ -16544,8 +16518,6 @@
   if(typeof window !== 'undefined'){
     window.forceOpenMastercard = function(ctx){
       // DEBUG STEP A (V52 – inside IIFE, has direct access to startListingFlow)
-      try{ var _a=document.createElement('div'); _a.style.cssText='position:fixed!important;top:0;left:0;width:100vw;height:50px;background:#ef4444;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _a.textContent='A-V52: forceOpenMastercard (IIFE)'; document.body.appendChild(_a); setTimeout(function(){try{_a.remove();}catch(e){}},30000); }catch(e){}
-      if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-5] forceOpenMastercard aufgerufen | ctx=', JSON.stringify(ctx || {}));
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof console !== 'undefined' && console.log) console.log('🏗️ V52: Baue Mastercard-Struktur neu auf...');
       var wbd = document.getElementById('wbd');
@@ -16616,7 +16588,6 @@
 
   function startWizard(kind, ctx={}){
     // DEBUG STEP C
-    try{ var _c=document.createElement('div'); _c.style.cssText='position:fixed!important;top:110px;left:0;width:100vw;height:50px;background:#eab308;z-index:999999999;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:900;'; _c.textContent='C: startWizard kind='+kind; document.body.appendChild(_c); setTimeout(function(){try{_c.remove();}catch(e){}},30000); }catch(e){}
     if(typeof console !== 'undefined' && console.log) console.log('[startWizard] kind=', kind);
     if(typeof window !== 'undefined') window.startWizard = startWizard;
     w = { kind, step:0, data:{}, ctx };
@@ -17180,16 +17151,6 @@
   // STEP_EDIT → STEP_MONEY → STEP_LIVE
   // ============================================================
   function buildListingStep(){
-    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-7] buildListingStep aufgerufen | w.data.dish=', w && w.data ? w.data.dish : 'n/a');
-    /* DEBUG-BANNER: 3 Sekunden sichtbar wenn buildListingStep läuft [REMOVE AFTER FIX] */
-    try {
-      var _dbg = document.createElement('div');
-      _dbg.id = '_debug_bls';
-      _dbg.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:60px!important;background:#10b981!important;z-index:99999999!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:18px!important;font-weight:900!important;color:white!important;';
-      _dbg.textContent = '✅ buildListingStep LÄUFT!';
-      document.body.appendChild(_dbg);
-      setTimeout(function(){ var e=document.getElementById('_debug_bls'); if(e) e.parentNode.removeChild(e); }, 30000);
-    } catch(e){}
     setWizardNextDefault();
     w.step = 0;
     /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
@@ -20139,7 +20100,6 @@
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
-    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-2] initApp startet | mode=', mode, '| provider.loggedIn=', typeof provider !== 'undefined' && provider ? !!provider.loggedIn : 'n/a');
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
     if((window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn)){
@@ -20404,35 +20364,7 @@
   /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
   setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 500);
 
-  /* WIZARD RESTORATION: Mastercard bei Provider-Load immer öffnen (wie 03.03.) [cite: Plan Mastercard-Fix 2026-03-06] */
-  window.addEventListener('load', function(){
-    var isProvider = (typeof window.mode !== 'undefined' ? window.mode : mode) === 'provider';
-    var bodyIsProvider = document.body && document.body.classList.contains('provider-mode');
-    var p = (typeof provider !== 'undefined' && provider) ? provider : null;
-    var wp = (typeof window !== 'undefined' && window.provider) ? window.provider : null;
-    var loggedIn = (wp && wp.loggedIn) || (p && p.loggedIn);
-    var canProceed = (isProvider || bodyIsProvider) && loggedIn;
-    if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-3] Load-Event: isProvider=', isProvider, '| bodyIsProvider=', bodyIsProvider, '| loggedIn=', loggedIn, '| canProceed=', canProceed, '| forceOpenMastercard=', typeof window.forceOpenMastercard);
-    if(canProceed){
-      var hadWizardOpen = localStorage.getItem('mittagio_wizard_open') === 'true';
-      if(hadWizardOpen){ try{ window.__pendingStartListingFlow = []; } catch(e){} }
-      setTimeout(function(){
-        var w = document.getElementById('wizard');
-        var wc = document.getElementById('wContent');
-        if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-4] Vor forceOpenMastercard: wizard=', !!w, '| wContent Kinder=', wc ? wc.children.length : 0);
-        if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
-        else {
-          var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
-          if(fn) fn({ entryPoint: 'dashboard', restore: !!hadWizardOpen });
-        }
-        setTimeout(function(){
-          var w2 = document.getElementById('wizard');
-          var wc2 = document.getElementById('wContent');
-          if(typeof console !== 'undefined' && console.log) console.log('[DEBUG-8] Nach 500ms: wizard aktiv=', w2 ? w2.classList.contains('active') : false, '| wContent Kinder=', wc2 ? wc2.children.length : 0);
-        }, 500);
-      }, hadWizardOpen ? 300 : 400);
-    }
-  });
+  /* WIZARD RESTORATION entfernt – Wizard öffnet nur auf expliziten User-Klick [cite: Fix 2026-03-04] */
 
   /* V49: NAVIGATION & CONTENT FORCE (Bauherren-Garantie) [cite: 2026-03-04] */
   document.addEventListener('click', function(e){
@@ -20467,24 +20399,10 @@
   document.addEventListener('click', function(e){
     var btn = e.target && e.target.closest ? e.target.closest('#createNewListing') : null;
     if(btn){
-      /* DIAG-X: Zeigt 30s welcher Pfad aktiv ist */
-      try{
-        var _x=document.createElement('div');
-        _x.style.cssText='position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:60px!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:18px!important;font-weight:900!important;color:#fff!important;';
-        var fomExists=(typeof window.forceOpenMastercard==='function');
-        _x.style.background=fomExists?'#6d28d9':'#dc2626';
-        _x.textContent=fomExists?'DIAG-X: Capture-Handler FIRES, forceOM=FUNCTION':'DIAG-X: Capture-Handler FIRES, forceOM=UNDEFINED';
-        document.body.appendChild(_x);
-        setTimeout(function(){try{_x.remove();}catch(e){}},30000);
-      }catch(e){}
       e.preventDefault();
       e.stopPropagation();
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       if(typeof window.forceOpenMastercard === 'function') window.forceOpenMastercard();
-      else{
-        /* DIAG-FALLBACK: forceOpenMastercard fehlt – zeige Konsolen-Info */
-        try{console.error('[DIAG] window.forceOpenMastercard ist nicht definiert! Keys:', Object.keys(window).filter(function(k){return k.indexOf('force')>-1||k.indexOf('mastercard')>-1||k.indexOf('Mastercard')>-1;}));}catch(e){}
-      }
     }
   }, true);
 }
