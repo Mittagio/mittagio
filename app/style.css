@@ -1721,7 +1721,8 @@
       visibility: visible !important;
     }
     body.wizard-inserat-open #wContent {
-      display: block !important;
+      display: flex !important;
+      flex-direction: column !important;
       opacity: 1 !important;
       transform: none !important;
       min-height: 200px;
