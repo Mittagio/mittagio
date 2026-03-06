@@ -557,8 +557,8 @@
     reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
-  /* Weisser-Screen-Fix: V47-Garantie nicht überschreiben – loggedIn immer true auf Live [cite: 2026-03-06] */
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github'))){
+  /* V47-Garantie: loggedIn=true auf Live + localhost [cite: 2026-03-06] */
+  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
     provider.loggedIn = true;
     provider.onboardingCompleted = provider.onboardingCompleted !== false;
     provider.id = provider.id || 'p1';
@@ -20115,7 +20115,7 @@
     renderChips();
 
   // init nav bindings – window.provider.loggedIn als Fallback (V47/V48 Bypass) [cite: 2026-03-17]
-  var _effectiveLoggedIn = (provider && provider.loggedIn) || (window.provider && window.provider.loggedIn);
+  var _effectiveLoggedIn = (provider && provider.loggedIn) || (window.provider && window.provider.loggedIn) || !!(document.body && document.body.classList.contains('provider-mode'));
   if(_effectiveLoggedIn && !provider.loggedIn){ provider.loggedIn = true; } // Lokale Variable synchronisieren
   if(mode==='provider' && !_effectiveLoggedIn) mode='customer';
   if(mode==='start') mode='customer';
