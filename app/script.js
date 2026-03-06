@@ -16476,9 +16476,10 @@
   function startListingFlow(context){
     // DEBUG STEP B
     if(!context) context = {};
-    /* Weisser-Screen-Fix: window.provider-Fallback – Live-Seite nie blockieren [cite: 2026-03-06] */
+    /* canProceed: provider-mode am Body reicht als Nachweis (V50 setzt das nur auf validen Domains) */
+    var _isProviderMode = !!(document.body && document.body.classList.contains('provider-mode'));
     var p = (typeof provider !== 'undefined' && provider) ? provider : (typeof window !== 'undefined' && window.provider) ? window.provider : null;
-    var canProceed = p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn));
+    var canProceed = _isProviderMode || (p && (p.loggedIn === true || (typeof window !== 'undefined' && window.provider && window.provider.loggedIn)));
     if(!canProceed){
       if(typeof showToast === 'function') showToast('Bitte zuerst anmelden');
       if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] BLOCKIERT: nicht eingeloggt');
