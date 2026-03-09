@@ -6368,13 +6368,15 @@
     };
   }
   
-  /* V54: Mastercard-Start – direkt openDishFlow (kein forceOpenMastercard-Stub) */
+  /* V55: Mastercard-Start – window.openDishFlow (kein Scope-Problem) */
   const btnNewListing = document.getElementById('createNewListing');
   if(btnNewListing){
     btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
-      if(typeof openDishFlow === 'function') openDishFlow(new Date().toISOString().split('T')[0], 'dashboard');
+      var _date = new Date().toISOString().split('T')[0];
+      if(typeof window.openDishFlow === 'function'){ window.openDishFlow(_date, 'dashboard'); }
+      else if(typeof window.startListingFlow === 'function'){ window.startListingFlow({ date: _date, entryPoint: 'dashboard' }); }
     };
   }
 
@@ -20383,17 +20385,28 @@
     }
   });
 
-  /* V54: createNewListing → direkt openDishFlow (lokale Funktion via Closure, umgeht alle Stubs) */
+  /* V55: createNewListing → window.openDishFlow (immer über window, kein Scope-Problem) */
   var _mainBtn = document.getElementById('createNewListing');
-  if(_mainBtn) _mainBtn.onclick = function(e){ if(e) e.preventDefault(); if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet(); if(typeof openDishFlow === 'function') openDishFlow(new Date().toISOString().split('T')[0], 'dashboard'); };
-  /* V54: Event-Delegation – createNewListing-Klick immer abfangen (auch bei dynamisch ersetztem Button) */
+  if(_mainBtn) _mainBtn.onclick = function(e){
+    if(e) e.preventDefault();
+    if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
+    var _date = new Date().toISOString().split('T')[0];
+    if(typeof window.openDishFlow === 'function'){ window.openDishFlow(_date, 'dashboard'); }
+    else if(typeof window.startListingFlow === 'function'){ window.startListingFlow({ date: _date, entryPoint: 'dashboard' }); }
+  };
+  /* V55: Event-Delegation – createNewListing-Klick immer abfangen (auch bei dynamisch ersetztem Button) */
   document.addEventListener('click', function(e){
     var btn = e.target && e.target.closest ? e.target.closest('#createNewListing') : null;
     if(btn){
       e.preventDefault();
       e.stopPropagation();
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
-      if(typeof openDishFlow === 'function') openDishFlow(new Date().toISOString().split('T')[0], 'dashboard');
+      var _date = new Date().toISOString().split('T')[0];
+      if(typeof window.openDishFlow === 'function'){
+        window.openDishFlow(_date, 'dashboard');
+      } else if(typeof window.startListingFlow === 'function'){
+        window.startListingFlow({ date: _date, entryPoint: 'dashboard' });
+      }
     }
   }, true);
 }
