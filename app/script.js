@@ -16,6 +16,9 @@
     window.startListingFlow = window.startListingFlow || function(){ if(typeof console !== 'undefined' && console.warn) console.warn('[startListingFlow] Noch nicht geladen'); };
     window.addEventListener('load', function flowAssignOnLoad(){
       try {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:load-listener',message:'load fired',data:{startListingFlowType:typeof startListingFlow,openDishFlowType:typeof openDishFlow},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
         if(typeof startListingFlow === 'function'){
           window.startListingFlow = startListingFlow;
           var p=window.__pendingStartListingFlow; if(Array.isArray(p)&&p.length){ while(p.length){ var c=p.shift(); startListingFlow(c); } }
@@ -6373,6 +6376,9 @@
   if(btnNewListing){
     btnNewListing.onclick = function(e){
       if(e) e.preventDefault();
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:btnNewListing-onclick',message:'btn clicked',data:{openDishFlowType:typeof window.openDishFlow,startListingFlowType:typeof window.startListingFlow},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       var _date = new Date().toISOString().split('T')[0];
       if(typeof window.openDishFlow === 'function'){ window.openDishFlow(_date, 'dashboard'); }
@@ -16412,6 +16418,9 @@
     if(typeof defaultDate === 'undefined') defaultDate = null;
     if(typeof entryPoint === 'undefined') entryPoint = null;
     if(typeof console !== 'undefined' && console.log) console.log('🛠️ V51: Starte Inserat-Inhalt...');
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:openDishFlow-entry',message:'openDishFlow called',data:{date:defaultDate,ep:entryPoint,providerLoggedIn:!!(window.provider&&window.provider.loggedIn)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     /* Brücken-Fix: window.provider sicherstellen – First-Class-Citizen für Daten-Resilienz */
     if(!window.provider || !window.provider.loggedIn){
       try{
@@ -20094,6 +20103,9 @@
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
   function initApp(){
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:initApp-entry',message:'initApp started',data:{mode:typeof mode!=='undefined'?mode:'undef',setModeType:typeof setMode,readyState:document.readyState},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
     if((window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn)){
       document.body.classList.add('provider-mode');
@@ -20400,6 +20412,9 @@
     if(btn){
       e.preventDefault();
       e.stopPropagation();
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/61a0f9e4-5232-45fe-9e66-bad6749ec1cb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f04b6f'},body:JSON.stringify({sessionId:'f04b6f',location:'script.js:capture-listener',message:'capture fired',data:{openDishFlowType:typeof window.openDishFlow,startListingFlowType:typeof window.startListingFlow},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
       var _date = new Date().toISOString().split('T')[0];
       if(typeof window.openDishFlow === 'function'){
