@@ -53,16 +53,10 @@ window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
     window.startListingFlow = stub;
   }
 })();
-/* forceOpenMastercard-Stub: Wizard sichtbar machen, dann startListingFlow – wird von script.js ersetzt */
+/* forceOpenMastercard-Stub: Fallback – ruft openDishFlow oder startListingFlow */
   window.forceOpenMastercard=window.forceOpenMastercard||function(ctx){
-    var wbd=document.getElementById('wbd'),wizard=document.getElementById('wizard');
-    if(!wbd){ wbd=document.createElement('div'); wbd.id='wbd'; wbd.className='backdrop'; document.body.appendChild(wbd); }
-    if(!wizard){ wizard=document.createElement('div'); wizard.id='wizard'; wizard.className='sheet sheet--kitchen active'; wizard.innerHTML='<div class="handle"></div><div class="sheet-body wizard-sheet-body"><div class="wizard" id="wBox"><div class="wizard-scroll"><div id="wContent"></div></div></div></div>'; document.body.appendChild(wizard); }
-    wizard.setAttribute('data-flow','listing'); wizard.style.cssText='display:flex!important;visibility:visible!important;opacity:1!important;z-index:1000000!important;position:fixed!important;inset:0!important;background:#fff!important;';
-    if(wbd) wbd.classList.add('active');
-    wizard.classList.add('active');
-    document.body.classList.add('wizard-inserat-open','vendor-area');
     var c=ctx&&typeof ctx==='object'?Object.assign({},ctx):{date:new Date().toISOString().split('T')[0],entryPoint:'dashboard'};
+    if(typeof window.openDishFlow==='function'){ window.openDishFlow(c.date||new Date().toISOString().split('T')[0], c.entryPoint||'dashboard'); return; }
     if(typeof window.startListingFlow==='function') window.startListingFlow(c);
   };
 </script>
