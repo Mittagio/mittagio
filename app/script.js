@@ -20160,21 +20160,21 @@
   var planMatch = (location.hash || '').match(/^#\/plan\/(.+)$/);
   var path = (window.location.pathname || '').replace(/\/$/, '');
   if(path.indexOf('/anbieter/hilfe/faq') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
-    setMode('provider');
-    showLegalPage('faq-provider');
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('faq-provider');
   } else if(path.indexOf('/anbieter/hilfe/inserat') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
-    setMode('provider');
-    showLegalPage('inserat-info-provider');
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('inserat-info-provider');
   } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {
-    setMode(mode);
+    if(typeof setMode === 'function') setMode(mode); else if(typeof window.setMode === 'function') window.setMode(mode);
     if(mode==='provider') providerScrollReset();
   }
   window.addEventListener('hashchange', function(){
     var m = (location.hash || '').match(/^#\/plan\/(.+)$/);
     if(m && typeof showPlanPublicView === 'function') showPlanPublicView(decodeURIComponent(m[1]));
-    else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); setMode(mode); }
+    else if(typeof hidePlanPublicView === 'function'){ hidePlanPublicView(); if(typeof setMode==='function') setMode(mode); else if(typeof window.setMode==='function') window.setMode(mode); }
   });
   
   // Connectivity-Check starten wenn Provider-Modus
