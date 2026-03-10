@@ -5995,6 +5995,7 @@
     }, true);
   })();
 
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint A erreicht (Zeile ~6000)');
   // Legacy No-Op - #psheet entfernt
   function closeProviderSheet(){}
 
@@ -9750,6 +9751,7 @@
     }, 300);
   })();
 
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint B erreicht (Zeile ~9750)');
   // Provider nav handlers – Kalender-Icon (Wochenplan) triggert showProviderWeek [cite: 2026-02-18]
   var providerNavEl = document.getElementById('providerNav');
   if(providerNavEl) providerNavEl.addEventListener('click',function(e){
@@ -12879,6 +12881,7 @@
     if(bd) bd.onclick = closeWeekTimeOverlay;
   })();
 
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint C erreicht (Zeile ~12880)');
   function copyWeekEntryToNextDay(fromDate, entryIndex){
     var dayArr = week[fromDate] || [];
     var entry = dayArr[entryIndex];
@@ -16499,17 +16502,15 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
-  function assignFlowToWindow(){
-    try {
-      if(typeof window !== 'undefined' && typeof startListingFlow === 'function'){
-        window.startListingFlow = startListingFlow;
-        window.startWizard = startWizard;
-        var pending = window.__pendingStartListingFlow;
-        if(Array.isArray(pending) && pending.length){ while(pending.length){ try { startListingFlow(pending.shift()); } catch(x){} } }
-      }
-    } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
-  }
-  assignFlowToWindow();
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint D erreicht (Zeile ~16500) – startListingFlow:', typeof startListingFlow);
+  window.startListingFlow = startListingFlow;
+  window.startWizard = startWizard;
+  window.openDishFlow = openDishFlow;
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] window.startListingFlow gesetzt:', typeof window.startListingFlow);
+  try {
+    var pending = window.__pendingStartListingFlow;
+    if(Array.isArray(pending) && pending.length){ while(pending.length){ try { startListingFlow(pending.shift()); } catch(x){} } }
+  } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei pending-flush:', e); }
   if(typeof window !== 'undefined'){
     if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', assignFlowToWindow); }
     window.addEventListener('load', assignFlowToWindow);
