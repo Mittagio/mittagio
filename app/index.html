@@ -38,26 +38,29 @@ window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
 
 (function(){
   function stub(ctx){
+    var real = window.startListingFlow;
+    if(real && real !== stub && typeof real === 'function'){ real(ctx); return; }
     window.__pendingStartListingFlow.push(ctx || {});
-    setTimeout(function(){
-      if (typeof window.startListingFlow === "function" && window.startListingFlow !== stub) {
-        var q = window.__pendingStartListingFlow.splice(0);
-        for (var i = 0; i < q.length; i++) {
-          try { window.startListingFlow(q[i] || {}); } catch(e) {}
+    var attempts = 0;
+    function poll(){
+      var r = window.startListingFlow;
+      if(r && r !== stub && typeof r === 'function'){
+        while(window.__pendingStartListingFlow && window.__pendingStartListingFlow.length){
+          try { r(window.__pendingStartListingFlow.shift()); } catch(e){}
         }
+        return;
       }
-    }, 50);
+      if(++attempts < 120) setTimeout(poll, 100);
+    }
+    setTimeout(poll, 100);
   }
-
-  if(!window.startListingFlow){
-    window.startListingFlow = stub;
-  }
+  if(!window.startListingFlow){ window.startListingFlow = stub; }
 })();
-/* forceOpenMastercard-Stub: Fallback – ruft openDishFlow oder startListingFlow */
+/* forceOpenMastercard-Stub: Wizard öffnen, dann startListingFlow mit vollem ctx (dishId bleibt erhalten) */
   window.forceOpenMastercard=window.forceOpenMastercard||function(ctx){
     var c=ctx&&typeof ctx==='object'?Object.assign({},ctx):{date:new Date().toISOString().split('T')[0],entryPoint:'dashboard'};
+    if(typeof window.startListingFlow==='function'){ window.startListingFlow(c); return; }
     if(typeof window.openDishFlow==='function'){ window.openDishFlow(c.date||new Date().toISOString().split('T')[0], c.entryPoint||'dashboard'); return; }
-    if(typeof window.startListingFlow==='function') window.startListingFlow(c);
   };
 </script>
 <script src="js/early-visibility.js"></script>
@@ -3470,7 +3473,7 @@ window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260309"></script>
+<script src="script.js?v=20260310"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
