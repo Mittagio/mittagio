@@ -11566,7 +11566,7 @@
   window.toggleCategoryBadge = function(selectedCategory){
     var floatingBadgesEl = document.querySelector('#wizard .floating-badges');
     if(!floatingBadgesEl) return;
-    floatingBadgesEl.querySelectorAll('.badge').forEach(function(b){
+    floatingBadgesEl.querySelectorAll('.category-badge').forEach(function(b){
       b.classList.toggle('active', b.dataset.type === selectedCategory);
     });
     if(typeof w !== 'undefined' && w && w.data){
@@ -17344,11 +17344,12 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:35dvh; min-height:35dvh; max-height:35dvh; margin:0; padding:0;';
+      /* height=250px = gleich wie photoContainer → kein Clip-Versatz [cite: 2026-03-10] */
+      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
-      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#e2e8f0" width="400" height="300"/></svg>'); imgEl.style.objectPosition='center '+objPos+'%';
+      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||''; imgEl.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+objPos+'%;';
       if(!w.data.photoData) imgEl.style.display='none';
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
@@ -17359,8 +17360,8 @@
       if(!w.data.photoData){
         var placeholderCenter=document.createElement('div');
         placeholderCenter.className='inserat-photo-placeholder-center';
-        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#e2e8f0; pointer-events:none;';
-        placeholderCenter.innerHTML='<span style="font-size:48px; opacity:0.5;">📷</span>';
+        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:linear-gradient(160deg,#f8f6f3 0%,#ede9e3 100%); pointer-events:none;';
+        placeholderCenter.innerHTML='<span style="font-size:52px; line-height:1;">🍽️</span><span style="font-size:11px; font-weight:800; color:#b0a89a; letter-spacing:0.08em; text-transform:uppercase;">Foto hinzufügen</span>';
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
@@ -17451,22 +17452,19 @@
       badgeDefs.forEach(function(bd){
         var badge=document.createElement('button');
         badge.type='button';
-        badge.className='badge'+(currentCatForBadge===bd.type?' active':'');
+        /* .category-badge statt .badge → kein Konflikt mit globalem .badge rule [cite: 2026-03-10] */
+        badge.className='category-badge'+(currentCatForBadge===bd.type?' active':'');
         badge.dataset.type=bd.type;
-        badge.style.cssText='position:relative;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
         badge.innerHTML='<span>'+bd.emoji+'</span> '+bd.label;
         badge.onclick=function(e){
           e.stopPropagation();
           hapticLight();
           w.data.category=bd.type;
           saveDraft();
-          floatingBadges.querySelectorAll('.badge').forEach(function(b){
+          floatingBadges.querySelectorAll('.category-badge').forEach(function(b){
             var isAct=b.dataset.type===bd.type;
             b.classList.toggle('active',isAct);
-            b.style.background=isAct?'#222222':'rgba(255,255,255,0.92)';
-            b.style.color=isAct?'#ffffff':'#222222';
           });
-          /* Kategorie-Pills unten synchron halten */
           box.querySelectorAll('.category-pill').forEach(function(p){
             var isAct=p.dataset.category===bd.type;
             p.classList.toggle('active',isAct);
@@ -17477,8 +17475,8 @@
         };
         floatingBadges.appendChild(badge);
       });
-      /* An photoContainer hängen (hat position:relative + overflow:hidden bei 250px) */
-      photoContainer.appendChild(floatingBadges);
+      /* Badges zentriert als erster Block in contentSheet [cite: 2026-03-10] */
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; z-index:5; padding:8px 16px 4px; margin-top:0; justify-content:center; width:100%; pointer-events:auto;';
 
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -17584,12 +17582,14 @@
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
       contentSheet.style.cssText='';
       scrollArea.appendChild(contentSheet);
+      /* Floating Badges: erstes Element in contentSheet, überlappt visuell das Foto [cite: 2026-03-10] */
+      contentSheet.appendChild(floatingBadges);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:12px 0 8px;';
+      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:10px 16px 6px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17682,16 +17682,26 @@
       pillGroup.classList.add('pill-intro-run');
       /* pillGroup wird erst in der Action-Row (Schritt 5) unten platziert */
 
-      // ========== 5. Preis (Giant) & Extras-Button [cite: FINALE NEUAUFBAU 2026-02-21] ==========
+      // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:16px; margin-top:16px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin:12px 16px 8px;';
+      /* Airbnb Card Wrapper */
       var priceInputWrapper=document.createElement('div');
-      priceInputWrapper.className='price-input-wrapper';
-      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px;';
+      priceInputWrapper.className='price-input-wrapper price-airbnb-card';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:6px; width:100%; border:1.5px solid #e0e0e0; border-radius:16px; padding:16px 24px; background:#fff; transition:border-color 0.2s;';
+      priceInputWrapper.addEventListener('focusin', function(){ priceInputWrapper.style.borderColor='#222222'; });
+      priceInputWrapper.addEventListener('focusout', function(){ priceInputWrapper.style.borderColor='#e0e0e0'; });
+      /* Preis-Label klein oben-links */
+      var priceLabelSmall=document.createElement('span');
+      priceLabelSmall.style.cssText='position:absolute; top:-9px; left:16px; font-size:11px; font-weight:700; color:#888; background:#fff; padding:0 4px; letter-spacing:0.04em; text-transform:uppercase;';
+      priceLabelSmall.textContent='Preis';
+      priceInputWrapper.style.position='relative';
+      priceInputWrapper.appendChild(priceLabelSmall);
       var stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
       stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
+      stepPriceWrap.style.cssText='display:flex; align-items:baseline; gap:4px;';
       var inputPrice=document.createElement('input');
       inputPrice.type='text';
       inputPrice.id='gericht-preis';
@@ -17699,9 +17709,11 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
+      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:42px; font-weight:700; color:#222222; width:150px; text-align:center;';
       var eurSpan=document.createElement('span');
       eurSpan.className='currency inserat-price-pill-euro';
-      eurSpan.textContent=' \u20AC';
+      eurSpan.textContent='\u20AC';
+      eurSpan.style.cssText='font-size:24px; font-weight:600; color:#555; line-height:1;';
       stepPriceWrap.appendChild(inputPrice);
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
@@ -17753,14 +17765,178 @@
       }
       var tileDineIn=makeTile('\uD83C\uDF74','Vor Ort','vor-ort',hasDineIn);
       var tileMehrweg=makeTile('\uD83D\uDD04','Mehrweg','mehrweg',hasReuse);
-      var tileAbhol=makeTile('\uD83C\uDFAB\u0031\uFE0F\u20E3','Abholnr.','abholnummer',hasAbholnummer);
+      /* Abholzeit-Kachel: zeigt aktuelle Zeit als Label [cite: 2026-03-10] */
+      var curTimeLabel=(w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30–14:00');
+      var tileTime=makeTile('\uD83D\uDD52','Abholzeit','time',false);
+      tileTime.querySelector('.tile-label').textContent=curTimeLabel;
       var tileAllergen=makeTile('\uD83C\uDF3F','Allergene','allergene',hasAllergens);
       var tileExtras=makeTile('\u2795','Extras','extras',hasExtras);
 
-      /* Toggle-Kacheln: Vor Ort, Mehrweg, Abholnummer */
-      tileDineIn.onclick=function(){ hapticLight(); w.data.dineInPossible=!tileDineIn.classList.toggle('active'); w.data.dineInPossible=tileDineIn.classList.contains('active'); saveDraft(); updatePowerBarFromBox(); };
-      tileMehrweg.onclick=function(){ hapticLight(); var a=tileMehrweg.classList.toggle('active'); w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=a; saveDraft(); updatePowerBarFromBox(); };
-      tileAbhol.onclick=function(){ hapticLight(); var a=tileAbhol.classList.toggle('active'); w.data.hasPickupCode=a; saveDraft(); updatePowerBarFromBox(); };
+      /* ===== BOTTOM SHEETS: Vor Ort, Mehrweg, Abholzeit ===== [cite: 2026-03-10] */
+      var sharedBackdrop=document.createElement('div');
+      sharedBackdrop.className='inserat-bottom-sheet-backdrop';
+      sharedBackdrop.style.cssText='position:fixed; inset:0; z-index:1100000; background:rgba(0,0,0,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity 0.3s ease;';
+      document.body.appendChild(sharedBackdrop);
+
+      /* Inline-Style-basiert: unabhängig von body.provider-mode CSS-Selektor [cite: 2026-03-10] */
+      function openSheet(sheetEl){
+        hapticLight();
+        sharedBackdrop.style.opacity='1'; sharedBackdrop.style.pointerEvents='auto';
+        sheetEl.style.transform='translateY(0)';
+      }
+      function closeSheet(sheetEl){
+        sheetEl.style.transform='translateY(100%)';
+        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        setTimeout(function(){ updatePowerBarFromBox(); }, 350);
+      }
+
+      /* Helper: Sheet bauen – vollständiger Inline-Style, kein CSS-Selektor nötig */
+      function makeSheet(ariaLabel){
+        var s=document.createElement('div');
+        s.className='inserat-bottom-sheet';
+        s.setAttribute('role','dialog');
+        s.setAttribute('aria-label',ariaLabel);
+        s.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:1200000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px)); max-height:70vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); border-top:1px solid #ebebeb;';
+        var handle=document.createElement('div');
+        handle.style.cssText='width:44px; height:5px; background:#ebebeb; border-radius:3px; margin:0 auto 16px;';
+        s.appendChild(handle);
+        document.body.appendChild(s);
+        return s;
+      }
+      function makeSheetTitle(text){
+        var t=document.createElement('div');
+        t.style.cssText='font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;';
+        t.textContent=text;
+        return t;
+      }
+      function makeSheetDesc(text){
+        var d=document.createElement('p');
+        d.style.cssText='font-size:14px; color:#64748b; margin:0 0 20px; line-height:1.5;';
+        d.textContent=text;
+        return d;
+      }
+      function makeToggleRow(labelText, isActive, onToggle){
+        var row=document.createElement('div');
+        row.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-top:1px solid #f1f5f9;';
+        var lbl=document.createElement('span');
+        lbl.style.cssText='font-size:15px; font-weight:700; color:#1a1a1a;';
+        lbl.textContent=labelText;
+        /* Toggle-Switch */
+        var tog=document.createElement('button');
+        tog.type='button';
+        tog.setAttribute('role','switch');
+        tog.setAttribute('aria-checked', isActive?'true':'false');
+        tog.style.cssText='width:52px; height:30px; border-radius:999px; border:none; cursor:pointer; transition:background 0.2s; background:'+(isActive?'#10b981':'#e2e8f0')+'; position:relative; flex-shrink:0;';
+        var knob=document.createElement('span');
+        knob.style.cssText='position:absolute; top:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.18); transition:left 0.2s; left:'+(isActive?'25px':'3px')+';';
+        tog.appendChild(knob);
+        tog.onclick=function(){
+          isActive=!isActive;
+          tog.setAttribute('aria-checked', isActive?'true':'false');
+          tog.style.background=isActive?'#10b981':'#e2e8f0';
+          knob.style.left=isActive?'25px':'3px';
+          hapticLight();
+          onToggle(isActive);
+        };
+        row.appendChild(lbl);
+        row.appendChild(tog);
+        return row;
+      }
+      function makeFertigBtn(sheetEl){
+        var btn=document.createElement('button');
+        btn.type='button';
+        btn.className='inserat-sheet-done';
+        btn.style.cssText='width:100%; min-height:56px; padding:16px 24px; margin-top:20px; border-radius:8px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
+        btn.textContent='Fertig';
+        btn.onclick=function(){ hapticLight(); closeSheet(sheetEl); };
+        return btn;
+      }
+
+      /* ---- Vor Ort Sheet ---- */
+      var dineInSheet=makeSheet('Vor Ort einstellen');
+      dineInSheet.appendChild(makeSheetTitle('🍴 Vor Ort'));
+      dineInSheet.appendChild(makeSheetDesc('Gäste können direkt bei dir essen – kein Besteck nötig.'));
+      dineInSheet.appendChild(makeToggleRow('Vor Ort aktiviert', hasDineIn, function(val){
+        w.data.dineInPossible=val;
+        tileDineIn.classList.toggle('active',val);
+        saveDraft();
+      }));
+      dineInSheet.appendChild(makeFertigBtn(dineInSheet));
+      tileDineIn.onclick=function(){ openSheet(dineInSheet); };
+      sharedBackdrop.addEventListener('click', function(){
+        [dineInSheet,mehrwegSheet,timeSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
+        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        setTimeout(function(){ updatePowerBarFromBox(); }, 350);
+      });
+
+      /* ---- Mehrweg Sheet ---- */
+      var mehrwegSheet=makeSheet('Mehrweg einstellen');
+      mehrwegSheet.appendChild(makeSheetTitle('🔄 Mehrweg / Rebowl'));
+      mehrwegSheet.appendChild(makeSheetDesc('Gäste bringen eigene Dose oder Rebowl-Behälter.'));
+      mehrwegSheet.appendChild(makeToggleRow('Mehrweg aktiviert', hasReuse, function(val){
+        w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=val;
+        tileMehrweg.classList.toggle('active',val);
+        saveDraft();
+      }));
+      /* Pfand-Zeile */
+      var pfandRow=document.createElement('div');
+      pfandRow.style.cssText='display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid #f1f5f9;';
+      pfandRow.innerHTML='<span style="font-size:15px; font-weight:700; color:#1a1a1a;">Rebowl-Pfand</span>';
+      var pfandToggleBtn=document.createElement('button');
+      pfandToggleBtn.type='button';
+      pfandToggleBtn.style.cssText='padding:8px 16px; border-radius:999px; border:1.5px solid #10b981; background:#fff; color:#10b981; font-size:13px; font-weight:700; cursor:pointer;';
+      pfandToggleBtn.textContent=(w.data.reuse&&w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen';
+      pfandToggleBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandToggleBtn.textContent=(w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen'; };
+      pfandRow.appendChild(pfandToggleBtn);
+      mehrwegSheet.appendChild(pfandRow);
+      mehrwegSheet.appendChild(makeFertigBtn(mehrwegSheet));
+      tileMehrweg.onclick=function(){ openSheet(mehrwegSheet); };
+
+      /* ---- Abholzeit Sheet ---- */
+      var timeSheet=makeSheet('Abholzeit einstellen');
+      timeSheet.appendChild(makeSheetTitle('🕒 Abholzeit'));
+      timeSheet.appendChild(makeSheetDesc('Wann können Gäste abholen? Standard wird im Profil gespeichert.'));
+      var pwParts=(w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30 – 14:00').split(/\s*[–\-]\s*/);
+      var tStart=(pwParts[0]||'11:30').trim(); var tEnd=(pwParts[1]||'14:00').trim();
+      if(tStart.length===4) tStart='0'+tStart; if(tEnd.length===4) tEnd='0'+tEnd;
+      var timeRow=document.createElement('div');
+      timeRow.style.cssText='display:flex; align-items:center; justify-content:center; gap:12px; padding:16px 0; border-top:1px solid #f1f5f9;';
+      var inpStart=document.createElement('input'); inpStart.type='time'; inpStart.value=tStart;
+      inpStart.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:18px; font-weight:700; color:#1a1a1a;';
+      var dash=document.createElement('span'); dash.textContent='–'; dash.style.cssText='font-size:18px; font-weight:700; color:#94a3b8;';
+      var inpEnd=document.createElement('input'); inpEnd.type='time'; inpEnd.value=tEnd;
+      inpEnd.style.cssText='padding:12px 16px; border-radius:12px; border:2px solid #e2e8f0; background:#f8fafc; font-size:18px; font-weight:700; color:#1a1a1a;';
+      function onTimeChange(){
+        var newWindow=inpStart.value+' – '+inpEnd.value;
+        w.data.pickupWindow=newWindow;
+        saveDraft();
+        tileTime.querySelector('.tile-label').textContent=newWindow;
+      }
+      inpStart.onchange=function(){ hapticLight(); onTimeChange(); };
+      inpEnd.onchange=function(){ hapticLight(); onTimeChange(); };
+      timeRow.appendChild(inpStart); timeRow.appendChild(dash); timeRow.appendChild(inpEnd);
+      timeSheet.appendChild(timeRow);
+      /* Als Standard speichern */
+      var btnTimeDefault=document.createElement('button');
+      btnTimeDefault.type='button';
+      btnTimeDefault.style.cssText='width:100%; padding:12px; border-radius:12px; border:1.5px solid #10b981; background:#fff; color:#10b981; font-size:14px; font-weight:700; cursor:pointer; margin-top:4px;';
+      btnTimeDefault.textContent='Als Standard im Profil speichern';
+      btnTimeDefault.onclick=function(){
+        hapticLight();
+        if(provider&&provider.profile){
+          provider.profile.mealWindow=inpStart.value+' – '+inpEnd.value;
+          provider.profile.mealStart=inpStart.value;
+          provider.profile.mealEnd=inpEnd.value;
+          if(typeof save==='function') save(LS.provider,provider);
+        }
+        btnTimeDefault.textContent='✓ Gespeichert';
+        btnTimeDefault.style.background='#10b981';
+        btnTimeDefault.style.color='#fff';
+        setTimeout(function(){ btnTimeDefault.textContent='Als Standard im Profil speichern'; btnTimeDefault.style.background='#fff'; btnTimeDefault.style.color='#10b981'; }, 1800);
+      };
+      timeSheet.appendChild(btnTimeDefault);
+      timeSheet.appendChild(makeFertigBtn(timeSheet));
+      tileTime.onclick=function(){ openSheet(timeSheet); };
 
       /* Allergen-Kachel → öffnet Sub-Menu-Drawer */
       /* Allergen-Drawer erstellen */
@@ -17827,7 +18003,7 @@
 
       powerBar.appendChild(tileDineIn);
       powerBar.appendChild(tileMehrweg);
-      powerBar.appendChild(tileAbhol);
+      powerBar.appendChild(tileTime);
       powerBar.appendChild(tileAllergen);
       powerBar.appendChild(tileExtras);
 
@@ -17850,7 +18026,8 @@
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:50%; bottom:0; width:100%; max-width:400px; z-index:6000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px 0; margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto; padding-bottom:0;';
+      /* left:0/right:0; z-index über Wizard (1000000) [cite: 2026-03-10] */
+      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; width:100%; z-index:1200001; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px calc(24px + env(safe-area-inset-bottom,0)); margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
@@ -17861,7 +18038,7 @@
         }
         quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
         requestAnimationFrame(function(){
-          quickAdjustPanel.style.transform='translate(-50%, 100%)';
+          quickAdjustPanel.style.transform='translateY(100%)';
           setTimeout(function(){
             quickAdjustPanel.style.display='none';
             quickAdjustPanel.style.transform='';
@@ -17876,9 +18053,9 @@
         hapticLight();
         quickAdjustPanel.innerHTML='';
         quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-        quickAdjustPanel.style.transform='translate(-50%, 100%)';
+        quickAdjustPanel.style.transform='translateY(100%)';
         quickAdjustPanel.style.display='block';
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translate(-50%, 0)'; }); });
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translateY(0)'; }); });
         var headline=document.createElement('h3');
         headline.className='quick-adjust-headline';
         headline.style.cssText='margin:0 0 16px; font-size:18px; font-weight:800; color:#0f172a;';
