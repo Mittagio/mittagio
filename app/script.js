@@ -17437,9 +17437,10 @@
       closeX.style.cssText='position:absolute;top:12px;left:12px;width:32px;height:32px;background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
       photoTile.appendChild(closeX);
 
-      /* Floating Category Badges – über dem Foto, Airbnb-Glassmorphism-Style [cite: 2026-03-10] */
+      /* Floating Category Badges – an photoContainer (250px), nicht photoTile (35dvh), sonst Clipping [cite: 2026-03-10] */
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges';
+      floatingBadges.style.cssText='position:absolute;bottom:12px;left:12px;display:flex;gap:6px;z-index:160;pointer-events:auto;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17452,16 +17453,21 @@
         badge.type='button';
         badge.className='badge'+(currentCatForBadge===bd.type?' active':'');
         badge.dataset.type=bd.type;
+        badge.style.cssText='display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
         badge.innerHTML='<span>'+bd.emoji+'</span> '+bd.label;
         badge.onclick=function(e){
           e.stopPropagation();
           hapticLight();
           w.data.category=bd.type;
           saveDraft();
-          floatingBadges.querySelectorAll('.badge').forEach(function(b){ b.classList.toggle('active',b.dataset.type===bd.type); });
+          floatingBadges.querySelectorAll('.badge').forEach(function(b){
+            var isAct=b.dataset.type===bd.type;
+            b.classList.toggle('active',isAct);
+            b.style.background=isAct?'#222222':'rgba(255,255,255,0.92)';
+            b.style.color=isAct?'#ffffff':'#222222';
+          });
           /* Kategorie-Pills unten synchron halten */
-          var pills=box.querySelectorAll('.category-pill');
-          pills.forEach(function(p){
+          box.querySelectorAll('.category-pill').forEach(function(p){
             var isAct=p.dataset.category===bd.type;
             p.classList.toggle('active',isAct);
             p.style.background=isAct?'#222222':'#F5F5F5';
@@ -17471,7 +17477,8 @@
         };
         floatingBadges.appendChild(badge);
       });
-      photoTile.appendChild(floatingBadges);
+      /* An photoContainer hängen (hat position:relative + overflow:hidden bei 250px) */
+      photoContainer.appendChild(floatingBadges);
 
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
