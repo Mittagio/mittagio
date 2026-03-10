@@ -114,43 +114,7 @@
   function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
   if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
 
-  // --- Helper: openWizard (missing in codebase) ---
-  function openWizard(){
-    var wbd = document.getElementById('wbd');
-    var wizard = document.getElementById('wizard');
-
-    if(!wbd){
-      wbd = document.createElement('div');
-      wbd.id = 'wbd';
-      wbd.className = 'backdrop';
-      document.body.appendChild(wbd);
-    }
-    if(!wizard){
-      wizard = document.createElement('div');
-      wizard.id = 'wizard';
-      wizard.className = 'sheet sheet--kitchen';
-      wizard.innerHTML =
-        '<div class="handle"></div>' +
-        '<div class="sheet-body wizard-sheet-body">' +
-          '<div class="wizard" id="wBox">' +
-            '<div id="wContent"></div>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(wizard);
-    }
-
-    wizard.setAttribute('data-flow', 'listing');
-    wizard.style.cssText = 'display:flex!important;visibility:visible!important;opacity:1!important;z-index:1000000!important;position:fixed!important;inset:0!important;background:#fff!important;transform:translateY(0)!important;';
-    if(wbd) wbd.classList.add('active');
-    wizard.classList.add('active');
-    document.body.classList.add('wizard-inserat-open', 'vendor-area');
-    var wc = document.getElementById('wContent');
-    if(wc && (!wc.innerHTML || wc.innerHTML.trim() === '')){
-      wc.innerHTML = '<div style="padding:24px;text-align:center;color:#64748b">Lade Inserat…</div>';
-    }
-    if(typeof console !== 'undefined' && console.log) console.log('[openWizard] wizard sichtbar | wbd=', !!wbd, '| wizard=', !!wizard, '| body.wizard-inserat-open=', document.body.classList.contains('wizard-inserat-open'));
-  }
-  if (typeof window !== 'undefined') window.openWizard = openWizard;
+  /* openWizard-Stub entfernt – echte Funktion übernimmt (weiter unten, ~L16294) */
 
   /** Provider-ID (stabil pro E-Mail) – früh definiert, auf window exponiert, verhindert ReferenceErrors [cite: Bereinigung 2026-03-04] */
   function providerId(){
@@ -16302,7 +16266,7 @@
     if(w && w.kind === 'listing'){
       if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
     }
-    if(w && w.kind === 'listing' && document.body.classList.contains('provider-mode')){
+    if(w && w.kind === 'listing'){
       var pn = document.getElementById('providerNavWrap');
       if(pn) pn.style.setProperty('display', 'none', 'important');
       document.body.classList.add('wizard-inserat-open', 'vendor-area');
