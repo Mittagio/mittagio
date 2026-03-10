@@ -16541,10 +16541,7 @@
     var pending = window.__pendingStartListingFlow;
     if(Array.isArray(pending) && pending.length){ while(pending.length){ try { startListingFlow(pending.shift()); } catch(x){} } }
   } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei pending-flush:', e); }
-  if(typeof window !== 'undefined'){
-    if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', assignFlowToWindow); }
-    window.addEventListener('load', assignFlowToWindow);
-  }
+  /* assignFlowToWindow entfernt – Zuweisung erfolgt direkt oben (Zeile 16535) */
 
   /* V52: forceOpenMastercard FRÜH – unabhängig von initApp, optional ctx [cite: Live-Fix 2026-03-04, Renner-Fix 2026-03-05] */
   if(typeof window !== 'undefined'){
@@ -18353,8 +18350,8 @@
 
   // Transaktions-Schema (pro Inserat): id, vendor_id, base_price, addon_pickup, addon_price, total_amount, timestamp
   /** TRANSACTION LOGIC & TERMINOLOGY: Nur Abholnummer. Abholnummer-Upsell nur nach Publish (Geld-Route), nicht bei stillem Speichern. */
-  const TX_BASE_PRICE = 4.99;   // fixed_fee (Inseratsgebühr)
-  const TX_ADDON_PRICE = 0.89; // abholnummer_fee pro Vorgang
+  var TX_BASE_PRICE = 4.99;   // fixed_fee (Inseratsgebühr)
+  var TX_ADDON_PRICE = 0.89; // abholnummer_fee pro Vorgang
   function createInseratTransaction(offer){
     const inseratWaived = !!(offer && offer.inseratFeeWaived);
     const base = inseratWaived ? 0 : TX_BASE_PRICE;
@@ -19637,7 +19634,7 @@
   }
 
   // --- Pickup Code Screen Event Handlers ---
-  const btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
+  var btnPickupCodeBack = document.getElementById('btnPickupCodeBack');
   if(btnPickupCodeBack){
     btnPickupCodeBack.onclick = () => {
       // Abholnummer-Ansicht explizit verstecken
@@ -19650,7 +19647,7 @@
     };
   }
   
-  const btnCopyCode = document.getElementById('btnCopyCode');
+  var btnCopyCode = document.getElementById('btnCopyCode');
   if(btnCopyCode){
     btnCopyCode.onclick = async () => {
       if(!currentPickupOrderId) return;
@@ -19702,7 +19699,7 @@
     };
   }
   
-  const btnOpenRoute = document.getElementById('btnOpenRoute');
+  var btnOpenRoute = document.getElementById('btnOpenRoute');
   if(btnOpenRoute){
     btnOpenRoute.onclick = () => {
       if(!currentPickupOrderId) return;
@@ -19719,7 +19716,7 @@
     };
   }
   
-  const btnToOrders = document.getElementById('btnToOrders');
+  var btnToOrders = document.getElementById('btnToOrders');
   if(btnToOrders){
     btnToOrders.onclick = () => {
       showOrders(); // Zu Abholnummern
@@ -19728,7 +19725,7 @@
   
   // --- Swipe Action-Buttons Handler ---
   // Reset-Button (Nochmal von vorne)
-  const btnSwipeReset = document.getElementById('btnSwipeReset');
+  var btnSwipeReset = document.getElementById('btnSwipeReset');
   if(btnSwipeReset){
     btnSwipeReset.onclick = () => {
       // SessionStorage leeren (Ablehnungen zurücksetzen)
@@ -19749,7 +19746,7 @@
   }
   
   // Zur Liste wechseln Button (falls Swipe-UI vorhanden)
-  const btnSwipeToList = document.getElementById('btnSwipeToList');
+  var btnSwipeToList = document.getElementById('btnSwipeToList');
   if(btnSwipeToList){
     btnSwipeToList.onclick = () => {
       switchDiscoverView('list');
@@ -19877,8 +19874,8 @@
   } // Ende Route Handler Block
   
   // --- Stabilitäts-Sicherung: Status-Ampel & Connectivity-Check ---
-  let connectivityCheckInterval = null;
-  let lastConnectivityStatus = 'online';
+  var connectivityCheckInterval = null;
+  var lastConnectivityStatus = 'online';
   
   // Status-Ampel aktualisieren
   function updateStatusIndicator(status){
@@ -20005,7 +20002,7 @@
   }
   
   // Support-Thema auswählen
-  let selectedSupportTopic = null;
+  var selectedSupportTopic = null;
   function selectSupportTopic(topic){
     selectedSupportTopic = topic;
     
