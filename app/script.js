@@ -11,17 +11,28 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
-  /** Stub aus index.html wird durch echte Implementierung ersetzt – NICHT hier überschreiben, sonst bleibt Stub [cite: Weisser-Screen-Fix 2026-03-10] */
-  if (typeof window !== 'undefined') {
-    window.addEventListener('load', function flowAssignOnLoad(){
-      try {
-        if(typeof startListingFlow === 'function'){
-          window.startListingFlow = startListingFlow;
-          var p=window.__pendingStartListingFlow; if(Array.isArray(p)&&p.length){ while(p.length){ var c=p.shift(); startListingFlow(c); } }
-        }
-        if(typeof openDishFlow === 'function'){ window.openDishFlow = openDishFlow; }
-      } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[Flow] load-Zuweisung:', e); }
-    });
+  /* Hoisting-Fix: Function Declarations sind sofort verfügbar – Zuweisung HIER statt am Ende [cite: Weisser-Screen-Fix 2026-03-11] */
+  if(typeof startListingFlow === 'function'){
+    window.startListingFlow = startListingFlow;
+    if(typeof startWizard === 'function') window.startWizard = startWizard;
+    if(typeof openDishFlow === 'function') window.openDishFlow = openDishFlow;
+    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] Hoisted: startListingFlow auf window gesetzt');
+    var _hp = window.__pendingStartListingFlow;
+    if(Array.isArray(_hp) && _hp.length){ while(_hp.length){ try { startListingFlow(_hp.shift()); } catch(x){} } }
+  } else {
+    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] startListingFlow NICHT gehoisted – typeof:', typeof startListingFlow);
+    if(typeof window !== 'undefined'){
+      window.addEventListener('load', function flowAssignOnLoad(){
+        try {
+          if(typeof startListingFlow === 'function'){
+            window.startListingFlow = startListingFlow;
+            if(typeof startWizard === 'function') window.startWizard = startWizard;
+            if(typeof openDishFlow === 'function') window.openDishFlow = openDishFlow;
+            var p = window.__pendingStartListingFlow; if(Array.isArray(p) && p.length){ while(p.length){ try { startListingFlow(p.shift()); } catch(x){} } }
+          }
+        } catch(e){}
+      });
+    }
   }
   /** DEBUG_WEEKPLAN: In Konsole setzen (window.DEBUG_WEEKPLAN=true) für FAB/KW/Footer-Klick-Logs [cite: 2026-02-25] */
   /** User-Interaction Unlock: navigator.vibrate nur nach erstem Klick (Blocked call beheben) [cite: 2026-02-25] */
