@@ -6308,8 +6308,10 @@
             return;
           }
           if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
-          if(typeof window.forceOpenMastercard === 'function'){ window.forceOpenMastercard({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false }); return; }
-          if(typeof startListingFlow === 'function') startListingFlow({ dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false });
+          var ctx = { dishId: c.id, date: date, entryPoint: ep, skipQuickPost: false };
+          if(typeof window.forceOpenMastercard === 'function'){ window.forceOpenMastercard(ctx); return; }
+          var fn = (typeof startListingFlow === 'function') ? startListingFlow : (typeof window.startListingFlow === 'function' ? window.startListingFlow : null);
+          if(fn) fn(ctx);
         } catch(err){
           if(typeof console !== 'undefined' && console.error) console.error('Fehler beim Renner-Klick:', err);
           if(typeof closeCreateFlowSheet === 'function') closeCreateFlowSheet();
@@ -16497,14 +16499,21 @@
     /* Mastercard Step 1 für alles: Einheitlich über startWizard [cite: 2026-02-28] */
     startWizard('listing', context);
   }
-  try {
-    if(typeof window !== 'undefined'){
-      window.startListingFlow = startListingFlow;
-      window.startWizard = startWizard;
-      var pending=window.__pendingStartListingFlow;
-      if(Array.isArray(pending)&&pending.length){ while(pending.length){ var c=pending.shift(); startListingFlow(c); } }
-    }
-  } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
+  function assignFlowToWindow(){
+    try {
+      if(typeof window !== 'undefined' && typeof startListingFlow === 'function'){
+        window.startListingFlow = startListingFlow;
+        window.startWizard = startWizard;
+        var pending = window.__pendingStartListingFlow;
+        if(Array.isArray(pending) && pending.length){ while(pending.length){ try { startListingFlow(pending.shift()); } catch(x){} } }
+      }
+    } catch(e){ if(typeof console !== 'undefined' && console.error) console.error('[script.js] Fehler bei startListingFlow-Zuweisung:', e); }
+  }
+  assignFlowToWindow();
+  if(typeof window !== 'undefined'){
+    if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', assignFlowToWindow); }
+    window.addEventListener('load', assignFlowToWindow);
+  }
 
   /* V52: forceOpenMastercard FRÜH – unabhängig von initApp, optional ctx [cite: Live-Fix 2026-03-04, Renner-Fix 2026-03-05] */
   if(typeof window !== 'undefined'){
@@ -20440,7 +20449,4 @@
   }
 })();
 
-/* Garantie: Echte startListingFlow auf window – überschreibt Stub aus index.html [cite: Weisser-Screen-Fix 2026-03-10] */
-try{ if(typeof startListingFlow === 'function') window.startListingFlow = startListingFlow; }catch(e){}
-
-/* forceOpenMastercard und startListingFlow sind innerhalb der IIFE definiert (V52, Zeile ~16521) */
+/* Garantie: Echte startListingFlow auf window – Zuweisung erfolgt in Zeile ~16502 [cite: Weisser-Screen-Fix 2026-03-10] */

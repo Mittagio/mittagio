@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="style.css?v=20260304">
 </head>
 <body>
-<!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05] -->
+<!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05, Weisser-Screen-Fix 2026-03-10] -->
 <script>
 window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
 
@@ -56,12 +56,13 @@ window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
   }
   if(!window.startListingFlow){ window.startListingFlow = stub; }
 })();
-/* forceOpenMastercard-Stub: Wizard öffnen, dann startListingFlow mit vollem ctx (dishId bleibt erhalten) */
-  window.forceOpenMastercard=window.forceOpenMastercard||function(ctx){
-    var c=ctx&&typeof ctx==='object'?Object.assign({},ctx):{date:new Date().toISOString().split('T')[0],entryPoint:'dashboard'};
-    if(typeof window.startListingFlow==='function'){ window.startListingFlow(c); return; }
-    if(typeof window.openDishFlow==='function'){ window.openDishFlow(c.date||new Date().toISOString().split('T')[0], c.entryPoint||'dashboard'); return; }
-  };
+/* forceOpenMastercard-Stub: Ruft startListingFlow – script.js überschreibt mit echter Impl (Wizard-Setup) */
+window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
+  var c = ctx && typeof ctx === 'object' ? Object.assign({}, ctx) : { date: new Date().toISOString().split('T')[0], entryPoint: 'dashboard' };
+  if(typeof window.closeCreateFlowSheet === 'function') window.closeCreateFlowSheet();
+  if(typeof window.startListingFlow === 'function'){ window.startListingFlow(c); return; }
+  if(typeof window.openDishFlow === 'function'){ window.openDishFlow(c.date || new Date().toISOString().split('T')[0], c.entryPoint || 'dashboard'); return; }
+};
 </script>
 <script src="js/early-visibility.js"></script>
 <!-- Wizard physisch zuerst – nie durch Cache/Deployment verloren [cite: 2026-03-01] -->
@@ -3473,7 +3474,7 @@ window.__pendingStartListingFlow = window.__pendingStartListingFlow || [];
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260310"></script>
+<script src="script.js?v=20260311"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
