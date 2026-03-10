@@ -17187,7 +17187,7 @@
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header mastercard-header';
       collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
-      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
+      collapsingHeader.style.cssText='display:none;'; /* Header ausgeblendet – Foto ist die visuelle Führung */
       box.appendChild(collapsingHeader);
       sheet.appendChild(box);
       const saveDraft = () => { try { if(w && w.data) localStorage.setItem('wizard_draft', JSON.stringify({ data: w.data, ctx: w.ctx || {} })); } catch(e){} };
@@ -17578,7 +17578,7 @@
       /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-content-sheet';
-      contentSheet.style.cssText='width:100%; background:#ffffff; border-top-left-radius:24px; border-top-right-radius:24px; flex:1; box-shadow:none;';
+      contentSheet.style.cssText='width:100%; background:#ffffff; border-radius:0; flex:1; box-shadow:none;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
@@ -17597,7 +17597,7 @@
       inputDish.value=w.data.dish||'';
       inputDish.placeholder='Was bietest du heute an?';
       inputDish.autocomplete='off';
-      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-weight:800; font-style:normal; box-sizing:border-box; border:none; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:4px; resize:none; overflow:hidden; min-height:36px; text-align:center;';
+      inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-size:28px; font-weight:800; font-style:normal; box-sizing:border-box; border:none; border-bottom:1px solid #ebebeb; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:10px; resize:none; overflow:hidden; min-height:44px; text-align:center;';
       function adjustTitleFontSize(){
         var el = inputDish;
         if(!el || !el.offsetParent) return;
@@ -18002,7 +18002,7 @@
       });
 
       // 9. ACTION BUTTONS – 3-Schritt Mastercard: Speichern (Shortcut) + Weiter (Primary) [cite: FLOW FIX 2026-02-26]
-      var showSpeichernShortcut = !!(w.ctx && w.ctx.editOfferId) || entryPoint === 'week' || entryPoint === 'cookbook';
+      var showSpeichernShortcut = true; /* Immer sichtbar – Links "Im Kochbuch speichern" per Spec */
       function isPrimaryValid(){
         var d = !!(w.data.dish && String(w.data.dish).trim().length >= 2);
         var p = Number(w.data.price) > 0;
@@ -18040,7 +18040,7 @@
       const actionSection=document.createElement('section');
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:500; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:1000002; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
@@ -18085,7 +18085,12 @@
             showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
             return;
           }
-          if(id){ if(typeof showToast==='function') showToast('Bitte zuerst ein Datum im Wochenplan wählen'); }
+          /* Dashboard/Renner: Ins Kochbuch speichern und Wizard schließen */
+          if(id){
+            closeWizard(true);
+            if(typeof showToast==='function') showToast('Im Kochbuch gespeichert 📖');
+            if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
+          }
         };
         step1NavRow.appendChild(linkSpeichern);
       }
