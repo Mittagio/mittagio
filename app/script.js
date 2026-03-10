@@ -16262,6 +16262,14 @@
     if(!wizard){ if(typeof console !== 'undefined' && console.warn) console.warn('WIZARD: #wizard nicht im DOM – wizard-inserat-open wird nicht gesetzt'); return; }
     if(wbd) wbd.classList.add('active');
     wizard.classList.add('active');
+    /* z-index via setProperty('important') – schlägt jede CSS-Spezifität [cite: V53 z-index Fix] */
+    wizard.style.setProperty('z-index', '1000001', 'important');
+    wizard.style.setProperty('position', 'fixed', 'important');
+    wizard.style.setProperty('inset', '0', 'important');
+    wizard.style.setProperty('background', '#ffffff', 'important');
+    wizard.style.setProperty('display', 'flex', 'important');
+    wizard.style.setProperty('visibility', 'visible', 'important');
+    wizard.style.setProperty('opacity', '1', 'important');
     if(typeof console !== 'undefined' && console.log) console.log('MASTER-WIZARD IS NOW LIVE');
     if(w && w.kind === 'listing'){
       if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);

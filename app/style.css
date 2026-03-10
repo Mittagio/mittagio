@@ -9910,3 +9910,19 @@ body.wizard-inserat-open #wizard {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* V53: FINAL Z-INDEX FIX – Wizard IMMER über Backdrop (Spezifität 1ID+3Klassen schlägt alle) */
+body.wizard-inserat-open #wizard.sheet--kitchen.active {
+  z-index: 1000001 !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
