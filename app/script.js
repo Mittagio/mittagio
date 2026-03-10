@@ -17453,7 +17453,7 @@
         badge.type='button';
         badge.className='badge'+(currentCatForBadge===bd.type?' active':'');
         badge.dataset.type=bd.type;
-        badge.style.cssText='position:relative;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
+        badge.style.cssText='position:relative;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
         badge.innerHTML='<span>'+bd.emoji+'</span> '+bd.label;
         badge.onclick=function(e){
           e.stopPropagation();
@@ -17718,13 +17718,9 @@
       var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
       var hasExtras=!!(w.data.extras&&w.data.extras.length);
       var hasAbholnummer=!!w.data.hasPickupCode;
-      /* Info-Section: Wrapper für Service-Grid mit Label [cite: 2026-03-10] */
+      /* Info-Section: Wrapper für Service-Grid [cite: 2026-03-10] */
       var infoSection=document.createElement('div');
       infoSection.className='info-section';
-      var sectionLabel=document.createElement('p');
-      sectionLabel.className='section-label';
-      sectionLabel.textContent='Was bietest du heute an?';
-      infoSection.appendChild(sectionLabel);
 
       /* powerBar alias für Legacy-Referenzen */
       const powerBar=document.createElement('div');
@@ -17954,12 +17950,10 @@
           verdienstEl.style.display = price > 0 ? 'block' : 'none';
         }
       };
-      /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Kategorie-Pills → Preis */
+      /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Preis */
       infoSection.appendChild(powerBar);
       contentSheet.appendChild(infoSection);
-      /* Kategorie-Pills: flache Zeile unter Service-Grid */
-      pillGroup.style.cssText='display:flex; flex-direction:row; gap:6px; flex-wrap:wrap; align-items:center; justify-content:center; width:100%; margin:0; padding:4px 0 8px;';
-      contentSheet.appendChild(pillGroup);
+      /* Kategorie-Pills entfernt – Auswahl erfolgt über Floating Badges im Foto [cite: 2026-03-10] */
       /* Preis: groß (32px), zentriert, letzte Ebene vor Footer */
       priceSection.className='inserat-cockpit-price '+priceSection.className;
       contentSheet.appendChild(priceSection);
@@ -18083,7 +18077,7 @@
         linkSpeichern.id='btnSpeichernKochbuch';
         linkSpeichern.className='inserat-footer-link btn-secondary-link';
         linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
-        linkSpeichern.textContent=(w.ctx&&w.ctx.editOfferId)?'Änderungen speichern':(entryPoint==='week'?'Speichern':'Im Kochbuch speichern');
+        linkSpeichern.textContent='Speichern';
         linkSpeichern.disabled=!primaryValid;
         linkSpeichern.style.opacity=primaryValid?'1':'0.3';
         linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
