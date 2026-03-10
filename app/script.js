@@ -10498,6 +10498,7 @@
           `;
         }).join('');
         
+        if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint E erreicht (Zeile ~10500)');
         // Tap on offer item
         providerActiveOffersList.querySelectorAll('[data-offer-id]').forEach(el => {
           if(el.tagName !== 'BUTTON'){
@@ -10996,6 +10997,7 @@
       var provEntries = (w[dateKey] || []).filter(function(x){ return x.providerId === pid; });
       var liveOffers = offs.filter(function(o){ return o.providerId === pid && o.day === dateKey; });
       var count = liveOffers.length > 0 ? liveOffers.length : provEntries.length;
+      if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint F erreicht (Zeile ~11000)');
       if (count < 3) {
         if (typeof getWeekIndexForDate === 'function') weekPlanKWIndex = Math.max(0, getWeekIndexForDate(dateKey));
         weekPlanDay = dateKey;
@@ -11499,6 +11501,7 @@
   }
 
   /** Insert Review View: „Der schlaue Metzger spart“ – UI-Weiche Standard vs. Smart [cite: 2026-02-24, 2026-02-25] */
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint G erreicht (Zeile ~11504)');
   window.openInsertReview = function(selectedDishes, useAbholnummer){
     var view = document.getElementById('v-insert-review');
     var grid = document.getElementById('reviewGrid');
@@ -12199,6 +12202,7 @@
       }
       kebabDrop.onclick = function(e){ e.stopPropagation(); };
     }
+    if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint H erreicht (Zeile ~12205)');
     /* Header-Schatten beim Scrollen: feine Trennung Content/Header [cite: 2026-03-02] */
     var scrollEl = document.getElementById('kwBoardScroll');
     var headerEl = document.getElementById('weekHeaderCompact');
