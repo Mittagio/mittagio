@@ -11343,6 +11343,7 @@
     bd.classList.add('active');
     sheet.classList.add('active');
   }
+  } // schließt openKWSelector [FIX: fehlende Klammer]
   function closeKWSelector(){
     var bd = document.getElementById('kwSelectorBd');
     var sheet = document.getElementById('kwSelectorSheet');
