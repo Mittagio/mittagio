@@ -16826,8 +16826,8 @@
   }
 
   // Common wizard buttons (DOM-Elemente #wBack/#wNext wurden entfernt – Navigation nur im #wContent; Refs bleiben für null-sichere No-Ops.)
-  const wBackBtn = document.getElementById('wBack');
-  const wNextBtn = document.getElementById('wNext');
+  var wBackBtn = document.getElementById('wBack');
+  var wNextBtn = document.getElementById('wNext');
   function setWizardNext(text, icon = 'chevron-right'){
     if(!wNextBtn) return;
     wNextBtn.innerHTML = `<span>${text}</span>` + (icon ? `<i data-lucide="${icon}" style="width:18px;height:18px;stroke-width:3;"></i>` : '');
@@ -16837,7 +16837,7 @@
     wNextBtn.style.gap = '8px';
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
-  const defaultWizardNext = ()=>{ w.step += 1; rebuildWizard(); };
+  var defaultWizardNext = function(){ w.step += 1; rebuildWizard(); };
   function setWizardNextDefault(){ if(wNextBtn) wNextBtn.onclick = defaultWizardNext; }
 
   if(wBackBtn) wBackBtn.onclick=()=>{
