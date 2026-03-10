@@ -1,61 +1,83 @@
 # Mastercard-Architektur – Single Source of Truth
 
-> Letzte Aktualisierung: 2026-03-04  
-> Gilt für: `app/index.html`, `app/style.css`, `app/script.js` → `buildListingStep()`
+> Letzte Aktualisierung: 2026-03-10 (S25 Premium Scroll-Flow & Global Cleanup)  
+> Gilt für: `app/style.css`, `app/script.js` → `buildListingStep()`
 
 ---
 
-## Überblick: 3-Schritt Mastercard-Flow
+## Überblick: 2-Schritt Flow (Step 2 entfernt)
 
 | Schritt | Bezeichnung | Zweck |
 |---------|-------------|-------|
-| **Step 1 (STEP_EDIT)** | Edit / Neu | Dateneingabe: Bild, Name, Preis, Kategorie, Allergene |
-| **Step 2 (STEP_MONEY)** | Monetarisierung | Paket-Wahl: 0,00 € Inserat + 0,89 € Stripe-Fee oder 4,99 € Einmalzahlung |
+| **Step 1 (STEP_EDIT)** | S25 Cockpit | Dateneingabe: Bild, Name, Preis, Service-Grid, Allergene |
+| ~~Step 2 (STEP_MONEY)~~ | ~~Monetarisierung~~ | ~~Entfernt – immer kostenlos mit Abholnummer~~ |
 | **Step 3 (STEP_LIVE)** | Bestätigung | Live-Karte, Konfetti, Teilen-Button |
+
+**Pricing:** Immer `pricingChoice = 'pro'` (0,89 € / Abholnummer). `btnWeiter` publiziert direkt.
 
 ---
 
-## Schritt 1 – Edit/Neu (Design-Spec)
+## Schritt 1 – S25 Cockpit (35/45/20 Layout)
 
-### Vollbild-Immersion (Layout-Regel)
-- **Kein Padding oben/seitlich** um das Foto-Modul
-- `margin: 0`, `border-radius: 0` an den Seiten des Bildschirms
-- Das Bild „springt dich an" – volle Breite, bündig mit dem Rand
+### Layout-Regel (100dvh, Flexbox)
+- Container `.inserat-cockpit`: `height: 100dvh; display: flex; flex-direction: column; overflow: hidden`
+- **35dvh**: Foto-Zone (`.inserat-cockpit-photo`)
+- **45dvh**: Body-Zone (`.inserat-cockpit-body`, `overflow-y: auto`)
+- **~20dvh**: Footer (fixiert, `position: fixed; bottom: 0`)
 
 ### Visuelle Reihenfolge (Top → Bottom)
 
-1. **Hero-Foto-Modul** (Full-Width)
-   - Breite: `100%`, Höhe: `190px`, `object-fit: cover`
-   - Keine seitlichen Border-Radius
-   - Schließen-X: oben links, schwebt auf dem Bild (`position: absolute; top: 12px; left: 12px`)
-   - Klick → Kamera/Galerie öffnen
+1. **Hero-Foto-Modul** (35dvh, Edge-to-Edge)
+   - Keine seitlichen Border-Radius, `object-fit: cover`
+   - Schließen-X: oben links
 
-2. **Gerichtsname** (Ghost-Input)
+2. **Gerichtsname** (Ghost-Input, zentriert)
    - `font-size: 28px`, `font-weight: 900`, `color: #0f172a`
-   - Kein sichtbarer Input-Rahmen, nur `border-bottom: 1px solid #ebebeb`
-   - Placeholder: „Was kochst du heute?"
+   - Placeholder: „Was bietest du heute an?"
 
-3. **Preis-Badge** (rechtsbündig oder direkt darunter)
-   - Gelber Button-Badge, öffnet Preis-Eingabe per Hero-Morph
+3. **Beschreibung** (optional, zentriert)
 
-4. **Kategorie-Pills** (horizontal scrollbar)
-   - Fleisch, Veggie, Fisch, Vegan, Salat, Suppe
-   - Aktiv: Emerald `#10b981`
+4. **Service-Grid** – 5 quadratische Kacheln (Airbnb-Highlight: 2px `#000` bei active)
 
-5. **Allergen-Leiste** (Icons dezent)
-   - Collapsible, nur bei gesetzten Allergenen sichtbar
+   | Kachel | Emoji | Typ | Verhalten |
+   |--------|-------|-----|-----------|
+   | Vor Ort | 🍴 | `vor-ort` | Toggle |
+   | Mehrweg | 🔄 | `mehrweg` | Toggle + Rebowl-Zeile |
+   | Abholnummer | 🎫1️⃣ | `abholnummer` | Toggle |
+   | Allergene | 🌿 | `allergene` | Öffnet Sub-Menu-Drawer |
+   | Extras | ➕ | `extras` | Öffnet Quick-Adjust |
+
+5. **Kategorie-Pills** (Fleisch / Veggie / Vegan, flache Zeile)
+
+6. **Preis-Feld** (`font-size: 32px`, zentriert, `border-bottom`)
 
 ---
 
-## Schritt 2 – Monetarisierung
+## 4. Allergen-Grid (Icon-Sprache)
 
-### Zero-Entry-Modell
-- **Kachel A** (Standard): `0,00 €` Inserat + `0,89 €` Stripe-Fee pro Abholnummer
-- **Kachel B** (Einmalig): `4,99 €` Fixpreis, kein Abo
+Im Sub-Menu-Drawer (`.sub-menu-allergen-grid`) werden folgende Emojis als Kacheln angezeigt.
+Jede Kachel ist quadratisch und folgt dem Airbnb-Highlight-Prinzip (2px schwarzer Rand bei Auswahl).
 
-### Umsatz-Vorschau
-- Formel: `Preis × 25 Portionen`
-- Anzeige: „Möglicher Umsatz: X,XX €"
+| Emoji | Allergen | Kürzel |
+|-------|----------|--------|
+| 🌾 | Gluten | A |
+| 🥛 | Laktose | G |
+| 🥚 | Ei | C |
+| 🥜 | Erdnuss | E |
+| 🐟 | Fisch | D |
+| 🍤 | Krebstiere | B |
+| 🫘 | Soja | F |
+| 🌰 | Schalenfrüchte | H |
+| 🥗 | Sellerie | I |
+| 🌭 | Senf | J |
+| 🥯 | Sesam | K |
+| 🍷 | Sulfite | L |
+
+### Drawer-Verhalten
+- **Öffnen:** `cubic-bezier(0.2, 0.8, 0.2, 1)`, 0.4s, Slide-Up von unten
+- **Footer:** bleibt fixiert (z-index: 1000100), Drawer darunter (z-index: 999990)
+- **Schließen:** „Fertig"-Button oder Backdrop-Tap
+- **Cleanup:** `closeWizard()` entfernt Drawer aus `document.body`
 
 ---
 
@@ -126,11 +148,41 @@ history.pushState({ view: 'inserat-card', wizard: true }, '', location.pathname)
 
 ---
 
+## Floating Category Badges (S25 Hero-Foto)
+
+Im Foto-Modul (35dvh) erscheinen drei Glassmorphism-Badges am unteren linken Rand:
+
+| Badge | Typ | Klasse bei Auswahl |
+|-------|-----|--------------------|
+| 🥩 Fleisch | `Fleisch` | `.badge.active` |
+| 🥦 Veggie | `Veggie` | `.badge.active` |
+| 🌿 Vegan | `Vegan` | `.badge.active` |
+
+- **Klassen:** `.floating-badges` (Container), `.badge` (Button), `.badge.active` (schwarz)
+- **Style:** `background: rgba(255,255,255,0.9)`, `backdrop-filter: blur(4px)`, `border-radius: 20px`
+- **Logik:** Klick → `w.data.category` setzen + Kategorie-Pills unten synchronisieren
+- **Global:** `window.toggleCategoryBadge(type)` – synchronisiert Badges und Pills
+
+## Info-Section (Service-Grid Wrapper)
+
+Das Service-Grid (5 Kacheln) ist in `.info-section` eingebettet:
+
+```html
+<div class="info-section">
+  <p class="section-label">Was bietest du heute an?</p>
+  <div class="inserat-service-grid service-grid"><!-- 5 Kacheln --></div>
+</div>
+```
+
+- **`.info-section`:** `background: #f9f9f9`, `border-radius: 24px`, `margin: 12px 16px`
+- **`.section-label`:** `font-size: 11px`, `font-weight: 800`, `color: #717171`, uppercase
+
 ## Cleanup-Regeln
 
 - **Verboten in Step 1:** Jede Erwähnung von `4,99 €`, `Monetarisierung`, `Abholnummer-Upsell`
 - Step 1 = reine Dateneingabe, kein kommerzieller Druck
-- Alle Legacy-IDs (`#v-step-1` bis `#v-step-3`) sind entfernt
+- Alle Legacy-IDs (`#v-step-1`, `#v-step-2-monetize`, `#v-step-3-success`) sind aus `index.html` entfernt
+- Legacy-Funktionen (`goToStep2` alt, `bridgeToPremiumMonetization`, `confirmFinalListing`) sind auf Stubs reduziert
 
 ---
 
