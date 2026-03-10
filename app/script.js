@@ -20448,7 +20448,6 @@
       }
     }
   }, true);
-}
 
 // Flush pending listing flow calls created by index.html stub
 (function flushPendingStartListingFlow(){
