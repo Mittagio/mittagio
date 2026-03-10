@@ -583,6 +583,14 @@
     if(document.body) document.body.classList.add('provider-mode');
     if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff erzwungen (host=', location.hostname, ')');
   }
+  /* HOISTING-FIX v2: Zuweisung im GLEICHEN Scope wie startListingFlow – direkt nach V50 [cite: Weisser-Screen-Fix 2026-03-11] */
+  if(typeof startListingFlow === 'function'){
+    window.startListingFlow = startListingFlow;
+    if(typeof startWizard === 'function') window.startWizard = startWizard;
+    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] ✅ startListingFlow via Hoisting auf window (nach V50)');
+  } else {
+    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] ⚠️ startListingFlow NICHT gehoisted bei V50 – typeof:', typeof startListingFlow);
+  }
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
   if(typeof window !== 'undefined'){ window.customer = customer; window.cookbook = cookbook; window.week = week; }
