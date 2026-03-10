@@ -12271,6 +12271,7 @@
     if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
   }
   if(typeof window !== 'undefined') window.renderWeekPlan = renderWeekPlan;
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint I erreicht (Top-Level ~12273)');
 
   function getWeekDraftDays(){
     var out = [];
@@ -12496,6 +12497,7 @@
     addCookbookEntryToWeek(date, mealId);
   }
   if(typeof window !== 'undefined') window.assignToDate = assignToDate;
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint J erreicht (Top-Level ~12498)');
   function replaceWeekEntry(dayKey, index, cookbookId){
     var c = (cookbook||[]).find(function(x){ return String(x.id) === String(cookbookId); });
     if(!c || c.providerId !== providerId()) return;
@@ -16334,6 +16336,7 @@
     if(typeof window !== 'undefined') window._wizardInitialDataSnapshot = null;
   }
   if(typeof window !== 'undefined') window.closeWizard = closeWizard;
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint K erreicht (Top-Level ~16336)');
   /** Rücksprung nach Schließen der InseratCard gemäß entryPoint [cite: 2026-02-16 Smart-Exit] */
   function navigateAfterWizardExit(entryPoint){
     var ep = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
