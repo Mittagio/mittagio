@@ -9896,6 +9896,7 @@
   // --- Provider Dashboard (Home) - FINAL MVP ---
   let createFlowPreselectedDate = null; // Für Date-Preselect aus Today/Week
   let createFlowOriginView = 'dashboard'; // 'dashboard' = Pricing-Weiche (4,99/Gratis) | 'week' = nur Emerald Speichern
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint L erreicht (Top-Level ~9898)');
   
   // Zeit-Tracker Animation
   function animateTimeTracker(element, startHours, startMinutes, endHours, endMinutes){
@@ -10914,6 +10915,7 @@
     d.setDate(d.getDate() - daysBack);
     return d;
   }
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint M erreicht (Top-Level ~10917)');
   var holidays2026 = {'2026-01-01':'Neujahr','2026-01-06':'Heilige Drei Könige','2026-03-08':'Internationaler Frauentag','2026-04-03':'Karfreitag','2026-04-05':'Ostersonntag','2026-04-06':'Ostermontag','2026-05-01':'Tag der Arbeit','2026-05-14':'Christi Himmelfahrt','2026-05-24':'Pfingstsonntag','2026-05-25':'Pfingstmontag','2026-06-04':'Fronleichnam','2026-08-15':'Mariä Himmelfahrt','2026-09-20':'Weltkindertag','2026-10-03':'Tag der Deutschen Einheit','2026-10-31':'Reformationstag','2026-11-01':'Allerheiligen','2026-11-18':'Buß- und Bettag','2026-12-25':'1. Weihnachtstag','2026-12-26':'2. Weihnachtstag'};
   var holidayEmojis = {'2026-04-03':'✝️','2026-04-05':'🐣','2026-04-06':'🐣','2026-05-01':'👷','2026-05-14':'⬆️','2026-05-25':'🕊️','2026-10-03':'🇩🇪','2026-12-25':'🎄','2026-12-26':'🎄'};
   function getEasterSunday(year){
@@ -11241,6 +11243,7 @@
     grill: ['grill','steak','fleisch','bratwurst','hack','burger'],
     eintopf: ['eintopf','suppe','linsen','bohnen','gulasch']
   };
+  if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint N erreicht (Top-Level ~11244)');
   var SAISON_LABELS = { winter: 'Winter-Klassiker', fruhling: 'Frühlings-Frische', grill: 'Grillsaison-Spezial', eintopf: 'Eintopf-Woche' };
   function getDishesForSaisonSet(setKey){
     var pid = typeof providerId === 'function' ? providerId() : '';
