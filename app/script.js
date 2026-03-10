@@ -16256,9 +16256,11 @@
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     document.body.style.overflow = '';
     document.body.style.overscrollBehavior = '';
-    /* Radikaler Cleanup: .modal-backdrop + sub-menu-drawer restlos vernichten */
+    /* Radikaler Cleanup: alle Wizard-Sheets und Backdrops restlos vernichten [cite: 2026-03-10] */
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
+    document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
+    var qaPanel = document.getElementById('quick-adjust-sheet'); if(qaPanel && qaPanel.parentNode) qaPanel.remove();
     updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -17108,9 +17110,12 @@
   // STEP_EDIT → STEP_MONEY → STEP_LIVE
   // ============================================================
   function buildListingStep(){
-    /* Cleanup: alte Footer-Elemente aus #wizard entfernen (landen nicht mehr in #wContent) */
+    /* Cleanup: alte Footer-Elemente + alle Wizard-Sheets aus vorherigem Aufruf entfernen [cite: 2026-03-10] */
     var _oldF1=document.getElementById('mastercard-footer-step1'); if(_oldF1) _oldF1.remove();
     var _oldF2=document.getElementById('mastercard-footer-step2'); if(_oldF2) _oldF2.remove();
+    document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
+    var _oldQa=document.getElementById('quick-adjust-sheet'); if(_oldQa && _oldQa.parentNode) _oldQa.remove();
+    document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     setWizardNextDefault();
     w.step = 0;
     /* Immer Step 1 als Einstieg – verhindert falschen Step-2-Footer bei Neustart [cite: 2026-02-28] */
@@ -17741,12 +17746,13 @@
       function updatePowerBarFromBox(){
         var dineInTile=powerBar.querySelector('.inserat-service-tile[data-type="vor-ort"]');
         var mehrwegTile=powerBar.querySelector('.inserat-service-tile[data-type="mehrweg"]');
-        var abholTile=powerBar.querySelector('.inserat-service-tile[data-type="abholnummer"]');
+        var timeTile=powerBar.querySelector('.inserat-service-tile[data-type="time"]');
         var allergenTile=powerBar.querySelector('.inserat-service-tile[data-type="allergene"]');
         var extrasTile=powerBar.querySelector('.inserat-service-tile[data-type="extras"]');
         if(dineInTile) dineInTile.classList.toggle('active', w.data.dineInPossible!==false);
         if(mehrwegTile) mehrwegTile.classList.toggle('active', !!(w.data.reuse&&w.data.reuse.enabled));
-        if(abholTile) abholTile.classList.toggle('active', !!w.data.hasPickupCode);
+        /* tileTime zeigt aktuelle Zeit – kein toggle active, immer sichtbar */
+        if(timeTile){ var curPw=w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30–14:00'; timeTile.querySelector('.tile-label').textContent=curPw; }
         if(allergenTile) allergenTile.classList.toggle('active', !!(w.data.allergens&&w.data.allergens.length));
         if(extrasTile) extrasTile.classList.toggle('active', !!(w.data.extras&&w.data.extras.length));
         if(typeof updateMastercardFeedback==='function') updateMastercardFeedback();
