@@ -17453,7 +17453,7 @@
         badge.type='button';
         badge.className='badge'+(currentCatForBadge===bd.type?' active':'');
         badge.dataset.type=bd.type;
-        badge.style.cssText='display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
+        badge.style.cssText='position:relative;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:18px;border:none;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:transform 0.15s,background 0.15s;'+(currentCatForBadge===bd.type?'background:#222222;color:#ffffff;':'background:rgba(255,255,255,0.92);color:#222222;');
         badge.innerHTML='<span>'+bd.emoji+'</span> '+bd.label;
         badge.onclick=function(e){
           e.stopPropagation();
