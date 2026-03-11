@@ -3670,10 +3670,10 @@
       height: auto; min-height: 0;
       transition: max-height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    /* Listing: Foto 220px – S25 Premium kompakt [cite: S25-PREMIUM-NAV 2026-03-11] */
+    /* Listing: Foto 250px – scrollt normal unter Fixed Header [cite: S25-PREMIUM-NAV 2026-03-11] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
-      height: 220px !important; min-height: 220px !important; max-height: 220px !important; aspect-ratio: auto;
+      height: 250px !important; min-height: 250px !important; max-height: 250px !important; aspect-ratio: auto;
       box-shadow: none; border: none;
     }
     .liquid-master-panel .photo-header img,
@@ -9334,16 +9334,14 @@
   overflow: visible;
   min-height: 44px;
 }
-/* Foto-Container: Sticky + sanfter Verlauf unten [cite: S25 PREMIUM V2 2026-02-23] */
+/* Foto-Container: Normal-Flow (scrollt unter Fixed Header weg) [cite: S25-PREMIUM-NAV 2026-03-11] */
 .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 4 !important;
-  height: 220px !important;
-  min-height: 220px !important;
-  max-height: 220px !important;
+  position: relative !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  max-height: 250px !important;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header::after {
   content: '';
@@ -10326,58 +10324,55 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 }
 
 /* ===================================================================
-   S25 PREMIUM NAVIGATION: Sticky Header + Hero [cite: S25-PREMIUM-NAV 2026-03-11]
+   S25 PREMIUM NAVIGATION: Fixed Header + Normal-Scroll Photo
+   Apple/Airbnb-Style [cite: S25-PREMIUM-NAV 2026-03-11]
    =================================================================== */
 
-/* Photo-Container: Sticky auf Top 0 (überschreibt ältere 250px-Regeln) */
+/* Photo-Container: Normal-Flow, 250px (überschreibt alte sticky-Regeln) */
 #wizard[data-flow="listing"] .inserat-cockpit-photo {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 4 !important;
-  height: 220px !important;
-  min-height: 220px !important;
+  position: relative !important;
+  height: 250px !important;
+  min-height: 250px !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
+  transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-/* Photo-Tile im Scroll: einheitlich 220px */
+/* Photo-Tile im Scroll: einheitlich 250px */
 #wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
-  height: 220px !important;
-  min-height: 220px !important;
-  max-height: 220px !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  max-height: 250px !important;
 }
 
-/* Sticky Header: "Dein Gericht" – klebt bei 220px (direkt unter Foto) */
-#inserat-sticky-header {
-  position: sticky;
-  top: 220px;
-  z-index: 5;
+/* Fixed Header: permanent oben (Apple/Airbnb Style) */
+#inserat-fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  z-index: 10006;
   background: #ffffff;
   border-bottom: 1px solid #ebebeb;
-  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-#inserat-sticky-title {
+#inserat-fixed-title {
   font-size: 17px;
   font-weight: 800;
   color: #0f172a;
-  max-width: 80%;
+  max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-#inserat-sticky-header.is-stuck {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
 
-/* ScrollArea: kein top-padding – Foto + Header nehmen diesen Platz */
+/* ScrollArea: padding-top 60px (Platz für Fixed Header) */
 #mastercard-step-edit .inserat-scroll-area,
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
-  padding-top: 0 !important;
+  padding-top: 60px !important;
 }
 
 /* Service-Tiles: sanfter Schatten für Premium-Look */
@@ -10390,25 +10385,16 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
 }
 
-/* Keyboard-Mode: Foto schrumpft auf 120px, Sticky-Header folgt mit (beide animiert) */
-#wizard[data-flow="listing"] .inserat-cockpit-photo {
-  transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), min-height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+/* Keyboard-Mode: Photo komprimiert auf 120px */
 #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-cockpit-photo {
   height: 120px !important;
   min-height: 120px !important;
 }
-#wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active #inserat-sticky-header {
-  top: 120px !important;
-}
 
-/* Small-Screen: Foto 140px → Sticky-Header folgt */
+/* Small-Screen (<700px): Foto 140px */
 @media (max-height: 700px) {
   #wizard[data-flow="listing"] .inserat-cockpit-photo {
     height: 140px !important;
     min-height: 140px !important;
-  }
-  #inserat-sticky-header {
-    top: 140px !important;
   }
 }

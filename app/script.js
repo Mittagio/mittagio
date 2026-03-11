@@ -17113,6 +17113,7 @@
     /* Cleanup: alte Footer-Elemente + alle Wizard-Sheets aus vorherigem Aufruf entfernen [cite: 2026-03-10] */
     var _oldF1=document.getElementById('mastercard-footer-step1'); if(_oldF1) _oldF1.remove();
     var _oldF2=document.getElementById('mastercard-footer-step2'); if(_oldF2) _oldF2.remove();
+    var _oldFH=document.getElementById('inserat-fixed-header'); if(_oldFH) _oldFH.remove();
     document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var _oldQa=document.getElementById('quick-adjust-sheet'); if(_oldQa && _oldQa.parentNode) _oldQa.remove();
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
@@ -17349,8 +17350,8 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      /* height=220px – S25 Premium: kompakteres Hero, mehr Content sichtbar [cite: S25-PREMIUM-NAV 2026-03-11] */
-      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:220px; min-height:220px; max-height:220px; margin:0; padding:0;';
+      /* height=250px – Foto scrollt normal unter Fixed Header weg [cite: S25-PREMIUM 2026-03-11] */
+      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -17440,8 +17441,8 @@
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      closeX.style.cssText='position:absolute;top:12px;left:12px;width:32px;height:32px;background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
-      photoTile.appendChild(closeX);
+      closeX.style.cssText='position:absolute;left:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;background:#f7f7f7;border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
+      /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
 
       /* Floating Category Badges – an photoContainer (250px), nicht photoTile (35dvh), sonst Clipping [cite: 2026-03-10] */
       var floatingBadges=document.createElement('div');
@@ -17576,22 +17577,22 @@
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
-      scrollArea.style.cssText='padding-top:0;';
+      scrollArea.style.cssText='padding-top:60px;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      photoContainer.style.cssText='position:sticky; top:0; z-index:4; overflow:hidden; width:100%; height:220px; flex-shrink:0;';
+      photoContainer.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; flex-shrink:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoContainer);
 
-      /* S25 Premium Sticky Header: "Dein Gericht" – klebt direkt unter dem Foto [cite: S25-PREMIUM-NAV 2026-03-11] */
-      var stickyHeader=document.createElement('div');
-      stickyHeader.id='inserat-sticky-header';
-      stickyHeader.style.cssText='position:sticky; top:220px; z-index:5; background:#ffffff; border-bottom:1px solid #ebebeb; height:48px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:box-shadow 0.2s cubic-bezier(0.2,0.8,0.2,1), top 0.3s cubic-bezier(0.2,0.8,0.2,1);';
-      var stickyTitle=document.createElement('span');
-      stickyTitle.id='inserat-sticky-title';
-      stickyTitle.textContent='Dein Gericht';
-      stickyTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1);';
-      stickyHeader.appendChild(stickyTitle);
-      scrollArea.appendChild(stickyHeader);
+      /* S25 Fixed Header: Apple/Airbnb-Style – permanent oben [cite: S25-PREMIUM-NAV 2026-03-11] */
+      var fixedHeader=document.createElement('div');
+      fixedHeader.id='inserat-fixed-header';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center;';
+      var fixedTitle=document.createElement('span');
+      fixedTitle.id='inserat-fixed-title';
+      fixedTitle.textContent='Dein Gericht';
+      fixedTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1);';
+      fixedHeader.appendChild(fixedTitle);
+      fixedHeader.appendChild(closeX); /* Close-Button links im Fixed Header */
 
       /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
@@ -17627,19 +17628,17 @@
         el.style.height = 'auto';
         el.style.height = Math.min(el.scrollHeight, 80) + 'px';
       }
-      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); if(scrollArea.scrollTop>60){ var _dn=(inputDish.value||'').trim(); stickyTitle.textContent=_dn||'Dein Gericht'; } };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); if(scrollArea.scrollTop>200){ var _dn=(inputDish.value||'').trim(); fixedTitle.textContent=_dn||'Dein Gericht'; } };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
-      /* Fading-Title Scroll-Listener: Gerichtsname fadet in Sticky-Header ein [cite: S25-PREMIUM-NAV 2026-03-11] */
+      /* Fading-Title Scroll-Listener: Gerichtsname fadet in Fixed Header ein wenn Foto weg [cite: S25-PREMIUM-NAV 2026-03-11] */
       var _stickyPrevDish='';
       scrollArea.addEventListener('scroll', function(){
         var st=scrollArea.scrollTop;
         var dn=(inputDish.value||'').trim();
-        if(st>60){
-          stickyHeader.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';
-          if(dn!==_stickyPrevDish){ stickyTitle.style.opacity='0'; var _cap=dn; setTimeout(function(){ stickyTitle.textContent=_cap||'Dein Gericht'; stickyTitle.style.opacity='1'; },150); _stickyPrevDish=dn; }
+        if(st>200){
+          if(dn!==_stickyPrevDish){ fixedTitle.style.opacity='0'; var _cap=dn; setTimeout(function(){ fixedTitle.textContent=_cap||'Dein Gericht'; fixedTitle.style.opacity='1'; },150); _stickyPrevDish=dn; }
         } else {
-          stickyHeader.style.boxShadow='none';
-          if(_stickyPrevDish!==''){ stickyTitle.style.opacity='0'; setTimeout(function(){ stickyTitle.textContent='Dein Gericht'; stickyTitle.style.opacity='1'; },150); _stickyPrevDish=''; }
+          if(_stickyPrevDish!==''){ fixedTitle.style.opacity='0'; setTimeout(function(){ fixedTitle.textContent='Dein Gericht'; fixedTitle.style.opacity='1'; },150); _stickyPrevDish=''; }
         }
       },{passive:true});
       var btnClearName=document.createElement('button');
@@ -18290,7 +18289,13 @@
         linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
         linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+          /* Save-Feedback: Grün + Checkmark + Haptik, dann 500ms Delay [cite: S25-PREMIUM 2026-03-11] */
+          linkSpeichern.textContent='Gespeichert ✅';
+          linkSpeichern.style.color='#4caf50';
+          linkSpeichern.style.textDecoration='none';
+          try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
           hapticLight();
+          setTimeout(function(){
           if(w.ctx&&w.ctx.editOfferId){
             var o=previewOfferFromWizard();
             var offerId=(w.ctx.editOfferId)||(o&&o.id)||null;
@@ -18324,6 +18329,7 @@
             if(typeof showToast==='function') showToast('Im Kochbuch gespeichert 📖');
             if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
           }
+          }, 500); /* Ende setTimeout Save-Feedback */
         };
         step1NavRow.appendChild(linkSpeichern);
       }
@@ -18366,6 +18372,8 @@
         /* Footer direkt an #wizard – verhindert Clipping durch overflow:hidden in .wizard-scroll/.wizard-inner/.wizard-sheet-body */
         var _wizardEl = document.getElementById('wizard');
         if(_wizardEl) _wizardEl.appendChild(actionSection); else box.appendChild(actionSection);
+        /* Fixed Header direkt an #wizard – nicht im scroll-Fluss [cite: S25-PREMIUM-NAV 2026-03-11] */
+        if(_wizardEl) _wizardEl.appendChild(fixedHeader); else document.body.appendChild(fixedHeader);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
