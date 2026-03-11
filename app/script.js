@@ -17382,7 +17382,7 @@
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
-      photoContainer.appendChild(floatingBadges); /* Badges im Foto-Container (position:absolute, bottom-left) */
+      /* floatingBadges wird weiter unten nach Erstellung an photoContainer gehängt [cite: S25-FIXED-COCKPIT 2026-03-11] */
       overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); } };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
@@ -17647,6 +17647,7 @@
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
       contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; overflow:hidden; padding:4px 16px 0; gap:0;';
       scrollArea.appendChild(contentSheet);
+      contentSheet.appendChild(floatingBadges); /* Kategorie-Badges als erstes Element im Body */
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
