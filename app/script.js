@@ -17350,8 +17350,8 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      /* height=250px – Foto scrollt normal unter Fixed Header weg [cite: S25-PREMIUM 2026-03-11] */
-      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
+      /* height:100% – füllt den flex:0 0 30vh photoContainer [cite: S25-FIXED-COCKPIT 2026-03-11] */
+      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:100%; min-height:0; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -17382,6 +17382,7 @@
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
+      photoContainer.appendChild(floatingBadges); /* Badges im Foto-Container (position:absolute, bottom-left) */
       overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); } };
       photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
@@ -17489,7 +17490,7 @@
       closeX.style.cssText='position:absolute;left:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;background:#f7f7f7;border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
       /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
 
-      /* Floating Category Badges – an photoContainer (250px), nicht photoTile (35dvh), sonst Clipping [cite: 2026-03-10] */
+      /* Floating Category Badges – direkt in photoContainer (30vh), korrekte absolute Positionierung [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges';
       floatingBadges.style.cssText='position:absolute;bottom:12px;left:12px;display:flex;gap:6px;z-index:160;pointer-events:auto;';
@@ -17622,9 +17623,10 @@
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
-      scrollArea.style.cssText='padding-top:60px;';
+      /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow:hidden; padding-top:60px; padding-bottom:76px;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      photoContainer.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; flex-shrink:0;';
+      photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoContainer);
       scrollArea.appendChild(photoPillBar); /* eBay Pill-Bar direkt unter Foto */
@@ -17640,19 +17642,17 @@
       fixedHeader.appendChild(fixedTitle);
       fixedHeader.appendChild(closeX); /* Close-Button links im Fixed Header */
 
-      /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
+      /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='';
+      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; overflow:hidden; padding:4px 16px 0; gap:0;';
       scrollArea.appendChild(contentSheet);
-      /* Floating Badges: erstes Element in contentSheet, überlappt visuell das Foto [cite: 2026-03-10] */
-      contentSheet.appendChild(floatingBadges);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:6px 16px 4px;';
+      stepName.style.cssText='width:100%; margin:0; display:flex; justify-content:center; background:#ffffff; padding:4px 0;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17674,19 +17674,9 @@
         el.style.height = 'auto';
         el.style.height = Math.min(el.scrollHeight, 80) + 'px';
       }
-      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); if(scrollArea.scrollTop>200){ var _dn=(inputDish.value||'').trim(); fixedTitle.textContent=_dn||'Dein Gericht'; } };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
-      /* Fading-Title Scroll-Listener: Gerichtsname fadet in Fixed Header ein wenn Foto weg [cite: S25-PREMIUM-NAV 2026-03-11] */
-      var _stickyPrevDish='';
-      scrollArea.addEventListener('scroll', function(){
-        var st=scrollArea.scrollTop;
-        var dn=(inputDish.value||'').trim();
-        if(st>200){
-          if(dn!==_stickyPrevDish){ fixedTitle.style.opacity='0'; var _cap=dn; setTimeout(function(){ fixedTitle.textContent=_cap||'Dein Gericht'; fixedTitle.style.opacity='1'; },150); _stickyPrevDish=dn; }
-        } else {
-          if(_stickyPrevDish!==''){ fixedTitle.style.opacity='0'; setTimeout(function(){ fixedTitle.textContent='Dein Gericht'; fixedTitle.style.opacity='1'; },150); _stickyPrevDish=''; }
-        }
-      },{passive:true});
+      /* Kein Scroll-Listener: Fixed Cockpit hat kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var btnClearName=document.createElement('button');
       btnClearName.type='button';
       btnClearName.className='inserat-name-clear-btn';
@@ -17716,7 +17706,7 @@
       // ========== 4. Kategorie-Pills (Fleisch, Veggie, Vegan) – direkt unter Bild [cite: 2026-03-02] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:8px; margin-bottom:0; padding-top:0; align-items:center; width:100%;';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin:0; padding:0; align-items:center; width:100%;';
       var catValues=['Fleisch','Veggie','Vegan'];
       var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
@@ -17759,7 +17749,7 @@
       // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:8px 16px 4px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:0; width:100%;';
       /* Airbnb Card Wrapper */
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper price-airbnb-card';

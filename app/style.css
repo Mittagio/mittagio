@@ -10385,12 +10385,6 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* ScrollArea: padding-top 60px (Platz für Fixed Header) */
-#mastercard-step-edit .inserat-scroll-area,
-#wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
-  padding-top: 60px !important;
-}
-
 /* Service-Tiles: sanfter Schatten für Premium-Look */
 #wizard[data-flow="listing"] .inserat-service-tile {
   box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
@@ -10401,16 +10395,74 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
 }
 
-/* Keyboard-Mode: Photo komprimiert auf 120px */
-#wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-cockpit-photo {
-  height: 120px !important;
-  min-height: 120px !important;
+/* ===================================================================
+   S25 FIXED COCKPIT – No-Scroll Proportional Layout
+   Überschreibt alle älteren padding/overflow/height-Regeln
+   [cite: S25-FIXED-COCKPIT 2026-03-11]
+   =================================================================== */
+
+/* 1. ScrollArea: Flex-Column, KEIN Scroll, padding für Header + Footer */
+#wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
+#mastercard-step-edit .inserat-scroll-area,
+#mastercard-step-edit .mastercard-scroll-area {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  padding-top: 60px !important;
+  padding-bottom: 76px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  align-items: stretch !important;
+  text-align: left !important;
+  gap: 0 !important;
 }
 
-/* Small-Screen (<700px): Foto 140px */
+/* 2. PhotoContainer: 30vh, kein fixer px-Wert mehr */
+#wizard[data-flow="listing"] .inserat-cockpit-photo,
+#wizard[data-flow="listing"] .inserat-photo-container {
+  flex: 0 0 30vh !important;
+  height: 30vh !important;
+  min-height: 0 !important;
+  max-height: 30vh !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* 3. PhotoTile: füllt den photoContainer zu 100% */
+#wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+/* 4. ContentSheet: flex:1, verteilt Inhalt gleichmäßig */
+#wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
+#wizard[data-flow="listing"] .inserat-cockpit-body {
+  flex: 1 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  padding: 4px 16px 0 !important;
+  gap: 0 !important;
+}
+
+/* 5. Keyboard-Mode: Photo schrumpft auf 20vh */
+#wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-cockpit-photo {
+  flex: 0 0 20vh !important;
+  height: 20vh !important;
+  max-height: 20vh !important;
+}
+
+/* 6. Kleiner Screen (<700px): Photo 25vh */
 @media (max-height: 700px) {
   #wizard[data-flow="listing"] .inserat-cockpit-photo {
-    height: 140px !important;
-    min-height: 140px !important;
+    flex: 0 0 25vh !important;
+    height: 25vh !important;
+    max-height: 25vh !important;
   }
 }
