@@ -17341,7 +17341,7 @@
       {
 
       // ========== 1. EBENE: Ebay-Style Photo-Modul ÔÇô Smart-Crop, Drag-to-Pan [cite: 2026-02-21] ==========
-      function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 50; }
+      function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 40; }
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
       const photoContainer=document.createElement('div');
       photoContainer.className='inserat-photo-container';
@@ -17349,8 +17349,8 @@
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
       photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
-      /* height=250px = gleich wie photoContainer → kein Clip-Versatz [cite: 2026-03-10] */
-      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; min-height:250px; max-height:250px; margin:0; padding:0;';
+      /* height=220px – S25 Premium: kompakteres Hero, mehr Content sichtbar [cite: S25-PREMIUM-NAV 2026-03-11] */
+      photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:220px; min-height:220px; max-height:220px; margin:0; padding:0;';
       var imgSrc=w.data.photoData||'';
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
@@ -17576,11 +17576,22 @@
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
-      scrollArea.style.cssText='';
+      scrollArea.style.cssText='padding-top:0;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      photoContainer.style.cssText='position:relative; overflow:hidden; width:100%;';
+      photoContainer.style.cssText='position:sticky; top:0; z-index:4; overflow:hidden; width:100%; height:220px; flex-shrink:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoContainer);
+
+      /* S25 Premium Sticky Header: "Dein Gericht" – klebt direkt unter dem Foto [cite: S25-PREMIUM-NAV 2026-03-11] */
+      var stickyHeader=document.createElement('div');
+      stickyHeader.id='inserat-sticky-header';
+      stickyHeader.style.cssText='position:sticky; top:220px; z-index:5; background:#ffffff; border-bottom:1px solid #ebebeb; height:48px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:box-shadow 0.2s cubic-bezier(0.2,0.8,0.2,1), top 0.3s cubic-bezier(0.2,0.8,0.2,1);';
+      var stickyTitle=document.createElement('span');
+      stickyTitle.id='inserat-sticky-title';
+      stickyTitle.textContent='Dein Gericht';
+      stickyTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1);';
+      stickyHeader.appendChild(stickyTitle);
+      scrollArea.appendChild(stickyHeader);
 
       /* Content-Sheet: Weißer Wrapper, Zero Gap [cite: REFACTOR 2026-02-23] */
       var contentSheet=document.createElement('div');
@@ -17594,7 +17605,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; position:sticky; top:0; z-index:10; background:#ffffff; padding:10px 16px 6px;';
+      stepName.style.cssText='width:100%; margin-top:0; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:6px 16px 4px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17616,8 +17627,21 @@
         el.style.height = 'auto';
         el.style.height = Math.min(el.scrollHeight, 80) + 'px';
       }
-      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
+      inputDish.oninput=function(){ w.data.dish=inputDish.value; saveDraft(); adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); if(scrollArea.scrollTop>60){ var _dn=(inputDish.value||'').trim(); stickyTitle.textContent=_dn||'Dein Gericht'; } };
       inputDish.onblur=function(){ dismissKeyboard(); hapticLight(); };
+      /* Fading-Title Scroll-Listener: Gerichtsname fadet in Sticky-Header ein [cite: S25-PREMIUM-NAV 2026-03-11] */
+      var _stickyPrevDish='';
+      scrollArea.addEventListener('scroll', function(){
+        var st=scrollArea.scrollTop;
+        var dn=(inputDish.value||'').trim();
+        if(st>60){
+          stickyHeader.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';
+          if(dn!==_stickyPrevDish){ stickyTitle.style.opacity='0'; var _cap=dn; setTimeout(function(){ stickyTitle.textContent=_cap||'Dein Gericht'; stickyTitle.style.opacity='1'; },150); _stickyPrevDish=dn; }
+        } else {
+          stickyHeader.style.boxShadow='none';
+          if(_stickyPrevDish!==''){ stickyTitle.style.opacity='0'; setTimeout(function(){ stickyTitle.textContent='Dein Gericht'; stickyTitle.style.opacity='1'; },150); _stickyPrevDish=''; }
+        }
+      },{passive:true});
       var btnClearName=document.createElement('button');
       btnClearName.type='button';
       btnClearName.className='inserat-name-clear-btn';
@@ -17633,7 +17657,7 @@
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
       descWrap.className='inserat-desc-wrap';
-      descWrap.style.cssText='width:100%; padding:4px 0 8px 0; text-align:center;';
+      descWrap.style.cssText='width:100%; padding:2px 0 4px 0; text-align:center;';
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
@@ -17647,7 +17671,7 @@
       // ========== 4. Kategorie-Pills (Fleisch, Veggie, Vegan) – direkt unter Bild [cite: 2026-03-02] ==========
       var pillGroup=document.createElement('div');
       pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:8px; margin-top:16px; margin-bottom:0; padding-top:16px; align-items:center; width:100%;';
+      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin-top:8px; margin-bottom:0; padding-top:0; align-items:center; width:100%;';
       var catValues=['Fleisch','Veggie','Vegan'];
       var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
       var currentCat=w.data.category||'Fleisch';
@@ -17690,7 +17714,7 @@
       // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; margin:12px 16px 8px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:8px 16px 4px;';
       /* Airbnb Card Wrapper */
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper price-airbnb-card';

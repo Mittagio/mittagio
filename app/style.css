@@ -3668,12 +3668,12 @@
     .liquid-master-panel .inserat-photo-tile.photo-header {
       width: 100%; aspect-ratio: 3/2; max-height: min(260px, 38vh); flex-shrink: 0;
       height: auto; min-height: 0;
-      transition: max-height 0.25s ease;
+      transition: max-height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    /* Listing: Foto 250px – Anti-Hüpf: immer gleiche Höhe (Neu/Bearbeiten/Kochbuch) [cite: UNIFY COOKBOOK 2026-02-23] */
+    /* Listing: Foto 220px – S25 Premium kompakt [cite: S25-PREMIUM-NAV 2026-03-11] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
-      height: 250px !important; min-height: 250px !important; max-height: 250px !important; aspect-ratio: auto;
+      height: 220px !important; min-height: 220px !important; max-height: 220px !important; aspect-ratio: auto;
       box-shadow: none; border: none;
     }
     .liquid-master-panel .photo-header img,
@@ -9317,13 +9317,13 @@
   height: 32px !important;
   z-index: 999 !important;
 }
-/* Content-Sheet: Zero Gap – fast bündig mit 24px-Abrundung [cite: S25 PREMIUM 2026-02-23] */
+/* Content-Sheet: kein Negativrand mehr – Sticky Header übernimmt Trennung [cite: S25-PREMIUM-NAV 2026-03-11] */
 #wizard[data-flow="listing"] .inserat-content-sheet {
   background: #ffffff !important;
-  border-top-left-radius: 24px !important;
-  border-top-right-radius: 24px !important;
-  margin-top: -19px !important;
-  padding-top: 8px !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 4px !important;
   position: relative;
   z-index: 2;
   overflow: visible;
@@ -9340,10 +9340,10 @@
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   position: sticky !important;
   top: 0 !important;
-  z-index: 1 !important;
-  height: 250px !important;
-  min-height: 250px !important;
-  max-height: 250px !important;
+  z-index: 4 !important;
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header::after {
   content: '';
@@ -9977,7 +9977,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 8px;
 }
 
 /* Titel und Beschreibung zentriert */
@@ -10323,4 +10323,92 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   line-height: 1.4;
   text-align: center;
   margin: 12px 0 0;
+}
+
+/* ===================================================================
+   S25 PREMIUM NAVIGATION: Sticky Header + Hero [cite: S25-PREMIUM-NAV 2026-03-11]
+   =================================================================== */
+
+/* Photo-Container: Sticky auf Top 0 (überschreibt ältere 250px-Regeln) */
+#wizard[data-flow="listing"] .inserat-cockpit-photo {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 4 !important;
+  height: 220px !important;
+  min-height: 220px !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+/* Photo-Tile im Scroll: einheitlich 220px */
+#wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
+}
+
+/* Sticky Header: "Dein Gericht" – klebt bei 220px (direkt unter Foto) */
+#inserat-sticky-header {
+  position: sticky;
+  top: 220px;
+  z-index: 5;
+  background: #ffffff;
+  border-bottom: 1px solid #ebebeb;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#inserat-sticky-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#inserat-sticky-header.is-stuck {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ScrollArea: kein top-padding – Foto + Header nehmen diesen Platz */
+#mastercard-step-edit .inserat-scroll-area,
+#wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
+  padding-top: 0 !important;
+}
+
+/* Service-Tiles: sanfter Schatten für Premium-Look */
+#wizard[data-flow="listing"] .inserat-service-tile {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  transition: box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+#wizard[data-flow="listing"] .inserat-service-tile:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+}
+
+/* Keyboard-Mode: Foto schrumpft auf 120px, Sticky-Header folgt mit (beide animiert) */
+#wizard[data-flow="listing"] .inserat-cockpit-photo {
+  transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), min-height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-cockpit-photo {
+  height: 120px !important;
+  min-height: 120px !important;
+}
+#wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active #inserat-sticky-header {
+  top: 120px !important;
+}
+
+/* Small-Screen: Foto 140px → Sticky-Header folgt */
+@media (max-height: 700px) {
+  #wizard[data-flow="listing"] .inserat-cockpit-photo {
+    height: 140px !important;
+    min-height: 140px !important;
+  }
+  #inserat-sticky-header {
+    top: 140px !important;
+  }
 }
