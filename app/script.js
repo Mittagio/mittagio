@@ -17363,11 +17363,22 @@
       overlay.style.cssText='position:absolute;inset:0;cursor:pointer;';
       overlay.style.setProperty('pointer-events', w.data.photoData?'none':'auto', 'important');
       photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
+      /* Crop-Modus: Fertig-Overlay (positioniert unten mittig im Foto) */
+      var cropFertigOverlay=document.createElement('div');
+      cropFertigOverlay.id='crop-fertig-overlay';
+      cropFertigOverlay.style.cssText='position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:18px; z-index:60; pointer-events:none; background:rgba(0,0,0,0.12);';
+      var cropFertigBtn=document.createElement('button');
+      cropFertigBtn.type='button';
+      cropFertigBtn.style.cssText='pointer-events:auto; background:rgba(10,10,10,0.72); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:none; border-radius:50px; color:#fff; font-size:15px; font-weight:700; padding:12px 36px; cursor:pointer; display:flex; align-items:center; gap:8px; letter-spacing:0.01em;';
+      cropFertigBtn.innerHTML='✓&nbsp;Fertig';
+      cropFertigOverlay.appendChild(cropFertigBtn);
+      photoTile.appendChild(cropFertigOverlay);
       if(!w.data.photoData){
+        photoTile.style.border='2px dashed #e0e0e0';
         var placeholderCenter=document.createElement('div');
         placeholderCenter.className='inserat-photo-placeholder-center';
-        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:linear-gradient(160deg,#f8f6f3 0%,#ede9e3 100%); pointer-events:none;';
-        placeholderCenter.innerHTML='<span style="font-size:52px; line-height:1;">🍽️</span><span style="font-size:11px; font-weight:800; color:#b0a89a; letter-spacing:0.08em; text-transform:uppercase;">Foto hinzufügen</span>';
+        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#f9f9f9; pointer-events:none;';
+        placeholderCenter.innerHTML='<span style="font-size:44px; line-height:1; opacity:0.45;">📸</span><span style="font-size:14px; font-weight:400; color:#aaaaaa; font-family:system-ui,-apple-system,sans-serif; letter-spacing:0.01em;">Foto hinzufügen</span>';
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
@@ -17388,8 +17399,10 @@
           if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; }
           var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
           photoTile.classList.remove('inserat-photo-placeholder','pulse-soft');
+          photoTile.style.border='none';
           w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
           overlay.style.pointerEvents='none'; overlay.style.cursor='default';
+          if(photoPillBar) photoPillBar.style.display='flex';
           if(typeof checkMastercardValidation==='function') checkMastercardValidation();
           /* Hintergrund: Resize + Filter für Upload, dann dataUrl speichern */
           (async function(){
@@ -17422,20 +17435,52 @@
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
-      if(imgEl&&w.data.photoData){
-        var panStartY=0,panStartPos=50,isPanning=false;
-        function onPointerStart(ev){ panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
-        function onPointerMove(ev){ if(!isPanning) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var diff=(panStartY-y)*0.15; var p=Math.max(0,Math.min(100,panStartPos+diff)); imgEl.style.objectPosition='center '+p+'%'; setPhotoObjectPosition(p); }
-        function onPointerEnd(){ if(isPanning) hapticLight(); isPanning=false; panStartY=0; }
-        photoTile.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; onPointerStart(ev); },{passive:true});
-        photoTile.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; onPointerMove(ev); },{passive:true});
-        photoTile.addEventListener('touchend',onPointerEnd,{passive:true});
-        photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
-        var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
-        var panUp=function(){ onPointerEnd(); };
-        window.addEventListener('mousemove',panMove);
-        window.addEventListener('mouseup',panUp);
+      /* eBay-Style Pill-Bar: erscheint nach Foto-Upload [cite: S25-PREMIUM 2026-03-11] */
+      var photoPillBar=document.createElement('div');
+      photoPillBar.id='photo-pill-bar';
+      photoPillBar.style.cssText='display:'+(w.data.photoData?'flex':'none')+'; gap:8px; padding:8px 16px 0; justify-content:center; flex-wrap:wrap;';
+      var _pillStyle='display:flex; align-items:center; gap:5px; background:#fff; border:1px solid #e8e8e8; border-radius:50px; padding:8px 16px; font-size:13px; font-weight:600; color:#222; cursor:pointer; box-shadow:0 1px 8px rgba(0,0,0,0.07); min-height:40px; white-space:nowrap; transition:opacity 0.2s;';
+      var btnCropPill=document.createElement('button'); btnCropPill.type='button'; btnCropPill.style.cssText=_pillStyle;
+      btnCropPill.innerHTML='✂️ <span>Ausschnitt</span>';
+      var btnChangePill=document.createElement('button'); btnChangePill.type='button'; btnChangePill.style.cssText=_pillStyle;
+      btnChangePill.innerHTML='🔄 <span>Ändern</span>';
+      photoPillBar.appendChild(btnCropPill);
+      photoPillBar.appendChild(btnChangePill);
+      /* Crop-Modus Logik */
+      var cropModeActive=false;
+      function enterCropMode(){
+        if(!w.data.photoData) return;
+        cropModeActive=true;
+        cropFertigOverlay.style.display='flex';
+        photoPillBar.style.opacity='0.3';
+        photoPillBar.style.pointerEvents='none';
+        hapticLight();
+        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
       }
+      function exitCropMode(){
+        cropModeActive=false;
+        cropFertigOverlay.style.display='none';
+        photoPillBar.style.opacity='1';
+        photoPillBar.style.pointerEvents='auto';
+        hapticLight();
+        try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+      }
+      cropFertigBtn.onclick=function(e){ e.stopPropagation(); exitCropMode(); };
+      btnCropPill.onclick=function(e){ e.stopPropagation(); enterCropMode(); };
+      btnChangePill.onclick=function(e){ e.stopPropagation(); hapticLight(); cameraInput.click(); };
+      /* Pan-Events: immer registriert, aber nur aktiv wenn cropModeActive=true */
+      var panStartY=0,panStartPos=50,isPanning=false;
+      function onPointerStart(ev){ if(!cropModeActive) return; panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
+      function onPointerMove(ev){ if(!isPanning||!cropModeActive) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var diff=(panStartY-y)*0.15; var p=Math.max(0,Math.min(100,panStartPos+diff)); imgEl.style.objectPosition='center '+p+'%'; setPhotoObjectPosition(p); }
+      function onPointerEnd(){ if(isPanning) hapticLight(); isPanning=false; panStartY=0; }
+      photoTile.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; onPointerStart(ev); },{passive:true});
+      photoTile.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; onPointerMove(ev); },{passive:true});
+      photoTile.addEventListener('touchend',onPointerEnd,{passive:true});
+      photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
+      var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
+      var panUp=function(){ onPointerEnd(); };
+      window.addEventListener('mousemove',panMove);
+      window.addEventListener('mouseup',panUp);
       var closeX=document.createElement('button');
       closeX.type='button';
       closeX.className='close-wizard-x close-mastercard btn-close-master';
@@ -17582,6 +17627,7 @@
       photoContainer.style.cssText='position:relative; overflow:hidden; width:100%; height:250px; flex-shrink:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       scrollArea.appendChild(photoContainer);
+      scrollArea.appendChild(photoPillBar); /* eBay Pill-Bar direkt unter Foto */
 
       /* S25 Fixed Header: Apple/Airbnb-Style – permanent oben [cite: S25-PREMIUM-NAV 2026-03-11] */
       var fixedHeader=document.createElement('div');

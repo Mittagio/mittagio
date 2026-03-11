@@ -10344,7 +10344,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: 250px !important;
 }
 
-/* Fixed Header: permanent oben (Apple/Airbnb Style) */
+/* Fixed Header: permanent oben (Apple/Airbnb Style) – keine Rückstände vom Foto */
 #inserat-fixed-header {
   position: fixed;
   top: 0;
@@ -10357,6 +10357,22 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden; /* verhindert Bleed-through */
+  isolation: isolate;
+}
+
+/* eBay Pill-Bar: Foto-Aktionen direkt unter dem Foto */
+#photo-pill-bar {
+  flex-shrink: 0;
+}
+#photo-pill-bar button:active {
+  transform: scale(0.94);
+  opacity: 0.85;
+}
+
+/* Crop-Fertig-Overlay im Foto */
+#crop-fertig-overlay {
+  touch-action: none; /* verhindert Page-Scroll während Crop */
 }
 #inserat-fixed-title {
   font-size: 17px;
