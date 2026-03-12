@@ -17733,8 +17733,6 @@
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
       contentSheet.appendChild(stepName);
-      /* Kategorie-Pills direkt unter Name (nicht mehr im Foto schwebend) [cite: EBAY-AIRBNB 2026-03-11] */
-      contentSheet.appendChild(pillGroup);
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
@@ -17791,7 +17789,8 @@
       });
       pillGroup.appendChild(categoryPills);
       pillGroup.classList.add('pill-intro-run');
-      /* pillGroup wird erst in der Action-Row (Schritt 5) unten platziert */
+      /* Kategorie-Pills direkt unter Name in contentSheet [cite: EBAY-AIRBNB 2026-03-11] */
+      contentSheet.appendChild(pillGroup);
 
       // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
       var priceSection=document.createElement('div');
