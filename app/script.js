@@ -17749,7 +17749,7 @@
       descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
       descWrap.appendChild(descriptionTextarea);
-      contentSheet.appendChild(descWrap);
+      /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
 
       // ========== 4. Kategorie-Pills (Fleisch, Veggie, Vegan) – direkt unter Bild [cite: 2026-03-02] ==========
       var pillGroup=document.createElement('div');
@@ -17792,8 +17792,9 @@
       });
       pillGroup.appendChild(categoryPills);
       pillGroup.classList.add('pill-intro-run');
-      /* Kategorie-Pills direkt unter Name in contentSheet [cite: EBAY-AIRBNB 2026-03-11] */
+      /* DOM-Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
       contentSheet.appendChild(pillGroup);
+      contentSheet.appendChild(descWrap);
 
       // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
       var priceSection=document.createElement('div');

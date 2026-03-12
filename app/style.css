@@ -1851,14 +1851,7 @@
       gap: 0 !important;
       align-items: stretch !important;
     }
-    /* Foto-Modul: 170px, edge-to-edge */
-    #mastercard-step-edit .photo-section-ebay,
-    #mastercard-step-edit .inserat-photo-tile {
-      height: 170px !important;
-      min-height: 170px !important;
-      max-height: 170px !important;
-      margin: 0 -20px !important;
-    }
+    /* 170px-Block entfernt – photo-tile füllt jetzt 100% des 250px-Containers [cite: PURGE 2026-03-12] */
     /* 3. TYPOGRAFIE REDUKTION */
     #mastercard-step-edit #step-name input,
     #mastercard-step-edit .input-giant-name,
@@ -9297,21 +9290,16 @@
   color: #222222;
 }
 
-/* mastercard-scroll-area: Fixed Cockpit, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
+/* overflow:hidden Scroll-Block entfernt – Airbnb-Block setzt overflow-y:auto [cite: PURGE 2026-03-12] */
 .mastercard-scroll-area,
 .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  overflow: hidden !important;
   padding: 60px 0 76px !important;
 }
-/* Foto bündig oben, Kamera-Icon oben rechts [cite: 2026-02-23] */
-#wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area,
-#wizard[data-flow="listing"] .inserat-step1-pane .inserat-scroll-area {
-  padding-top: 0 !important;
-}
+/* padding-top:0 entfernt – Airbnb-Block (padding-top:60px) greift jetzt korrekt [cite: PURGE 2026-03-12] */
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -9342,25 +9330,7 @@
   overflow: visible;
   min-height: 44px;
 }
-/* Foto-Container: Normal-Flow, 30vh (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
-.inserat-photo-container,
-#wizard[data-flow="listing"] .inserat-photo-container,
-#wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
-  position: relative !important;
-  height: 30vh !important;
-  min-height: 0 !important;
-  max-height: 30vh !important;
-}
-#wizard[data-flow="listing"] .inserat-photo-tile.photo-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.4) 100%);
-  pointer-events: none;
-}
+/* height:30vh + ::after-Gradient entfernt – Airbnb-Block (250px) greift [cite: PURGE 2026-03-12] */
 #wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-placeholder {
   background: #e2e8f0 !important;
 }
@@ -9965,15 +9935,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   background: #ffffff;
 }
 
-#wizard[data-flow="listing"] .inserat-cockpit-photo {
-  height: 35dvh;
-  min-height: 35dvh;
-  max-height: 35dvh;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-}
+/* 35dvh Block entfernt – Airbnb-Block setzt 250px [cite: PURGE 2026-03-12] */
 
 #wizard[data-flow="listing"] .inserat-cockpit-body {
   flex: 1;
@@ -10333,17 +10295,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
    Apple/Airbnb-Style [cite: S25-PREMIUM-NAV 2026-03-11]
    =================================================================== */
 
-/* Photo-Container: Normal-Flow, 30vh (Fixed Cockpit, überschreibt alte sticky-Regeln) */
-#wizard[data-flow="listing"] .inserat-cockpit-photo {
-  position: relative !important;
-  flex: 0 0 30vh !important;
-  height: 30vh !important;
-  min-height: 0 !important;
-  max-height: 30vh !important;
-  flex-shrink: 0 !important;
-  overflow: hidden !important;
-  transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+/* 30vh Photo-Block entfernt – Airbnb-Block weiter unten setzt 250px [cite: PURGE 2026-03-12] */
 /* Photo-Tile im Scroll: einheitlich 250px */
 #wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
   height: 250px !important;
