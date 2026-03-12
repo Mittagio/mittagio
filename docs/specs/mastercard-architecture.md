@@ -191,3 +191,32 @@ Das Service-Grid (5 Kacheln) ist in `.info-section` eingebettet:
 - `app/script.js` → `buildListingStep()` (~L17146)
 - `app/style.css` → `.inserat-card-sheet`, `#mastercard-footer-step1`, `.btn-primary-black`
 - CSS-Scope: `body.wizard-inserat-open #wizard` (immer scopen!)
+
+---
+
+## Foto-Workflow (eBay-Style, S25)
+
+- **Kein Auto-Start Kamera:** Beim Öffnen der Mastercard wird die Kamera nicht automatisch gestartet.
+- **Native Trigger:** Bildwahl nur über Klick auf Platzhalter/Bild oder `🔄 Ersetzen` (Hidden File Input mit `accept="image/*"` und `capture="environment"`).
+- **Overlay:** `#photo-edit-overlay` ist schwarzes Vollbild mit eigenem `✓ Fertig` oben rechts.
+- **Actions unten:** `🔄 Ersetzen`, `✂️ Zuschneiden`, `🗑️ Löschen` (mit Sicherheitsdialog „Foto löschen?“).
+- **Touch-Drag Crop:** Im Zuschneiden-Modus wird das Bild auf `scale(1.1)` gesetzt; vertikales Verschieben per Touch-Drag schreibt `object-position` (0% bis 100%, Clamp aktiv).
+- **Sync:** Bei `✓ Fertig` wird der finale `object-position` Wert auf das Hauptbild im Wizard übertragen und gespeichert.
+- **Header-X Verhalten:** Das graue X im weißen Header schließt die Mastercard (nicht das schwarze Foto-Overlay).
+
+---
+
+## Smart Context Routing (S25)
+
+- EntryPoints werden im Wizard normalisiert: `cookbook`, `weeklyPlan`, `activeOffers`, `newListing`.
+- Unbekannte/kaputte EntryPoints fallen defensiv auf `activeOffers` (sicherer UI-Fallback, kein White-Screen).
+- `Speichern` nutzt den zentralen Save-Path + Routing nach EntryPoint:
+  - `cookbook` -> zurück ins Kochbuch
+  - `weeklyPlan` -> zurück in den Wochenplan
+  - `activeOffers` -> zurück zu Aktive Angebote / Anbieter-Home
+  - `newListing` -> Standard: ins Kochbuch
+- Exit erfolgt zentral über `closeMastercard()` (kein White-Screen, Body wieder scrollbar).
+- `Weiter` wechselt in **Step 2 (Monetarisierung)** statt Direkt-Publish.
+- Header-Titel wird pro Schritt synchronisiert:
+  - Step 1: `Dein Gericht`
+  - Step 2: `Monetarisierung`

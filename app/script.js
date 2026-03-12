@@ -16254,8 +16254,8 @@
     if (wbd) wbd.classList.remove('active');
     if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
-    document.body.style.overflow = '';
-    document.body.style.overscrollBehavior = '';
+    document.body.style.overflow = 'auto';
+    document.body.style.overscrollBehavior = 'auto';
     /* Radikaler Cleanup: alle Wizard-Sheets und Backdrops restlos vernichten [cite: 2026-03-10] */
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
@@ -16273,11 +16273,20 @@
   }
   if(typeof window !== 'undefined') window.closeWizard = closeWizard;
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint K erreicht (Top-Level ~16336)');
+  function normalizeWizardEntryPoint(entryPoint){
+    var raw = String(entryPoint || '').trim().toLowerCase();
+    if(raw === 'cookbook') return 'cookbook';
+    if(raw === 'weeklyplan' || raw === 'week' || raw === 'weekly_plan' || raw === 'weekly_plan_edit') return 'weeklyPlan';
+    if(raw === 'activeoffers' || raw === 'active_offers' || raw === 'dashboard' || raw === 'inserate') return 'activeOffers';
+    if(raw === 'newlisting' || raw === 'new_listing' || raw === 'new') return 'newListing';
+    /* Defensiver Fallback: unbekannter Context -> sichere Startansicht */
+    return 'activeOffers';
+  }
   /** Rücksprung nach Schließen der InseratCard gemäß entryPoint [cite: 2026-02-16 Smart-Exit] */
   function navigateAfterWizardExit(entryPoint){
-    var ep = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
-    if(ep === 'week' && typeof showProviderWeek === 'function'){ showProviderWeek(); if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
-    else if(ep === 'cookbook' && typeof showProviderCookbook === 'function'){ showProviderCookbook(); if(typeof renderCookbook === 'function') renderCookbook(); }
+    var ep = normalizeWizardEntryPoint(entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'newListing');
+    if(ep === 'weeklyPlan' && typeof showProviderWeek === 'function'){ showProviderWeek(); if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview(); }
+    else if((ep === 'cookbook' || ep === 'newListing') && typeof showProviderCookbook === 'function'){ showProviderCookbook(); if(typeof renderCookbook === 'function') renderCookbook(); }
     else if(typeof showProviderHome === 'function') showProviderHome();
   }
   /** Dirty-Check: wurden Daten seit Öffnen geändert? [cite: 2026-02-16] */
@@ -16285,22 +16294,23 @@
     if(!w || !w.data || typeof window === 'undefined' || !window._wizardInitialDataSnapshot) return false;
     return JSON.stringify(w.data) !== JSON.stringify(window._wizardInitialDataSnapshot);
   }
-  /** Schließt die Mastercard, versteckt Container, entfernt vendor-area, zeigt Dashboard [cite: DELETE PROVIDER-WIZARD 2026-02-23] */
+  /** Schließt nur das Mastercard-Overlay; Main Page wird sofort wieder sichtbar und scrollbar [cite: S25-ULTRA CLOSE 2026-03-12] */
   function closeMastercard(){
-    var container = document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .mastercard-main-container');
-    if(container){
-      container.style.display = 'none';
-    }
+    /* Sofort Body scrollbar machen, damit Hintergrundseite (Main Page) wieder nutzbar ist */
+    document.body.style.overflow = 'auto';
+    document.body.style.overscrollBehavior = 'auto';
     document.body.classList.remove('vendor-area', 'wizard-inserat-open');
-    document.body.style.overflow = '';
-    document.body.style.overscrollBehavior = '';
-    document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');
-    if(wizard) wizard.classList.remove('active');
+    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); wizard.style.display = ''; }
+    document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
+    /* Ziel-View anzeigen (Dashboard/Kochbuch/Wochenplan), dann Wizard-Cleanup */
+    var entryPoint = normalizeWizardEntryPoint((w && w.ctx && w.ctx.entryPoint) || 'newListing');
+    if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit(entryPoint);
     if(typeof closeWizard === 'function') closeWizard(true);
-    if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit((w && w.ctx && w.ctx.entryPoint) || 'dashboard');
+    var container = document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+    if(container) container.style.display = 'none';
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
   /** Alias für Handy-Back / X-Button: closeListingFlow = closeMastercard [cite: Universal-Linker 2026-02-26] */
@@ -16324,12 +16334,12 @@
 
   /** Schließt die Mastercard mit S25-Slide-Down (translateY 100%) [cite: 2026-02-21] */
   function closeMastercardSlideDown(panel, entryPoint){
-    entryPoint = entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'dashboard';
+    entryPoint = normalizeWizardEntryPoint(entryPoint || (w && w.ctx && w.ctx.entryPoint) || 'newListing');
     var card = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
     var overlay = document.getElementById('wbd');
     if(card){ card.classList.remove('is-open'); }
     if(overlay) overlay.classList.remove('active');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto';
     setTimeout(function(){
       closeWizard(true);
       navigateAfterWizardExit(entryPoint);
@@ -16339,19 +16349,19 @@
   /** Universal-X: Prüft Dirty, zeigt ggf. Save-Prompt, sonst Slide-Down + close + navigate [cite: 2026-02-16, 2026-02-21] */
   function handleWizardExit(panel){
     if(!w || w.kind !== 'listing'){ var p = panel || document.querySelector('#wizard .liquid-master-panel'); if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit('dashboard'); }, 280); } else { closeWizard(); navigateAfterWizardExit('dashboard'); } return; }
-    var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+    var entryPoint = normalizeWizardEntryPoint((w.ctx && w.ctx.entryPoint) || 'newListing');
     if(isWizardDataDirty() && typeof showWizardExitSavePrompt === 'function'){
       showWizardExitSavePrompt(
         function(){
           if(typeof saveToCookbookFromWizard === 'function'){
             var id = saveToCookbookFromWizard();
-            if(id && (entryPoint === 'week') && w.data && w.data.day && typeof week !== 'undefined'){
+            if(id && (entryPoint === 'weeklyPlan') && w.data && w.data.day && typeof week !== 'undefined'){
               if(!week[w.data.day]) week[w.data.day] = []; var c = typeof cookbook !== 'undefined' && cookbook.find(function(x){ return x.id === id; }); if(c) week[w.data.day].push({ providerId: c.providerId, cookbookId: c.id, dish: c.dish, price: c.price }); if(typeof save === 'function') save(LS.week, week);
             }
           }
           closeWizard(true);
           navigateAfterWizardExit(entryPoint);
-          if(entryPoint === 'week' && typeof showToast === 'function') showToast('Im Wochenplan gespeichert 📅');
+          if(entryPoint === 'weeklyPlan' && typeof showToast === 'function') showToast('Im Wochenplan gespeichert 📅');
           else if(entryPoint === 'cookbook' && typeof showToast === 'function') showToast('Gericht im Kochbuch aktualisiert 📖');
           else if(typeof showToast === 'function') showToast('Gespeichert');
         },
@@ -17157,7 +17167,8 @@
       const saveDraft = () => { try { if(w && w.data) localStorage.setItem('wizard_draft', JSON.stringify({ data: w.data, ctx: w.ctx || {} })); } catch(e){} };
       const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
-      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var entryPoint = normalizeWizardEntryPoint((w.ctx && w.ctx.entryPoint) || 'newListing');
+      if(w && w.ctx) w.ctx.entryPoint = entryPoint;
       /* 3-Schritt Mastercard: Immer Editierung → Monetarisierung → Live [cite: FLOW FIX 2026-02-26] */
       if(typeof w.inseratStep !== 'number') w.inseratStep = 1;
       var inseratStep = Math.max(1, Math.min(3, w.inseratStep));
@@ -17347,6 +17358,7 @@
       function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 40; }
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
       const photoContainer=document.createElement('div');
+      photoContainer.id='photo-container';
       photoContainer.className='inserat-photo-container';
       photoContainer.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
       const photoTile=document.createElement('section');
@@ -17385,13 +17397,30 @@
       }
       photoContainer.appendChild(photoTile);
       /* floatingBadges wird weiter unten nach Erstellung an photoContainer gehängt [cite: S25-FIXED-COCKPIT 2026-03-11] */
-      overlay.onclick=function(e){ if(!e.target.closest('.photo-suggestion')){ e.stopPropagation(); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); } };
-      photoTile.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData&&(ev.target===imgEl||ev.target.closest('.ebay-preview-img'))) return; try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){} cameraInput.click(); };
+      overlay.onclick=function(e){
+        if(e.target.closest('.photo-suggestion')) return;
+        e.stopPropagation();
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){}
+        if(!w.data.photoData){ cameraInput.click(); return; }
+        openPhotoEditOverlay();
+      };
+      photoTile.onclick=function(ev){
+        if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return;
+        if(ev.target.closest('.photo-suggestion')) return;
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){}
+        if(!w.data.photoData){ cameraInput.click(); return; }
+        openPhotoEditOverlay();
+      };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
       function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
       /* Gesamtes Foto klickbar → Edit-Overlay öffnen [cite: EBAY-AIRBNB 2026-03-11] */
-      photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return; try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} openPhotoEditOverlay(); };
+      photoContainer.onclick=function(ev){
+        if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return;
+        try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
+        if(!w.data.photoData){ cameraInput.click(); return; }
+        openPhotoEditOverlay();
+      };
       if(cameraInput){
         cameraInput.onchange=async function(){
           var f=this.files&&this.files[0];
@@ -17427,9 +17456,7 @@
           })();
         };
       }
-      if(cameraInput&&entryPoint==='dashboard'&&!(w.ctx&&(w.ctx.editOfferId||w.ctx.dishId))&&!w.data.photoData){
-        setTimeout(function(){ if(cameraInput&&cameraInput.parentNode) cameraInput.click(); }, 400);
-      }
+      /* AUTO-CAMERA deaktiviert: Start immer mit leerem Platzhalter, Trigger nur nativ per Klick */
       var urls=getListingSuggestionUrls();
       var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
       if(showSuggestions){
@@ -17449,98 +17476,142 @@
       var btnChangeCircle=document.createElement('button'); btnChangeCircle.type='button'; btnChangeCircle.className='btn-photo-action'; btnChangeCircle.setAttribute('aria-label','Foto ändern'); btnChangeCircle.textContent='🔄';
       photoEditBar.appendChild(btnCropCircle);
       photoEditBar.appendChild(btnChangeCircle);
-      /* Photo-Edit-Overlay: Schwarzes Vollbild-Modal (eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
+      /* Photo-Edit-Overlay: eBay-Style Vollbild + nativer Touch-Drag-Crop */
       var cropModeActive=false;
+      var cropStartY=0;
+      var cropStartPosY=50;
+      var cropCurrentPosY=50;
+      var cropTouching=false;
+      function clampCrop(v){ return Math.max(0, Math.min(100, v)); }
+      function closePhotoEditOverlay(){
+        var ov=document.getElementById('photo-edit-overlay');
+        if(!ov) return;
+        ov.style.opacity='0';
+        setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },220);
+      }
       function openPhotoEditOverlay(){
         if(!w.data.photoData){ cameraInput.click(); return; }
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
-        ov.style.cssText='position:fixed; inset:0; background:#000000; z-index:999999; display:flex; flex-direction:column; opacity:0; transition:opacity 0.22s ease;';
-        /* Overlay-Foto (pannable für Crop) */
+        ov.style.cssText='position:fixed; inset:0; background:#000000; z-index:1100005; display:none; flex-direction:column; opacity:0; transition:opacity 0.22s ease;';
         var oImg=document.createElement('img');
         oImg.src=w.data.photoData||'';
-        var initPos=getPhotoObjectPosition();
-        oImg.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+initPos+'%; transition:transform 0.3s ease;';
+        cropCurrentPosY=getPhotoObjectPosition();
+        oImg.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+cropCurrentPosY+'%; transform:scale(1); transition:transform 0.2s ease; touch-action:none; user-select:none; -webkit-user-drag:none;';
         ov.appendChild(oImg);
-        /* Pan-Logik im Overlay */
-        var oPanY=0,oPanPos=initPos,oPanning=false;
-        function oPanStart(ev){ oPanY=ev.touches?ev.touches[0].clientY:ev.clientY; oPanPos=parseFloat((oImg.style.objectPosition||'center 40%').split(' ')[1])||40; oPanning=true; }
-        function oPanMove(ev){ if(!oPanning) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var d=(oPanY-y)*0.2; var p=Math.max(0,Math.min(100,oPanPos+d)); oImg.style.objectPosition='center '+p+'%'; }
-        function oPanEnd(){ oPanning=false; }
-        oImg.addEventListener('touchstart',oPanStart,{passive:true});
-        oImg.addEventListener('touchmove',oPanMove,{passive:true});
-        oImg.addEventListener('touchend',oPanEnd,{passive:true});
-        /* Header: ✓ Fertig oben RECHTS (iOS-Standard, Daumen-Zone) [cite: PURGE-FINAL 2026-03-12] */
-        var oHdr=document.createElement('div');
-        oHdr.style.cssText='position:absolute; top:0; left:0; right:0; height:60px; display:flex; align-items:center; justify-content:flex-end; padding:0 20px; z-index:10; background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,transparent 100%);';
-        var btnFertig=document.createElement('button');
-        btnFertig.type='button'; btnFertig.textContent='✓ Fertig';
-        btnFertig.style.cssText='background:none; border:none; color:#4ade80; font-size:18px; font-weight:700; cursor:pointer; padding:8px 0; font-family:system-ui,sans-serif; letter-spacing:0.01em;';
-        btnFertig.onclick=function(){
-          try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
-          var p=parseFloat((oImg.style.objectPosition||'center 40%').replace('center ',''))||40;
-          if(imgEl){ imgEl.style.objectPosition='center '+p+'%'; } setPhotoObjectPosition(p); saveDraft();
+        function syncOverlayPos(){ oImg.style.objectPosition='center '+clampCrop(cropCurrentPosY)+'%'; }
+        function setCropMode(active){
+          cropModeActive=!!active;
+          oImg.style.transform=cropModeActive?'scale(1.1)':'scale(1)';
+        }
+        function onTouchStart(ev){
+          if(!cropModeActive) return;
+          var t=ev.touches&&ev.touches[0]; if(!t) return;
+          cropTouching=true;
+          cropStartY=t.clientY;
+          cropStartPosY=cropCurrentPosY;
+        }
+        function onTouchMove(ev){
+          if(!cropModeActive || !cropTouching) return;
+          var t=ev.touches&&ev.touches[0]; if(!t) return;
+          ev.preventDefault();
+          var deltaY=(t.clientY-cropStartY)*0.5;
+          cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
+          syncOverlayPos();
+        }
+        function onTouchEnd(){
+          if(!cropModeActive) return;
+          cropTouching=false;
+          cropCurrentPosY=clampCrop(cropCurrentPosY);
+          syncOverlayPos();
+        }
+        oImg.addEventListener('touchstart', onTouchStart, { passive:true });
+        oImg.addEventListener('touchmove', onTouchMove, { passive:false });
+        oImg.addEventListener('touchend', onTouchEnd, { passive:true });
+        var topBar=document.createElement('div');
+        topBar.style.cssText='position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:flex-end; padding:12px 16px calc(8px + env(safe-area-inset-top,0)); z-index:20; background:linear-gradient(to bottom,rgba(0,0,0,0.55) 0%,transparent 100%);';
+        var btnDone=document.createElement('button');
+        btnDone.type='button';
+        btnDone.textContent='✓ Fertig';
+        btnDone.style.cssText='border:none; background:none; color:#ffffff; font-size:18px; font-weight:700; cursor:pointer; padding:8px 2px;';
+        btnDone.onclick=function(){
+          try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+          cropCurrentPosY=clampCrop(cropCurrentPosY);
+          if(imgEl){ imgEl.style.objectPosition='center '+cropCurrentPosY+'%'; }
+          setPhotoObjectPosition(cropCurrentPosY);
+          saveDraft();
           closePhotoEditOverlay();
         };
-        oHdr.appendChild(btnFertig);
-        ov.appendChild(oHdr);
-        /* Bottom Action Bar: 🔄 Ersetzen | ✂️ Zuschneiden | 🗑️ Löschen */
-        var oBar=document.createElement('div');
-        oBar.style.cssText='position:absolute; bottom:0; left:0; right:0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0)); display:flex; justify-content:space-around; align-items:center; background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 100%);';
-        [{emoji:'🔄',label:'Ersetzen',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} cameraInput.click(); }},
-         {emoji:'✂️',label:'Zuschneiden',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} oImg.style.transform='scale(1.12)'; setTimeout(function(){ oImg.style.transform='scale(1)'; },400); }},
-         {emoji:'🗑️',label:'Löschen',fn:function(){
-           try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
-           /* Elegantes Bestätigungs-Modal – kein Browser-Alert [cite: PURGE-FINAL 2026-03-12] */
-           var confirmMod=document.createElement('div');
-           confirmMod.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,0.72);z-index:30;display:flex;align-items:center;justify-content:center;padding:24px;';
-           var confirmBox=document.createElement('div');
-           confirmBox.style.cssText='background:#1c1c1e;border-radius:18px;padding:28px 24px;width:100%;max-width:300px;text-align:center;font-family:system-ui,sans-serif;';
-           confirmBox.innerHTML='<p style="color:#fff;font-size:18px;font-weight:700;margin:0 0 8px;">Bild entfernen?</p><p style="color:#8e8e93;font-size:14px;margin:0 0 28px;line-height:1.4;">Das Foto wird unwiderruflich entfernt.</p>';
-           var confirmBtns=document.createElement('div');
-           confirmBtns.style.cssText='display:flex;flex-direction:column;gap:10px;';
-           var btnDel=document.createElement('button'); btnDel.type='button'; btnDel.textContent='Ja, Löschen';
-           btnDel.style.cssText='width:100%;padding:15px;border-radius:12px;border:none;background:#ef4444;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;';
-           btnDel.ontouchstart=function(){ btnDel.style.opacity='0.8'; };
-           btnDel.ontouchend=function(){ btnDel.style.opacity='1'; };
-           btnDel.onclick=function(){
-             try{if(navigator.vibrate)navigator.vibrate(40);}catch(e){}
-             w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(40); saveDraft();
-             if(imgEl){ imgEl.src=''; imgEl.style.display='none'; }
-             var plc=photoTile.querySelector('.inserat-photo-placeholder-center');
-             if(!plc){ plc=document.createElement('div'); plc.className='inserat-photo-placeholder-center'; plc.innerHTML='<span style="font-size:32px;">📸</span><span style="font-size:14px;color:#94a3b8;font-weight:500;margin-top:6px;">Foto hinzufügen</span>'; plc.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f9f9f9;'; photoTile.appendChild(plc); }
-             photoTile.classList.add('inserat-photo-placeholder','pulse-soft');
-             photoTile.style.border='2px dashed #e0e0e0';
-             if(editPencilBtn) editPencilBtn.style.display='none';
-             if(typeof checkMastercardValidation==='function') checkMastercardValidation();
-             closePhotoEditOverlay();
-           };
-           var btnCancel=document.createElement('button'); btnCancel.type='button'; btnCancel.textContent='Abbrechen';
-           btnCancel.style.cssText='width:100%;padding:15px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:system-ui,sans-serif;';
-           btnCancel.onclick=function(){ confirmMod.remove(); };
-           confirmBtns.appendChild(btnDel); confirmBtns.appendChild(btnCancel);
-           confirmBox.appendChild(confirmBtns); confirmMod.appendChild(confirmBox); ov.appendChild(confirmMod);
-         }}
-        ].forEach(function(a){
-          var col=document.createElement('div'); col.style.cssText='display:flex;flex-direction:column;align-items:center;gap:8px;';
-          var btn=document.createElement('button'); btn.type='button'; btn.textContent=a.emoji;
-          btn.style.cssText='width:56px;height:56px;background:rgba(255,255,255,0.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border-radius:50%;border:1px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:transform 0.15s;';
-          btn.onclick=a.fn;
-          btn.addEventListener('touchstart',function(){ btn.style.transform='scale(0.88)'; },{passive:true});
-          btn.addEventListener('touchend',function(){ btn.style.transform='scale(1)'; },{passive:true});
-          var lbl=document.createElement('span'); lbl.textContent=a.label; lbl.style.cssText='color:rgba(255,255,255,0.88);font-size:12px;font-weight:600;font-family:system-ui,sans-serif;';
-          col.appendChild(btn); col.appendChild(lbl); oBar.appendChild(col);
+        topBar.appendChild(btnDone);
+        ov.appendChild(topBar);
+        var bottomBar=document.createElement('div');
+        bottomBar.style.cssText='position:absolute; left:0; right:0; bottom:0; padding:18px 14px calc(18px + env(safe-area-inset-bottom, 20px)); display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; background:linear-gradient(to top,rgba(0,0,0,0.68) 0%,transparent 100%); z-index:20;';
+        function makeAction(icon,label,handler){
+          var btn=document.createElement('button');
+          btn.type='button';
+          btn.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; min-height:64px; border:none; border-radius:12px; background:rgba(255,255,255,0.12); color:#fff; cursor:pointer;';
+          btn.innerHTML='<span style="font-size:22px; line-height:1;">'+icon+'</span><span style="font-size:12px; font-weight:700;">'+label+'</span>';
+          btn.onclick=handler;
+          return btn;
+        }
+        var btnReplace=makeAction('🔄','Ersetzen',function(){
+          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+          cameraInput.click();
         });
-        ov.appendChild(oBar);
+        var btnCrop=makeAction('✂️','Zuschneiden',function(){
+          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+          setCropMode(!cropModeActive);
+          btnCrop.style.background=cropModeActive?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.12)';
+        });
+        var btnDelete=makeAction('🗑️','Löschen',function(){
+          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+          var mini=document.createElement('div');
+          mini.style.cssText='position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.72);';
+          var boxDel=document.createElement('div');
+          boxDel.style.cssText='width:min(320px,calc(100% - 32px)); background:#111; border-radius:16px; padding:20px; color:#fff; text-align:center;';
+          boxDel.innerHTML='<div style="font-size:18px; font-weight:800; margin-bottom:14px;">Foto löschen?</div>';
+          var row=document.createElement('div');
+          row.style.cssText='display:flex; gap:10px;';
+          var bCancel=document.createElement('button');
+          bCancel.type='button';
+          bCancel.textContent='Abbrechen';
+          bCancel.style.cssText='flex:1; min-height:44px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); background:transparent; color:#fff; font-weight:700; cursor:pointer;';
+          bCancel.onclick=function(){ mini.remove(); };
+          var bDelete=document.createElement('button');
+          bDelete.type='button';
+          bDelete.textContent='Löschen';
+          bDelete.style.cssText='flex:1; min-height:44px; border-radius:10px; border:none; background:#dc2626; color:#fff; font-weight:800; cursor:pointer;';
+          bDelete.onclick=function(){
+            w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
+            if(imgEl){ imgEl.src=''; imgEl.style.display='none'; }
+            var plc=photoTile.querySelector('.inserat-photo-placeholder-center');
+            if(!plc){
+              plc=document.createElement('div');
+              plc.className='inserat-photo-placeholder-center';
+              plc.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#f9f9f9; pointer-events:none;';
+              plc.innerHTML='<span style="font-size:44px; line-height:1; opacity:0.45;">📸</span><span style="font-size:14px; font-weight:400; color:#aaaaaa;">Foto hinzufügen</span>';
+              photoTile.appendChild(plc);
+            }
+            photoTile.classList.add('inserat-photo-placeholder','pulse-soft');
+            photoTile.style.border='2px dashed #e0e0e0';
+            overlay.style.pointerEvents='auto';
+            if(editPencilBtn) editPencilBtn.style.display='none';
+            if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+            closePhotoEditOverlay();
+          };
+          row.appendChild(bCancel); row.appendChild(bDelete);
+          boxDel.appendChild(row);
+          mini.appendChild(boxDel);
+          ov.appendChild(mini);
+        });
+        bottomBar.appendChild(btnReplace);
+        bottomBar.appendChild(btnCrop);
+        bottomBar.appendChild(btnDelete);
+        ov.appendChild(bottomBar);
         document.body.appendChild(ov);
+        ov.style.display='flex';
         requestAnimationFrame(function(){ ov.style.opacity='1'; });
-      }
-      function closePhotoEditOverlay(){
-        var ov=document.getElementById('photo-edit-overlay');
-        if(!ov) return;
-        ov.style.opacity='0';
-        setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },230);
       }
       function enterCropMode(){ cropModeActive=true; }
       function exitCropMode(){ cropModeActive=false; closePhotoEditOverlay(); }
@@ -17554,10 +17625,9 @@
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
-      floatingBadges.className='floating-badges';
-      /* width:auto + justify-content:flex-start überschreiben das CSS .floating-badges {width:100%; justify-content:center} */
-      /* Pills direkt unter Titel – kein position:absolute mehr [cite: AIRBNB-PRECISION 2026-03-11] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
+      floatingBadges.className='floating-badges category-pills';
+      /* Pills direkt unter Bild, oberhalb des großen Titels [cite: AIRBNB-EDGE-TO-EDGE] */
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:4px; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17669,26 +17739,42 @@
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
-        var photoOv=document.getElementById('photo-edit-overlay'); if(photoOv){ closePhotoEditOverlay(); return; }
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
+        var stepNow=1;
+        try{ if(slider) stepNow=parseInt(slider.getAttribute('data-inserat-step')||'1',10)||1; }catch(ex){}
+        if(stepNow===2){
+          hapticLight();
+          if(slider) slider.setAttribute('data-inserat-step','1');
+          w.inseratStep=1;
+          saveDraft();
+          if(typeof updateFooterVisibility==='function') updateFooterVisibility();
+          var wz=document.getElementById('wizard'); if(wz){ wz.classList.remove('inserat-step2-active'); wz.classList.remove('inserat-step3-active'); }
+          if(headerTitle) headerTitle.textContent='Dein Gericht';
+          return;
+        }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
         /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
         if(typeof history !== 'undefined' && history.length > 1){ history.back(); return; }
         if(typeof closeListingFlow==='function') closeListingFlow();
+        else if(typeof closeMastercard==='function') closeMastercard();
+        else if(typeof showProviderHome==='function') showProviderHome();
       };
 
       const scrollArea=document.createElement('div');
       scrollArea.id='mastercardScrollArea';
-      scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
+      scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area wizard-scroll-container';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:120px; overscroll-behavior:contain;';
+      /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
+      var headerOffset='calc(60px + env(safe-area-inset-top, 0))';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:120px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
-      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0;';
+      photoContainer.style.cssText='width:100vw; max-width:100vw; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* Dezentes Edit-Icon oben rechts IM BILD (eBay-Style) */
       var editPencilBtn=document.createElement('button');
       editPencilBtn.type='button';
+      editPencilBtn.id='inserat-edit-pencil-btn';
       editPencilBtn.setAttribute('aria-label','Foto bearbeiten');
       editPencilBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
       editPencilBtn.style.cssText='position:absolute; top:12px; right:12px; width:32px; height:32px; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; color:#fff; font-size:16px; z-index:100; pointer-events:auto;';
@@ -17696,19 +17782,20 @@
       photoTile.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
-      /* Header: Airbnb Rule – ein X rechts */
+      /* Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:1000002; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; min-height:60px; height:auto; padding-top:env(safe-area-inset-top, 0); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
+      headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
-      headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
+      headerTitle.style.cssText='font-size:16px; font-weight:600; color:#222222; margin:0; pointer-events:none; opacity:0; transition:opacity 0.2s ease-out;';
       fixedHeader.appendChild(headerTitle);
       fixedHeader.appendChild(closeX);
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
-      contentSheet.className='inserat-cockpit-body inserat-content-sheet';
+      contentSheet.className='inserat-cockpit-body inserat-content-sheet wizard-content';
       /* ContentSheet: normaler Flow, kompakt [cite: CLEAN-SWEEP 2026-03-12] */
       contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:0; padding:0 0 16px;';
       scrollArea.appendChild(contentSheet);
@@ -17717,7 +17804,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:8px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
+      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17794,7 +17881,7 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:24px; font-weight:700; color:#222; width:100px; text-align:left;';
+      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:26px; font-weight:800; color:#222; width:100px; text-align:left;';
       var eurSpan=document.createElement('span');
       eurSpan.className='currency inserat-price-pill-euro';
       eurSpan.textContent='\u20AC';
@@ -18296,9 +18383,25 @@
       }
       step1Container.appendChild(scrollArea);
       scrollArea.addEventListener('scroll', function(){
-        var ch = box.querySelector('.inserat-collapsing-header');
-        if(ch) ch.classList.toggle('is-scrolled', scrollArea.scrollTop > 60);
-      });
+        /* Airbnb Collapsing Header: Titel-Opazität 0–150px: 0, 150–200px: linear 0→1 */
+        var h = document.getElementById('app-sticky-header');
+        var ht = h && h.querySelector('.header-title');
+        var st = scrollArea.scrollTop;
+        if(ht){
+          var op = st <= 150 ? 0 : st >= 200 ? 1 : (st - 150) / 50;
+          ht.style.opacity = String(op);
+        }
+        if(h){
+          h.classList.toggle('header-collapsed', st > 180);
+          h.style.borderBottomColor = st > 180 ? '#ebebeb' : 'transparent';
+        }
+        /* Inhalts-Titel (groß) blendet aus, wenn er sich dem Header nähert (150–250px) */
+        var sn = box.querySelector('#step-name');
+        if(sn){
+          var op2 = st <= 150 ? 1 : st >= 250 ? 0 : 1 - (st - 150) / 100;
+          sn.style.opacity = String(Math.max(0, op2));
+        }
+      }, { passive: true });
 
       // 9. ACTION BUTTONS – 3-Schritt Mastercard: Speichern (Shortcut) + Weiter (Primary) [cite: FLOW FIX 2026-02-26]
       var showSpeichernShortcut = true; /* Immer sichtbar – Links "Im Kochbuch speichern" per Spec */
@@ -18334,16 +18437,42 @@
         if (priceSection) priceSection.classList.remove('inserat-validation-error');
       }
       var primaryValid = isPrimaryValid();
+      function updateHeaderTitleByStep(step){
+        if(!headerTitle) return;
+        headerTitle.textContent = step === 2 ? 'Monetarisierung' : 'Dein Gericht';
+      }
+      function routeAfterSave(){
+        var normalized = normalizeWizardEntryPoint(entryPoint);
+        var target = normalized === 'newListing' ? 'cookbook' : normalized;
+        if(w && w.ctx) w.ctx.entryPoint = target;
+        if(typeof closeMastercard === 'function') closeMastercard();
+      }
+      function switchToStep2(){
+        if(!isPrimaryValid()){
+          if(typeof showToast==='function') showToast('Bitte Name und Foto eingeben.');
+          if(typeof triggerValidationError==='function') triggerValidationError(btnWeiter);
+          return;
+        }
+        hapticLight();
+        w.inseratStep=2;
+        if(slider) slider.setAttribute('data-inserat-step','2');
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+        saveDraft();
+        if(typeof updateFooterVisibility==='function') updateFooterVisibility();
+        var wizardEl=document.getElementById('wizard');
+        if(wizardEl){ wizardEl.classList.add('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); }
+        updateHeaderTitleByStep(2);
+      }
 
       /* 3-Schritt Mastercard: Footer außerhalb des Sliders – Viewport-treu [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
       const actionSection=document.createElement('section');
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:9999; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -18356,47 +18485,17 @@
         linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
         linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          /* Save-Feedback: Grün + Checkmark + Haptik, dann 500ms Delay [cite: S25-PREMIUM 2026-03-11] */
           linkSpeichern.textContent='Gespeichert ✅';
           linkSpeichern.style.color='#4caf50';
           linkSpeichern.style.textDecoration='none';
           try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
           hapticLight();
           setTimeout(function(){
-          if(w.ctx&&w.ctx.editOfferId){
-            var o=previewOfferFromWizard();
-            var offerId=(w.ctx.editOfferId)||(o&&o.id)||null;
-            if(offerId) try{ sessionStorage.setItem('mittagio_last_saved_offer_id', String(offerId)); }catch(e){}
-            if(typeof publishOffer==='function') publishOffer(o);
-            closeWizard(true);
-            if(entryPoint==='WEEKLY_PLAN_EDIT'&&typeof renderWeekPlanBoard==='function') renderWeekPlanBoard();
-            else if(typeof showProviderHome==='function') showProviderHome();
-            return;
-          }
-          if(typeof haptic==='function') haptic(50);
-          var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
-          if(entryPoint==='cookbook'&&id){
-            closeWizard(true);
-            if(typeof showToast==='function') showToast('Gericht im Kochbuch aktualisiert 📖');
-            if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-            return;
-          }
-          if(id&&w.data.day){
-            if(!week[w.data.day]) week[w.data.day]=[];
-            var c=cookbook.find(function(x){ return x.id===id; });
-            if(c) week[w.data.day].push({ providerId:c.providerId, cookbookId:c.id, dish:c.dish, price:c.price });
-            save(LS.week, week);
-            closeWizard(true);
-            showSaveSuccessSheet({ title:'Im Wochenplan gespeichert', sub:'Dein Gericht ist im Wochenplan eingetragen.', dishName: w.data.dish||'', price: w.data.price, imageUrl: w.data.photoData||'', savedEntryId: id, savedDay: w.data.day, onFertig: function(){ if(typeof showToast==='function') showToast('Im Wochenplan gespeichert 📅'); if(typeof showProviderWeek==='function') showProviderWeek(); }, onLive: null });
-            return;
-          }
-          /* Dashboard/Renner: Ins Kochbuch speichern und Wizard schließen */
-          if(id){
-            closeWizard(true);
-            if(typeof showToast==='function') showToast('Im Kochbuch gespeichert 📖');
-            if(typeof navigateAfterWizardExit==='function') navigateAfterWizardExit('cookbook');
-          }
-          }, 500); /* Ende setTimeout Save-Feedback */
+            var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
+            if(!id){ if(typeof showToast==='function') showToast('Speichern fehlgeschlagen'); return; }
+            if(typeof haptic==='function') haptic(50);
+            routeAfterSave();
+          }, 500);
         };
         step1NavRow.appendChild(linkSpeichern);
       }
@@ -18409,27 +18508,7 @@
       btnWeiter.disabled=true;
       btnWeiter.style.opacity='0.3';
       btnWeiter.style.pointerEvents='none';
-      btnWeiter.onclick=function(){
-        if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-        hapticLight();
-        /* 4,99€ Logik entfernt – immer Abholnummer (kostenlos inserieren, 0,89€/Gast) */
-        w.data.hasPickupCode=true;
-        w.data.inseratFeeWaived=true;
-        w.data.pricingOption='abholnummer';
-        w.data.pricingChoice='pro';
-        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-        saveDraft();
-        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(err){}
-        var o=typeof previewOfferFromWizard==='function'?previewOfferFromWizard():null;
-        if(typeof publishFeeUseStep3!=='undefined') publishFeeUseStep3=true;
-        if(typeof showPublishFeeModal==='function' && o){ showPublishFeeModal(o); }
-        else if(typeof slideWizardToStep3==='function' && o){ slideWizardToStep3(o); }
-        else {
-          var published=typeof publishOffer==='function'&&o?publishOffer(o):null;
-          if(published&&typeof slideWizardToStep3==='function'){ slideWizardToStep3(published); }
-          else { closeWizard(true); if(typeof showProviderHome==='function') showProviderHome(); }
-        }
-      };
+      btnWeiter.onclick=function(){ switchToStep2(); };
       step1NavRow.appendChild(btnWeiter);
       actionSection.appendChild(step1NavRow);
       /* Footer außerhalb des Sliders – nicht an step1Container [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
@@ -18444,13 +18523,13 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:500; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:10000; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
         var linkZurueck=document.createElement('button');
         linkZurueck.type='button';
         linkZurueck.className='inserat-footer-link btn-secondary-link';
         linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
         linkZurueck.textContent='Zurück';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(typeof updateFooterVisibility==='function') updateFooterVisibility(); var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display','none','important'); var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } };
+        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(typeof updateFooterVisibility==='function') updateFooterVisibility(); var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display','none','important'); var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } updateHeaderTitleByStep(1); };
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
@@ -18491,7 +18570,7 @@
         airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         if(_wizardEl) _wizardEl.appendChild(airbnbFooter); else box.appendChild(airbnbFooter);
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); updateHeaderTitleByStep(s); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); });
       }

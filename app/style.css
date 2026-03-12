@@ -3597,16 +3597,46 @@
       opacity: 1;
       pointer-events: auto;
     }
+    /* S25: Scroll-Bereich padding-top = Header + Safe-Area, Foto bündig unter Header (0px Spalt) */
+    #wizard[data-flow="listing"] .mastercard-scroll-area.wizard-scroll-container,
+    #wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area {
+      padding-top: calc(60px + env(safe-area-inset-top, 0)) !important;
+    }
     /* Bild im Scroll-Fluss: Edge-to-Edge, keine Rundungen [cite: 2026-02-21 Inseratsbüro] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
       padding-top: 0 !important;
     }
-    #wizard[data-flow="listing"] .inserat-photo-in-scroll {
+    /* Edge-to-Edge Photo: Bild berührt Bildschirmrand links/rechts, kein border-radius */
+    #wizard[data-flow="listing"] .inserat-cockpit-photo.inserat-photo-container,
+    #wizard[data-flow="listing"] .inserat-photo-container.photo-container {
       width: 100vw !important;
-      max-width: 100% !important;
-      margin-left: 0 !important;
+      max-width: 100vw !important;
+      margin-left: calc(-50vw + 50%) !important;
       margin-right: 0 !important;
+      padding: 0 !important;
       border-radius: 0 !important;
+      overflow: hidden !important;
+    }
+    #wizard[data-flow="listing"] .inserat-photo-in-scroll,
+    #wizard[data-flow="listing"] .inserat-photo-tile {
+      width: 100% !important;
+      border-radius: 0 !important;
+    }
+    /* Pills direkt unter Bild, großer Titel (H1) darunter [cite: Airbnb Collapsing] */
+    #wizard[data-flow="listing"] .inserat-content-sheet.wizard-content .floating-badges {
+      margin-top: 0 !important;
+      margin-bottom: 0;
+      padding-bottom: 8px;
+    }
+    #wizard[data-flow="listing"] .wizard-content #step-name,
+    #wizard[data-flow="listing"] .inserat-content-sheet #step-name {
+      margin-top: 16px !important;
+      transition: opacity 0.25s ease-out;
+    }
+    #wizard[data-flow="listing"] .wizard-content #step-name .input-giant-name.inserat-detail-style-title,
+    #wizard[data-flow="listing"] #mastercard-step-edit #step-name input.ghost-input.inserat-detail-style-title {
+      font-size: 28px !important;
+      font-weight: 800 !important;
     }
     /* ghost-input: Placeholder pulsierend (z.B. Jägerschnitzel) [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .ghost-input::placeholder {
@@ -10256,8 +10286,19 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 }
 
 /* Footer immer über Drawer */
+/* S25-ULTRA: Footer absolut bündig mit unterem Displayrand, verschmilzt mit Home-Bar [cite: 2026-03-12] */
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] .inserat-action-section.fixed-footer,
 #mastercard-footer-step1 {
-  z-index: 1000100 !important;
+  z-index: 10000 !important;
+}
+/* Preis-Input: hochwertig, klar, fett, große Schrift (Reihenfolge Pills oben, Preis unten unverändert) */
+#wizard[data-flow="listing"] .inserat-price-pill-input.input-giant-price,
+#wizard[data-flow="listing"] #gericht-preis.inserat-price-fintech {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  color: #222222 !important;
 }
 
 /* Allergen-Disclaimer im Drawer */
@@ -10283,22 +10324,56 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: 250px !important;
 }
 
-/* Fixed Header: Airbnb Rule (EDGE-TO-EDGE) */
+/* Fixed Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
 #app-sticky-header,
 #inserat-fixed-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  min-height: 60px;
+  padding-top: env(safe-area-inset-top, 0);
   background: #fff;
   z-index: 1000002;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  transition: border-color 0.25s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+#app-sticky-header .header-title,
+#inserat-fixed-header .header-title {
+  position: relative;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+  font-size: 16px;
+  font-weight: 600;
+  color: #222222;
+}
+#app-sticky-header.header-collapsed .header-title,
+#inserat-fixed-header.header-collapsed .header-title {
+  opacity: 1;
+}
+#app-sticky-header.header-collapsed,
+#inserat-fixed-header.header-collapsed {
+  border-bottom-color: #ebebeb;
+}
+#app-sticky-header .close-wizard-x,
+#app-sticky-header .btn-close-master,
+#inserat-fixed-header .close-wizard-x,
+#inserat-fixed-header .btn-close-master {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: #888;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */
@@ -10312,6 +10387,12 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 
 /* Photo-Edit-Overlay: Schwarzes Vollbild-Modal */
 #photo-edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 1100005;
+  display: none;
+  flex-direction: column;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
@@ -10319,7 +10400,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 #photo-edit-overlay img {
   user-select: none;
   -webkit-user-drag: none;
-  touch-action: pan-y;
+  touch-action: none;
 }
 
 /* Crop-Fertig-Overlay im Foto */
@@ -10343,6 +10424,17 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
    Inhalt scrollt unter fixem Header – Clean Sweep [cite: CLEAN-SWEEP 2026-03-12]
    =================================================================== */
 
+/* Großer Titel (H1): direkt unter Pills, 28px, 800 */
+#wizard[data-flow="listing"] .wizard-content #step-name,
+#wizard[data-flow="listing"] .wizard-content .inserat-unified-title-wrap {
+  margin-top: 16px !important;
+}
+#wizard[data-flow="listing"] .wizard-content #step-name .input-giant-name,
+#wizard[data-flow="listing"] .wizard-content .inserat-detail-style-title.inserat-gericht-name-extra {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+}
+
 /* 1. ScrollArea: padding für Header (60px) + Footer (120px) */
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .inserat-scroll-area,
@@ -10360,18 +10452,19 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   gap: 0 !important;
 }
 
-/* 2. PhotoContainer: 250px, Edge-to-Edge – kein Weißraum */
+/* 2. PhotoContainer: 250px, Edge-to-Edge – Bild berührt Bildschirmrand links/rechts */
 #wizard[data-flow="listing"] .inserat-cockpit-photo,
 #wizard[data-flow="listing"] .inserat-photo-container,
 #wizard[data-flow="listing"] .photo-container {
-  width: 100% !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
   height: 250px !important;
   min-height: 250px !important;
   max-height: 250px !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
   position: relative !important;
-  margin: 0 !important;
+  margin: 0 0 0 calc(-50vw + 50%) !important;
   padding: 0 !important;
   border-radius: 0 !important;
 }
@@ -10387,7 +10480,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   border-radius: 0 !important;
 }
 
-/* 4. ContentSheet: normaler Flow, kompakt */
+/* 4. ContentSheet: normaler Flow, kompakt – Pills direkt unter Foto, H1 darunter */
 #wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
 #wizard[data-flow="listing"] .inserat-cockpit-body {
   width: 100% !important;
@@ -10399,6 +10492,11 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   padding: 8px 16px 16px !important;
   gap: 8px !important;
   flex: 0 0 auto !important;
+}
+#wizard[data-flow="listing"] .wizard-content #step-name .input-giant-name,
+#wizard[data-flow="listing"] .wizard-content .inserat-name-textarea {
+  font-size: 28px !important;
+  font-weight: 800 !important;
 }
 
 /* 5. Keyboard-Mode: Photo schrumpft auf 150px */
