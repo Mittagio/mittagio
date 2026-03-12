@@ -3366,25 +3366,18 @@
     }
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
-    /* Universal-X: 32px Kreis, weiß 80% + Blur [cite: S25 PREMIUM V2 2026-02-23] */
-    /* closeX als Flex-Kind im 3-Spalten Header – KEIN position:absolute [cite: CLEAN-SWEEP 2026-03-12] */
-    /* Thin SVG-X: kein Kreis, kein Pseudo-Element, kein Hintergrund [cite: PURGE-FINAL 2026-03-12] */
+    /* Universal-X: absolut rechts im Header */
     .close-wizard-x,
     #wizard[data-flow="listing"] .close-wizard-x {
-      position: relative !important;
-      top: auto !important; left: auto !important; right: auto !important;
-      transform: none !important;
-      flex-shrink: 0 !important;
-      width: 40px !important; height: 40px !important;
-      background: transparent !important;
-      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-      border-radius: 0 !important;
-      border: none !important; box-shadow: none !important;
-      display: flex !important; align-items: center !important; justify-content: center !important;
-      padding: 0 !important;
+      background: none;
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     .close-wizard-x:active { opacity: 0.5; }
-    .close-wizard-x::before, .close-wizard-x::after { content: none !important; }
+    .close-wizard-x::before, .close-wizard-x::after { content: none; }
     /* Universal-X: Pop-Away (Implosion) beim Schließen [cite: 2026-02-16 S25] */
     #wizard[data-flow="listing"] .liquid-master-panel.x-pop-away {
       animation: x-pop-away 0.28s cubic-bezier(0.55, 0, 0.45, 1) forwards;
@@ -10294,10 +10287,10 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 64px;
-  z-index: 10006;
+  width: 100%;
+  height: 60px;
   background: #ffffff;
+  z-index: 9999;
   border-bottom: 1px solid #ebebeb;
   display: flex;
   align-items: center;

@@ -17548,16 +17548,15 @@
       closeX.type='button';
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
-      /* Thin SVG-X: kein Kreis, kein Hintergrund – reines Airbnb-Style [cite: PURGE-FINAL 2026-03-12] */
-      closeX.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#aaaaaa" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>';
-      closeX.style.cssText='flex-shrink:0; width:40px; height:40px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; padding:0;';
+      closeX.innerHTML='&#10005;'; /* einfaches × Zeichen */
+      closeX.style.cssText='position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:24px; color:#222222; cursor:pointer; border:none; background:none; padding:5px; line-height:1; width:auto; height:auto;';
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges';
       /* width:auto + justify-content:flex-start überschreiben das CSS .floating-badges {width:100%; justify-content:center} */
       /* Pills direkt unter Titel – kein position:absolute mehr [cite: AIRBNB-PRECISION 2026-03-11] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; pointer-events:auto; flex-wrap:wrap;';
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17689,10 +17688,9 @@
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:64px; padding-bottom:76px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:76px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      /* Photo: 250px, Edge-to-Edge, margin-bottom:0 → Name direkt darunter [cite: PURGE-FINAL 2026-03-12] */
-      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; line-height:0;';
+      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
       var editPencilBtn=document.createElement('button');
@@ -17704,25 +17702,28 @@
       photoContainer.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
-      /* Header: Nur X oben rechts – kein Titel (Airbnb-Style) [cite: PURGE-FINAL 2026-03-12] */
+      /* Header: Titel zentriert, X absolut rechts */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:64px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0;';
-      closeX.style.cssText='position:absolute; right:16px; top:50%; transform:translateY(-50%); width:40px; height:40px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;';
-      fixedHeader.appendChild(closeX); /* X absolut rechts – kein Layout-Drift [cite: AIRBNB-PRECISION 2026-03-11] */
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#ffffff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0;';
+      var headerTitle=document.createElement('span');
+      headerTitle.textContent='Dein Gericht';
+      headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
+      fixedHeader.appendChild(headerTitle);
+      fixedHeader.appendChild(closeX);
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
       /* ContentSheet: normaler Flow, kompakt [cite: CLEAN-SWEEP 2026-03-12] */
-      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; padding:4px 16px 16px;';
+      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:0; padding:0 0 16px;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin:0; display:flex; justify-content:center; background:#ffffff; padding:2px 0;';
+      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
