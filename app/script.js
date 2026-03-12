@@ -17580,12 +17580,6 @@
             var isAct=b.dataset.type===bd.type;
             b.classList.toggle('active',isAct);
           });
-          box.querySelectorAll('.category-pill').forEach(function(p){
-            var isAct=p.dataset.category===bd.type;
-            p.classList.toggle('active',isAct);
-            p.style.background=isAct?'#222222':'#F5F5F5';
-            p.style.color=isAct?'#ffffff':'#6b7280';
-          });
           if(typeof checkMastercardValidation==='function') checkMastercardValidation();
         };
         floatingBadges.appendChild(badge);
@@ -17775,49 +17769,7 @@
       descWrap.appendChild(descriptionTextarea);
       /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
 
-      // ========== 4. Kategorie-Pills (Fleisch, Veggie, Vegan) – direkt unter Bild [cite: 2026-03-02] ==========
-      var pillGroup=document.createElement('div');
-      pillGroup.className='pill-group system-content-body';
-      pillGroup.style.cssText='display:flex; flex-direction:column; gap:6px; margin:0; padding:0; align-items:center; width:100%;';
-      var catValues=['Fleisch','Veggie','Vegan'];
-      var catEmojis=['\uD83E\uDD69','\uD83E\uDD66','\uD83C\uDF3F'];
-      var currentCat=w.data.category||'Fleisch';
-      if(currentCat==='Vegetarisch'||currentCat==='Salat') currentCat='Veggie';
-      if(!catValues.includes(currentCat)) w.data.category='Fleisch'; else w.data.category=currentCat;
-      var categoryPills=document.createElement('div');
-      categoryPills.className='pill-cloud categories category-pills-green';
-      categoryPills.id='categoryPills';
-      categoryPills.style.cssText='display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;';
-      catValues.forEach(function(c,i){
-        var b=document.createElement('button');
-        b.type='button';
-        b.className='pill power-item category-pill'+(w.data.category===c?' active':'');
-        b.style.cssText='min-height:40px; padding:8px 14px; border-radius:12px; border:none; font-size:13px; font-weight:700; cursor:pointer;';
-        if(w.data.category===c){ b.style.background='#222222'; b.style.color='#ffffff'; } else { b.style.background='#F5F5F5'; b.style.color='#6b7280'; }
-        b.innerHTML='<span style="font-size:14px;">'+(catEmojis[i]||'')+'</span> ' + c;
-        b.setAttribute('title',c);
-        b.dataset.category=c;
-        b.onclick=function(){
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          hapticLight();
-          var cat=this.dataset.category;
-          w.data.category=cat;
-          saveDraft();
-          categoryPills.querySelectorAll('.category-pill').forEach(function(p){
-            p.classList.remove('active');
-            p.style.background='#F5F5F5';
-            p.style.color='#6b7280';
-          });
-          this.classList.add('active');
-          this.style.background='#222222';
-          this.style.color='#ffffff';
-        };
-        categoryPills.appendChild(b);
-      });
-      pillGroup.appendChild(categoryPills);
-      pillGroup.classList.add('pill-intro-run');
-      /* DOM-Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
-      contentSheet.appendChild(pillGroup);
+      /* pillGroup entfernt – floatingBadges übernimmt Kategorie-Auswahl komplett */
       contentSheet.appendChild(descWrap);
 
       // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
