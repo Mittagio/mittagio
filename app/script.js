@@ -17518,8 +17518,8 @@
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      /* Airbnb-Style: Rechts oben, kein Hintergrund, schlichtes Grau [cite: EBAY-AIRBNB 2026-03-11] */
-      closeX.style.cssText='position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;background:transparent;border-radius:50%;color:#9ca3af;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:22px;line-height:1;font-family:system-ui,sans-serif;';
+      /* Airbnb-Style: Flex-Kind rechts – KEIN position:absolute, kein CSS-Konflikt [cite: CLEAN-SWEEP 2026-03-12] */
+      closeX.style.cssText='flex-shrink:0; width:32px; height:32px; background:transparent; border-radius:50%; color:#9ca3af; display:flex; align-items:center; justify-content:center; z-index:150; border:none; cursor:pointer; font-size:22px; line-height:1; font-family:system-ui,sans-serif; position:relative;';
       /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
@@ -17657,9 +17657,11 @@
       scrollArea.id='mastercardScrollArea';
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow:hidden; padding-top:60px; padding-bottom:76px;';
+      /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:76px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0; margin-bottom:0;';
+      /* Photo: 250px feste Höhe, normaler Flow – scrollt unter Header weg [cite: CLEAN-SWEEP 2026-03-12] */
+      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
       var editPencilBtn=document.createElement('button');
@@ -17675,18 +17677,23 @@
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
       fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center;';
-      /* Airbnb-Style Header: Titel zentriert, X rechts oben [cite: EBAY-AIRBNB 2026-03-11] */
+      /* Airbnb 3-Spalten Header: [Spacer | Titel zentriert | X rechts] [cite: CLEAN-SWEEP 2026-03-12] */
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:space-between; padding:0 16px;';
+      var headerSpacer=document.createElement('div');
+      headerSpacer.style.cssText='width:32px; flex-shrink:0;'; /* Balanciert das X auf der rechten Seite */
       var fixedTitle=document.createElement('span');
       fixedTitle.id='inserat-fixed-title';
       fixedTitle.textContent='Dein Gericht';
-      fixedTitle.style.cssText='font-size:17px; font-weight:700; color:#0f172a; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1); pointer-events:none;';
-      fixedHeader.appendChild(fixedTitle);
-      fixedHeader.appendChild(closeX); /* X oben rechts im Fixed Header */
+      fixedTitle.style.cssText='font-size:17px; font-weight:700; color:#0f172a; flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; pointer-events:none;';
+      fixedHeader.appendChild(headerSpacer); /* Links: Spacer */
+      fixedHeader.appendChild(fixedTitle);   /* Mitte: Titel */
+      fixedHeader.appendChild(closeX);       /* Rechts: X */
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:hidden; padding:4px 16px 4px; gap:8px;';
+      /* ContentSheet: normaler Flow, kompakt [cite: CLEAN-SWEEP 2026-03-12] */
+      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px 16px 16px;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
@@ -18240,7 +18247,7 @@
       /* Kategorie-Pills entfernt – Auswahl erfolgt über Floating Badges im Foto [cite: 2026-03-10] */
       /* Preis: groß (32px), zentriert, letzte Ebene vor Footer */
       priceSection.className='inserat-cockpit-price '+priceSection.className;
-      priceSection.style.marginTop='auto'; /* Thumb-Zone: Preis ans Ende schieben */
+      priceSection.style.marginTop='0'; /* Normaler Flow, kein auto mehr */
       contentSheet.appendChild(priceSection);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       document.body.appendChild(quickAdjustPanel); /* Fix: position:fixed relativ zum Viewport, nicht zum transformierten wizard-box */

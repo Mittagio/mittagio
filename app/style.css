@@ -1846,7 +1846,8 @@
       padding: 60px 0 76px !important;
       display: flex !important;
       flex-direction: column !important;
-      overflow: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
       gap: 0 !important;
       align-items: stretch !important;
     }
@@ -1973,7 +1974,7 @@
       animation: pillIntroRun 0.6s ease-out forwards;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Pills→Name→PowerBar→Preis */
-    #mastercard-step-edit .inserat-scroll-area { padding: 60px 0 76px !important; overflow: hidden !important; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 60px 0 76px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
     #mastercard-step-edit .pill-group { margin-top: 0; box-shadow: none !important; }
     #mastercard-step-edit .category-pill { box-shadow: none !important; }
     #mastercard-step-edit .category-pill.active { background: #222222 !important; color: #ffffff !important; }
@@ -2489,23 +2490,24 @@
       text-overflow: ellipsis;
       margin-top: 4px;
     }
-    /* X oben links – einziges Schließen-Element [cite: UI CLEANUP 2026-02-23] */
+    /* X als Flex-Kind im 3-Spalten Header [cite: CLEAN-SWEEP 2026-03-12] */
     #wizard[data-flow="listing"] .btn-close-master,
     #wizard[data-flow="listing"] .close-mastercard {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      width: 40px;
-      height: 40px;
-      background: rgba(0, 0, 0, 0.4);
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 32px;
+      height: 32px;
+      background: transparent;
       border-radius: 50%;
-      color: white;
+      color: #9ca3af;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 150;
       border: none;
       cursor: pointer;
+      flex-shrink: 0;
     }
     /* Kamera-Linse entfernt – Nutzer nutzt zentralen Platzhalter [cite: UI CLEANUP 2026-02-23] */
     #wizard[data-flow="listing"] .camera-trigger,
@@ -3372,15 +3374,19 @@
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
     /* Universal-X: 32px Kreis, weiß 80% + Blur [cite: S25 PREMIUM V2 2026-02-23] */
+    /* closeX als Flex-Kind im 3-Spalten Header – KEIN position:absolute [cite: CLEAN-SWEEP 2026-03-12] */
     .close-wizard-x,
     #wizard[data-flow="listing"] .close-wizard-x {
-      position: absolute !important; top: 50% !important; right: 16px !important; left: auto !important;
-      transform: translateY(-50%) !important;
+      position: relative !important;
+      top: auto !important; left: auto !important; right: auto !important;
+      transform: none !important;
+      flex-shrink: 0 !important;
       width: 32px !important; height: 32px !important;
       background: transparent !important;
       backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
       border-radius: 50% !important; color: #9ca3af !important;
       border: none !important; box-shadow: none !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
     }
     .close-wizard-x:active{ transform:scale(0.96); box-shadow:none; filter:brightness(0.95); }
     .close-wizard-x::before,.close-wizard-x::after{
@@ -9311,12 +9317,10 @@
   margin-bottom: 0 !important;
 }
 /* X: Einziges Schließen-Element oben links [cite: UI CLEANUP 2026-02-23] */
-#wizard[data-flow="listing"] .close-wizard-x.close-mastercard,
-#wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x {
-  top: 50% !important;
-  left: auto !important;
-  right: 16px !important;
-  transform: translateY(-50%) !important;
+#wizard[data-flow="listing"] .close-wizard-x.close-mastercard {
+  position: relative !important;
+  top: auto !important; left: auto !important; right: auto !important;
+  transform: none !important;
   width: 32px !important;
   height: 32px !important;
   z-index: 999 !important;
@@ -10411,35 +10415,35 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 }
 
 /* ===================================================================
-   S25 FIXED COCKPIT – No-Scroll Proportional Layout
-   Überschreibt alle älteren padding/overflow/height-Regeln
-   [cite: S25-FIXED-COCKPIT 2026-03-11]
+   AIRBNB SCROLLABLE LAYOUT
+   Inhalt scrollt unter fixem Header – Clean Sweep [cite: CLEAN-SWEEP 2026-03-12]
    =================================================================== */
 
-/* 1. ScrollArea: Flex-Column, KEIN Scroll, padding für Header + Footer */
+/* 1. ScrollArea: Scrollbar, padding für Header (60px) + Footer (76px) */
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .inserat-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
   display: flex !important;
   flex-direction: column !important;
-  overflow: hidden !important;
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
   padding-top: 60px !important;
   padding-bottom: 76px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
   align-items: stretch !important;
-  text-align: left !important;
   gap: 0 !important;
 }
 
-/* 2. PhotoContainer: 30vh, kein fixer px-Wert mehr */
+/* 2. PhotoContainer: 250px, Edge-to-Edge */
 #wizard[data-flow="listing"] .inserat-cockpit-photo,
 #wizard[data-flow="listing"] .inserat-photo-container {
-  flex: 0 0 30vh !important;
-  height: 30vh !important;
-  min-height: 0 !important;
-  max-height: 30vh !important;
+  width: 100% !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  max-height: 250px !important;
+  flex-shrink: 0 !important;
   overflow: hidden !important;
   position: relative !important;
 }
@@ -10451,32 +10455,31 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: none !important;
 }
 
-/* 4. ContentSheet: flex-start mit gap:8px; Preis per margin-top:auto ans Ende */
+/* 4. ContentSheet: normaler Flow, kompakt */
 #wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
 #wizard[data-flow="listing"] .inserat-cockpit-body {
-  flex: 1 !important;
-  min-height: 0 !important;
+  width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  overflow: hidden !important;
-  overflow-y: hidden !important;
-  padding: 4px 16px 4px !important;
+  overflow: visible !important;
+  padding: 8px 16px 16px !important;
   gap: 8px !important;
+  flex: 0 0 auto !important;
 }
 
-/* 5. Keyboard-Mode: Photo schrumpft auf 20vh */
+/* 5. Keyboard-Mode: Photo schrumpft auf 150px */
 #wizard[data-flow="listing"] .liquid-master-panel.inserat-keyboard-active .inserat-cockpit-photo {
-  flex: 0 0 20vh !important;
-  height: 20vh !important;
-  max-height: 20vh !important;
+  height: 150px !important;
+  min-height: 150px !important;
+  max-height: 150px !important;
 }
 
-/* 6. Kleiner Screen (<700px): Photo 25vh */
+/* 6. Kleiner Screen (<700px): Photo 200px */
 @media (max-height: 700px) {
   #wizard[data-flow="listing"] .inserat-cockpit-photo {
-    flex: 0 0 25vh !important;
+    height: 200px !important;
     height: 25vh !important;
     max-height: 25vh !important;
   }
