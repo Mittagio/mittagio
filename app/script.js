@@ -17556,7 +17556,7 @@
       floatingBadges.className='floating-badges';
       /* width:auto + justify-content:flex-start überschreiben das CSS .floating-badges {width:100%; justify-content:center} */
       /* Pills direkt unter Titel – kein position:absolute mehr [cite: AIRBNB-PRECISION 2026-03-11] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17681,16 +17681,16 @@
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:76px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:calc(60px + env(safe-area-inset-top,0)); padding-bottom:76px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
       photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
-      /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
+      /* Dezentes Edit-Icon oben rechts IM BILD (eBay-Style) */
       var editPencilBtn=document.createElement('button');
       editPencilBtn.type='button';
       editPencilBtn.setAttribute('aria-label','Foto bearbeiten');
-      editPencilBtn.textContent='✏️';
-      editPencilBtn.style.cssText='position:absolute; top:10px; right:10px; width:36px; height:36px; background:rgba(0,0,0,0.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; font-size:17px; z-index:200; pointer-events:auto; box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+      editPencilBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+      editPencilBtn.style.cssText='position:absolute; top:12px; right:12px; width:32px; height:32px; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; color:#fff; font-size:16px; z-index:200; pointer-events:auto;';
       editPencilBtn.onclick=function(e){ e.stopPropagation(); try{if(navigator.vibrate)navigator.vibrate(20);}catch(ex){} openPhotoEditOverlay(); };
       photoContainer.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
@@ -17698,7 +17698,7 @@
       /* Header: Titel zentriert, X absolut rechts */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#ffffff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; min-height:60px; padding-top:env(safe-area-inset-top,0); background:#ffffff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding-left:0; padding-right:0; padding-bottom:0; box-sizing:border-box;';
       var headerTitle=document.createElement('span');
       headerTitle.textContent='Dein Gericht';
       headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
@@ -17716,7 +17716,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
+      stepName.style.cssText='width:100%; margin-top:8px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -17751,8 +17751,8 @@
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
-      contentSheet.appendChild(stepName);
-      contentSheet.appendChild(floatingBadges); /* Kategorie-Pills direkt unter Titel [cite: AIRBNB-PRECISION 2026-03-11] */
+      contentSheet.appendChild(floatingBadges); /* Pills DIREKT unter Bild (eBay-homogen) */
+      contentSheet.appendChild(stepName); /* Name folgt ERST DANACH */
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
@@ -17771,25 +17771,20 @@
       /* pillGroup entfernt – floatingBadges übernimmt Kategorie-Auswahl komplett */
       contentSheet.appendChild(descWrap);
 
-      // ========== 5. Preis – Airbnb Card Style [cite: 2026-03-10] ==========
+      // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:0; width:100%;';
-      /* Airbnb Card Wrapper */
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:0; width:100%; padding:0 16px;';
+      var priceLabelSmall=document.createElement('label');
+      priceLabelSmall.htmlFor='gericht-preis';
+      priceLabelSmall.textContent='Dein Preis';
+      priceLabelSmall.style.cssText='font-size:12px; font-weight:500; color:#888; margin:0;';
       var priceInputWrapper=document.createElement('div');
-      priceInputWrapper.className='price-input-wrapper price-airbnb-card';
-      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:6px; width:100%; border:1.5px solid #e0e0e0; border-radius:16px; padding:16px 24px; background:#fff; transition:border-color 0.2s;';
-      priceInputWrapper.addEventListener('focusin', function(){ priceInputWrapper.style.borderColor='#222222'; });
-      priceInputWrapper.addEventListener('focusout', function(){ priceInputWrapper.style.borderColor='#e0e0e0'; });
-      /* Preis-Label klein oben-links */
-      var priceLabelSmall=document.createElement('span');
-      priceLabelSmall.style.cssText='position:absolute; top:-9px; left:16px; font-size:11px; font-weight:700; color:#888; background:#fff; padding:0 4px; letter-spacing:0.04em; text-transform:uppercase;';
-      priceLabelSmall.textContent='Preis';
-      priceInputWrapper.style.position='relative';
-      priceInputWrapper.appendChild(priceLabelSmall);
+      priceInputWrapper.className='price-input-wrapper inserat-price-ebay';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; gap:6px; background:#f7f7f7; border:none; border-radius:12px; padding:12px 16px; width:fit-content;';
       var stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
-      stepPriceWrap.className='inserat-price-pill-wrap price-input-wrapper';
+      stepPriceWrap.className='inserat-price-pill-wrap';
       stepPriceWrap.style.cssText='display:flex; align-items:baseline; gap:4px;';
       var inputPrice=document.createElement('input');
       inputPrice.type='text';
@@ -17798,14 +17793,15 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:42px; font-weight:700; color:#222222; width:150px; text-align:center;';
+      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:24px; font-weight:700; color:#222; width:100px; text-align:left;';
       var eurSpan=document.createElement('span');
       eurSpan.className='currency inserat-price-pill-euro';
       eurSpan.textContent='\u20AC';
-      eurSpan.style.cssText='font-size:24px; font-weight:600; color:#555; line-height:1;';
+      eurSpan.style.cssText='font-size:18px; font-weight:600; color:#555; line-height:1;';
       stepPriceWrap.appendChild(inputPrice);
       stepPriceWrap.appendChild(eurSpan);
       priceInputWrapper.appendChild(stepPriceWrap);
+      priceSection.appendChild(priceLabelSmall);
       priceSection.appendChild(priceInputWrapper);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';

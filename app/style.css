@@ -1843,7 +1843,7 @@
     /* 2. COMPACT LAYOUT: Ein-Screen-Garantie S25 */
     #mastercard-step-edit .inserat-scroll-area.mastercard-content,
     #mastercard-step-edit .mastercard-scroll-area {
-      padding: 60px 0 76px !important;
+      padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important;
       display: flex !important;
       flex-direction: column !important;
       overflow-y: auto !important;
@@ -1967,7 +1967,7 @@
       animation: pillIntroRun 0.6s ease-out forwards;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Pills→Name→PowerBar→Preis */
-    #mastercard-step-edit .inserat-scroll-area { padding: 60px 0 76px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
+    #mastercard-step-edit .inserat-scroll-area { padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
     #mastercard-step-edit .pill-group { margin-top: 0; box-shadow: none !important; }
     #mastercard-step-edit .category-pill { box-shadow: none !important; }
     #mastercard-step-edit .category-pill.active { background: #222222 !important; color: #ffffff !important; }
@@ -3458,7 +3458,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow: hidden; padding: 0;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 60px 0 76px; overflow: hidden; font-family: var(--font-main); }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px; overflow: hidden; font-family: var(--font-main); }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -9284,9 +9284,8 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  padding: 60px 0 76px !important;
+  padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important;
 }
-/* padding-top:0 entfernt – Airbnb-Block (padding-top:60px) greift jetzt korrekt [cite: PURGE 2026-03-12] */
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -10282,13 +10281,15 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: 250px !important;
 }
 
-/* Fixed Header: nur X rechts (Airbnb-Style) [cite: PURGE-FINAL 2026-03-12] */
+/* Fixed Header: Safe Area für Notch (iPhone/S25), X rechts */
 #inserat-fixed-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  min-height: 60px;
+  padding-top: env(safe-area-inset-top, 0);
+  box-sizing: border-box;
   background: #ffffff;
   z-index: 9999;
   border-bottom: 1px solid #ebebeb;
@@ -10296,7 +10297,9 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */
@@ -10350,7 +10353,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain !important;
-  padding-top: 60px !important;
+  padding-top: calc(60px + env(safe-area-inset-top, 0)) !important;
   padding-bottom: 76px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
