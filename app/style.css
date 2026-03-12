@@ -10362,12 +10362,38 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 }
 
 /* eBay Edit-Bar: Kreis-Icons unten rechts im Foto */
-#photo-edit-bar {
+#photo-edit-bar,
+.photo-edit-toolbar {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 210;
   touch-action: none;
 }
-#photo-edit-bar button:active {
-  transform: scale(0.88);
-  opacity: 0.75;
+
+/* Glas-Kreise für Foto-Aktionen (✂️ / 🔄) */
+.btn-photo-action {
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.15s;
+  flex-shrink: 0;
+}
+.btn-photo-action:active {
+  transform: scale(0.85);
+  background: #ffffff;
 }
 
 /* Crop-Fertig-Overlay im Foto */

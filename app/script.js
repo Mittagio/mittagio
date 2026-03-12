@@ -17437,30 +17437,44 @@
         overlay.appendChild(sugWrap);
       }
       /* eBay-Style: Kreis-Icons unten rechts im Foto [cite: S25-PREMIUM 2026-03-11] */
-      var _circleBtn='width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.18); flex-shrink:0; transition:opacity 0.2s;';
       var photoEditBar=document.createElement('div');
       photoEditBar.id='photo-edit-bar';
-      photoEditBar.style.cssText='position:absolute; bottom:12px; right:12px; display:'+(w.data.photoData?'flex':'none')+'; gap:8px; z-index:200; pointer-events:auto;';
-      var btnCropCircle=document.createElement('button'); btnCropCircle.type='button'; btnCropCircle.style.cssText=_circleBtn; btnCropCircle.setAttribute('aria-label','Ausschnitt anpassen'); btnCropCircle.textContent='✂️';
-      var btnChangeCircle=document.createElement('button'); btnChangeCircle.type='button'; btnChangeCircle.style.cssText=_circleBtn; btnChangeCircle.setAttribute('aria-label','Foto ändern'); btnChangeCircle.textContent='🔄';
+      photoEditBar.className='photo-edit-toolbar';
+      photoEditBar.style.cssText='display:'+(w.data.photoData?'flex':'none')+'; pointer-events:auto;';
+      var btnCropCircle=document.createElement('button'); btnCropCircle.type='button'; btnCropCircle.className='btn-photo-action'; btnCropCircle.setAttribute('aria-label','Ausschnitt anpassen'); btnCropCircle.textContent='✂️';
+      var btnChangeCircle=document.createElement('button'); btnChangeCircle.type='button'; btnChangeCircle.className='btn-photo-action'; btnChangeCircle.setAttribute('aria-label','Foto ändern'); btnChangeCircle.textContent='🔄';
       photoEditBar.appendChild(btnCropCircle);
       photoEditBar.appendChild(btnChangeCircle);
-      /* Crop-Modus Logik */
+      /* Crop-Modus Logik – Header-Transformation statt Overlay im Foto */
       var cropModeActive=false;
       function enterCropMode(){
         if(!w.data.photoData) return;
         cropModeActive=true;
-        cropFertigOverlay.style.display='flex';
-        photoEditBar.style.opacity='0.3';
+        /* Bild leicht einzoomen (eBay-Style) */
+        imgEl.style.transition='transform 0.3s ease';
+        imgEl.style.transform='scale(1.1)';
+        /* Header-Titel + Close-Button umwandeln */
+        if(fixedTitle) fixedTitle.textContent='Ausschnitt wählen';
+        if(closeX){ closeX.innerHTML='✅'; closeX.style.background='#e8f5e9'; }
+        /* Edit-Buttons dezent ausblenden während Crop */
+        photoEditBar.style.opacity='0.25';
         photoEditBar.style.pointerEvents='none';
+        cropFertigOverlay.style.display='none';
         hapticLight();
         try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
       }
       function exitCropMode(){
         cropModeActive=false;
-        cropFertigOverlay.style.display='none';
+        /* Zoom zurücksetzen */
+        imgEl.style.transition='transform 0.3s ease';
+        imgEl.style.transform='scale(1)';
+        /* Header zurücksetzen */
+        var curDish=(w.data.dish||'').trim();
+        if(fixedTitle) fixedTitle.textContent=curDish||'Dein Gericht';
+        if(closeX){ closeX.innerHTML='<span aria-hidden="true">&#10005;</span>'; closeX.style.background='#f7f7f7'; }
         photoEditBar.style.opacity='1';
         photoEditBar.style.pointerEvents='auto';
+        cropFertigOverlay.style.display='none';
         hapticLight();
         try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
       }
@@ -17611,6 +17625,7 @@
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
+        if(cropModeActive){ exitCropMode(); return; }
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
         /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
