@@ -1843,7 +1843,7 @@
     /* 2. COMPACT LAYOUT: Ein-Screen-Garantie S25 */
     #mastercard-step-edit .inserat-scroll-area.mastercard-content,
     #mastercard-step-edit .mastercard-scroll-area {
-      padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important;
+      padding: 60px 0 100px !important;
       display: flex !important;
       flex-direction: column !important;
       overflow-y: auto !important;
@@ -1967,7 +1967,7 @@
       animation: pillIntroRun 0.6s ease-out forwards;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Pills→Name→PowerBar→Preis */
-    #mastercard-step-edit .inserat-scroll-area { padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 60px 0 100px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
     #mastercard-step-edit .pill-group { margin-top: 0; box-shadow: none !important; }
     #mastercard-step-edit .category-pill { box-shadow: none !important; }
     #mastercard-step-edit .category-pill.active { background: #222222 !important; color: #ffffff !important; }
@@ -3458,7 +3458,7 @@
     .liquid-master-panel .inserat-scroll-area {
       flex: 1; min-height: 0; overflow: hidden; padding: 0;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px; overflow: hidden; font-family: var(--font-main); }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 60px 0 100px; overflow: hidden; font-family: var(--font-main); }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -3558,7 +3558,7 @@
     }
     /* Scroll-Bereich: Platz für fixierten Footer (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
-      padding-bottom: 76px !important;
+      padding-bottom: 100px !important;
       overflow: hidden !important;
     }
     /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
@@ -3703,8 +3703,8 @@
     }
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"].sheet--kitchen .liquid-master-panel .inserat-photo-tile.photo-header {
-      border-radius: 0 0 24px 24px; width: 100%;
-      margin: 0; margin-top: 0; /* Bild bündig oben, 0px [cite: 2026-02-21] */
+      border-radius: 0; width: 100%;
+      margin: 0; margin-top: 0; padding: 0;
     }
     .liquid-master-panel .photo-header.inserat-photo-tile .inserat-photo-placeholder,
     .liquid-master-panel .photo-header:not(:has(img[src])) {
@@ -9284,7 +9284,7 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  padding: calc(60px + env(safe-area-inset-top, 0)) 0 76px !important;
+  padding: 60px 0 100px !important;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   margin-top: 0 !important;
@@ -10281,25 +10281,22 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: 250px !important;
 }
 
-/* Fixed Header: Safe Area für Notch (iPhone/S25), X rechts */
+/* Fixed Header: Airbnb Rule (EDGE-TO-EDGE) */
+#app-sticky-header,
 #inserat-fixed-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 60px;
-  padding-top: env(safe-area-inset-top, 0);
-  box-sizing: border-box;
-  background: #ffffff;
+  height: 60px;
+  background: #fff;
   z-index: 9999;
   border-bottom: 1px solid #ebebeb;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */
@@ -10353,17 +10350,18 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain !important;
-  padding-top: calc(60px + env(safe-area-inset-top, 0)) !important;
-  padding-bottom: 76px !important;
+  padding-top: 60px !important;
+  padding-bottom: 100px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
   align-items: stretch !important;
   gap: 0 !important;
 }
 
-/* 2. PhotoContainer: 250px, Edge-to-Edge */
+/* 2. PhotoContainer: 250px, Edge-to-Edge – kein Weißraum */
 #wizard[data-flow="listing"] .inserat-cockpit-photo,
-#wizard[data-flow="listing"] .inserat-photo-container {
+#wizard[data-flow="listing"] .inserat-photo-container,
+#wizard[data-flow="listing"] .photo-container {
   width: 100% !important;
   height: 250px !important;
   min-height: 250px !important;
@@ -10371,13 +10369,20 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   flex-shrink: 0 !important;
   overflow: hidden !important;
   position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
-/* 3. PhotoTile: füllt den photoContainer zu 100% */
-#wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
+/* 3. PhotoTile: füllt den photoContainer, PURGE – kein Weißraum */
+#wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll,
+#wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   height: 100% !important;
   min-height: 0 !important;
   max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
 /* 4. ContentSheet: normaler Flow, kompakt */

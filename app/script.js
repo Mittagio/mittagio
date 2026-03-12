@@ -17114,7 +17114,7 @@
     /* Cleanup: alte Footer-Elemente + alle Wizard-Sheets aus vorherigem Aufruf entfernen [cite: 2026-03-10] */
     var _oldF1=document.getElementById('mastercard-footer-step1'); if(_oldF1) _oldF1.remove();
     var _oldF2=document.getElementById('mastercard-footer-step2'); if(_oldF2) _oldF2.remove();
-    var _oldFH=document.getElementById('inserat-fixed-header'); if(_oldFH) _oldFH.remove();
+    var _oldFH=document.getElementById('app-sticky-header')||document.getElementById('inserat-fixed-header'); if(_oldFH) _oldFH.remove();
     document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var _oldQa=document.getElementById('quick-adjust-sheet'); if(_oldQa && _oldQa.parentNode) _oldQa.remove();
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
@@ -17549,7 +17549,7 @@
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='&#10005;'; /* einfaches × Zeichen */
-      closeX.style.cssText='position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:24px; color:#222222; cursor:pointer; border:none; background:none; padding:5px; line-height:1; width:auto; height:auto;';
+      closeX.style.cssText='position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:24px; color:#888; cursor:pointer; border:none; background:none; padding:5px; line-height:1; width:auto; height:auto;';
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
@@ -17681,8 +17681,8 @@
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:calc(60px + env(safe-area-inset-top,0)); padding-bottom:76px; overscroll-behavior:contain;';
-      photoContainer.className='inserat-cockpit-photo inserat-photo-container';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:100px; overscroll-behavior:contain;';
+      photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* Dezentes Edit-Icon oben rechts IM BILD (eBay-Style) */
@@ -17690,15 +17690,15 @@
       editPencilBtn.type='button';
       editPencilBtn.setAttribute('aria-label','Foto bearbeiten');
       editPencilBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-      editPencilBtn.style.cssText='position:absolute; top:12px; right:12px; width:32px; height:32px; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; color:#fff; font-size:16px; z-index:200; pointer-events:auto;';
+      editPencilBtn.style.cssText='position:absolute; top:12px; right:12px; width:32px; height:32px; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; color:#fff; font-size:16px; z-index:100; pointer-events:auto;';
       editPencilBtn.onclick=function(e){ e.stopPropagation(); try{if(navigator.vibrate)navigator.vibrate(20);}catch(ex){} openPhotoEditOverlay(); };
       photoContainer.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
-      /* Header: Titel zentriert, X absolut rechts */
+      /* Header: Airbnb Rule – ein X rechts */
       var fixedHeader=document.createElement('div');
-      fixedHeader.id='inserat-fixed-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; min-height:60px; padding-top:env(safe-area-inset-top,0); background:#ffffff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding-left:0; padding-right:0; padding-bottom:0; box-sizing:border-box;';
+      fixedHeader.id='app-sticky-header';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
       var headerTitle=document.createElement('span');
       headerTitle.textContent='Dein Gericht';
       headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
@@ -18330,7 +18330,7 @@
       const actionSection=document.createElement('section');
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; left:0; right:0; bottom:0; z-index:1000002; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:9999; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
