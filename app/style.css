@@ -9455,8 +9455,7 @@
 /* Zentrierungs-Achse Step 1 + 2 [cite: 2026-02-23] */
 .mastercard-step-center,
 #mastercard-step-edit,
-.inserat-step1-pane,
-#mastercard-step-money .inserat-step2-wrap {
+.inserat-step1-pane {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -10311,6 +10310,38 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   margin: 12px 0 0;
 }
 
+/* S25/HANDY-STABILITÄT: Footer klebt in Step 1 + Step 2 auf jedem Gerät */
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  border-top: 1px solid #ebebeb !important;
+  z-index: 10000 !important;
+  padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+  min-height: calc(68px + env(safe-area-inset-bottom, 20px)) !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+#wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+#wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav {
+  width: 100% !important;
+  min-height: 48px !important;
+  align-items: stretch !important;
+}
+/* Scroll-Reserve: letzter Inhalt bleibt über klebendem Footer sichtbar */
+#wizard[data-flow="listing"] #mastercard-step-edit .mastercard-scroll-area,
+#wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area,
+#wizard[data-flow="listing"] #mastercard-step-money .inserat-step2-wrap {
+  padding-bottom: calc(132px + env(safe-area-inset-bottom, 20px)) !important;
+}
+
 /* ===================================================================
    S25 PREMIUM NAVIGATION: Fixed Header + Normal-Scroll Photo
    Apple/Airbnb-Style [cite: S25-PREMIUM-NAV 2026-03-11]
@@ -10406,6 +10437,44 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 /* Crop-Fertig-Overlay im Foto */
 #crop-fertig-overlay {
   touch-action: none; /* verhindert Page-Scroll während Crop */
+}
+/* Step 2 Clean UI: kompakt, homogen, eBay/Airbnb */
+#wizard[data-flow="listing"] #mastercard-step-money .step2-clean-info {
+  padding-bottom: 6px;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-pickup-box {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-umsatz-vorschau {
+  margin-bottom: 8px !important;
+}
+/* Schmale Handys (<=390px): kompakter Footer + Step2 ohne Umbrüche */
+@media (max-width: 390px) {
+  #wizard[data-flow="listing"] #mastercard-footer-step1,
+  #wizard[data-flow="listing"] #mastercard-footer-step2 {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    min-height: calc(64px + env(safe-area-inset-bottom, 20px)) !important;
+  }
+  #wizard[data-flow="listing"] #mastercard-footer-step1 .btn-primary-black,
+  #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black {
+    min-height: 46px !important;
+    height: 46px !important;
+    font-size: 15px !important;
+    padding: 0 16px !important;
+  }
+  #wizard[data-flow="listing"] #mastercard-step-money .step2-clean-info {
+    gap: 8px !important;
+    padding: 10px 12px 0 !important;
+  }
+  #wizard[data-flow="listing"] #mastercard-step-money .step2-pickup-box {
+    padding: 10px 12px !important;
+  }
+  #wizard[data-flow="listing"] #mastercard-step-money .step2-umsatz-vorschau {
+    margin: 6px 12px 0 !important;
+    width: calc(100% - 24px) !important;
+    padding: 10px 12px !important;
+  }
 }
 /* #inserat-fixed-title entfernt – kein Titel im Header mehr [cite: PURGE-FINAL 2026-03-12] */
 

@@ -17223,7 +17223,7 @@
         /* Step 2 entfernt (4,99€ Logik cleanup) – bleibt als leerer Slider-Pane für Step3-Transition */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money';
-        step2Wrap.style.cssText='display:none;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; width:100%; min-height:0; background:#fff; overflow-y:auto; -webkit-overflow-scrolling:touch;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17231,19 +17231,51 @@
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' Ôé¼');
         var miniPreview=document.createElement('div');
         miniPreview.className='mini-dish-preview';
-        miniPreview.style.cssText='display:flex; align-items:center; gap:12px; padding:12px 0; margin-bottom:16px; border-bottom:1px solid rgba(15,23,42,0.08); flex-shrink:0;';
-        miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;object-position:center '+objPos2+'%; background:#e8ecf0;"><div class="mini-details" style="flex:1;min-width:0;"><h3 id="money-dish-name" style="margin:0;font-size:17px;font-weight:900;color:#0f172a;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:15px;font-weight:700;color:#64748b;">'+euroS2+'</span></div>';
+        miniPreview.style.cssText='display:block; width:100vw; max-width:100vw; height:250px; margin:0 0 0 calc(-50vw + 50%); overflow:hidden; position:relative; flex-shrink:0;';
+        miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+objPos2+'%; display:block;">';
         step2Wrap.appendChild(miniPreview);
+        var step2Info=document.createElement('div');
+        step2Info.className='step2-clean-info';
+        step2Info.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 16px 0;';
+        step2Info.innerHTML='<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;"><h3 id="money-dish-name" style="margin:0; font-size:24px; font-weight:800; color:#111827; line-height:1.12;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:20px; font-weight:800; color:#111827;">'+euroS2+'</span></div>';
+        var pickupBox=document.createElement('div');
+        pickupBox.className='step2-pickup-box';
+        pickupBox.style.cssText='display:flex; align-items:center; justify-content:space-between; gap:12px; background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; padding:12px 14px;';
+        var pickupEnabled = w.data.hasPickupCode !== false;
+        w.data.step2PickupEnabled = pickupEnabled;
+        var pickupInfo=document.createElement('div');
+        pickupInfo.style.cssText='display:flex; align-items:center; gap:10px;';
+        pickupInfo.innerHTML='<span style="font-size:18px;">🎫</span><div><div style="font-size:14px; font-weight:700; color:#111827;">Abholnummer</div><div style="font-size:12px; color:#6b7280;">0,89 € pro Vorgang</div></div>';
+        var pickupToggle=document.createElement('button');
+        pickupToggle.type='button';
+        pickupToggle.setAttribute('aria-label','Abholnummer aktivieren');
+        pickupToggle.style.cssText='width:52px; height:30px; border:none; border-radius:999px; position:relative; background:'+(pickupEnabled?'#111827':'#e5e7eb')+'; cursor:pointer; flex-shrink:0;';
+        var pickupKnob=document.createElement('span');
+        pickupKnob.style.cssText='position:absolute; top:3px; left:'+(pickupEnabled?'25px':'3px')+'; width:24px; height:24px; border-radius:50%; background:#fff; transition:left .2s ease;';
+        pickupToggle.appendChild(pickupKnob);
+        pickupToggle.onclick=function(){
+          pickupEnabled=!pickupEnabled;
+          w.data.hasPickupCode=pickupEnabled;
+          w.data.step2PickupEnabled=pickupEnabled;
+          pickupToggle.style.background=pickupEnabled?'#111827':'#e5e7eb';
+          pickupKnob.style.left=pickupEnabled?'25px':'3px';
+          saveDraft();
+          hapticLight();
+        };
+        pickupBox.appendChild(pickupInfo);
+        pickupBox.appendChild(pickupToggle);
+        step2Info.appendChild(pickupBox);
+        step2Wrap.appendChild(step2Info);
         updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; var umsatzValEl=document.getElementById('step2UmsatzVal'); if(umsatzValEl){ var u25=(pr*25).toFixed(2).replace('.',','); umsatzValEl.textContent=u25+' €'; } };
         var moneyHeadline=document.createElement('h2');
         moneyHeadline.className='money-headline';
-        moneyHeadline.textContent='Wähle dein Paket';
-        moneyHeadline.style.cssText='margin:0 0 20px; font-size:18px; font-weight:800; color:#0f172a;';
+        moneyHeadline.textContent='';
+        moneyHeadline.style.cssText='display:none;';
         step2Wrap.appendChild(moneyHeadline);
         var umsatzVorschauEl=document.createElement('div');
         umsatzVorschauEl.id='step2UmsatzVorschau';
         umsatzVorschauEl.className='step2-umsatz-vorschau';
-        umsatzVorschauEl.style.cssText='margin-bottom:20px; padding:14px 16px; background:rgba(15,23,42,0.04); border-radius:12px; text-align:left; width:100%; box-sizing:border-box;';
+        umsatzVorschauEl.style.cssText='margin:8px 16px 0; padding:12px 14px; background:#f8fafc; border-radius:12px; text-align:left; width:calc(100% - 32px); box-sizing:border-box;';
         var priceS2ForUmsatz=Number(w.data.price)||0;
         var umsatz25=(priceS2ForUmsatz*25).toFixed(2).replace('.',',');
         umsatzVorschauEl.innerHTML='<div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:4px;">Möglicher Umsatz (bei 25 Portionen)</div><div id="step2UmsatzVal" style="font-size:22px; font-weight:900; color:#0f172a;">'+umsatz25+' €</div><div style="font-size:11px; color:#94a3b8; margin-top:12px; line-height:1.4;">Inserat: 0,00 €<br>Service-Gebühr: 0,89 € pro Abholnummer (nur bei erfolgreichem Verkauf via Stripe)</div>';
@@ -17251,7 +17283,7 @@
         /* Zero-Entry: Zwei Kacheln – Standard 4,99 oben, Abholnummer 0,00 unten (aktiv) [cite: ZERO-COST PICKUP 2026-02-23] */
         var pricingContainer=document.createElement('div');
         pricingContainer.className='pricing-container inserat-step2-two-tiles';
-        pricingContainer.style.cssText='display:flex; flex-direction:column; gap:20px; padding:0; margin-top:0; flex:1; width:100%; max-width:100%;';
+        pricingContainer.style.cssText='display:none;';
         var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
         var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
         var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
@@ -18439,7 +18471,7 @@
       var primaryValid = isPrimaryValid();
       function updateHeaderTitleByStep(step){
         if(!headerTitle) return;
-        headerTitle.textContent = step === 2 ? 'Monetarisierung' : 'Dein Gericht';
+        headerTitle.textContent = step === 2 ? 'Verkaufseinstellungen' : 'Dein Gericht';
       }
       function routeAfterSave(){
         var normalized = normalizeWizardEntryPoint(entryPoint);
@@ -18523,51 +18555,31 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; position:fixed; left:0; right:0; bottom:0; z-index:10000; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
-        var linkZurueck=document.createElement('button');
-        linkZurueck.type='button';
-        linkZurueck.className='inserat-footer-link btn-secondary-link';
-        linkZurueck.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0;';
-        linkZurueck.textContent='Zurück';
-        linkZurueck.onclick=function(){ hapticLight(); w.inseratStep=1; saveDraft(); if(slider) slider.setAttribute('data-inserat-step','1'); if(typeof updateFooterVisibility==='function') updateFooterVisibility(); var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display','none','important'); var wizardEl=document.getElementById('wizard'); if(wizardEl){ wizardEl.classList.remove('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); } updateHeaderTitleByStep(1); };
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:fixed; left:0; right:0; bottom:0; z-index:10000; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
-        footerBtn.className='btn-primary-black' + (w.data.pricingChoice==='499' ? ' inserat-footer-btn--499' : ' free-mode is-free-mode');
+        footerBtn.className='btn-primary-black inserat-footer-btn--499';
         footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
-        footerBtn.textContent=(w.data.pricingChoice==='499' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
+        footerBtn.textContent='Jetzt für 4,99 € inserieren';
         footerBtn.onclick=function(){
           hapticLight();
           var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
           if(bulkDates.length>0){
-            var choice=w.data.pricingChoice||'pro';
-            var useAbholnummer=(choice!=='499');
+            var useAbholnummer=!!w.data.step2PickupEnabled;
             if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
             closeWizard(true);
             if(typeof showProviderWeek==='function') showProviderWeek();
             return;
           }
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          var choice=w.data.pricingChoice||'pro';
-          if(choice==='499'){
-            w.data.hasPickupCode=false; w.data.inseratFeeWaived=false; w.data.pricingOption=undefined;
-            var o=previewOfferFromWizard(); publishFeeUseStep3=true; showPublishFeeModal(o);
-          } else {
-            w.data.hasPickupCode=true; w.data.inseratFeeWaived=true; w.data.pricingOption='abholnummer';
-            var o=previewOfferFromWizard();
-            var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(x){return x.id===w.ctx.editOfferId;}):null;
-            var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
-            var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
-            if(isEditActiveS2){
-              var published=typeof publishOffer==='function'?publishOffer(o):null;
-              if(published){ if(typeof slideWizardToStep3==='function') slideWizardToStep3(published); else { closeWizard(true); if(typeof showInseratSuccessSheet==='function') showInseratSuccessSheet(published); else if(typeof showProviderHome==='function') showProviderHome(); } return; }
-            }
-            var premiumCard=box.querySelector('.price-card.premium');
-            if(premiumCard){ premiumCard.classList.add('is-loading'); premiumCard.dataset.originalHtml=premiumCard.innerHTML; premiumCard.innerHTML='<span class="inserat-btn-spinner" style="width:24px;height:24px;border:3px solid rgba(16,185,129,0.3);border-top-color:#10b981;border-radius:50%;animation:inserat-spin 0.8s linear infinite;display:block;margin:24px auto;"></span>'; }
-            publishFeeUseStep3=true;
-            setTimeout(function(){ showPublishFeeModal(o); }, 800);
-          }
+          w.data.pricingChoice='499';
+          w.data.hasPickupCode=!!w.data.step2PickupEnabled;
+          w.data.inseratFeeWaived=false;
+          w.data.pricingOption=undefined;
+          var o=previewOfferFromWizard();
+          publishFeeUseStep3=true;
+          showPublishFeeModal(o);
         };
-        airbnbFooter.appendChild(linkZurueck);
         airbnbFooter.appendChild(footerBtn);
         if(_wizardEl) _wizardEl.appendChild(airbnbFooter); else box.appendChild(airbnbFooter);
         var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); updateHeaderTitleByStep(s); };

@@ -219,4 +219,13 @@ Das Service-Grid (5 Kacheln) ist in `.info-section` eingebettet:
 - `Weiter` wechselt in **Step 2 (Monetarisierung)** statt Direkt-Publish.
 - Header-Titel wird pro Schritt synchronisiert:
   - Step 1: `Dein Gericht`
-  - Step 2: `Monetarisierung`
+  - Step 2: `Verkaufseinstellungen`
+
+## Step 2 Redesign (Clean UI)
+
+- Foto bleibt in Step 2 Edge-to-Edge oben mit identischem Ausschnitt (`object-position`) wie in Step 1.
+- Keine manuellen Zurück-Links im Content oder Footer; Navigation über System-Back und Header-X.
+- Kompakte Abholnummer-Sektion als weiße Box mit Toggle und Label `0,89 € pro Vorgang`.
+- Verdienst-Vorschau sitzt direkt oberhalb des Step-2-Insertions-Buttons.
+- Primär-CTA im Footer: `Jetzt für 4,99 € inserieren` (schwarz, 8px Radius, Safe-Area-fest).
+- Footer-Stabilität Step 1/2: Footer ist auf mobilen Geräten immer `fixed` mit `padding-bottom: env(safe-area-inset-bottom, 20px)` und zusätzlicher Scroll-Reserve im Content.
