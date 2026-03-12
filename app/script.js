@@ -17644,14 +17644,14 @@
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:8px 16px 4px; gap:0;';
+      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:2px 16px 4px; gap:0;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin:0; display:flex; justify-content:center; background:#ffffff; padding:4px 0;';
+      stepName.style.cssText='width:100%; margin:0; display:flex; justify-content:center; background:#ffffff; padding:2px 0;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';

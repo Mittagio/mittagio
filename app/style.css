@@ -9318,13 +9318,13 @@
   height: 32px !important;
   z-index: 999 !important;
 }
-/* Content-Sheet: kein Negativrand mehr – Sticky Header übernimmt Trennung [cite: S25-PREMIUM-NAV 2026-03-11] */
+/* Content-Sheet: direkt ans Foto, kein sichtbarer Weißraum [cite: S25-PREMIUM 2026-03-11] */
 #wizard[data-flow="listing"] .inserat-content-sheet {
   background: #ffffff !important;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   margin-top: 0 !important;
-  padding-top: 4px !important;
+  padding-top: 2px !important;
   position: relative;
   z-index: 2;
   overflow: visible;
@@ -9335,14 +9335,14 @@
   overflow: visible;
   min-height: 44px;
 }
-/* Foto-Container: Normal-Flow (scrollt unter Fixed Header weg) [cite: S25-PREMIUM-NAV 2026-03-11] */
+/* Foto-Container: Normal-Flow, 30vh (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
 .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-container,
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   position: relative !important;
-  height: 250px !important;
-  min-height: 250px !important;
-  max-height: 250px !important;
+  height: 30vh !important;
+  min-height: 0 !important;
+  max-height: 30vh !important;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header::after {
   content: '';
@@ -10326,11 +10326,13 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
    Apple/Airbnb-Style [cite: S25-PREMIUM-NAV 2026-03-11]
    =================================================================== */
 
-/* Photo-Container: Normal-Flow, 250px (überschreibt alte sticky-Regeln) */
+/* Photo-Container: Normal-Flow, 30vh (Fixed Cockpit, überschreibt alte sticky-Regeln) */
 #wizard[data-flow="listing"] .inserat-cockpit-photo {
   position: relative !important;
-  height: 250px !important;
-  min-height: 250px !important;
+  flex: 0 0 30vh !important;
+  height: 30vh !important;
+  min-height: 0 !important;
+  max-height: 30vh !important;
   flex-shrink: 0 !important;
   overflow: hidden !important;
   transition: height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
