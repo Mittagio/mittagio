@@ -17403,7 +17403,7 @@
           photoTile.style.border='none';
           w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
           overlay.style.pointerEvents='none'; overlay.style.cursor='default';
-          if(photoPillBar) photoPillBar.style.display='flex';
+          if(photoEditBar) photoEditBar.style.display='flex';
           if(typeof checkMastercardValidation==='function') checkMastercardValidation();
           /* Hintergrund: Resize + Filter für Upload, dann dataUrl speichern */
           (async function(){
@@ -17436,39 +17436,37 @@
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
-      /* eBay-Style Pill-Bar: erscheint nach Foto-Upload [cite: S25-PREMIUM 2026-03-11] */
-      var photoPillBar=document.createElement('div');
-      photoPillBar.id='photo-pill-bar';
-      photoPillBar.style.cssText='display:'+(w.data.photoData?'flex':'none')+'; gap:8px; padding:8px 16px 0; justify-content:center; flex-wrap:wrap;';
-      var _pillStyle='display:flex; align-items:center; gap:5px; background:#fff; border:1px solid #e8e8e8; border-radius:50px; padding:8px 16px; font-size:13px; font-weight:600; color:#222; cursor:pointer; box-shadow:0 1px 8px rgba(0,0,0,0.07); min-height:40px; white-space:nowrap; transition:opacity 0.2s;';
-      var btnCropPill=document.createElement('button'); btnCropPill.type='button'; btnCropPill.style.cssText=_pillStyle;
-      btnCropPill.innerHTML='✂️ <span>Ausschnitt</span>';
-      var btnChangePill=document.createElement('button'); btnChangePill.type='button'; btnChangePill.style.cssText=_pillStyle;
-      btnChangePill.innerHTML='🔄 <span>Ändern</span>';
-      photoPillBar.appendChild(btnCropPill);
-      photoPillBar.appendChild(btnChangePill);
+      /* eBay-Style: Kreis-Icons unten rechts im Foto [cite: S25-PREMIUM 2026-03-11] */
+      var _circleBtn='width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.18); flex-shrink:0; transition:opacity 0.2s;';
+      var photoEditBar=document.createElement('div');
+      photoEditBar.id='photo-edit-bar';
+      photoEditBar.style.cssText='position:absolute; bottom:12px; right:12px; display:'+(w.data.photoData?'flex':'none')+'; gap:8px; z-index:162; pointer-events:auto;';
+      var btnCropCircle=document.createElement('button'); btnCropCircle.type='button'; btnCropCircle.style.cssText=_circleBtn; btnCropCircle.setAttribute('aria-label','Ausschnitt anpassen'); btnCropCircle.textContent='✂️';
+      var btnChangeCircle=document.createElement('button'); btnChangeCircle.type='button'; btnChangeCircle.style.cssText=_circleBtn; btnChangeCircle.setAttribute('aria-label','Foto ändern'); btnChangeCircle.textContent='🔄';
+      photoEditBar.appendChild(btnCropCircle);
+      photoEditBar.appendChild(btnChangeCircle);
       /* Crop-Modus Logik */
       var cropModeActive=false;
       function enterCropMode(){
         if(!w.data.photoData) return;
         cropModeActive=true;
         cropFertigOverlay.style.display='flex';
-        photoPillBar.style.opacity='0.3';
-        photoPillBar.style.pointerEvents='none';
+        photoEditBar.style.opacity='0.3';
+        photoEditBar.style.pointerEvents='none';
         hapticLight();
         try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
       }
       function exitCropMode(){
         cropModeActive=false;
         cropFertigOverlay.style.display='none';
-        photoPillBar.style.opacity='1';
-        photoPillBar.style.pointerEvents='auto';
+        photoEditBar.style.opacity='1';
+        photoEditBar.style.pointerEvents='auto';
         hapticLight();
         try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
       }
       cropFertigBtn.onclick=function(e){ e.stopPropagation(); exitCropMode(); };
-      btnCropPill.onclick=function(e){ e.stopPropagation(); enterCropMode(); };
-      btnChangePill.onclick=function(e){ e.stopPropagation(); hapticLight(); cameraInput.click(); };
+      btnCropCircle.onclick=function(e){ e.stopPropagation(); enterCropMode(); };
+      btnChangeCircle.onclick=function(e){ e.stopPropagation(); hapticLight(); cameraInput.click(); };
       /* Pan-Events: immer registriert, aber nur aktiv wenn cropModeActive=true */
       var panStartY=0,panStartPos=50,isPanning=false;
       function onPointerStart(ev){ if(!cropModeActive) return; panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
@@ -17527,8 +17525,7 @@
         };
         floatingBadges.appendChild(badge);
       });
-      /* Badges zentriert als erster Block in contentSheet [cite: 2026-03-10] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; z-index:5; padding:8px 16px 4px; margin-top:0; justify-content:center; width:100%; pointer-events:auto;';
+      /* Badges bleiben position:absolute unten links im Foto – kein Style-Override [cite: S25-PREMIUM 2026-03-11] */
 
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -17628,8 +17625,9 @@
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
       photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
+      photoContainer.appendChild(floatingBadges); /* Kategorie-Badges: unten links im Foto */
+      photoContainer.appendChild(photoEditBar);   /* Edit-Buttons: unten rechts im Foto */
       scrollArea.appendChild(photoContainer);
-      scrollArea.appendChild(photoPillBar); /* eBay Pill-Bar direkt unter Foto */
 
       /* S25 Fixed Header: Apple/Airbnb-Style – permanent oben [cite: S25-PREMIUM-NAV 2026-03-11] */
       var fixedHeader=document.createElement('div');
@@ -17645,9 +17643,8 @@
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; overflow:hidden; padding:4px 16px 0; gap:0;';
+      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:8px 16px 4px; gap:0;';
       scrollArea.appendChild(contentSheet);
-      contentSheet.appendChild(floatingBadges); /* Kategorie-Badges als erstes Element im Body */
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
       const stepName=document.createElement('div');

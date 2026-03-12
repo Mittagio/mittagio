@@ -10362,13 +10362,13 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   isolation: isolate;
 }
 
-/* eBay Pill-Bar: Foto-Aktionen direkt unter dem Foto */
-#photo-pill-bar {
-  flex-shrink: 0;
+/* eBay Edit-Bar: Kreis-Icons unten rechts im Foto */
+#photo-edit-bar {
+  touch-action: none;
 }
-#photo-pill-bar button:active {
-  transform: scale(0.94);
-  opacity: 0.85;
+#photo-edit-bar button:active {
+  transform: scale(0.88);
+  opacity: 0.75;
 }
 
 /* Crop-Fertig-Overlay im Foto */
@@ -10437,7 +10437,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: none !important;
 }
 
-/* 4. ContentSheet: flex:1, verteilt Inhalt gleichmäßig */
+/* 4. ContentSheet: flex:1, space-between (Items oben+unten verankert) */
 #wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
 #wizard[data-flow="listing"] .inserat-cockpit-body {
   flex: 1 !important;
@@ -10445,10 +10445,10 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: space-evenly !important;
+  justify-content: space-between !important;
   overflow: hidden !important;
   overflow-y: hidden !important;
-  padding: 4px 16px 0 !important;
+  padding: 8px 16px 4px !important;
   gap: 0 !important;
 }
 
