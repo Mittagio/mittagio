@@ -17432,7 +17432,7 @@
         var sugWrap=document.createElement('div');
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(photoEditBar) photoEditBar.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -17488,10 +17488,11 @@
       closeX.style.cssText='position:absolute;left:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;background:#f7f7f7;border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
       /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
 
-      /* Floating Category Badges – direkt in photoContainer (30vh), korrekte absolute Positionierung [cite: S25-FIXED-COCKPIT 2026-03-11] */
+      /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges';
-      floatingBadges.style.cssText='position:absolute;bottom:12px;left:12px;display:flex;gap:6px;z-index:160;pointer-events:auto;';
+      /* width:auto + justify-content:flex-start überschreiben das CSS .floating-badges {width:100%; justify-content:center} */
+      floatingBadges.style.cssText='position:absolute;bottom:12px;left:12px;width:auto;display:flex;gap:6px;justify-content:flex-start;align-self:auto;z-index:160;pointer-events:auto;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},

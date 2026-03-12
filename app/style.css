@@ -10012,16 +10012,13 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   text-align: center;
 }
 
-/* Floating Badges im Hero-Foto [cite: 2026-03-10] */
+/* Floating Badges im Hero-Foto – position:absolute, inline-style übernimmt die Kontrolle [cite: S25-PREMIUM 2026-03-11] */
 .floating-badges {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  z-index: 5;
+  flex-wrap: nowrap;
+  gap: 6px;
+  z-index: 160;
   pointer-events: auto;
-  align-self: center;
-  justify-content: center;
-  width: 100%;
 }
 
 .badge {
