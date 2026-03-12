@@ -17686,7 +17686,7 @@
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:4px 16px 4px; gap:0;';
+      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:hidden; padding:4px 16px 4px; gap:8px;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
@@ -18240,6 +18240,7 @@
       /* Kategorie-Pills entfernt – Auswahl erfolgt über Floating Badges im Foto [cite: 2026-03-10] */
       /* Preis: groß (32px), zentriert, letzte Ebene vor Footer */
       priceSection.className='inserat-cockpit-price '+priceSection.className;
+      priceSection.style.marginTop='auto'; /* Thumb-Zone: Preis ans Ende schieben */
       contentSheet.appendChild(priceSection);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       document.body.appendChild(quickAdjustPanel); /* Fix: position:fixed relativ zum Viewport, nicht zum transformierten wizard-box */

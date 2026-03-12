@@ -3374,11 +3374,12 @@
     /* Universal-X: 32px Kreis, weiß 80% + Blur [cite: S25 PREMIUM V2 2026-02-23] */
     .close-wizard-x,
     #wizard[data-flow="listing"] .close-wizard-x {
-      position: absolute !important; top: 12px !important; left: 12px !important;
+      position: absolute !important; top: 50% !important; right: 16px !important; left: auto !important;
+      transform: translateY(-50%) !important;
       width: 32px !important; height: 32px !important;
-      background: rgba(255,255,255,0.8) !important;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-radius: 50% !important; color: #1a1a1a !important;
+      background: transparent !important;
+      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+      border-radius: 50% !important; color: #9ca3af !important;
       border: none !important; box-shadow: none !important;
     }
     .close-wizard-x:active{ transform:scale(0.96); box-shadow:none; filter:brightness(0.95); }
@@ -9312,8 +9313,10 @@
 /* X: Einziges Schließen-Element oben links [cite: UI CLEANUP 2026-02-23] */
 #wizard[data-flow="listing"] .close-wizard-x.close-mastercard,
 #wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x {
-  top: 12px !important;
-  left: 12px !important;
+  top: 50% !important;
+  left: auto !important;
+  right: 16px !important;
+  transform: translateY(-50%) !important;
   width: 32px !important;
   height: 32px !important;
   z-index: 999 !important;
@@ -10448,7 +10451,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: none !important;
 }
 
-/* 4. ContentSheet: flex:1, space-between (Items oben+unten verankert) */
+/* 4. ContentSheet: flex-start mit gap:8px; Preis per margin-top:auto ans Ende */
 #wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
 #wizard[data-flow="listing"] .inserat-cockpit-body {
   flex: 1 !important;
@@ -10456,11 +10459,11 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   overflow: hidden !important;
   overflow-y: hidden !important;
-  padding: 8px 16px 4px !important;
-  gap: 0 !important;
+  padding: 4px 16px 4px !important;
+  gap: 8px !important;
 }
 
 /* 5. Keyboard-Mode: Photo schrumpft auf 20vh */
