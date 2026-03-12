@@ -10292,7 +10292,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   width: 100%;
   height: 60px;
   background: #fff;
-  z-index: 100001;
+  z-index: 1000002;
   border-bottom: 1px solid #ebebeb;
   display: flex;
   align-items: center;

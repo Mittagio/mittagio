@@ -17699,7 +17699,7 @@
       /* Header: Airbnb Rule – ein X rechts */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:100001; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:1000002; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
       var headerTitle=document.createElement('span');
       headerTitle.textContent='Dein Gericht';
       headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
