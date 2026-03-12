@@ -17693,13 +17693,13 @@
       editPencilBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
       editPencilBtn.style.cssText='position:absolute; top:12px; right:12px; width:32px; height:32px; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; color:#fff; font-size:16px; z-index:100; pointer-events:auto;';
       editPencilBtn.onclick=function(e){ e.stopPropagation(); try{if(navigator.vibrate)navigator.vibrate(20);}catch(ex){} openPhotoEditOverlay(); };
-      photoContainer.appendChild(editPencilBtn);
+      photoTile.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
       /* Header: Airbnb Rule – ein X rechts */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:9999; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; height:60px; background:#fff; z-index:100001; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0; box-sizing:border-box;';
       var headerTitle=document.createElement('span');
       headerTitle.textContent='Dein Gericht';
       headerTitle.style.cssText='font-size:16px; font-weight:700; color:#222222; margin:0; pointer-events:none;';
