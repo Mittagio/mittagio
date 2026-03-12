@@ -17556,7 +17556,8 @@
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges';
       /* width:auto + justify-content:flex-start überschreiben das CSS .floating-badges {width:100%; justify-content:center} */
-      floatingBadges.style.cssText='position:absolute;bottom:12px;left:12px;width:auto;display:flex;gap:6px;justify-content:flex-start;align-self:auto;z-index:190;pointer-events:auto;';
+      /* Pills direkt unter Titel – kein position:absolute mehr [cite: AIRBNB-PRECISION 2026-03-11] */
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:8px; pointer-events:auto; flex-wrap:wrap;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17590,7 +17591,7 @@
         };
         floatingBadges.appendChild(badge);
       });
-      /* Badges bleiben position:absolute unten links im Foto – kein Style-Override [cite: S25-PREMIUM 2026-03-11] */
+      /* floatingBadges wird nach contentSheet+stepName eingefügt [cite: AIRBNB-PRECISION 2026-03-11] */
 
       var selectionOverlay=document.createElement('div');
       selectionOverlay.className='selection-overlay';
@@ -17688,7 +17689,7 @@
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:76px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:64px; padding-bottom:76px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
       /* Photo: 250px, Edge-to-Edge, margin-bottom:0 → Name direkt darunter [cite: PURGE-FINAL 2026-03-12] */
       photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; line-height:0;';
@@ -17706,8 +17707,9 @@
       /* Header: Nur X oben rechts – kein Titel (Airbnb-Style) [cite: PURGE-FINAL 2026-03-12] */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:flex-end; padding:0 12px;';
-      fixedHeader.appendChild(closeX); /* Rechts: Thin-X */
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:64px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center; margin:0; padding:0;';
+      closeX.style.cssText='position:absolute; right:16px; top:50%; transform:translateY(-50%); width:40px; height:40px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;';
+      fixedHeader.appendChild(closeX); /* X absolut rechts – kein Layout-Drift [cite: AIRBNB-PRECISION 2026-03-11] */
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
@@ -17756,6 +17758,7 @@
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
       contentSheet.appendChild(stepName);
+      contentSheet.appendChild(floatingBadges); /* Kategorie-Pills direkt unter Titel [cite: AIRBNB-PRECISION 2026-03-11] */
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');

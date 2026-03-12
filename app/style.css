@@ -10295,14 +10295,15 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   top: 0;
   left: 0;
   right: 0;
-  height: 60px;
+  height: 64px;
   z-index: 10006;
   background: #ffffff;
   border-bottom: 1px solid #ebebeb;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 12px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */
