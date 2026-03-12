@@ -17606,7 +17606,6 @@
         if(extrasItem) extrasItem.classList.toggle('active',!!(w.data.extras&&w.data.extras.length));
         var zeitItem=bar.querySelector('.power-item[data-type="zeit"]');
         if(zeitItem){ var hasTime=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd); zeitItem.classList.toggle('active',!!hasTime); }
-        if(typeof updateMastercardFeedback==='function') updateMastercardFeedback();
       }
       function renderSelectionContent(type){
         selectionOverlayInner.innerHTML='';
@@ -18112,7 +18111,7 @@
       rebowlRow.appendChild(pfandBtn);
       powerBar.appendChild(rebowlRow);
 
-      function updateMastercardFeedback(){ updatePowerBarFromBox(); }
+      function updateMastercardFeedback(){ /* Validierung ohne Rekursion – kein updatePowerBarFromBox-Aufruf */ }
       function renderPowerBarExtras(){}
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
