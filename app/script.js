@@ -17470,9 +17470,9 @@
         oImg.addEventListener('touchstart',oPanStart,{passive:true});
         oImg.addEventListener('touchmove',oPanMove,{passive:true});
         oImg.addEventListener('touchend',oPanEnd,{passive:true});
-        /* Header: ✓ Fertig oben links */
+        /* Header: ✓ Fertig oben RECHTS (iOS-Standard, Daumen-Zone) [cite: PURGE-FINAL 2026-03-12] */
         var oHdr=document.createElement('div');
-        oHdr.style.cssText='position:absolute; top:0; left:0; right:0; height:60px; display:flex; align-items:center; padding:0 20px; z-index:10; background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,transparent 100%);';
+        oHdr.style.cssText='position:absolute; top:0; left:0; right:0; height:60px; display:flex; align-items:center; justify-content:flex-end; padding:0 20px; z-index:10; background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,transparent 100%);';
         var btnFertig=document.createElement('button');
         btnFertig.type='button'; btnFertig.textContent='✓ Fertig';
         btnFertig.style.cssText='background:none; border:none; color:#4ade80; font-size:18px; font-weight:700; cursor:pointer; padding:8px 0; font-family:system-ui,sans-serif; letter-spacing:0.01em;';
@@ -17489,7 +17489,38 @@
         oBar.style.cssText='position:absolute; bottom:0; left:0; right:0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0)); display:flex; justify-content:space-around; align-items:center; background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 100%);';
         [{emoji:'🔄',label:'Ersetzen',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} cameraInput.click(); }},
          {emoji:'✂️',label:'Zuschneiden',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} oImg.style.transform='scale(1.12)'; setTimeout(function(){ oImg.style.transform='scale(1)'; },400); }},
-         {emoji:'🗑️',label:'Löschen',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(40); saveDraft(); if(imgEl){ imgEl.src=''; imgEl.style.display='none'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(!plc){ plc=document.createElement('div'); plc.className='inserat-photo-placeholder-center'; plc.innerHTML='<span style="font-size:32px;">📸</span><span style="font-size:14px;color:#94a3b8;font-weight:500;margin-top:6px;">Foto hinzufügen</span>'; plc.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f9f9f9;'; photoTile.appendChild(plc); } photoTile.classList.add('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='2px dashed #e0e0e0'; if(editPencilBtn) editPencilBtn.style.display='none'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); closePhotoEditOverlay(); }}
+         {emoji:'🗑️',label:'Löschen',fn:function(){
+           try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
+           /* Elegantes Bestätigungs-Modal – kein Browser-Alert [cite: PURGE-FINAL 2026-03-12] */
+           var confirmMod=document.createElement('div');
+           confirmMod.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,0.72);z-index:30;display:flex;align-items:center;justify-content:center;padding:24px;';
+           var confirmBox=document.createElement('div');
+           confirmBox.style.cssText='background:#1c1c1e;border-radius:18px;padding:28px 24px;width:100%;max-width:300px;text-align:center;font-family:system-ui,sans-serif;';
+           confirmBox.innerHTML='<p style="color:#fff;font-size:18px;font-weight:700;margin:0 0 8px;">Bild entfernen?</p><p style="color:#8e8e93;font-size:14px;margin:0 0 28px;line-height:1.4;">Das Foto wird unwiderruflich entfernt.</p>';
+           var confirmBtns=document.createElement('div');
+           confirmBtns.style.cssText='display:flex;flex-direction:column;gap:10px;';
+           var btnDel=document.createElement('button'); btnDel.type='button'; btnDel.textContent='Ja, Löschen';
+           btnDel.style.cssText='width:100%;padding:15px;border-radius:12px;border:none;background:#ef4444;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:system-ui,sans-serif;';
+           btnDel.ontouchstart=function(){ btnDel.style.opacity='0.8'; };
+           btnDel.ontouchend=function(){ btnDel.style.opacity='1'; };
+           btnDel.onclick=function(){
+             try{if(navigator.vibrate)navigator.vibrate(40);}catch(e){}
+             w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(40); saveDraft();
+             if(imgEl){ imgEl.src=''; imgEl.style.display='none'; }
+             var plc=photoTile.querySelector('.inserat-photo-placeholder-center');
+             if(!plc){ plc=document.createElement('div'); plc.className='inserat-photo-placeholder-center'; plc.innerHTML='<span style="font-size:32px;">📸</span><span style="font-size:14px;color:#94a3b8;font-weight:500;margin-top:6px;">Foto hinzufügen</span>'; plc.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f9f9f9;'; photoTile.appendChild(plc); }
+             photoTile.classList.add('inserat-photo-placeholder','pulse-soft');
+             photoTile.style.border='2px dashed #e0e0e0';
+             if(editPencilBtn) editPencilBtn.style.display='none';
+             if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+             closePhotoEditOverlay();
+           };
+           var btnCancel=document.createElement('button'); btnCancel.type='button'; btnCancel.textContent='Abbrechen';
+           btnCancel.style.cssText='width:100%;padding:15px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:system-ui,sans-serif;';
+           btnCancel.onclick=function(){ confirmMod.remove(); };
+           confirmBtns.appendChild(btnDel); confirmBtns.appendChild(btnCancel);
+           confirmBox.appendChild(confirmBtns); confirmMod.appendChild(confirmBox); ov.appendChild(confirmMod);
+         }}
         ].forEach(function(a){
           var col=document.createElement('div'); col.style.cssText='display:flex;flex-direction:column;align-items:center;gap:8px;';
           var btn=document.createElement('button'); btn.type='button'; btn.textContent=a.emoji;
@@ -17517,10 +17548,9 @@
       closeX.type='button';
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
-      closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      /* Airbnb-Style: Flex-Kind rechts – KEIN position:absolute, kein CSS-Konflikt [cite: CLEAN-SWEEP 2026-03-12] */
-      closeX.style.cssText='flex-shrink:0; width:32px; height:32px; background:transparent; border-radius:50%; color:#9ca3af; display:flex; align-items:center; justify-content:center; z-index:150; border:none; cursor:pointer; font-size:22px; line-height:1; font-family:system-ui,sans-serif; position:relative;';
-      /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
+      /* Thin SVG-X: kein Kreis, kein Hintergrund – reines Airbnb-Style [cite: PURGE-FINAL 2026-03-12] */
+      closeX.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#aaaaaa" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>';
+      closeX.style.cssText='flex-shrink:0; width:40px; height:40px; background:transparent; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; padding:0;';
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var floatingBadges=document.createElement('div');
@@ -17660,8 +17690,8 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:76px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      /* Photo: 250px feste Höhe, normaler Flow – scrollt unter Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0;';
+      /* Photo: 250px, Edge-to-Edge, margin-bottom:0 → Name direkt darunter [cite: PURGE-FINAL 2026-03-12] */
+      photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; line-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
       var editPencilBtn=document.createElement('button');
@@ -17673,27 +17703,17 @@
       photoContainer.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
-      /* S25 Fixed Header: Apple/Airbnb-Style – permanent oben [cite: S25-PREMIUM-NAV 2026-03-11] */
+      /* Header: Nur X oben rechts – kein Titel (Airbnb-Style) [cite: PURGE-FINAL 2026-03-12] */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center;';
-      /* Airbnb 3-Spalten Header: [Spacer | Titel zentriert | X rechts] [cite: CLEAN-SWEEP 2026-03-12] */
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:space-between; padding:0 16px;';
-      var headerSpacer=document.createElement('div');
-      headerSpacer.style.cssText='width:32px; flex-shrink:0;'; /* Balanciert das X auf der rechten Seite */
-      var fixedTitle=document.createElement('span');
-      fixedTitle.id='inserat-fixed-title';
-      fixedTitle.textContent='Dein Gericht';
-      fixedTitle.style.cssText='font-size:17px; font-weight:700; color:#0f172a; flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; pointer-events:none;';
-      fixedHeader.appendChild(headerSpacer); /* Links: Spacer */
-      fixedHeader.appendChild(fixedTitle);   /* Mitte: Titel */
-      fixedHeader.appendChild(closeX);       /* Rechts: X */
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:flex-end; padding:0 12px;';
+      fixedHeader.appendChild(closeX); /* Rechts: Thin-X */
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
       /* ContentSheet: normaler Flow, kompakt [cite: CLEAN-SWEEP 2026-03-12] */
-      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; padding:8px 16px 16px;';
+      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:6px; padding:4px 16px 16px;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========

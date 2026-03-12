@@ -3368,29 +3368,23 @@
     
     /* Universal-X: 32px Kreis, weiß 80% + Blur [cite: S25 PREMIUM V2 2026-02-23] */
     /* closeX als Flex-Kind im 3-Spalten Header – KEIN position:absolute [cite: CLEAN-SWEEP 2026-03-12] */
+    /* Thin SVG-X: kein Kreis, kein Pseudo-Element, kein Hintergrund [cite: PURGE-FINAL 2026-03-12] */
     .close-wizard-x,
     #wizard[data-flow="listing"] .close-wizard-x {
       position: relative !important;
       top: auto !important; left: auto !important; right: auto !important;
       transform: none !important;
       flex-shrink: 0 !important;
-      width: 32px !important; height: 32px !important;
+      width: 40px !important; height: 40px !important;
       background: transparent !important;
       backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-      border-radius: 50% !important; color: #9ca3af !important;
+      border-radius: 0 !important;
       border: none !important; box-shadow: none !important;
       display: flex !important; align-items: center !important; justify-content: center !important;
+      padding: 0 !important;
     }
-    .close-wizard-x:active{ transform:scale(0.96); box-shadow:none; filter:brightness(0.95); }
-    .close-wizard-x::before,.close-wizard-x::after{
-      content:''; position:absolute; width:12px; height:2px; background:#1a1a1a; border-radius:1px;
-    }
-    .close-wizard-x::before{ transform:rotate(45deg); }
-    .close-wizard-x::after{ transform:rotate(-45deg); }
-    /* X-Button: Text-Fallback falls ::before/::after nicht greifen [cite: SYNC MASTER-CARD 2026-02-23] */
-    #wizard[data-flow="listing"] .inserat-photo-tile .close-wizard-x span {
-      font-size: 22px; font-weight: 300; line-height: 1;
-    }
+    .close-wizard-x:active { opacity: 0.5; }
+    .close-wizard-x::before, .close-wizard-x::after { content: none !important; }
     /* Universal-X: Pop-Away (Implosion) beim Schließen [cite: 2026-02-16 S25] */
     #wizard[data-flow="listing"] .liquid-master-panel.x-pop-away {
       animation: x-pop-away 0.28s cubic-bezier(0.55, 0, 0.45, 1) forwards;
@@ -9304,15 +9298,7 @@
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-/* X: Einziges Schließen-Element oben links [cite: UI CLEANUP 2026-02-23] */
-#wizard[data-flow="listing"] .close-wizard-x.close-mastercard {
-  position: relative !important;
-  top: auto !important; left: auto !important; right: auto !important;
-  transform: none !important;
-  width: 32px !important;
-  height: 32px !important;
-  z-index: 999 !important;
-}
+/* Duplikat-Regel entfernt – Basis-Regel oben übernimmt [cite: PURGE-FINAL 2026-03-12] */
 /* Content-Sheet: direkt ans Foto, kein sichtbarer Weißraum [cite: S25-PREMIUM 2026-03-11] */
 #wizard[data-flow="listing"] .inserat-content-sheet {
   background: #ffffff !important;
@@ -10303,7 +10289,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   max-height: 250px !important;
 }
 
-/* Fixed Header: permanent oben (Apple/Airbnb Style) – keine Rückstände vom Foto */
+/* Fixed Header: nur X rechts (Airbnb-Style) [cite: PURGE-FINAL 2026-03-12] */
 #inserat-fixed-header {
   position: fixed;
   top: 0;
@@ -10315,9 +10301,8 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   border-bottom: 1px solid #ebebeb;
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden; /* verhindert Bleed-through */
-  isolation: isolate;
+  justify-content: flex-end;
+  padding: 0 12px;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */
@@ -10345,16 +10330,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 #crop-fertig-overlay {
   touch-action: none; /* verhindert Page-Scroll während Crop */
 }
-#inserat-fixed-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: #0f172a;
-  max-width: 70%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+/* #inserat-fixed-title entfernt – kein Titel im Header mehr [cite: PURGE-FINAL 2026-03-12] */
 
 /* Service-Tiles: sanfter Schatten für Premium-Look */
 #wizard[data-flow="listing"] .inserat-service-tile {
