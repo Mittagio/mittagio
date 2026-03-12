@@ -17389,7 +17389,8 @@
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
       function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
-      photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')||ev.target.closest('.ebay-photo-overlay')) return; if(w.data.photoData) openPhotoLightbox(imgEl.src||w.data.photoData); };
+      /* Gesamtes Foto klickbar → Edit-Overlay öffnen [cite: EBAY-AIRBNB 2026-03-11] */
+      photoContainer.onclick=function(ev){ if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return; try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} openPhotoEditOverlay(); };
       if(cameraInput){
         cameraInput.onchange=async function(){
           var f=this.files&&this.files[0];
@@ -17512,11 +17513,6 @@
       function enterCropMode(){ cropModeActive=true; }
       function exitCropMode(){ cropModeActive=false; closePhotoEditOverlay(); }
       cropFertigBtn.onclick=function(e){ e.stopPropagation(); closePhotoEditOverlay(); };
-      photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
-      var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
-      var panUp=function(){ onPointerEnd(); };
-      window.addEventListener('mousemove',panMove);
-      window.addEventListener('mouseup',panUp);
       var closeX=document.createElement('button');
       closeX.type='button';
       closeX.className='close-wizard-x close-mastercard btn-close-master';
@@ -17663,7 +17659,7 @@
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       scrollArea.style.cssText='display:flex; flex-direction:column; overflow:hidden; padding-top:60px; padding-bottom:76px;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
-      photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0;';
+      photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0; margin-bottom:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
       var editPencilBtn=document.createElement('button');
@@ -17679,18 +17675,18 @@
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
       fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center;';
-      /* Airbnb-Style Header: Kein Titel; nur X rechts oben [cite: EBAY-AIRBNB 2026-03-11] */
+      /* Airbnb-Style Header: Titel zentriert, X rechts oben [cite: EBAY-AIRBNB 2026-03-11] */
       var fixedTitle=document.createElement('span');
       fixedTitle.id='inserat-fixed-title';
-      fixedTitle.textContent='';
-      fixedTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1); pointer-events:none;';
+      fixedTitle.textContent='Dein Gericht';
+      fixedTitle.style.cssText='font-size:17px; font-weight:700; color:#0f172a; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1); pointer-events:none;';
       fixedHeader.appendChild(fixedTitle);
       fixedHeader.appendChild(closeX); /* X oben rechts im Fixed Header */
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet';
-      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:2px 16px 4px; gap:0;';
+      contentSheet.style.cssText='flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:space-between; overflow:hidden; padding:4px 16px 4px; gap:0;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
