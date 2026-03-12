@@ -17682,7 +17682,7 @@
       scrollArea.className='inserat-cockpit inserat-scroll-area mastercard-scroll-area';
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:100px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:60px; padding-bottom:120px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100%; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -17866,8 +17866,15 @@
       document.body.appendChild(sharedBackdrop);
 
       /* Inline-Style-basiert: unabhängig von body.provider-mode CSS-Selektor [cite: 2026-03-10] */
+      function closeAllPowerbarSheets(){
+        [dineInSheet,mehrwegSheet,timeSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
+        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        if(typeof closeAllergenDrawer==='function') closeAllergenDrawer();
+        if(typeof closeQuickAdjust==='function') closeQuickAdjust();
+      }
       function openSheet(sheetEl){
         hapticLight();
+        closeAllPowerbarSheets();
         sharedBackdrop.style.opacity='1'; sharedBackdrop.style.pointerEvents='auto';
         sheetEl.style.transform='translateY(0)';
       }
@@ -18079,7 +18086,7 @@
       allergenDrawer.appendChild(btnDrawerFertig);
       document.body.appendChild(allergenDrawerBackdrop);
       document.body.appendChild(allergenDrawer);
-      function openAllergenDrawer(){ hapticLight(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
+      function openAllergenDrawer(){ hapticLight(); closeAllPowerbarSheets(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
       function closeAllergenDrawer(){ allergenDrawer.classList.remove('is-open'); allergenDrawerBackdrop.classList.remove('is-open'); updatePowerBarFromBox(); }
       tileAllergen.onclick=function(){ openAllergenDrawer(); };
       allergenDrawerBackdrop.onclick=closeAllergenDrawer;
@@ -18138,6 +18145,7 @@
       function closeQuickAdjust(){ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; updatePowerBarFromData(); }
       function openQuickAdjust(type){
         hapticLight();
+        closeAllPowerbarSheets();
         quickAdjustPanel.innerHTML='';
         quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
         quickAdjustPanel.style.transform='translateY(100%)';
