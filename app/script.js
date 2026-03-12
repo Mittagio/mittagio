@@ -16261,6 +16261,7 @@
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var qaPanel = document.getElementById('quick-adjust-sheet'); if(qaPanel && qaPanel.parentNode) qaPanel.remove();
+    var photoOvPanel = document.getElementById('photo-edit-overlay'); if(photoOvPanel && photoOvPanel.parentNode) photoOvPanel.remove();
     updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -17403,7 +17404,8 @@
           photoTile.style.border='none';
           w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
           overlay.style.pointerEvents='none'; overlay.style.cursor='default';
-          if(photoEditBar) photoEditBar.style.display='flex';
+          if(editPencilBtn) editPencilBtn.style.display='flex';
+          closePhotoEditOverlay(); /* Overlay schließen falls offen (z.B. via 🔄 Ersetzen) */
           if(typeof checkMastercardValidation==='function') checkMastercardValidation();
           /* Hintergrund: Resize + Filter für Upload, dann dataUrl speichern */
           (async function(){
@@ -17432,7 +17434,7 @@
         var sugWrap=document.createElement('div');
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(photoEditBar) photoEditBar.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -17445,50 +17447,71 @@
       var btnChangeCircle=document.createElement('button'); btnChangeCircle.type='button'; btnChangeCircle.className='btn-photo-action'; btnChangeCircle.setAttribute('aria-label','Foto ändern'); btnChangeCircle.textContent='🔄';
       photoEditBar.appendChild(btnCropCircle);
       photoEditBar.appendChild(btnChangeCircle);
-      /* Crop-Modus Logik – Header-Transformation statt Overlay im Foto */
+      /* Photo-Edit-Overlay: Schwarzes Vollbild-Modal (eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
       var cropModeActive=false;
-      function enterCropMode(){
-        if(!w.data.photoData) return;
-        cropModeActive=true;
-        /* Bild leicht einzoomen (eBay-Style) */
-        imgEl.style.transition='transform 0.3s ease';
-        imgEl.style.transform='scale(1.1)';
-        /* Header-Titel + Close-Button umwandeln */
-        if(fixedTitle) fixedTitle.textContent='Ausschnitt wählen';
-        if(closeX){ closeX.innerHTML='✅'; closeX.style.background='#e8f5e9'; }
-        /* Edit-Buttons dezent ausblenden während Crop */
-        photoEditBar.style.opacity='0.25';
-        photoEditBar.style.pointerEvents='none';
-        cropFertigOverlay.style.display='none';
-        hapticLight();
-        try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+      function openPhotoEditOverlay(){
+        if(!w.data.photoData){ cameraInput.click(); return; }
+        var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
+        var ov=document.createElement('div');
+        ov.id='photo-edit-overlay';
+        ov.style.cssText='position:fixed; inset:0; background:#000000; z-index:999999; display:flex; flex-direction:column; opacity:0; transition:opacity 0.22s ease;';
+        /* Overlay-Foto (pannable für Crop) */
+        var oImg=document.createElement('img');
+        oImg.src=w.data.photoData||'';
+        var initPos=getPhotoObjectPosition();
+        oImg.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+initPos+'%; transition:transform 0.3s ease;';
+        ov.appendChild(oImg);
+        /* Pan-Logik im Overlay */
+        var oPanY=0,oPanPos=initPos,oPanning=false;
+        function oPanStart(ev){ oPanY=ev.touches?ev.touches[0].clientY:ev.clientY; oPanPos=parseFloat((oImg.style.objectPosition||'center 40%').split(' ')[1])||40; oPanning=true; }
+        function oPanMove(ev){ if(!oPanning) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var d=(oPanY-y)*0.2; var p=Math.max(0,Math.min(100,oPanPos+d)); oImg.style.objectPosition='center '+p+'%'; }
+        function oPanEnd(){ oPanning=false; }
+        oImg.addEventListener('touchstart',oPanStart,{passive:true});
+        oImg.addEventListener('touchmove',oPanMove,{passive:true});
+        oImg.addEventListener('touchend',oPanEnd,{passive:true});
+        /* Header: ✓ Fertig oben links */
+        var oHdr=document.createElement('div');
+        oHdr.style.cssText='position:absolute; top:0; left:0; right:0; height:60px; display:flex; align-items:center; padding:0 20px; z-index:10; background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,transparent 100%);';
+        var btnFertig=document.createElement('button');
+        btnFertig.type='button'; btnFertig.textContent='✓ Fertig';
+        btnFertig.style.cssText='background:none; border:none; color:#4ade80; font-size:18px; font-weight:700; cursor:pointer; padding:8px 0; font-family:system-ui,sans-serif; letter-spacing:0.01em;';
+        btnFertig.onclick=function(){
+          try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
+          var p=parseFloat((oImg.style.objectPosition||'center 40%').replace('center ',''))||40;
+          if(imgEl){ imgEl.style.objectPosition='center '+p+'%'; } setPhotoObjectPosition(p); saveDraft();
+          closePhotoEditOverlay();
+        };
+        oHdr.appendChild(btnFertig);
+        ov.appendChild(oHdr);
+        /* Bottom Action Bar: 🔄 Ersetzen | ✂️ Zuschneiden | 🗑️ Löschen */
+        var oBar=document.createElement('div');
+        oBar.style.cssText='position:absolute; bottom:0; left:0; right:0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0)); display:flex; justify-content:space-around; align-items:center; background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 100%);';
+        [{emoji:'🔄',label:'Ersetzen',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} cameraInput.click(); }},
+         {emoji:'✂️',label:'Zuschneiden',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} oImg.style.transform='scale(1.12)'; setTimeout(function(){ oImg.style.transform='scale(1)'; },400); }},
+         {emoji:'🗑️',label:'Löschen',fn:function(){ try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){} w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(40); saveDraft(); if(imgEl){ imgEl.src=''; imgEl.style.display='none'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(!plc){ plc=document.createElement('div'); plc.className='inserat-photo-placeholder-center'; plc.innerHTML='<span style="font-size:32px;">📸</span><span style="font-size:14px;color:#94a3b8;font-weight:500;margin-top:6px;">Foto hinzufügen</span>'; plc.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f9f9f9;'; photoTile.appendChild(plc); } photoTile.classList.add('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='2px dashed #e0e0e0'; if(editPencilBtn) editPencilBtn.style.display='none'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); closePhotoEditOverlay(); }}
+        ].forEach(function(a){
+          var col=document.createElement('div'); col.style.cssText='display:flex;flex-direction:column;align-items:center;gap:8px;';
+          var btn=document.createElement('button'); btn.type='button'; btn.textContent=a.emoji;
+          btn.style.cssText='width:56px;height:56px;background:rgba(255,255,255,0.18);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border-radius:50%;border:1px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:transform 0.15s;';
+          btn.onclick=a.fn;
+          btn.addEventListener('touchstart',function(){ btn.style.transform='scale(0.88)'; },{passive:true});
+          btn.addEventListener('touchend',function(){ btn.style.transform='scale(1)'; },{passive:true});
+          var lbl=document.createElement('span'); lbl.textContent=a.label; lbl.style.cssText='color:rgba(255,255,255,0.88);font-size:12px;font-weight:600;font-family:system-ui,sans-serif;';
+          col.appendChild(btn); col.appendChild(lbl); oBar.appendChild(col);
+        });
+        ov.appendChild(oBar);
+        document.body.appendChild(ov);
+        requestAnimationFrame(function(){ ov.style.opacity='1'; });
       }
-      function exitCropMode(){
-        cropModeActive=false;
-        /* Zoom zurücksetzen */
-        imgEl.style.transition='transform 0.3s ease';
-        imgEl.style.transform='scale(1)';
-        /* Header zurücksetzen */
-        var curDish=(w.data.dish||'').trim();
-        if(fixedTitle) fixedTitle.textContent=curDish||'Dein Gericht';
-        if(closeX){ closeX.innerHTML='<span aria-hidden="true">&#10005;</span>'; closeX.style.background='#f7f7f7'; }
-        photoEditBar.style.opacity='1';
-        photoEditBar.style.pointerEvents='auto';
-        cropFertigOverlay.style.display='none';
-        hapticLight();
-        try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
+      function closePhotoEditOverlay(){
+        var ov=document.getElementById('photo-edit-overlay');
+        if(!ov) return;
+        ov.style.opacity='0';
+        setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },230);
       }
-      cropFertigBtn.onclick=function(e){ e.stopPropagation(); exitCropMode(); };
-      btnCropCircle.onclick=function(e){ e.stopPropagation(); enterCropMode(); };
-      btnChangeCircle.onclick=function(e){ e.stopPropagation(); hapticLight(); cameraInput.click(); };
-      /* Pan-Events: immer registriert, aber nur aktiv wenn cropModeActive=true */
-      var panStartY=0,panStartPos=50,isPanning=false;
-      function onPointerStart(ev){ if(!cropModeActive) return; panStartY=ev.touches?ev.touches[0].clientY:ev.clientY; panStartPos=getPhotoObjectPosition(); isPanning=true; }
-      function onPointerMove(ev){ if(!isPanning||!cropModeActive) return; var y=ev.touches?ev.touches[0].clientY:ev.clientY; var diff=(panStartY-y)*0.15; var p=Math.max(0,Math.min(100,panStartPos+diff)); imgEl.style.objectPosition='center '+p+'%'; setPhotoObjectPosition(p); }
-      function onPointerEnd(){ if(isPanning) hapticLight(); isPanning=false; panStartY=0; }
-      photoTile.addEventListener('touchstart',function(ev){ if(ev.touches.length!==1) return; onPointerStart(ev); },{passive:true});
-      photoTile.addEventListener('touchmove',function(ev){ if(ev.touches.length!==1) return; onPointerMove(ev); },{passive:true});
-      photoTile.addEventListener('touchend',onPointerEnd,{passive:true});
+      function enterCropMode(){ cropModeActive=true; }
+      function exitCropMode(){ cropModeActive=false; closePhotoEditOverlay(); }
+      cropFertigBtn.onclick=function(e){ e.stopPropagation(); closePhotoEditOverlay(); };
       photoTile.addEventListener('mousedown',function(ev){ if(ev.button!==0) return; onPointerStart(ev); ev.preventDefault(); });
       var panMove=function(ev){ if(isPanning) onPointerMove(ev); };
       var panUp=function(){ onPointerEnd(); };
@@ -17499,7 +17522,8 @@
       closeX.className='close-wizard-x close-mastercard btn-close-master';
       closeX.setAttribute('aria-label','Schließen');
       closeX.innerHTML='<span aria-hidden="true">&#10005;</span>';
-      closeX.style.cssText='position:absolute;left:12px;top:50%;transform:translateY(-50%);width:36px;height:36px;background:#f7f7f7;border-radius:50%;color:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:18px;line-height:1;font-family:system-ui,sans-serif;';
+      /* Airbnb-Style: Rechts oben, kein Hintergrund, schlichtes Grau [cite: EBAY-AIRBNB 2026-03-11] */
+      closeX.style.cssText='position:absolute;right:16px;top:50%;transform:translateY(-50%);width:32px;height:32px;background:transparent;border-radius:50%;color:#9ca3af;display:flex;align-items:center;justify-content:center;z-index:150;border:none;cursor:pointer;font-size:22px;line-height:1;font-family:system-ui,sans-serif;';
       /* closeX wird in fixedHeader eingefügt (nicht in photoTile) [cite: S25-PREMIUM-NAV 2026-03-11] */
 
       /* Floating Category Badges – unten links im Foto (position:absolute) [cite: S25-FIXED-COCKPIT 2026-03-11] */
@@ -17625,7 +17649,7 @@
       }
       function toggleHeaderSelection(type){ hapticLight(); renderSelectionContent(type); photoTile.classList.add('is-selecting'); }
       closeX.onclick=function(e){ e.preventDefault(); e.stopPropagation();
-        if(cropModeActive){ exitCropMode(); return; }
+        var photoOv=document.getElementById('photo-edit-overlay'); if(photoOv){ closePhotoEditOverlay(); return; }
         if(photoTile.classList.contains('is-selecting')){ hapticLight(); closeHeaderSelection(); return; }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
         /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
@@ -17641,20 +17665,27 @@
       photoContainer.className='inserat-cockpit-photo inserat-photo-container';
       photoContainer.style.cssText='flex:0 0 30vh; overflow:hidden; width:100%; position:relative; min-height:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
-      photoContainer.appendChild(floatingBadges); /* Kategorie-Badges: unten links im Foto */
-      photoContainer.appendChild(photoEditBar);   /* Edit-Buttons: unten rechts im Foto */
+      /* ✏️ Edit-Icon: Oben rechts im Foto (dunkler Glas-Kreis, eBay-Style) [cite: EBAY-AIRBNB 2026-03-11] */
+      var editPencilBtn=document.createElement('button');
+      editPencilBtn.type='button';
+      editPencilBtn.setAttribute('aria-label','Foto bearbeiten');
+      editPencilBtn.textContent='✏️';
+      editPencilBtn.style.cssText='position:absolute; top:10px; right:10px; width:36px; height:36px; background:rgba(0,0,0,0.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-radius:50%; border:none; cursor:pointer; display:'+(w.data.photoData?'flex':'none')+'; align-items:center; justify-content:center; font-size:17px; z-index:200; pointer-events:auto; box-shadow:0 2px 8px rgba(0,0,0,0.3);';
+      editPencilBtn.onclick=function(e){ e.stopPropagation(); try{if(navigator.vibrate)navigator.vibrate(20);}catch(ex){} openPhotoEditOverlay(); };
+      photoContainer.appendChild(editPencilBtn);
       scrollArea.appendChild(photoContainer);
 
       /* S25 Fixed Header: Apple/Airbnb-Style – permanent oben [cite: S25-PREMIUM-NAV 2026-03-11] */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='inserat-fixed-header';
       fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; height:60px; z-index:10006; background:#ffffff; border-bottom:1px solid #ebebeb; display:flex; align-items:center; justify-content:center;';
+      /* Airbnb-Style Header: Kein Titel; nur X rechts oben [cite: EBAY-AIRBNB 2026-03-11] */
       var fixedTitle=document.createElement('span');
       fixedTitle.id='inserat-fixed-title';
-      fixedTitle.textContent='Dein Gericht';
-      fixedTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1);';
+      fixedTitle.textContent='';
+      fixedTitle.style.cssText='font-size:17px; font-weight:800; color:#0f172a; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; transition:opacity 0.3s cubic-bezier(0.2,0.8,0.2,1); pointer-events:none;';
       fixedHeader.appendChild(fixedTitle);
-      fixedHeader.appendChild(closeX); /* Close-Button links im Fixed Header */
+      fixedHeader.appendChild(closeX); /* X oben rechts im Fixed Header */
 
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
@@ -17702,6 +17733,8 @@
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
       contentSheet.appendChild(stepName);
+      /* Kategorie-Pills direkt unter Name (nicht mehr im Foto schwebend) [cite: EBAY-AIRBNB 2026-03-11] */
+      contentSheet.appendChild(pillGroup);
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
