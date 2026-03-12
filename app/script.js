@@ -16262,6 +16262,7 @@
     document.querySelectorAll('.inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var qaPanel = document.getElementById('quick-adjust-sheet'); if(qaPanel && qaPanel.parentNode) qaPanel.remove();
     var photoOvPanel = document.getElementById('photo-edit-overlay'); if(photoOvPanel && photoOvPanel.parentNode) photoOvPanel.remove();
+    var stickyHdr = document.getElementById('app-sticky-header') || document.getElementById('inserat-fixed-header'); if(stickyHdr && stickyHdr.parentNode) stickyHdr.remove();
     updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -18430,8 +18431,8 @@
         /* Footer direkt an #wizard – verhindert Clipping durch overflow:hidden in .wizard-scroll/.wizard-inner/.wizard-sheet-body */
         var _wizardEl = document.getElementById('wizard');
         if(_wizardEl) _wizardEl.appendChild(actionSection); else box.appendChild(actionSection);
-        /* Fixed Header direkt an #wizard – nicht im scroll-Fluss [cite: S25-PREMIUM-NAV 2026-03-11] */
-        if(_wizardEl) _wizardEl.appendChild(fixedHeader); else document.body.appendChild(fixedHeader);
+        /* Fixed Header an body – viewport-sticky wie Meine Küche (nicht in transform-Kontext) */
+        document.body.appendChild(fixedHeader);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';

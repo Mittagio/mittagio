@@ -3456,9 +3456,10 @@
     /* Bereich-Steuerung: Fixed Cockpit kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
     .liquid-master-panel .scroll-content,
     .liquid-master-panel .inserat-scroll-area {
-      flex: 1; min-height: 0; overflow: hidden; padding: 0;
+      flex: 1; min-height: 0; overflow-y: auto; padding: 0;
+      -webkit-overflow-scrolling: touch;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 60px 0 100px; overflow: hidden; font-family: var(--font-main); }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 60px 0 100px; overflow-y: auto; font-family: var(--font-main); -webkit-overflow-scrolling: touch; }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -3559,7 +3560,8 @@
     /* Scroll-Bereich: Platz für fixierten Footer (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
       padding-bottom: 100px !important;
-      overflow: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
     }
     /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav {
@@ -10341,7 +10343,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
    Inhalt scrollt unter fixem Header – Clean Sweep [cite: CLEAN-SWEEP 2026-03-12]
    =================================================================== */
 
-/* 1. ScrollArea: Scrollbar, padding für Header (60px) + Footer (76px) */
+/* 1. ScrollArea: padding für Header (60px) + Footer (100px) */
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .inserat-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
