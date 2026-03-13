@@ -10082,15 +10082,20 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 
 .inserat-service-grid,
 .service-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  padding: 0;
+  padding: 0 16px;
+  box-sizing: border-box;
+  gap: 8px;
 }
 
 .inserat-service-tile,
 .service-tile {
+  flex: 1;
+  min-width: 0;
+  max-width: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10103,7 +10108,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   gap: 3px;
   padding: 6px 2px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
@@ -10114,9 +10119,24 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
 }
 
 .inserat-service-tile.active,
-.service-tile.active {
-  border: 2px solid #000000;
-  background: #f7f7f7;
+.inserat-service-tile.is-active,
+.service-tile.active,
+.service-tile.is-active {
+  background: #eef6ff;
+  border: 1.5px solid #007aff;
+  color: #007aff;
+}
+.inserat-service-tile.active .tile-icon,
+.inserat-service-tile.is-active .tile-icon,
+.service-tile.active .tile-icon,
+.service-tile.is-active .tile-icon {
+  color: #007aff;
+}
+.inserat-service-tile.active .tile-label,
+.inserat-service-tile.is-active .tile-label,
+.service-tile.active .tile-label,
+.service-tile.is-active .tile-label {
+  color: #007aff;
 }
 
 .inserat-service-tile .tile-icon,

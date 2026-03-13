@@ -17261,6 +17261,7 @@
           pickupKnob.style.left=pickupEnabled?'25px':'3px';
           saveDraft();
           hapticLight();
+          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
         };
         pickupBox.appendChild(pickupInfo);
         pickupBox.appendChild(pickupToggle);
@@ -17304,7 +17305,9 @@
           card.classList.add('active');
           w.data.pricingChoice=type==='classic'?'499':'pro';
           w.data.hasPickupCode=(type==='pro');
+          w.data.step2PickupEnabled=(type==='pro');
           saveDraft();
+          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
           var fb=document.querySelector('#mastercard-footer-step2 .btn-primary-black');
           if(fb){
             fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
@@ -17947,14 +17950,17 @@
         var dineInTile=powerBar.querySelector('.inserat-service-tile[data-type="vor-ort"]');
         var mehrwegTile=powerBar.querySelector('.inserat-service-tile[data-type="mehrweg"]');
         var timeTile=powerBar.querySelector('.inserat-service-tile[data-type="time"]');
+        var abholnummerTile=powerBar.querySelector('.inserat-service-tile[data-type="abholnummer"]');
         var allergenTile=powerBar.querySelector('.inserat-service-tile[data-type="allergene"]');
         var extrasTile=powerBar.querySelector('.inserat-service-tile[data-type="extras"]');
-        if(dineInTile) dineInTile.classList.toggle('active', w.data.dineInPossible!==false);
-        if(mehrwegTile) mehrwegTile.classList.toggle('active', !!(w.data.reuse&&w.data.reuse.enabled));
+        if(dineInTile){ var on=w.data.dineInPossible!==false; dineInTile.classList.toggle('active',on); dineInTile.classList.toggle('is-active',on); }
+        if(mehrwegTile){ var on=!!(w.data.reuse&&w.data.reuse.enabled); mehrwegTile.classList.toggle('active',on); mehrwegTile.classList.toggle('is-active',on); }
         /* tileTime zeigt aktuelle Zeit – kein toggle active, immer sichtbar */
         if(timeTile){ var curPw=w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30–14:00'; timeTile.querySelector('.tile-label').textContent=curPw; }
-        if(allergenTile) allergenTile.classList.toggle('active', !!(w.data.allergens&&w.data.allergens.length));
-        if(extrasTile) extrasTile.classList.toggle('active', !!(w.data.extras&&w.data.extras.length));
+        /* Abholnummer: Sync mit Step 2 – aktiv wenn hasPickupCode oder step2PickupEnabled */
+        if(abholnummerTile){ var abholOn=!!w.data.hasPickupCode||!!w.data.step2PickupEnabled; abholnummerTile.classList.toggle('active',abholOn); abholnummerTile.classList.toggle('is-active',abholOn); }
+        if(allergenTile){ var on=!!(w.data.allergens&&w.data.allergens.length); allergenTile.classList.toggle('active',on); allergenTile.classList.toggle('is-active',on); }
+        if(extrasTile){ var on=!!(w.data.extras&&w.data.extras.length); extrasTile.classList.toggle('active',on); extrasTile.classList.toggle('is-active',on); }
         if(typeof updateMastercardFeedback==='function') updateMastercardFeedback();
         /* Rebowl-Zeile ein-/ausblenden */
         var rebowlRow=powerBar.querySelector('.inserat-service-rebowl');
@@ -17975,6 +17981,7 @@
       var curTimeLabel=(w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30–14:00');
       var tileTime=makeTile('\uD83D\uDD52','Abholzeit','time',false);
       tileTime.querySelector('.tile-label').textContent=curTimeLabel;
+      var tileAbholnummer=makeTile('\uD83C\uDFAB','Abholnr','abholnummer',hasAbholnummer);
       var tileAllergen=makeTile('\uD83C\uDF3F','Allergene','allergene',hasAllergens);
       var tileExtras=makeTile('\u2795','Extras','extras',hasExtras);
 
@@ -17986,7 +17993,7 @@
 
       /* Inline-Style-basiert: unabhängig von body.provider-mode CSS-Selektor [cite: 2026-03-10] */
       function closeAllPowerbarSheets(){
-        [dineInSheet,mehrwegSheet,timeSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
+        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
         sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
         if(typeof closeAllergenDrawer==='function') closeAllergenDrawer();
         if(typeof closeQuickAdjust==='function') closeQuickAdjust();
@@ -18071,13 +18078,13 @@
       dineInSheet.appendChild(makeSheetDesc('Gäste können direkt bei dir essen – kein Besteck nötig.'));
       dineInSheet.appendChild(makeToggleRow('Vor Ort aktiviert', hasDineIn, function(val){
         w.data.dineInPossible=val;
-        tileDineIn.classList.toggle('active',val);
+        tileDineIn.classList.toggle('active',val); tileDineIn.classList.toggle('is-active',val);
         saveDraft();
       }));
       dineInSheet.appendChild(makeFertigBtn(dineInSheet));
       tileDineIn.onclick=function(){ openSheet(dineInSheet); };
       sharedBackdrop.addEventListener('click', function(){
-        [dineInSheet,mehrwegSheet,timeSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
+        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
         sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
         setTimeout(function(){ updatePowerBarFromBox(); }, 350);
       });
@@ -18088,7 +18095,7 @@
       mehrwegSheet.appendChild(makeSheetDesc('Gäste bringen eigene Dose oder Rebowl-Behälter.'));
       mehrwegSheet.appendChild(makeToggleRow('Mehrweg aktiviert', hasReuse, function(val){
         w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=val;
-        tileMehrweg.classList.toggle('active',val);
+        tileMehrweg.classList.toggle('active',val); tileMehrweg.classList.toggle('is-active',val);
         saveDraft();
       }));
       /* Pfand-Zeile */
@@ -18150,6 +18157,19 @@
       timeSheet.appendChild(btnTimeDefault);
       timeSheet.appendChild(makeFertigBtn(timeSheet));
       tileTime.onclick=function(){ openSheet(timeSheet); };
+
+      /* ---- Abholnummer Sheet (Sync mit Step 2) ---- */
+      var abholnummerSheet=makeSheet('Abholnummer einstellen');
+      abholnummerSheet.appendChild(makeSheetTitle('\uD83C\uDFAB Abholnummer'));
+      abholnummerSheet.appendChild(makeSheetDesc('Gäste erhalten eine Abholnummer zum Schlange-Überspringen. Wird in Schritt 2 bestätigt.'));
+      abholnummerSheet.appendChild(makeToggleRow('Abholnummer aktiviert', hasAbholnummer, function(val){
+        w.data.hasPickupCode=val;
+        w.data.step2PickupEnabled=val;
+        tileAbholnummer.classList.toggle('active',val); tileAbholnummer.classList.toggle('is-active',val);
+        saveDraft();
+      }));
+      abholnummerSheet.appendChild(makeFertigBtn(abholnummerSheet));
+      tileAbholnummer.onclick=function(){ openSheet(abholnummerSheet); };
 
       /* Allergen-Kachel → öffnet Sub-Menu-Drawer */
       /* Allergen-Drawer erstellen */
@@ -18217,6 +18237,7 @@
       powerBar.appendChild(tileDineIn);
       powerBar.appendChild(tileMehrweg);
       powerBar.appendChild(tileTime);
+      powerBar.appendChild(tileAbholnummer);
       powerBar.appendChild(tileAllergen);
       powerBar.appendChild(tileExtras);
 
