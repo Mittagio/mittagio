@@ -94,3 +94,13 @@ Der **3-Schritt Mastercard-Flow** gilt für alle Einstiege:
 - **Header sichtbar:** Der Sticky-Header im Listing-Flow ist standardmäßig sichtbar und nicht mehr nur über Scroll-Fade erreichbar.
 - **Scroll-Kette stabil:** Step-Panes und Scroll-Area haben eine durchgehende Flex-Kette (`min-height: 0`, `flex: 1`), damit der Inhalt auf mobilen Geräten zuverlässig vertikal scrollt.
 - **Footer im Kartenrahmen:** Die Footer von Step 1/2/3 sind panel-intern als `sticky` am unteren Rand verankert (statt viewport-weitem `fixed`), damit sie im Wizard-Rahmen bleiben.
+
+---
+
+## Mastercard 1 – Strict Footer Alignment (13.03.2026)
+
+- **Footer-Container:** Reinweiß (`#ffffff`), oben `1px solid #ebebeb`, kein Radius (`0px`), global am unteren Rand fixiert.
+- **Safe-Area-Padding:** `padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px`.
+- **Primär-Button:** Schwarz (`#222222`), weiße Schrift, Radius `8px`, volle verfügbare Breite in der Footer-Zeile.
+- **Sekundär-Button:** Schwarzer Text, fett, unterstrichen, ohne Hintergrund und ohne Rahmen.
+- **Scroll-Abstand:** Content-Container hat Bottom-Reserve, damit der letzte Inhalt nicht unter dem fixen Footer verschwindet.

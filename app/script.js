@@ -17374,7 +17374,7 @@
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
         step3Footer.classList.add('inserat-step1-nav');
-        step3Footer.style.cssText='position:sticky; bottom:0; z-index:1050; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+        step3Footer.style.cssText='position:fixed; bottom:0; left:0; width:100%; z-index:10000; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         step3Pane.appendChild(step3Footer);
         btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
@@ -17802,7 +17802,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:120px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)); overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100vw; max-width:100vw; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -18519,17 +18519,17 @@
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
       /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:1000002; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px; padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
         linkSpeichern.id='btnSpeichernKochbuch';
         linkSpeichern.className='inserat-footer-link btn-secondary-link';
-        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:bold; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
+        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:800; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
         linkSpeichern.textContent='Speichern';
         linkSpeichern.disabled=!primaryValid;
         linkSpeichern.style.opacity=primaryValid?'1':'0.3';
@@ -18575,7 +18575,7 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:sticky; bottom:0; z-index:1050; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
