@@ -1946,9 +1946,11 @@
       font-weight: 700;
       text-align: center;
       color: #222222;
-      width: 150px;
+      width: 100%;
+      max-width: 150px;
       outline: none;
       background: transparent;
+      box-sizing: border-box;
     }
     .minimal-divider {
       width: 40px;
@@ -2611,7 +2613,7 @@
       border: 1px solid var(--glass-border);
       box-shadow: 0 24px 48px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
       overflow: hidden;
-      max-width: 420px;
+      max-width: min(420px, 100%);
       max-height: 92vh;
       display: flex;
       flex-direction: column;
@@ -4258,7 +4260,7 @@
     /* #psheet-CSS entfernt (Legacy) – InseratCard nur im #wizard [cite: 2026-02-18] */
     /* Save-Scope-Dialog: Nur aktuell vs. Kochbuch [cite: Asset-Logik] */
     .save-scope-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1998; }
-    .save-scope-sheet { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 400px; background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px max(env(safe-area-inset-bottom), 20px); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 1999; display: flex; flex-direction: column; gap: 12px; }
+    .save-scope-sheet { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: min(400px, 100%); background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px max(env(safe-area-inset-bottom), 20px); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 1999; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
     .save-scope-title { margin: 0 0 8px; font-size: 16px; font-weight: 800; color: #0f172a; }
     .save-scope-btn { min-height: 48px; border-radius: 14px; border: none; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; }
     .save-scope-btn-current { background: #f1f5f9; color: #0f172a; }
@@ -10152,6 +10154,16 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   color: #333333;
   text-align: center;
   line-height: 1.2;
+}
+
+/* S25 Edge-Protection: Keine feste Breite > 320px im Inseratsflow [cite: S25-GRID-FIX 2026-03-13] */
+#wizard[data-flow="listing"] .inserat-content-sheet,
+#wizard[data-flow="listing"] .inserat-cockpit-body,
+#wizard[data-flow="listing"] .inserat-scroll-area,
+#mastercard-step-edit .inserat-content-sheet,
+#mastercard-step-edit .inserat-scroll-area {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Rebowl-Row innerhalb des Grids */
