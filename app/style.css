@@ -1977,19 +1977,30 @@
     /* 5-Pillars: Icons only, space-around, 2px Balken bei aktiv [cite: S25 PREMIUM V2 2026-02-23] */
     #mastercard-step-edit .power-item,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item {
-      flex: 1; min-width: 44px; min-height: 44px; padding: 10px 6px 12px; border-radius: 12px; text-align: center; font-size: 20px;
+      flex: 0 0 auto; min-width: 65px; max-width: 80px; min-height: 44px; padding: 8px 4px 10px; border-radius: 12px; text-align: center;
       border: none; background: transparent; color: #94a3b8;
       transition: all 0.2s cubic-bezier(0.4,0,0.2,1); cursor: pointer; user-select: none;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
-      border-bottom: 2px solid transparent;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
     }
+    /* S25: Grid zentriert, gleichmäßiger Abstand [cite: S25-GRID-FIX 2026-03-12] */
     #mastercard-step-edit .inserat-power-bar,
     #wizard[data-flow="listing"] .inserat-power-bar {
-      justify-content: space-around !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      padding: 0 20px !important;
+      box-sizing: border-box !important;
+      flex-wrap: nowrap !important;
     }
+    /* Labels sichtbar: 11px unter Icon [cite: S25-GRID-FIX 2026-03-12] */
     #mastercard-step-edit .power-item .power-item-label,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item-label {
-      display: none !important;
+      display: block !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      color: #9ca3af !important;
+      margin-top: 4px !important;
+      line-height: 1.1 !important;
+      white-space: nowrap !important;
     }
     #mastercard-step-edit .power-item .inserat-pill-emo,
     #wizard[data-flow="listing"] .inserat-power-bar .power-item .inserat-pill-emo {
@@ -2026,18 +2037,25 @@
       transform: scale(1.05);
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    /* S25 Icon-Vibrance [cite: 2026-03-03] */
+    /* Icon final 24px – S25-Grid-Fix [cite: S25-GRID-FIX 2026-03-12] */
     #wizard[data-flow="listing"] .inserat-power-bar .power-item .inserat-pill-emo,
     #mastercard-step-edit .power-item .inserat-pill-emo {
-      font-size: 32px !important;
+      font-size: 24px !important;
+      width: 40px !important;
+      height: 40px !important;
       line-height: 1;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15)) saturate(1.2);
       transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     #wizard[data-flow="listing"] .inserat-power-bar .power-item.active,
     #mastercard-step-edit .power-item.active {
       background: #ffffff !important;
       box-shadow: inset 0 -4px 0 #222222;
+    }
+    /* Active Label: schwarz [cite: S25-GRID-FIX 2026-03-12] */
+    #wizard[data-flow="listing"] .inserat-power-bar .power-item.active .power-item-label,
+    #mastercard-step-edit .power-item.active .power-item-label {
+      color: #1a1a1a !important;
+      font-weight: 700 !important;
     }
     #wizard[data-flow="listing"] .inserat-power-bar .power-item.active .inserat-pill-emo,
     #mastercard-step-edit .power-item.active .inserat-pill-emo {
@@ -3532,6 +3550,7 @@
     }
     /* Tunnel-Blick: Nav ausblenden wenn Inseratsauswahl ODER Mastercard offen [cite: 2026-02-21] */
     /* Mastercard-Footer Airbnb-Style: weiß, bündig, schwarzer Button [cite: 2026-02-23, LAYOUT-FIX 2026-02-28] */
+    /* Footer: position:fixed ist bereits inline gesetzt (z-index:1000002) – nur dekorative Regeln hier [cite: S25-GRID-FIX 2026-03-12] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
@@ -3543,11 +3562,11 @@
       width: 100% !important;
       margin: 0 !important;
       border-radius: 0 !important;
-      z-index: 1050 !important;
+      z-index: 1000002 !important;
       display: flex !important;
       flex-direction: column !important;
-      padding: 16px 20px !important;
-      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+      padding: 12px 20px !important;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
       background: #ffffff !important;
       border-top: 1px solid #ebebeb !important;
     }
@@ -9940,8 +9959,11 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  overflow-x: hidden !important;
   position: relative;
   background: #ffffff;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 /* 35dvh Block entfernt – Airbnb-Block setzt 250px [cite: PURGE 2026-03-12] */
@@ -10549,7 +10571,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   border-radius: 0 !important;
 }
 
-/* 4. ContentSheet: normaler Flow, kompakt – Pills direkt unter Foto, H1 darunter */
+/* 4. ContentSheet: normaler Flow, kompakt, 20px Safe-Zone [cite: S25-GRID-FIX 2026-03-12] */
 #wizard[data-flow="listing"] .inserat-cockpit-body.inserat-content-sheet,
 #wizard[data-flow="listing"] .inserat-cockpit-body {
   width: 100% !important;
@@ -10558,9 +10580,10 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   align-items: center !important;
   justify-content: flex-start !important;
   overflow: visible !important;
-  padding: 8px 16px 16px !important;
+  padding: 8px 20px 16px !important;
   gap: 8px !important;
   flex: 0 0 auto !important;
+  box-sizing: border-box !important;
 }
 #wizard[data-flow="listing"] .wizard-content #step-name .input-giant-name,
 #wizard[data-flow="listing"] .wizard-content .inserat-name-textarea {

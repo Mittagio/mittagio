@@ -18497,11 +18497,12 @@
       const actionSection=document.createElement('section');
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
-      actionSection.style.cssText='display:flex; flex-direction:column; position:sticky; bottom:0; width:100%; z-index:1050; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+      /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:1000002; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px; padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px));';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -18532,7 +18533,8 @@
       btnWeiter.type='button';
       btnWeiter.id='btnNext';
       btnWeiter.className='btn-primary-black footer-main-button';
-      btnWeiter.style.cssText='min-width:140px; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer;';
+      /* Weiter-Button: flex:1 = füllt verfügbare Breite [cite: S25-GRID-FIX 2026-03-12] */
+      btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer; box-sizing:border-box;';
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
       btnWeiter.style.opacity='0.3';
