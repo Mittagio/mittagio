@@ -10615,3 +10615,17 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   margin: 0 !important;
   z-index: 1050 !important;
 }
+
+/* Listing Footer Final: keine Legacy-Airbnb-Fixed-Leiste mehr im Wizard */
+#wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+#wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav,
+#wizard[data-flow="listing"] [data-inserat-step="3"].inserat-step1-nav {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+  border-top: 0 !important;
+}
