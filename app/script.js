@@ -17371,7 +17371,7 @@
         step3Footer.appendChild(btnShare);
         step3Footer.appendChild(btnFinish);
         step3Footer.classList.add('inserat-step1-nav', 'inserat-airbnb-footer');
-        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:1050; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
+        step3Footer.style.cssText='position:sticky; bottom:0; z-index:1050; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:calc(16px + env(safe-area-inset-bottom, 0));';
         step3Pane.appendChild(step3Footer);
         btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
@@ -17785,8 +17785,8 @@
           return;
         }
         try{ if(typeof haptic==='function') haptic(15); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
-        /* X = Hardware-Zurück: dieselbe Aktion wie History-Back [cite: History-Context 2026-02-26] */
-        if(typeof history !== 'undefined' && history.length > 1){ history.back(); return; }
+        /* X schließt deterministisch den Wizard (ohne Browser-Back-Seiteneffekt) */
+        if(typeof handleWizardExit === 'function'){ handleWizardExit(box); return; }
         if(typeof closeListingFlow==='function') closeListingFlow();
         else if(typeof closeMastercard==='function') closeMastercard();
         else if(typeof showProviderHome==='function') showProviderHome();
@@ -17799,7 +17799,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:120px; overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:120px; overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100vw; max-width:100vw; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -17821,7 +17821,7 @@
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
-      headerTitle.style.cssText='font-size:16px; font-weight:600; color:#222222; margin:0; pointer-events:none; opacity:0; transition:opacity 0.2s ease-out;';
+      headerTitle.style.cssText='font-size:16px; font-weight:600; color:#222222; margin:0; pointer-events:none; opacity:1; transition:opacity 0.2s ease-out;';
       fixedHeader.appendChild(headerTitle);
       fixedHeader.appendChild(closeX);
 
@@ -18419,10 +18419,7 @@
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        if(ht){
-          var op = st <= 150 ? 0 : st >= 200 ? 1 : (st - 150) / 50;
-          ht.style.opacity = String(op);
-        }
+        if(ht) ht.style.opacity = '1';
         if(h){
           h.classList.toggle('header-collapsed', st > 180);
           h.style.borderBottomColor = st > 180 ? '#ebebeb' : 'transparent';
@@ -18500,11 +18497,11 @@
       const actionSection=document.createElement('section');
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:sticky; bottom:0; width:100%; z-index:1050; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:center; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -18547,15 +18544,15 @@
 
       if(slider){
         box.appendChild(slider);
-        /* Footer direkt an #wizard – verhindert Clipping durch overflow:hidden in .wizard-scroll/.wizard-inner/.wizard-sheet-body */
+        /* Footer panel-intern: sticky im Kartenrahmen statt viewport-fixed */
         var _wizardEl = document.getElementById('wizard');
-        if(_wizardEl) _wizardEl.appendChild(actionSection); else box.appendChild(actionSection);
+        box.appendChild(actionSection);
         /* Fixed Header an body – viewport-sticky wie Meine Küche (nicht in transform-Kontext) */
         document.body.appendChild(fixedHeader);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav inserat-airbnb-footer';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:fixed; left:0; right:0; bottom:0; z-index:10000; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:sticky; bottom:0; z-index:1050; width:100%; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:0 16px; padding-bottom:env(safe-area-inset-bottom, 20px);';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
@@ -18581,7 +18578,7 @@
           showPublishFeeModal(o);
         };
         airbnbFooter.appendChild(footerBtn);
-        if(_wizardEl) _wizardEl.appendChild(airbnbFooter); else box.appendChild(airbnbFooter);
+        box.appendChild(airbnbFooter);
         var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); updateHeaderTitleByStep(s); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); });

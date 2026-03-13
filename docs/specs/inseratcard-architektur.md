@@ -86,3 +86,11 @@ Der **3-Schritt Mastercard-Flow** gilt für alle Einstiege:
 - [ ] **3 Säulen** (🍴, 🎫1️⃣, 🔄) sind in der Power-Bar vorhanden.
 - [ ] **3-Schritt Mastercard** (Edit → Money → Live) mit einheitlichem Footer.
 - [ ] Begriffe: **Abholnummer** verwenden, **Ticket**/ **Code** vermeiden.
+
+---
+
+## Layout-Fix 13.03.2026 (Mobile Stabilität)
+
+- **Header sichtbar:** Der Sticky-Header im Listing-Flow ist standardmäßig sichtbar und nicht mehr nur über Scroll-Fade erreichbar.
+- **Scroll-Kette stabil:** Step-Panes und Scroll-Area haben eine durchgehende Flex-Kette (`min-height: 0`, `flex: 1`), damit der Inhalt auf mobilen Geräten zuverlässig vertikal scrollt.
+- **Footer im Kartenrahmen:** Die Footer von Step 1/2/3 sind panel-intern als `sticky` am unteren Rand verankert (statt viewport-weitem `fixed`), damit sie im Wizard-Rahmen bleiben.

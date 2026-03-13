@@ -10583,3 +10583,35 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
     max-height: 25vh !important;
   }
 }
+
+/* Listing Hotfix 2026-03-13: Header sichtbar, Scroll stabil, Footer sticky im Panel */
+#wizard[data-flow="listing"] .inserat-steps-slider,
+#wizard[data-flow="listing"] .inserat-step1-pane,
+#wizard[data-flow="listing"] .inserat-step2-pane,
+#wizard[data-flow="listing"] .inserat-step3-pane,
+#wizard[data-flow="listing"] #mastercard-step-edit {
+  min-height: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#app-sticky-header .header-title,
+#inserat-fixed-header .header-title {
+  opacity: 1 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main {
+  position: sticky !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  z-index: 1050 !important;
+}
