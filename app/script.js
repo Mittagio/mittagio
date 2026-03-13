@@ -17219,109 +17219,87 @@
         var step2Pane=document.createElement('div');
         step2Pane.className='inserat-step2-pane';
         step1Container=step1Pane;
-        /* Step 2: Monetarisierung ÔÇô zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz 2026-02-21] */
-        /* Step 2 entfernt (4,99€ Logik cleanup) – bleibt als leerer Slider-Pane für Step3-Transition */
+        /* Step 2: Final Review Card (S25 one-page, no-scroll) */
         var step2Wrap=document.createElement('div');
-        step2Wrap.className='inserat-step2-wrap mastercard-step-money';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; width:100%; min-height:0; background:#fff; overflow-y:auto; -webkit-overflow-scrolling:touch;';
+        step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; height:100%; background:#ffffff; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
         var priceS2=Number(w.data.price)||0;
-        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' Ôé¼');
-        var miniPreview=document.createElement('div');
-        miniPreview.className='mini-dish-preview';
-        miniPreview.style.cssText='display:block; width:100vw; max-width:100vw; height:250px; margin:0 0 0 calc(-50vw + 50%); overflow:hidden; position:relative; flex-shrink:0;';
-        miniPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" class="mini-thumb" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center '+objPos2+'%; display:block;">';
-        step2Wrap.appendChild(miniPreview);
-        var step2Info=document.createElement('div');
-        step2Info.className='step2-clean-info';
-        step2Info.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 16px 0;';
-        step2Info.innerHTML='<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;"><h3 id="money-dish-name" style="margin:0; font-size:24px; font-weight:800; color:#111827; line-height:1.12;">'+esc(dishNameS2)+'</h3><span id="money-dish-price" style="font-size:20px; font-weight:800; color:#111827;">'+euroS2+'</span></div>';
-        var pickupBox=document.createElement('div');
-        pickupBox.className='step2-pickup-box';
-        pickupBox.style.cssText='display:flex; align-items:center; justify-content:space-between; gap:12px; background:#ffffff; border:1px solid #e5e7eb; border-radius:14px; padding:12px 14px;';
-        var pickupEnabled = w.data.hasPickupCode !== false;
+        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
+        var step2Header=document.createElement('h3');
+        step2Header.className='step2-review-title';
+        step2Header.textContent='Dein Gericht';
+        step2Header.style.cssText='margin:0; padding:14px 20px 10px; font-size:22px; font-weight:900; color:#111827;';
+        step2Wrap.appendChild(step2Header);
+        var stampCard=document.createElement('div');
+        stampCard.className='step2-review-stamp';
+        stampCard.style.cssText='display:flex; align-items:center; gap:12px; margin:0 20px; padding:12px; border:1px solid #ebebeb; border-radius:12px; background:#ffffff; box-shadow:0 6px 18px rgba(15,23,42,0.06);';
+        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:80px; height:80px; border-radius:12px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0;"><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span><span id="money-dish-name" style="font-size:17px; line-height:1.25; font-weight:800; color:#111827; word-break:break-word;">'+esc(dishNameS2)+'</span></div>';
+        step2Wrap.appendChild(stampCard);
+        var tilesWrap=document.createElement('div');
+        tilesWrap.className='step2-floating-tiles';
+        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:14px 20px 0;';
+        var tileStandard=document.createElement('button');
+        tileStandard.type='button';
+        tileStandard.className='step2-choice-tile';
+        tileStandard.setAttribute('data-tile','standard');
+        tileStandard.innerHTML='<div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div><div class="step2-choice-price">4,99 €</div>';
+        var tilePickup=document.createElement('button');
+        tilePickup.type='button';
+        tilePickup.className='step2-choice-tile';
+        tilePickup.setAttribute('data-tile','pickup');
+        tilePickup.innerHTML='<div class="step2-choice-head">Abholnummer 🧾</div><div class="step2-choice-sub">Inklusive Abholnummer · 0,89 € pro Vorgang</div><div class="step2-choice-price">0,00 €</div>';
+        tilesWrap.appendChild(tileStandard);
+        tilesWrap.appendChild(tilePickup);
+        step2Wrap.appendChild(tilesWrap);
+        var step2Spacer=document.createElement('div');
+        step2Spacer.style.cssText='flex:1; min-height:8px;';
+        step2Wrap.appendChild(step2Spacer);
+        var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;
-        var pickupInfo=document.createElement('div');
-        pickupInfo.style.cssText='display:flex; align-items:center; gap:10px;';
-        pickupInfo.innerHTML='<span style="font-size:18px;">🎫</span><div><div style="font-size:14px; font-weight:700; color:#111827;">Abholnummer</div><div style="font-size:12px; color:#6b7280;">0,89 € pro Vorgang</div></div>';
-        var pickupToggle=document.createElement('button');
-        pickupToggle.type='button';
-        pickupToggle.setAttribute('aria-label','Abholnummer aktivieren');
-        pickupToggle.style.cssText='width:52px; height:30px; border:none; border-radius:999px; position:relative; background:'+(pickupEnabled?'#111827':'#e5e7eb')+'; cursor:pointer; flex-shrink:0;';
-        var pickupKnob=document.createElement('span');
-        pickupKnob.style.cssText='position:absolute; top:3px; left:'+(pickupEnabled?'25px':'3px')+'; width:24px; height:24px; border-radius:50%; background:#fff; transition:left .2s ease;';
-        pickupToggle.appendChild(pickupKnob);
-        pickupToggle.onclick=function(){
-          pickupEnabled=!pickupEnabled;
-          w.data.hasPickupCode=pickupEnabled;
-          w.data.step2PickupEnabled=pickupEnabled;
-          pickupToggle.style.background=pickupEnabled?'#111827':'#e5e7eb';
-          pickupKnob.style.left=pickupEnabled?'25px':'3px';
-          saveDraft();
-          hapticLight();
-          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
-        };
-        pickupBox.appendChild(pickupInfo);
-        pickupBox.appendChild(pickupToggle);
-        step2Info.appendChild(pickupBox);
-        step2Wrap.appendChild(step2Info);
-        updateStep2ContextZoneRef=function(){ if(!miniPreview||!miniPreview.isConnected) return; var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60'; var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50); var dn=(w.data.dish||'').trim()||'Gericht'; var pr=Number(w.data.price)||0; var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €'); var imgEl=document.getElementById('money-dish-img'); var nameEl=document.getElementById('money-dish-name'); var priceEl=document.getElementById('money-dish-price'); if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; } if(nameEl) nameEl.textContent=dn; if(priceEl) priceEl.textContent=eu; var umsatzValEl=document.getElementById('step2UmsatzVal'); if(umsatzValEl){ var u25=(pr*25).toFixed(2).replace('.',','); umsatzValEl.textContent=u25+' €'; } };
-        var moneyHeadline=document.createElement('h2');
-        moneyHeadline.className='money-headline';
-        moneyHeadline.textContent='';
-        moneyHeadline.style.cssText='display:none;';
-        step2Wrap.appendChild(moneyHeadline);
-        var umsatzVorschauEl=document.createElement('div');
-        umsatzVorschauEl.id='step2UmsatzVorschau';
-        umsatzVorschauEl.className='step2-umsatz-vorschau';
-        umsatzVorschauEl.style.cssText='margin:8px 16px 0; padding:12px 14px; background:#f8fafc; border-radius:12px; text-align:left; width:calc(100% - 32px); box-sizing:border-box;';
-        var priceS2ForUmsatz=Number(w.data.price)||0;
-        var umsatz25=(priceS2ForUmsatz*25).toFixed(2).replace('.',',');
-        umsatzVorschauEl.innerHTML='<div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:4px;">Möglicher Umsatz (bei 25 Portionen)</div><div id="step2UmsatzVal" style="font-size:22px; font-weight:900; color:#0f172a;">'+umsatz25+' €</div><div style="font-size:11px; color:#94a3b8; margin-top:12px; line-height:1.4;">Inserat: 0,00 €<br>Service-Gebühr: 0,89 € pro Abholnummer (nur bei erfolgreichem Verkauf via Stripe)</div>';
-        step2Wrap.appendChild(umsatzVorschauEl);
-        /* Zero-Entry: Zwei Kacheln – Standard 4,99 oben, Abholnummer 0,00 unten (aktiv) [cite: ZERO-COST PICKUP 2026-02-23] */
-        var pricingContainer=document.createElement('div');
-        pricingContainer.className='pricing-container inserat-step2-two-tiles';
-        pricingContainer.style.cssText='display:none;';
-        var existingOfferS2=(w.ctx&&w.ctx.editOfferId&&typeof offers!=='undefined')?offers.find(function(o){return o.id===w.ctx.editOfferId;}):null;
-        var todayKeyS2=typeof isoDate==='function'?isoDate(new Date()):'';
-        var isEditActiveS2=!!(existingOfferS2&&existingOfferS2.day===todayKeyS2&&existingOfferS2.active!==false);
-        if((w.ctx && w.ctx.preferAbholnummer) || !w.data.pricingChoice) w.data.pricingChoice = 'pro';
-        var cardClassic=document.createElement('div');
-        cardClassic.className='price-card classic inserat-tile-standard' + (w.data.pricingChoice==='499' ? ' active' : '');
-        cardClassic.setAttribute('role','button');
-        cardClassic.tabIndex=0;
-        cardClassic.innerHTML='<div class="card-header">Standard Inserat — 4,99 € (Einmalig)</div><div class="amount">4,99 €</div><div class="card-detail">Kein Abo, keine Provision, keine Verträge.</div>';
-        var cardPremium=document.createElement('div');
-        cardPremium.className='price-card premium inserat-tile-abholnummer' + (w.data.pricingChoice==='pro' ? ' active' : '');
-        cardPremium.setAttribute('role','button');
-        cardPremium.tabIndex=0;
-        cardPremium.innerHTML='<div class="card-header">Abholnummer 🧾 — 0,00 €</div><div class="amount">0,00 €</div><div class="card-detail">Nur 0,89 € pro Vorgang (auch bei mehreren Bestellungen).</div>';
-        function selectPacket(type){
-          box.querySelectorAll('.price-card').forEach(function(c){ c.classList.remove('active'); });
-          var card=type==='classic'?cardClassic:cardPremium;
-          card.classList.add('active');
-          w.data.pricingChoice=type==='classic'?'499':'pro';
-          w.data.hasPickupCode=(type==='pro');
-          w.data.step2PickupEnabled=(type==='pro');
-          saveDraft();
-          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
-          var fb=document.querySelector('#mastercard-footer-step2 .btn-primary-black');
-          if(fb){
-            fb.textContent=(type==='classic' ? 'Jetzt für 4,99 € inserieren' : 'Jetzt kostenlos inserieren');
-            fb.classList.toggle('inserat-footer-btn--499',type==='classic');
-            fb.classList.toggle('free-mode',type==='pro');
-            fb.classList.toggle('is-free-mode',type==='pro');
+        function updateStep2ChoiceUI(){
+          tileStandard.classList.toggle('is-active', !pickupEnabled);
+          tilePickup.classList.toggle('is-active', pickupEnabled);
+          if(footerBtnStep2){
+            footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
           }
-          try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
         }
-        cardClassic.onclick=function(){ hapticLight(); selectPacket('classic'); };
-        cardPremium.onclick=function(){ hapticLight(); selectPacket('pro'); };
-        pricingContainer.appendChild(cardClassic);
-        pricingContainer.appendChild(cardPremium);
-        step2Wrap.appendChild(pricingContainer);
+        tileStandard.onclick=function(){
+          hapticLight();
+          pickupEnabled=false;
+          w.data.step2PickupEnabled=false;
+          w.data.hasPickupCode=false;
+          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+          saveDraft();
+        };
+        tilePickup.onclick=function(){
+          hapticLight();
+          pickupEnabled=true;
+          w.data.step2PickupEnabled=true;
+          w.data.hasPickupCode=true;
+          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+          saveDraft();
+        };
+        var footerBtnStep2=null;
+        updateStep2ContextZoneRef=function(){
+          var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
+          var op=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+          var dn=(w.data.dish||'').trim()||'Gericht';
+          var pr=Number(w.data.price)||0;
+          var eu=typeof euro==='function'?euro(pr):(pr.toFixed(2).replace('.',',')+' €');
+          var imgEl=document.getElementById('money-dish-img');
+          var nameEl=document.getElementById('money-dish-name');
+          var priceEl=document.getElementById('money-dish-price');
+          if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; }
+          if(nameEl) nameEl.textContent=dn;
+          if(priceEl) priceEl.textContent=eu;
+          updateStep2ChoiceUI();
+        };
+        updateStep2ContextZoneRef();
         step2Pane.appendChild(step2Wrap);
         step2Pane.id='mastercard-step-money';
         /* Step 3: Live-Erfolg [cite: 2026-02-21] */
@@ -17801,8 +17779,8 @@
       /* S25 FIXED COCKPIT: Flex-Column, kein Scroll [cite: S25-FIXED-COCKPIT 2026-03-11] */
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
-      var headerOffset='calc(60px + env(safe-area-inset-top, 0))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:'+headerOffset+'; padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)); overscroll-behavior:contain;';
+      var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 112px); overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100vw; max-width:100vw; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -17820,7 +17798,7 @@
       /* Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; width:100%; min-height:60px; height:auto; padding-top:env(safe-area-inset-top, 0); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:60px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
@@ -18237,7 +18215,6 @@
       powerBar.appendChild(tileDineIn);
       powerBar.appendChild(tileMehrweg);
       powerBar.appendChild(tileTime);
-      powerBar.appendChild(tileAbholnummer);
       powerBar.appendChild(tileAllergen);
       powerBar.appendChild(tileExtras);
 
@@ -18519,7 +18496,7 @@
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
       /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
@@ -18575,12 +18552,17 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:stretch; justify-content:center; gap:0; position:fixed; bottom:0; left:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:column; align-items:stretch; justify-content:center; gap:10px; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        var footerMotivation=document.createElement('p');
+        footerMotivation.className='step2-footer-motivation';
+        footerMotivation.style.cssText='margin:0; font-size:14px; line-height:1.35; font-weight:700; text-align:center; color:#374151;';
+        footerMotivation.textContent='Dein Gericht sieht fantastisch aus! Bereit zum Verkaufen?';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
         footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
-        footerBtn.textContent='Jetzt für 4,99 € inserieren';
+        footerBtn.textContent='Jetzt für 0,00 € inserieren';
+        footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
           hapticLight();
           var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
@@ -18592,19 +18574,42 @@
             return;
           }
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          w.data.pricingChoice='499';
-          w.data.hasPickupCode=!!w.data.step2PickupEnabled;
-          w.data.inseratFeeWaived=false;
-          w.data.pricingOption=undefined;
+          var usePickup=!!w.data.step2PickupEnabled;
+          w.data.hasPickupCode=usePickup;
+          w.data.pricingChoice=usePickup?'pro':'499';
+          w.data.inseratFeeWaived=usePickup;
+          w.data.pricingOption=usePickup?'abholnummer':undefined;
           var o=previewOfferFromWizard();
           publishFeeUseStep3=true;
           showPublishFeeModal(o);
         };
+        airbnbFooter.appendChild(footerMotivation);
         airbnbFooter.appendChild(footerBtn);
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
         box.appendChild(airbnbFooter);
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); updateHeaderTitleByStep(s); };
+        function applyListingViewportOffsets(){
+          try{
+            var headerH = (fixedHeader && fixedHeader.isConnected) ? (fixedHeader.offsetHeight || 60) : 60;
+            var candidates = [actionSection, airbnbFooter, step3Footer].filter(function(el){
+              return !!(el && el.isConnected && el.style.display !== 'none' && el.offsetParent !== null);
+            });
+            var footerH = 0;
+            candidates.forEach(function(el){ footerH = Math.max(footerH, el.offsetHeight || 0); });
+            if(footerH < 72) footerH = 92;
+            var reserve = footerH + 12;
+            if(scrollArea){
+              scrollArea.style.setProperty('padding-top', headerH + 'px', 'important');
+              scrollArea.style.setProperty('padding-bottom', reserve + 'px', 'important');
+            }
+            if(box){
+              box.style.setProperty('--listing-header-offset', headerH + 'px');
+              box.style.setProperty('--listing-footer-offset', reserve + 'px');
+            }
+          }catch(e){}
+        }
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.style.overflowY=(s===2?'hidden':'auto'); scrollArea.scrollTop=0; } updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
         slider.addEventListener('transitionend', updateFooterVisibility);
-        requestAnimationFrame(function(){ updateFooterVisibility(); });
+        requestAnimationFrame(function(){ updateFooterVisibility(); requestAnimationFrame(applyListingViewportOffsets); });
       }
 
       } /* Ende else (Step 1) */
@@ -18641,6 +18646,18 @@
         if(active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
           scrollInputAboveKeyboard(active);
         }
+        var sa = box.querySelector('.inserat-scroll-area');
+        var f1=document.getElementById('mastercard-footer-step1');
+        var f2=document.getElementById('mastercard-footer-step2');
+        var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
+        var footerH=Math.max((f1&&f1.style.display!=='none'&&f1.offsetHeight)||0,(f2&&f2.style.display!=='none'&&f2.offsetHeight)||0,(f3&&f3.style.display!=='none'&&f3.offsetHeight)||0,92);
+        var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
+        if(sa){
+          sa.style.setProperty('padding-top', headerH+'px', 'important');
+          sa.style.setProperty('padding-bottom', (footerH+12)+'px', 'important');
+        }
+        box.style.setProperty('--listing-header-offset', headerH+'px');
+        box.style.setProperty('--listing-footer-offset', (footerH+12)+'px');
       };
       if(typeof window.visualViewport !== 'undefined'){
         window.visualViewport.addEventListener('resize', vvHandler);

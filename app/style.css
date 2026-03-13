@@ -2175,124 +2175,6 @@
     #wizard[data-flow="listing"] .inserat-pfand-hint {
       font-size: 13px; color: #64748b; font-weight: 500; text-align: center; width: 100%;
     }
-    /* ===== SCHRITT 2: MONETARISIERUNG – Zwei vertikale Kacheln [cite: Drei-Schritte-Gesetz] ===== */
-    #mastercard-step-money .pricing-container,
-    .mastercard-step-money .pricing-container {
-      display: flex;
-      gap: 16px;
-      padding: 0;
-      margin-top: 0;
-      flex-wrap: wrap;
-    }
-    #mastercard-step-money .price-card,
-    .mastercard-step-money .price-card {
-      flex: 0 0 auto;
-      width: 100%;
-      min-width: 0;
-      border-radius: 16px;
-      padding: 20px 12px;
-      text-align: center;
-      transition: all 0.3s ease;
-      position: relative;
-      background: #fff;
-      cursor: pointer;
-      list-style: none;
-    }
-    /* Zero-Entry: Obere Kachel opacity 0.6 wenn inaktiv [cite: ZERO-COST PICKUP 2026-02-23] */
-    #mastercard-step-money .price-card.inserat-tile-standard,
-    .mastercard-step-money .price-card.inserat-tile-standard {
-      border: 1px solid #ebebeb;
-      transition: opacity 0.2s ease, border-color 0.2s ease, border-width 0.2s ease;
-    }
-    #mastercard-step-money .price-card.inserat-tile-standard:not(.active),
-    .mastercard-step-money .price-card.inserat-tile-standard:not(.active) {
-      opacity: 0.6;
-    }
-    #mastercard-step-money .price-card.inserat-tile-standard.active,
-    .mastercard-step-money .price-card.inserat-tile-standard.active {
-      opacity: 1;
-      border: 2px solid #222222;
-    }
-    /* Untere Kachel: 2px schwarzer Rahmen wenn aktiv (Default) [cite: ZERO-COST PICKUP 2026-02-23] */
-    #mastercard-step-money .price-card.inserat-tile-abholnummer,
-    .mastercard-step-money .price-card.inserat-tile-abholnummer {
-      border: 1px solid #ebebeb;
-      transition: opacity 0.2s ease, border-color 0.2s ease, border-width 0.2s ease;
-    }
-    #mastercard-step-money .price-card.inserat-tile-abholnummer:not(.active),
-    .mastercard-step-money .price-card.inserat-tile-abholnummer:not(.active) {
-      opacity: 0.6;
-    }
-    #mastercard-step-money .price-card.inserat-tile-abholnummer.active,
-    .mastercard-step-money .price-card.inserat-tile-abholnummer.active {
-      opacity: 1;
-      border: 2px solid #222222;
-      box-shadow: none;
-    }
-    #mastercard-step-money .price-card.active:not(.inserat-tile-standard):not(.inserat-tile-abholnummer),
-    .mastercard-step-money .price-card.active:not(.inserat-tile-standard):not(.inserat-tile-abholnummer) {
-      border-color: #10b981;
-      box-shadow: none;
-    }
-    #mastercard-step-money .price-card .card-badge,
-    .mastercard-step-money .price-card .card-badge {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #10b981;
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-    #mastercard-step-money .price-card .card-header,
-    .mastercard-step-money .price-card .card-header {
-      font-size: 14px;
-      font-weight: 800;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-    #mastercard-step-money .price-card .amount,
-    .mastercard-step-money .price-card .amount {
-      font-size: 32px;
-      font-weight: 900;
-      margin: 10px 0;
-      color: #0f172a;
-    }
-    #mastercard-step-money .price-card .amount-sub,
-    .mastercard-step-money .price-card .amount-sub {
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      margin-top: -8px;
-    }
-    #mastercard-step-money .price-card .card-detail,
-    .mastercard-step-money .price-card .card-detail {
-      font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
-      margin-top: 8px;
-      line-height: 1.4;
-      margin-bottom: 15px;
-    }
-    #mastercard-step-money .price-card .benefit-list,
-    .mastercard-step-money .price-card .benefit-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      text-align: left;
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.5;
-    }
-    #mastercard-step-money .price-card .benefit-list li,
-    .mastercard-step-money .price-card .benefit-list li {
-      margin-bottom: 6px;
-      padding-left: 0;
-    }
     /* Airbnb-Glow: Button atmet bei Validierung [cite: 2026-02-21] */
     .footer-btn-primary-glow,
     #wizard[data-flow="listing"] .inserat-step1-nav .footer-btn-primary.is-ready {
@@ -3012,18 +2894,7 @@
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary .inserat-cta-main{ display: block; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary .inserat-cta-sub{ display: block; font-size: 0.75rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: 0.9; margin-top: 4px; }
     #wizard.sheet--kitchen .glass-express-step0 .inserat-btn-secondary:active{ transform: scale(0.96); box-shadow: none; filter: brightness(0.95); }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type{
-      background: #10b981 !important; color: #fff !important; border: none;
-      padding: 18px 24px; min-height: 56px; border-radius: 24px; font-weight: 800; text-transform: uppercase; font-size: 1rem;
-      box-shadow: 0 10px 30px rgba(16,185,129,0.35); transition: transform 0.15s ease;
-    }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:first-of-type:active{ transform: scale(0.98); }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2){
-      background: rgba(250,204,21,0.08) !important; border: 2px solid #FACC15 !important; color: #1a1a1a !important;
-      padding: 16px 24px; min-height: 56px; border-radius: 24px; font-weight: 800; font-size: 0.875rem;
-      transition: transform 0.15s ease;
-    }
-    #wizard.sheet--kitchen .glass-express-step0 .inserat-action-section.inserat-action-pricing button:nth-of-type(2):active{ transform: scale(0.98); }
+    /* Legacy Step0 CTA-Farben entfernt: Footer-Buttons werden zentral im Airbnb-Block gestylt */
     #wizard.sheet--kitchen .glass-express-step0 .inserat-master-flow > section button{
       border-radius: 2rem;
     }
@@ -4055,77 +3926,12 @@
     body.provider-mode #wizard[data-flow="listing"] .liquid-master-panel:has(.inserat-action-layer) .inserat-scroll-area {
       padding-bottom: calc(120px + env(safe-area-inset-bottom, 0));
     }
-    /* Noble Floating Bottom: Aktions-Kacheln 16px über Nav-Pille, Nav-Pille 12px Abstand [cite: 2026-02-20] */
-    /* Step 2 Bold Selection: Vertikal gestapelt, Kontext-Zone oben [cite: 2026-02-21] */
-    .inserat-step2-immo .inserat-step2-tiles-vertical {
-      width: 100%;
-    }
     body.provider-mode:not(.wizard-inserat-open) #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer {
       position: fixed;
       bottom: calc(96px + env(safe-area-inset-bottom, 0));
       left: 16px;
       right: 16px;
       z-index: 10;
-    }
-    /* 2-Schritt Airbnb-Flow: Step 2 – Kacheln als Radio-Selection, Emerald-Glow bei Auswahl [cite: 2026-02-21 Step 2] */
-    /* Bold Selection: 1px Rahmen Standard, 4px schwarz bei Auswahl – kein Glow [cite: 2026-02-18, 2026-02-21] */
-    .inserat-step2-wrap .inserat-decision-tile.pricing-card {
-      border-radius: 12px;
-      position: relative;
-      border: 1px solid rgba(15, 23, 42, 0.12);
-      background: #fff;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
-    }
-    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected {
-      box-shadow: inset 0 0 0 4px #0f172a;
-      border-color: transparent;
-      transform: scale(1.01);
-      z-index: 10;
-    }
-    .inserat-step2-wrap .inserat-decision-tile.pricing-card.selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; transform: scale(1.01); z-index: 10; }
-    .inserat-step2-wrap .inserat-decision-tile:active { transform: scale(0.98); }
-    .inserat-step2-wrap .inserat-decision-tile.pricing-card.is-selected:active { transform: scale(0.99); }
-    .inserat-step2-wrap .inserat-decision-tile .pricing-card-price { font-size: 22px; font-weight: 900; }
-    .inserat-step2-wrap .inserat-decision-tile .pricing-card-label { font-size: 17px; font-weight: 800; }
-    .inserat-step2-wrap .inserat-decision-tile .pricing-card-sub { font-size: 13px; color: #64748b; }
-    .inserat-step2-wrap .inserat-decision-tile .price-massive { font-size: 3.8rem; font-weight: 900; line-height: 1; color: #0f172a; }
-    /* Bold-Selection: Basis immer 1px, Smart (Default) immer 4px [cite: 2026-02-21] */
-    .inserat-step2-wrap .inserat-tile-basis.pricing-card { border: 1px solid rgba(15, 23, 42, 0.12); }
-    .inserat-step2-wrap .inserat-tile-basis.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
-    .inserat-step2-wrap .inserat-tile-smart.pricing-card { border: 4px solid #0f172a; }
-    .inserat-step2-wrap .inserat-tile-smart.pricing-card.is-selected { box-shadow: inset 0 0 0 4px #0f172a; border-color: transparent; }
-    /* Step 2: Kachel-Redesign – Selection, Emerald-Glow bei Auswahl [cite: 2026-02-21] */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 20px;
-    }
-    .pricing-grid .pricing-card {
-      border: 2px solid #f1f5f9;
-      border-radius: 16px;
-      padding: 24px 16px;
-      text-align: center;
-      transition: all 0.3s ease;
-      background: #fafafa;
-    }
-    .pricing-grid .pricing-card.selected,
-    .pricing-grid .pricing-card.is-selected {
-      border-color: #10b981 !important;
-      background: rgba(16, 185, 129, 0.04);
-      box-shadow: 0 0 0 1px #10b981, 0 10px 25px rgba(16, 185, 129, 0.15);
-      transform: scale(1.02);
-    }
-    .pricing-grid .pricing-card h4 { font-size: 14px; color: #64748b; margin-bottom: 8px; }
-    .pricing-grid .pricing-card .price { font-size: 24px; font-weight: 800; color: #1e293b; }
-    /* 4. Schritt 2: ImmoScout-Eleganz – Pricing-Grid, Kacheln nur zum Antippen [cite: 2026-02-21] */
-    .pricing-selection-area {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 20px 24px;
-      background: #ffffff;
     }
     .pricing-card {
       border: 2px solid #f1f5f9;
@@ -10734,4 +10540,172 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 }
 #wizard[data-flow="listing"] .inserat-scroll-area {
   padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* MASTERCARD STEP 1 FINAL: 5 Icons + Airbnb Footer Single Source */
+#wizard[data-flow="listing"] .inserat-service-grid,
+#wizard[data-flow="listing"] .service-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  justify-items: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 16px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+#wizard[data-flow="listing"] .inserat-service-tile,
+#wizard[data-flow="listing"] .service-tile {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+}
+
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 10000 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  border-top: 1px solid #ebebeb !important;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px !important;
+  box-sizing: border-box !important;
+}
+#wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+#wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main.inserat-step1-nav {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main .footer-btn-primary,
+#wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black {
+  background: #222222 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  border: none !important;
+  min-height: 48px !important;
+  box-shadow: none !important;
+}
+#wizard[data-flow="listing"] .inserat-step1-nav .btn-secondary-link {
+  color: #222222 !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+  border: none !important;
+}
+#wizard[data-flow="listing"] .inserat-scroll-area,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* UNIVERSAL DEVICE FIX: iPhone/iPad/Samsung viewport + footer stability */
+body.wizard-inserat-open #wizard[data-flow="listing"],
+#wizard[data-flow="listing"].sheet--kitchen,
+#wizard[data-flow="listing"].sheet--kitchen.active {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+}
+#wizard[data-flow="listing"] .sheet-body.wizard-sheet-body,
+#wizard[data-flow="listing"] .wizard,
+#wizard[data-flow="listing"] .wizard-inner,
+#wizard[data-flow="listing"] .wizard-scroll,
+#wizard[data-flow="listing"] #wContent,
+#wizard[data-flow="listing"] .inserat-card-sheet,
+#wizard[data-flow="listing"] .liquid-master-panel,
+#wizard[data-flow="listing"] .mastercard-container {
+  min-height: 0 !important;
+}
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 {
+  padding: 12px 20px calc(12px + max(env(safe-area-inset-bottom, 0px), 12px)) 20px !important;
+}
+#wizard[data-flow="listing"] .inserat-scroll-area,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+  padding-bottom: var(--listing-footer-offset, calc(104px + max(env(safe-area-inset-bottom, 0px), 12px))) !important;
+}
+
+/* Edge-to-Edge Consistency: gleiche Typo-/Inset-Basis auf iOS/Android */
+#wizard[data-flow="listing"] {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+#app-sticky-header,
+#inserat-fixed-header,
+#wizard[data-flow="listing"] #mastercard-footer-step1,
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Mastercard Step 2: Final Review Card (S25) */
+#wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-title {
+  text-align: left;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
+  width: 100%;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #ebebeb;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  padding: 14px 14px 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile:active {
+  transform: scale(0.99);
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6, 0 10px 20px rgba(59, 130, 246, 0.14);
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-price {
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  color: #111827;
 }

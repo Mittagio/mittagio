@@ -104,3 +104,11 @@ Der **3-Schritt Mastercard-Flow** gilt für alle Einstiege:
 - **Primär-Button:** Schwarz (`#222222`), weiße Schrift, Radius `8px`, volle verfügbare Breite in der Footer-Zeile.
 - **Sekundär-Button:** Schwarzer Text, fett, unterstrichen, ohne Hintergrund und ohne Rahmen.
 - **Scroll-Abstand:** Content-Container hat Bottom-Reserve, damit der letzte Inhalt nicht unter dem fixen Footer verschwindet.
+
+### Ergänzung (Mastercard Step 1)
+
+- **Powerbar:** Exakt 5 Icons im Step-1-Cockpit (`Vor Ort`, `Mehrweg`, `Abholzeit`, `Allergene`, `Extras`), zentriert und gleichmäßig im Rahmen verteilt.
+- **Footer-Farbsicherheit:** Keine gelben/grünen Footer-Hintergründe; Footer bleibt reinweiß mit schwarzem Primär-Button.
+- **Legacy-Bereinigung:** Alte Step0-Button-Farbregeln (Emerald/Gelb) sind entfernt, damit nur der Airbnb-Footer-Block die Buttons stylt.
+- **Geräte-Stabilität:** Listing nutzt eine stabile `100dvh`-Kette und dynamische Footer-Reserve (`--listing-footer-offset`), damit Footer/Content auf iPhone, iPad und Samsung nicht abgeschnitten werden.
+- **Edge-to-Edge-Konsistenz:** Header/Footer sind strikt links/rechts auf `0` fixiert; Offsets werden per Live-Messung (`offsetHeight`) gesetzt, damit die vertikale Darstellung auf iPhone/iPad/Samsung gleich bleibt.

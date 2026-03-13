@@ -1,0 +1,48 @@
+# Mastercard Step 2 (Monetarisierung)
+
+## Ziel
+
+Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit Thumbnail, dazu zwei schwebende Auswahl-Kacheln fuer die Monetarisierung und ein dynamischer Abschluss-CTA im Footer.
+
+## Struktur
+
+1. Fester Header mit Titel `Verkaufseinstellungen` und Safe-Area.
+2. Titelbereich `Dein Gericht`.
+3. Stamp-Karte:
+   - Thumbnail links (`80x80`, Radius `12px`)
+   - Rechts Preis aus Step 1 (oben) und Gerichtsname fett (darunter)
+4. Zwei Floating-Tiles:
+   - `Standard-Inserat` mit Preis `4,99 EUR`
+   - `Abholnummer` mit Preis `0,00 EUR` und Hinweis `0,89 EUR pro Vorgang`
+5. Tile-Logik:
+   - Abholnummer-Tile ist standardmaessig aktiv (blau markiert)
+   - Umschalten per Tap auf die jeweilige Kachel (mutual exclusive)
+
+## Footer-Regel
+
+- Weiss (`#ffffff`), oben `1px solid #ebebeb`, keine Rundung.
+- Unterkante mit Safe-Area (`padding-bottom: env(safe-area-inset-bottom)`).
+- Motivationssatz ueber dem CTA: `Dein Gericht sieht fantastisch aus! Bereit zum Verkaufen?`
+- Nur Primaer-CTA in Step 2:
+  - `Jetzt fuer 0,00 EUR inserieren` wenn Abholnummer aktiv
+  - `Jetzt fuer 4,99 EUR inserieren` wenn Standard aktiv
+- Kein Zurueck-Link in Step 2.
+
+## Pricing-Logik beim Veröffentlichen
+
+- Abholnummer aktiv:
+  - `pricingChoice = "pro"`
+  - `inseratFeeWaived = true`
+  - `pricingOption = "abholnummer"`
+  - CTA zeigt `0,00 EUR`
+- Standard aktiv:
+  - `pricingChoice = "499"`
+  - `inseratFeeWaived = false`
+  - `pricingOption` wird entfernt
+  - CTA zeigt `4,99 EUR`
+
+## S25 Layout Lock
+
+- Step 2 laeuft im One-Page-Modus mit `overflow: hidden`.
+- Keine Scrollbars im Step-2-Content.
+- Footer bleibt als finaler Anker am unteren Rand mit Safe-Area.
