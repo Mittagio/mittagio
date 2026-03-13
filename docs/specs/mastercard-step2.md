@@ -7,8 +7,10 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
 ## Struktur
 
 1. Fester Header mit Titel `Dein Gericht` und Safe-Area.
-2. Edge-to-Edge Hero-Foto wie Step 1 (volle Breite, keine seitlichen Einrueckungen im Bildbereich).
-3. Titelbereich `Dein Gericht` und Meta-Zeile (Gerichtsname + Preis) mit konsistentem Seiten-Padding (`20px`).
+2. Titelbereich `Dein Gericht` mit konsistentem Seiten-Padding (`20px`).
+3. Kompakte Stamp-Karte:
+   - Thumbnail links (`80x80`, Radius `12px`)
+   - Rechts Preis (oben) und Gerichtsname (max. 2 Zeilen)
 4. Zwei Floating-Tiles (Airbnb-Look):
    - `Standard-Inserat` mit Preis `4,99 EUR`
    - `Abholnummer` mit Preis `0,00 EUR` und Hinweis `Inklusive Abholnummer` + `0,89 EUR pro Vorgang`

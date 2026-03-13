@@ -10671,18 +10671,15 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-title {
   text-align: left;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-hero-preview {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp {
+  width: calc(100% - 40px);
+  box-sizing: border-box;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-review-meta {
-  padding-left: 20px !important;
-  padding-right: 20px !important;
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-name {
+  font-size: clamp(16px, 4.4vw, 18px) !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money #money-dish-name {
-  font-size: clamp(22px, 5.4vw, 26px) !important;
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-price {
+  font-size: clamp(21px, 5vw, 24px) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
   width: 100%;
@@ -10732,15 +10729,22 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   font-weight: 800;
   color: #111827;
 }
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-sub {
   margin-top: 4px;
   font-size: 12px;
   color: #6b7280;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-price {
-  margin-top: 10px;
-  font-size: 24px;
+  margin-top: 0;
+  font-size: 22px;
   font-weight: 900;
   line-height: 1;
   color: #111827;
+  white-space: nowrap;
 }
