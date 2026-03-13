@@ -7,16 +7,15 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
 ## Struktur
 
 1. Fester Header mit Titel `Verkaufseinstellungen` und Safe-Area.
-2. Titelbereich `Dein Gericht`.
-3. Stamp-Karte:
-   - Thumbnail links (`80x80`, Radius `12px`)
-   - Rechts Preis aus Step 1 (oben) und Gerichtsname fett (darunter)
-4. Zwei Floating-Tiles:
+2. Edge-to-Edge Hero-Foto wie Step 1 (volle Breite, keine seitlichen Einrueckungen im Bildbereich).
+3. Titelbereich `Dein Gericht` und Meta-Zeile (Gerichtsname + Preis) mit konsistentem Seiten-Padding (`20px`).
+4. Zwei Floating-Tiles (Airbnb-Look):
    - `Standard-Inserat` mit Preis `4,99 EUR`
-   - `Abholnummer` mit Preis `0,00 EUR` und Hinweis `0,89 EUR pro Vorgang`
+   - `Abholnummer` mit Preis `0,00 EUR` und Hinweis `Inklusive Abholnummer` + `0,89 EUR pro Vorgang`
 5. Tile-Logik:
    - Abholnummer-Tile ist standardmaessig aktiv (blau markiert)
    - Umschalten per Tap auf die jeweilige Kachel (mutual exclusive)
+   - Aktive Kachel zeigt blauen Rahmen plus blauen Check-Indikator
 
 ## Footer-Regel
 

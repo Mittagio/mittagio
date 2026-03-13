@@ -17228,29 +17228,34 @@
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
         var priceS2=Number(w.data.price)||0;
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
+        var heroPreview=document.createElement('div');
+        heroPreview.className='step2-hero-preview';
+        heroPreview.style.cssText='display:block; width:100vw; max-width:100vw; height:250px; margin:0 0 0 calc(-50vw + 50%); overflow:hidden; position:relative; flex-shrink:0; border-radius:0;';
+        heroPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center '+objPos2+'%; display:block;">';
+        step2Wrap.appendChild(heroPreview);
         var step2Header=document.createElement('h3');
         step2Header.className='step2-review-title';
         step2Header.textContent='Dein Gericht';
-        step2Header.style.cssText='margin:0; padding:14px 20px 10px; font-size:22px; font-weight:900; color:#111827;';
+        step2Header.style.cssText='margin:0; padding:14px 20px 4px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
-        var stampCard=document.createElement('div');
-        stampCard.className='step2-review-stamp';
-        stampCard.style.cssText='display:flex; align-items:center; gap:12px; margin:0 20px; padding:12px; border:1px solid #ebebeb; border-radius:12px; background:#ffffff; box-shadow:0 6px 18px rgba(15,23,42,0.06);';
-        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:80px; height:80px; border-radius:12px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0;"><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span><span id="money-dish-name" style="font-size:17px; line-height:1.25; font-weight:800; color:#111827; word-break:break-word;">'+esc(dishNameS2)+'</span></div>';
-        step2Wrap.appendChild(stampCard);
+        var step2Meta=document.createElement('div');
+        step2Meta.className='step2-review-meta';
+        step2Meta.style.cssText='display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:0 20px 8px;';
+        step2Meta.innerHTML='<span id="money-dish-name" style="font-size:30px; line-height:1.08; font-weight:900; color:#111827; word-break:break-word; letter-spacing:-0.01em;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:21px; line-height:1; font-weight:900; color:#111827; white-space:nowrap; padding-top:4px;">'+euroS2+'</span>';
+        step2Wrap.appendChild(step2Meta);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
-        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:14px 20px 0;';
+        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:12px 20px 0;';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div><div class="step2-choice-price">4,99 €</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div><div class="step2-choice-price">4,99 €</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<div class="step2-choice-head">Abholnummer 🧾</div><div class="step2-choice-sub">Inklusive Abholnummer · 0,89 € pro Vorgang</div><div class="step2-choice-price">0,00 €</div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-head">Abholnummer 🧾</div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><div class="step2-choice-price">0,00 €</div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17262,6 +17267,8 @@
         function updateStep2ChoiceUI(){
           tileStandard.classList.toggle('is-active', !pickupEnabled);
           tilePickup.classList.toggle('is-active', pickupEnabled);
+          tileStandard.setAttribute('aria-pressed', (!pickupEnabled) ? 'true' : 'false');
+          tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           if(footerBtnStep2){
             footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
           }
