@@ -17222,7 +17222,7 @@
         /* Step 2: Final Review Card (S25 one-page, no-scroll) */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; height:100%; background:#ffffff; overflow:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17230,7 +17230,7 @@
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
         var heroPreview=document.createElement('div');
         heroPreview.className='step2-hero-preview';
-        heroPreview.style.cssText='display:block; width:100vw; max-width:100vw; height:250px; margin:0 0 0 calc(-50vw + 50%); overflow:hidden; position:relative; flex-shrink:0; border-radius:0;';
+        heroPreview.style.cssText='display:block; width:100%; max-width:100%; height:250px; margin:0; overflow:hidden; position:relative; flex-shrink:0; border-radius:0;';
         heroPreview.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center '+objPos2+'%; display:block;">';
         step2Wrap.appendChild(heroPreview);
         var step2Header=document.createElement('h3');
@@ -17241,7 +17241,7 @@
         var step2Meta=document.createElement('div');
         step2Meta.className='step2-review-meta';
         step2Meta.style.cssText='display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:0 20px 8px;';
-        step2Meta.innerHTML='<span id="money-dish-name" style="font-size:30px; line-height:1.08; font-weight:900; color:#111827; word-break:break-word; letter-spacing:-0.01em;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:21px; line-height:1; font-weight:900; color:#111827; white-space:nowrap; padding-top:4px;">'+euroS2+'</span>';
+        step2Meta.innerHTML='<span id="money-dish-name" style="font-size:26px; line-height:1.1; font-weight:900; color:#111827; word-break:break-word; letter-spacing:-0.01em;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:21px; line-height:1; font-weight:900; color:#111827; white-space:nowrap; padding-top:4px;">'+euroS2+'</span>';
         step2Wrap.appendChild(step2Meta);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
@@ -18473,7 +18473,7 @@
       var primaryValid = isPrimaryValid();
       function updateHeaderTitleByStep(step){
         if(!headerTitle) return;
-        headerTitle.textContent = step === 2 ? 'Verkaufseinstellungen' : 'Dein Gericht';
+        headerTitle.textContent = step === 2 ? 'Dein Gericht' : 'Dein Gericht';
       }
       function routeAfterSave(){
         var normalized = normalizeWizardEntryPoint(entryPoint);

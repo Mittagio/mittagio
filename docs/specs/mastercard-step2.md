@@ -6,7 +6,7 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
 
 ## Struktur
 
-1. Fester Header mit Titel `Verkaufseinstellungen` und Safe-Area.
+1. Fester Header mit Titel `Dein Gericht` und Safe-Area.
 2. Edge-to-Edge Hero-Foto wie Step 1 (volle Breite, keine seitlichen Einrueckungen im Bildbereich).
 3. Titelbereich `Dein Gericht` und Meta-Zeile (Gerichtsname + Preis) mit konsistentem Seiten-Padding (`20px`).
 4. Zwei Floating-Tiles (Airbnb-Look):
@@ -16,6 +16,10 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
    - Abholnummer-Tile ist standardmaessig aktiv (blau markiert)
    - Umschalten per Tap auf die jeweilige Kachel (mutual exclusive)
    - Aktive Kachel zeigt blauen Rahmen plus blauen Check-Indikator
+6. Sizing-Stabilitaet:
+   - Step-2 nutzt Step-1-nahe Proportionen (keine uebergrossen Titelbereiche)
+   - Hero in Step-2 bleibt edge-to-edge, aber ohne negative Offset-Hacks
+   - Ziel: keine abgeschnittenen Inhalte auf typischen S25-Viewport-Groessen
 
 ## Footer-Regel
 
