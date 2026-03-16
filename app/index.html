@@ -3431,4 +3431,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <button type="button" class="dropdown-item week-kebab-item" id="weekKebabSaveTemplate"><i data-lucide="save" style="width:20px;height:20px;"></i> Eigene Vorlage speichern</button>
   </div>
 </body>
+<script>
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  }
+</script>
 </html>
