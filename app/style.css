@@ -3249,11 +3249,12 @@
     }
     /* Neutralisierung des alten Wizards [cite: 2026-02-14] */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll {
-      overflow: hidden !important; 
+      overflow: hidden !important;
       flex: 1; min-height: 0;
-      display: flex !important; 
-      flex-direction: column !important; 
+      display: flex !important;
+      flex-direction: column !important;
       padding: 0 !important;
+      margin: 0 !important; /* Negativer Margin aus .wizard-scroll aufheben */
     }
     #wizard[data-flow="listing"] .w-actions { display: none !important; }
     
@@ -3334,6 +3335,7 @@
     }
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent{
       flex: 1; min-height: 0; height: 100%; display: flex; flex-direction: column;
+      margin: 0 !important; padding: 0 !important;
     }
     /* InseratCard: sheet ist direktes Kind von #wContent, liquid-master-panel darin [cite: Mastercard Step1 Fix 2026-03-02] */
     #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent > .inserat-card-sheet{
