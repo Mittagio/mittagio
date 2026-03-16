@@ -16252,7 +16252,7 @@
     const wizard = document.getElementById('wizard');
     var wbd = document.getElementById('wbd');
     if (wbd) wbd.classList.remove('active');
-    if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); }
+    if(wizard){ wizard.classList.remove('active','inserat-step2-active'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     document.body.style.overflow = 'auto';
     document.body.style.overscrollBehavior = 'auto';
@@ -16303,7 +16303,7 @@
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');
-    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); wizard.style.display = ''; }
+    if(wizard){ wizard.classList.remove('active'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     /* Ziel-View anzeigen (Dashboard/Kochbuch/Wochenplan), dann Wizard-Cleanup */
     var entryPoint = normalizeWizardEntryPoint((w && w.ctx && w.ctx.entryPoint) || 'newListing');
