@@ -17241,16 +17241,20 @@
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
         tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:12px 20px 0;';
+        var TILE_BASE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:16px;background:#ffffff;box-shadow:0 2px 12px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
+        var TILE_ACTIVE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:16px;background:#f0f6ff;box-shadow:0 0 0 4px rgba(0,122,255,0.10),0 4px 16px rgba(0,122,255,0.15);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
+        tileStandard.style.cssText=TILE_BASE_STYLE;
+        tileStandard.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;"><div style="font-size:15px;font-weight:800;color:#0f172a;line-height:1.2;">Standard-Inserat</div><div style="font-size:22px;font-weight:900;line-height:1;color:#0f172a;white-space:nowrap;">4,99 €</div></div><div style="margin-top:5px;font-size:12px;color:#64748b;line-height:1.4;">Dein Gericht wird veröffentlicht.</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Abholnummer 🧾</div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div>';
+        tilePickup.style.cssText=TILE_BASE_STYLE;
+        tilePickup.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;"><div style="font-size:15px;font-weight:800;color:#0f172a;line-height:1.2;">Abholnummer 🧾</div><div style="font-size:22px;font-weight:900;line-height:1;color:#0f172a;white-space:nowrap;">0,00 €</div></div><div style="margin-top:5px;font-size:12px;color:#64748b;line-height:1.4;">Inklusive Abholnummer · 0,89 € pro Vorgang</div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17260,13 +17264,25 @@
         var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;
         function updateStep2ChoiceUI(){
-          tileStandard.classList.toggle('is-active', !pickupEnabled);
-          tilePickup.classList.toggle('is-active', pickupEnabled);
+          /* Inline-Styles direkt setzen – CSS-Spezifität irrelevant */
+          tileStandard.style.cssText = pickupEnabled ? TILE_BASE_STYLE : TILE_ACTIVE_STYLE;
+          tilePickup.style.cssText   = pickupEnabled ? TILE_ACTIVE_STYLE : TILE_BASE_STYLE;
+          /* Checkmark-Farbe: aktive Tile = blau, inaktive = grau */
+          var chkS = tileStandard.querySelector('.step2-choice-check');
+          var chkP = tilePickup.querySelector('.step2-choice-check');
+          var chkActiveStyle='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #007aff;background:#007aff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#ffffff;pointer-events:none;';
+          var chkIdleStyle ='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;';
+          if(chkS) chkS.style.cssText = pickupEnabled ? chkIdleStyle : chkActiveStyle;
+          if(chkP) chkP.style.cssText = pickupEnabled ? chkActiveStyle : chkIdleStyle;
+          /* Preis-Farbe in aktiver Tile blau */
+          var priceS = tileStandard.querySelector('div > div:last-child');
+          var priceP = tilePickup.querySelector('div > div:last-child');
+          if(priceS) priceS.style.color = pickupEnabled ? '#0f172a' : '#007aff';
+          if(priceP) priceP.style.color = pickupEnabled ? '#007aff' : '#0f172a';
           tileStandard.setAttribute('aria-pressed', (!pickupEnabled) ? 'true' : 'false');
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           if(footerBtnStep2){
             footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
-            /* setProperty('important') übertrumpft CSS-!important-Regeln */
             if(pickupEnabled){
               footerBtnStep2.style.setProperty('background','#007aff','important');
               footerBtnStep2.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
