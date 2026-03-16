@@ -3492,7 +3492,7 @@
     /* S25: Scroll-Bereich padding-top = Header + Safe-Area, Foto bündig unter Header (0px Spalt) */
     #wizard[data-flow="listing"] .mastercard-scroll-area.wizard-scroll-container,
     #wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area {
-      padding-top: calc(60px + env(safe-area-inset-top, 0)) !important;
+      padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important;
     }
     /* Bild im Scroll-Fluss: Edge-to-Edge, keine Rundungen [cite: 2026-02-21 Inseratsbüro] */
     #wizard[data-flow="listing"] .inserat-scroll-area.inserat-scroll-with-photo {
@@ -10222,20 +10222,21 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 60px;
-  padding-top: env(safe-area-inset-top, 0);
-  background: #fff;
-  z-index: 1000002;
-  border-bottom: 1px solid transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
+  min-height: calc(60px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   padding-left: 0;
   padding-right: 0;
   padding-bottom: 0;
+  background: #ffffff;
+  z-index: 1000002;
+  border-bottom: 1px solid transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0;
   transition: border-color 0.25s ease, background 0.2s ease;
   box-sizing: border-box;
+  box-shadow: none;
 }
 #app-sticky-header .header-title,
 #inserat-fixed-header .header-title {
@@ -10579,6 +10580,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   border-radius: 0 !important;
   background: #ffffff !important;
   border-top: 1px solid #ebebeb !important;
+  box-shadow: none !important;
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px !important;
   box-sizing: border-box !important;
 }
@@ -10604,6 +10606,15 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   border: none !important;
   min-height: 48px !important;
   box-shadow: none !important;
+  flex: 1 !important;
+}
+/* Step 2: Einzelner Button füllt Footer bündig (kein sekundärer Link) */
+#wizard[data-flow="listing"] #mastercard-footer-step2 .inserat-step1-nav:has(.btn-primary-black:only-child) .btn-primary-black,
+#wizard[data-flow="listing"] #mastercard-footer-step2 > .btn-primary-black {
+  width: calc(100% - 40px) !important;
+  margin: 0 auto !important;
+  flex: none !important;
+  display: block !important;
 }
 #wizard[data-flow="listing"] .inserat-step1-nav .btn-secondary-link {
   color: #222222 !important;
@@ -10674,6 +10685,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp {
   width: calc(100% - 40px);
   box-sizing: border-box;
+  margin-top: 20px;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-name {
   font-size: clamp(16px, 4.4vw, 18px) !important;
