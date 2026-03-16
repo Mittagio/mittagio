@@ -17266,13 +17266,13 @@
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           if(footerBtnStep2){
             footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
-            /* Blauer Glow beim Gratis-Deal, kein Glow beim 4,99-€-Standard */
+            /* setProperty('important') übertrumpft CSS-!important-Regeln */
             if(pickupEnabled){
-              footerBtnStep2.style.boxShadow='0 8px 24px rgba(0,122,255,0.35)';
-              footerBtnStep2.style.background='#007aff';
+              footerBtnStep2.style.setProperty('background','#007aff','important');
+              footerBtnStep2.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
             } else {
-              footerBtnStep2.style.boxShadow='none';
-              footerBtnStep2.style.background='#222222';
+              footerBtnStep2.style.setProperty('background','#222222','important');
+              footerBtnStep2.style.setProperty('box-shadow','none','important');
             }
           }
         }
@@ -18568,7 +18568,9 @@
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='width:calc(100% - 40px); min-height:52px; padding:0 24px; border:none; border-radius:12px; background:#007aff; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 8px 24px rgba(0,122,255,0.35); transition:background 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.style.cssText='width:calc(100% - 40px); min-height:52px; padding:0 24px; border:none; border-radius:12px; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; transition:background 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.style.setProperty('background','#007aff','important');
+        footerBtn.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
         footerBtn.textContent='Jetzt für 0,00 € inserieren';
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){

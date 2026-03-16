@@ -10681,10 +10681,19 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-title {
   text-align: left;
 }
+/* ===== STEP 2: MONETIZATION – PREMIUM CARD DESIGN ===== */
+#wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
+  background: #f4f4f6 !important;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp {
-  width: calc(100% - 40px);
-  box-sizing: border-box;
-  margin-top: 20px;
+  width: calc(100% - 40px) !important;
+  box-sizing: border-box !important;
+  margin: 16px 20px 0 !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
+  background: #ffffff !important;
+  padding: 14px !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-name {
   font-size: clamp(16px, 4.4vw, 18px) !important;
@@ -10693,78 +10702,87 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   font-size: clamp(21px, 5vw, 24px) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
-  width: 100%;
-}
-#wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
-  background: #f9f9f9 !important;
-}
-#wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
-  background: transparent;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 16px 20px 0 !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile {
-  position: relative;
-  width: 100%;
-  text-align: left;
-  border: 1px solid #ebebeb;
-  border-radius: 14px;
-  background: #ffffff;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
-  padding: 14px 14px 12px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
-  -webkit-tap-highlight-color: transparent;
+  position: relative !important;
+  width: 100% !important;
+  text-align: left !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04) !important;
+  padding: 16px 46px 14px 16px !important;
+  cursor: pointer !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
+  -webkit-tap-highlight-color: transparent !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile:active {
-  transform: scale(0.97);
-  transition: transform 0.1s ease;
+  transform: scale(0.97) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active {
-  border: 2px solid #007aff;
-  box-shadow: 0 0 0 4px rgba(0,122,255,0.08), 0 10px 25px rgba(0,122,255,0.12);
+  border: 2px solid #007aff !important;
+  background: #f0f6ff !important;
+  box-shadow: 0 0 0 4px rgba(0,122,255,0.10), 0 4px 16px rgba(0,122,255,0.15) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-check {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  border: 1.5px solid #d1d5db;
-  color: transparent;
-  background: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 999px !important;
+  border: 2px solid #d1d5db !important;
+  color: transparent !important;
+  background: #f8fafc !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+  pointer-events: none !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active .step2-choice-check {
-  border-color: #007aff;
-  background: #007aff;
-  color: #ffffff;
-}
-#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {
-  font-size: 15px;
-  font-weight: 800;
-  color: #111827;
+  border-color: #007aff !important;
+  background: #007aff !important;
+  color: #ffffff !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-sub {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #6b7280;
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  line-height: 1.2 !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-price {
-  margin-top: 0;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-  color: #111827;
-  white-space: nowrap;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  color: #0f172a !important;
+  white-space: nowrap !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active .step2-choice-price {
+  color: #007aff !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-sub {
+  margin-top: 5px !important;
+  font-size: 12px !important;
+  color: #64748b !important;
+  line-height: 1.4 !important;
 }
