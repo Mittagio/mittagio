@@ -10222,11 +10222,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   top: 0;
   left: 0;
   width: 100%;
-  min-height: calc(60px + env(safe-area-inset-top, 0px));
-  padding-top: env(safe-area-inset-top, 0px);
+  min-height: calc(70px + env(safe-area-inset-top, 0px));
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 0;
+  padding-bottom: 10px;
   background: #ffffff;
   z-index: 1000002;
   border-bottom: 1px solid transparent;
@@ -10600,21 +10600,20 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black,
 #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main .footer-btn-primary,
 #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black {
-  background: #222222 !important;
   color: #ffffff !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
   border: none !important;
-  min-height: 48px !important;
-  box-shadow: none !important;
-  flex: 1 !important;
-}
-/* Step 2: Einzelner Button füllt Footer bündig (kein sekundärer Link) */
-#wizard[data-flow="listing"] #mastercard-footer-step2 .inserat-step1-nav:has(.btn-primary-black:only-child) .btn-primary-black,
-#wizard[data-flow="listing"] #mastercard-footer-step2 > .btn-primary-black {
+  min-height: 52px !important;
   width: calc(100% - 40px) !important;
   margin: 0 auto !important;
-  flex: none !important;
   display: block !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  transition: background 0.2s ease, box-shadow 0.2s ease !important;
+  -webkit-tap-highlight-color: transparent;
+}
+#wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black:active {
+  transform: scale(0.98);
 }
 #wizard[data-flow="listing"] .inserat-step1-nav .btn-secondary-link {
   color: #222222 !important;
@@ -10696,44 +10695,53 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
   width: 100%;
 }
+#wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
+  background: #f9f9f9 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
+  background: transparent;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile {
   position: relative;
   width: 100%;
   text-align: left;
   border: 1px solid #ebebeb;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
   padding: 14px 14px 12px;
   cursor: pointer;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile:active {
-  transform: scale(0.99);
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6, 0 10px 20px rgba(59, 130, 246, 0.14);
+  border: 2px solid #007aff;
+  box-shadow: 0 0 0 4px rgba(0,122,255,0.08), 0 10px 25px rgba(0,122,255,0.12);
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-check {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 20px;
-  height: 20px;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
+  border: 1.5px solid #d1d5db;
   color: transparent;
   background: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active .step2-choice-check {
-  border-color: #3b82f6;
-  background: #3b82f6;
+  border-color: #007aff;
+  background: #007aff;
   color: #ffffff;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {

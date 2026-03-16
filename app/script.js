@@ -17266,9 +17266,18 @@
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           if(footerBtnStep2){
             footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
+            /* Blauer Glow beim Gratis-Deal, kein Glow beim 4,99-€-Standard */
+            if(pickupEnabled){
+              footerBtnStep2.style.boxShadow='0 8px 24px rgba(0,122,255,0.35)';
+              footerBtnStep2.style.background='#007aff';
+            } else {
+              footerBtnStep2.style.boxShadow='none';
+              footerBtnStep2.style.background='#222222';
+            }
           }
         }
         tileStandard.onclick=function(){
+          if(window.navigator&&navigator.vibrate) navigator.vibrate(10);
           hapticLight();
           pickupEnabled=false;
           w.data.step2PickupEnabled=false;
@@ -17278,6 +17287,7 @@
           saveDraft();
         };
         tilePickup.onclick=function(){
+          if(window.navigator&&navigator.vibrate) navigator.vibrate(10);
           hapticLight();
           pickupEnabled=true;
           w.data.step2PickupEnabled=true;
@@ -18554,15 +18564,11 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:column; align-items:stretch; justify-content:center; gap:10px; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
-        var footerMotivation=document.createElement('p');
-        footerMotivation.className='step2-footer-motivation';
-        footerMotivation.style.cssText='margin:0; font-size:14px; line-height:1.35; font-weight:700; text-align:center; color:#374151;';
-        footerMotivation.textContent='Dein Gericht sieht fantastisch aus! Bereit zum Verkaufen?';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(12px + max(env(safe-area-inset-bottom, 0px), 12px)) 20px; box-sizing:border-box;';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:#ffffff !important; font-size:16px; font-weight:800; cursor:pointer;';
+        footerBtn.style.cssText='width:calc(100% - 40px); min-height:52px; padding:0 24px; border:none; border-radius:12px; background:#007aff; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; box-shadow:0 8px 24px rgba(0,122,255,0.35); transition:background 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent;';
         footerBtn.textContent='Jetzt für 0,00 € inserieren';
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
@@ -18585,7 +18591,6 @@
           publishFeeUseStep3=true;
           showPublishFeeModal(o);
         };
-        airbnbFooter.appendChild(footerMotivation);
         airbnbFooter.appendChild(footerBtn);
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
         box.appendChild(airbnbFooter);
