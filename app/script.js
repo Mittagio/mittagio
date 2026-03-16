@@ -17222,7 +17222,7 @@
         /* Step 2: Final Review Card (S25 one-page, no-scroll) */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f2f2f7; overflow-y:auto; overflow-x:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17231,7 +17231,7 @@
         var step2Header=document.createElement('h3');
         step2Header.className='step2-review-title';
         step2Header.textContent='Dein Gericht';
-        step2Header.style.cssText='margin:0; padding:12px 20px 10px; font-size:22px; font-weight:900; color:#111827;';
+        step2Header.style.cssText='margin:0; padding:16px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp';
@@ -17240,7 +17240,7 @@
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
-        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:12px 20px 0;';
+        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 16px; box-sizing:border-box; width:100%;';
         var TILE_BASE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:16px;background:#ffffff;box-shadow:0 2px 12px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
         var TILE_ACTIVE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:16px;background:#f0f6ff;box-shadow:0 0 0 4px rgba(0,122,255,0.10),0 4px 16px rgba(0,122,255,0.15);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
         var tileStandard=document.createElement('button');
