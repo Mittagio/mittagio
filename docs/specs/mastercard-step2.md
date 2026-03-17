@@ -31,9 +31,17 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
      - `Kein Kassen-Chaos: Bezahlung erledigt`
      - `Mehr Planbarkeit: Feste Abholzeiten`
      - `Null Verwaltung: Automatische Buchung`
-   - Neben dem Abholnummer-Titel ist ein kleines Info-Icon (`ⓘ`) mit Popover.
-   - Popover-Text:
-     - `Die Abholnummer sichert deinen Verkauf. Der Kunde zahlt vorab online, erhält eine Abholnummer und du händigst das Essen stressfrei gegen die Abholnummer aus.`
+   - Neben dem Titel `Stressfrei-Autopilot` sitzt ein kleines Info-Icon (`ⓘ`) als Trigger.
+   - Premium-Popover:
+     - Backdrop: `backdrop-filter: blur(8px)` + `rgba(0,0,0,0.3)`
+     - Card: weiß, Radius `16px`, Padding `24px`, hoher Kontrast
+     - Inhalt:
+       - Titel: `So funktioniert der Stressfrei-Modus 🛡️`
+       - Drei Schritte + Abschlusssatz (`Du konzentrierst dich aufs Kochen, wir erledigen den Rest.`)
+   - Interaktion:
+     - `openInfoPopover()` öffnet mit Haptik (`10ms`) und sperrt Hintergrundscroll
+     - `closeInfoPopover()` schließt über Backdrop oder `X`
+     - Auto-Close nach `5s` via `popoverTimeout`
 
 ## Footer-Regel
 

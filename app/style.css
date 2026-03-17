@@ -10796,9 +10796,9 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   line-height: 1.2 !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-info-btn {
-  border: none !important;
-  background: #eef1f5 !important;
-  color: #6b7280 !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  background: rgba(0,0,0,0.06) !important;
+  color: #999999 !important;
   width: 18px !important;
   height: 18px !important;
   min-width: 18px !important;
@@ -10847,24 +10847,64 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   color: #28a745 !important;
   font-weight: 900 !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-info-popover {
-  position: absolute !important;
-  right: 14px !important;
-  top: 42px !important;
-  width: min(260px, calc(100% - 28px)) !important;
-  background: #ffffff !important;
-  color: #334155 !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.14) !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
-  padding: 10px 12px !important;
-  font-size: 12px !important;
-  line-height: 1.45 !important;
-  z-index: 1000 !important;
-  display: none !important;
+#popover-backdrop {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.3);
+  transition: opacity 0.22s ease;
+  z-index: 1000;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-info-popover.is-open {
-  display: block !important;
+#popover-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#info-popover {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(16px);
+  width: min(420px, calc(100% - 32px));
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  z-index: 1001;
+}
+#info-popover.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+#info-popover .step2-popover-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.06);
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+}
+#info-popover .step2-popover-title {
+  margin: 0 30px 10px 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+}
+#info-popover .step2-popover-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #334155;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-list {
   margin: 6px 72px 0 0 !important;

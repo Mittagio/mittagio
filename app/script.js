@@ -17137,6 +17137,7 @@
     }catch(e){}
   }
   if(typeof window !== 'undefined') window.showStep = showStep;
+  var popoverTimeout = null;
 
   // ============================================================
   // INSERATCARD – 3-STEP FLOW [mastercard-drei-schritte-gesetz]
@@ -17272,7 +17273,7 @@
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul><div class="step2-info-popover" role="tooltip" aria-hidden="true">Die Abholnummer sichert deinen Verkauf. Der Kunde zahlt vorab online, erhält eine Abholnummer und du händigst das Essen stressfrei gegen die Abholnummer aus.</div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17282,35 +17283,51 @@
         var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;
         var infoBtn = tilePickup.querySelector('.step2-info-btn');
-        var infoPopover = tilePickup.querySelector('.step2-info-popover');
-        function hideStep2InfoPopover(){
-          if(!infoPopover) return;
-          infoPopover.classList.remove('is-open');
-          infoPopover.setAttribute('aria-hidden', 'true');
+        var oldBackdrop = document.getElementById('popover-backdrop');
+        if(oldBackdrop && oldBackdrop.parentNode) oldBackdrop.parentNode.removeChild(oldBackdrop);
+        var oldPopover = document.getElementById('info-popover');
+        if(oldPopover && oldPopover.parentNode) oldPopover.parentNode.removeChild(oldPopover);
+        var popoverBackdrop = document.createElement('div');
+        popoverBackdrop.id = 'popover-backdrop';
+        var infoPopover = document.createElement('div');
+        infoPopover.id = 'info-popover';
+        infoPopover.innerHTML = '<button type="button" class="step2-popover-close" aria-label="Schließen">×</button><h4 class="step2-popover-title">So funktioniert der Stressfrei-Modus 🛡️</h4><div class="step2-popover-body">1. Sicherer Verkauf: Kunden zahlen vorab online – kein Risiko bei Nicht-Abholung.<br>2. Schnelle Übergabe: Du scannst nur die Abholnummer – fertig.<br>3. Automatische Abrechnung: Kein Hantieren mit Bargeld oder Wechselgeld.<br><br>Du konzentrierst dich aufs Kochen, wir erledigen den Rest.</div>';
+        document.body.appendChild(popoverBackdrop);
+        document.body.appendChild(infoPopover);
+        function openInfoPopover() {
+          if(!infoPopover || !popoverBackdrop) return;
+          popoverBackdrop.classList.add('show');
+          infoPopover.classList.add('show');
+          if(navigator.vibrate) navigator.vibrate(10);
+          document.body.dataset.step2PrevOverflow = document.body.style.overflow || '';
+          document.body.style.overflow = 'hidden';
+          clearTimeout(popoverTimeout);
+          popoverTimeout = setTimeout(function(){
+            closeInfoPopover();
+          }, 5000);
         }
-        function toggleStep2InfoPopover(){
-          if(!infoPopover) return;
-          var isOpen = infoPopover.classList.contains('is-open');
-          if(isOpen){
-            hideStep2InfoPopover();
-          } else {
-            infoPopover.classList.add('is-open');
-            infoPopover.setAttribute('aria-hidden', 'false');
-          }
+        function closeInfoPopover() {
+          if(!infoPopover || !popoverBackdrop) return;
+          popoverBackdrop.classList.remove('show');
+          infoPopover.classList.remove('show');
+          clearTimeout(popoverTimeout);
+          document.body.style.overflow = document.body.dataset.step2PrevOverflow || '';
+        }
+        if(typeof window !== 'undefined'){
+          window.openInfoPopover = openInfoPopover;
+          window.closeInfoPopover = closeInfoPopover;
         }
         if(infoBtn){
           infoBtn.onclick = function(ev){
             ev.preventDefault();
             ev.stopPropagation();
             hapticLight();
-            toggleStep2InfoPopover();
+            openInfoPopover();
           };
         }
-        document.addEventListener('pointerdown', function(ev){
-          if(!infoPopover || !infoPopover.classList.contains('is-open')) return;
-          if(tilePickup.contains(ev.target)) return;
-          hideStep2InfoPopover();
-        }, true);
+        popoverBackdrop.onclick = function(){ closeInfoPopover(); };
+        var popoverCloseBtn = infoPopover.querySelector('.step2-popover-close');
+        if(popoverCloseBtn) popoverCloseBtn.onclick = function(){ closeInfoPopover(); };
         function updateTileUI(){
           var bestBadge = tilePickup.querySelector('.step2-badge-best');
           tileStandard.classList.toggle('active', !pickupEnabled);
@@ -17327,7 +17344,7 @@
           }
         }
         function selectPricing(type, silent){
-          hideStep2InfoPopover();
+          closeInfoPopover();
           if (type === 'stressfrei') {
             pickupEnabled = true;
             w.data.hasPickupCode = true;
