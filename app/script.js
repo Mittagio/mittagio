@@ -17353,10 +17353,10 @@
         step3Pane.appendChild(step3ConfettiWrap);
         var step3Content=document.createElement('div');
         step3Content.className='inserat-step3-content';
-        var successCheckWrap=document.createElement('div');
-        successCheckWrap.className='success-check-wrapper';
-        successCheckWrap.innerHTML='<div class="success-checkmark">LIVE</div>';
-        step3Content.appendChild(successCheckWrap);
+        var successHeader=document.createElement('h2');
+        successHeader.className='step3-success-title';
+        successHeader.textContent='Glückwunsch! Dein Inserat ist live! 🚀';
+        step3Content.appendChild(successHeader);
         var liveStatusCard=document.createElement('div');
         liveStatusCard.className='live-status-card';
         liveStatusCard.style.cssText='position:relative;';
@@ -17365,36 +17365,45 @@
         var dishS3=(w.data.dish||'').trim()||'Gericht';
         var priceS3=Number(w.data.price)||0;
         var euroS3=typeof euro==='function'?euro(priceS3):(priceS3.toFixed(2).replace('.',',')+' Ôé¼');
-        liveStatusCard.innerHTML='<div class="live-card-badge">Aktiv</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
+        liveStatusCard.innerHTML='<div class="live-card-badge">● LIVE</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
         step3Content.appendChild(liveStatusCard);
-        var successHint=document.createElement('p');
-        successHint.className='success-hint';
-        successHint.textContent='Dein Inserat ist jetzt f├╝r alle Kunden sichtbar.';
-        step3Content.appendChild(successHint);
+        var waShareBtn=document.createElement('button');
+        waShareBtn.type='button';
+        waShareBtn.className='step3-whatsapp-btn';
+        waShareBtn.id='step3WhatsAppShare';
+        waShareBtn.innerHTML='Auf WhatsApp teilen 🟢';
+        waShareBtn.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
+        step3Content.appendChild(waShareBtn);
         step3Pane.appendChild(step3Content);
         step3Pane.id='mastercard-step-live';
         var step3Footer=document.createElement('footer');
         step3Footer.className='app-footer-main';
         step3Footer.setAttribute('data-inserat-step','3');
-        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; width:100%;';
-        var btnShare=document.createElement('button');
-        btnShare.type='button';
-        btnShare.className='footer-link-secondary sharing-trigger btn-secondary-link';
-        btnShare.id='footerShare';
-        btnShare.innerHTML='<span class="share-icon">­ƒôñ</span> Teilen';
-        var btnFinish=document.createElement('button');
-        btnFinish.type='button';
-        btnFinish.className='footer-btn-primary btn-primary-black';
-        btnFinish.id='footerFinish';
-        btnFinish.style.cssText='flex:1; min-height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
-        btnFinish.textContent='Zum Dashboard';
-        step3Footer.appendChild(btnShare);
-        step3Footer.appendChild(btnFinish);
+        step3Footer.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:500; display:none; flex-direction:column; align-items:center; justify-content:center; gap:10px; width:100%;';
+        var btnNewListing=document.createElement('button');
+        btnNewListing.type='button';
+        btnNewListing.className='step3-new-listing-btn';
+        btnNewListing.id='step3NewListing';
+        btnNewListing.textContent='Neues Inserat erstellen';
+        var btnOverview=document.createElement('button');
+        btnOverview.type='button';
+        btnOverview.className='step3-overview-link';
+        btnOverview.id='step3OverviewLink';
+        btnOverview.textContent='Zur Übersicht';
+        step3Footer.appendChild(btnNewListing);
+        step3Footer.appendChild(btnOverview);
         step3Footer.classList.add('inserat-step1-nav');
-        step3Footer.style.cssText='position:fixed; bottom:0; left:0; width:100%; z-index:10000; display:none; flex-direction:row; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        step3Footer.style.cssText='position:fixed; bottom:0; left:0; width:100%; z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; gap:10px; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         step3Pane.appendChild(step3Footer);
-        btnShare.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
-        btnFinish.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
+        btnNewListing.onclick=function(){
+          hapticLight();
+          if(typeof closeWizard==='function') closeWizard(true);
+          setTimeout(function(){
+            if(typeof startListingFlow === 'function') startListingFlow({ entryPoint: 'dashboard' });
+            else if(typeof openDishFlow === 'function') openDishFlow(undefined, 'dashboard');
+          }, 40);
+        };
+        btnOverview.onclick=function(){ hapticLight(); if(typeof resetMastercardFromStep3==='function') resetMastercardFromStep3(); };
         track.appendChild(step1Pane);
         track.appendChild(step2Pane);
         track.appendChild(step3Pane);
@@ -19132,7 +19141,11 @@
     }
     if(typeof window !== 'undefined' && typeof window.confetti === 'function'){
       try{
-        window.confetti({ particleCount: 120, spread: 70, origin: { y: 0.65 } });
+        var confettiEnd = Date.now() + 2000;
+        var confettiTimer = setInterval(function(){
+          if(Date.now() > confettiEnd){ clearInterval(confettiTimer); return; }
+          window.confetti({ particleCount: 60, spread: 70, origin: { y: 0.65 } });
+        }, 250);
       }catch(e){}
     }
     if(typeof vibrate === 'function') vibrate([100, 50, 100]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]);
@@ -19147,29 +19160,23 @@
     if(step3Footer) step3Footer.style.setProperty('display','flex','important');
   }
 
-  /** Sharing: navigator.share oder WhatsApp-Fallback [cite: 2026-02-21] */
+  /** Sharing: Direkt-Trigger für WhatsApp [cite: Step3 Viral Trigger] */
   async function triggerLiveSharing(){
     var o = inseratSuccessCurrentOffer;
     var d = o ? normalizeOffer(o) : {};
-    var dishName = d.dish || d.title || 'unser neues Gericht';
-    var price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || 'Tagespreis');
+    var dishName = d.dish || d.title || 'Gericht';
+    var price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || '0,00 €');
     var shareUrl = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || ''));
-    var abholHint = (o && o.hasPickupCode) ? ' Mit Abholnummer 🧾 Schlange überspringen!' : '';
-    var shareText = '🔥 Frisch inseriert: ' + dishName + ' für nur ' + price + '!' + abholHint + '\n\nHier ansehen und direkt abholen: ';
+    var shareText = 'Schau mal, was ich gerade frisch inseriert habe: ' + dishName + ' für ' + price + '! Jetzt bestellen: ' + shareUrl;
     try {
-      if(navigator.share){
-        await navigator.share({ title: 'Mein neues Inserat', text: shareText, url: shareUrl });
-        if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
-        if(typeof showToast === 'function') showToast('Geteilt 📤');
-      } else {
-        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
-        window.open(waUrl, '_blank', 'noopener');
-        if(typeof showToast === 'function') showToast('WhatsApp geöffnet 📤');
-      }
+      var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText);
+      window.open(waUrl, '_blank', 'noopener');
+      if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+      if(typeof showToast === 'function') showToast('WhatsApp geöffnet 📤');
     } catch(err) {
-      if(err.name !== 'AbortError'){
-        var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareUrl);
-        window.open(waUrl, '_blank', 'noopener');
+      if(err && err.name !== 'AbortError'){
+        var fallbackUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText);
+        window.open(fallbackUrl, '_blank', 'noopener');
       }
     }
   }

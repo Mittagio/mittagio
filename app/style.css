@@ -4031,19 +4031,21 @@
     /* Step 3: Live-Erfolg [cite: 2026-02-21] */
     .inserat-step3-pane { position: relative; overflow: hidden; background: #f8fafc; }
     .inserat-step3-pane .success-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
-    .inserat-step3-pane .inserat-step3-content { flex: 1; overflow-y: auto; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
-    .inserat-step3-pane .success-check-wrapper { text-align: center; padding: 40px 0 20px; }
-    .inserat-step3-pane .success-checkmark { display: inline-block; background: #10b981; color: white; padding: 8px 24px; border-radius: 40px; font-weight: 900; font-size: 20px; letter-spacing: 2px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .inserat-step3-pane .live-status-card { margin: 20px 24px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; }
-    .inserat-step3-pane .live-card-badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; background: rgba(16,185,129,0.95); color: #fff; font-size: 12px; font-weight: 800; border-radius: 999px; z-index: 2; }
+    .inserat-step3-pane .inserat-step3-content { flex: 1; overflow: hidden; padding: 18px 20px calc(110px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:14px; }
+    .inserat-step3-pane .step3-success-title { margin: 0; text-align: center; font-size: 24px; font-weight: 900; color:#0f172a; line-height:1.2; }
+    .inserat-step3-pane .live-status-card { margin: 0; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 14px 32px rgba(0,0,0,0.10); border: 1px solid #f1f5f9; }
+    .inserat-step3-pane .live-card-badge { position: absolute; top: 12px; left: 12px; padding: 6px 12px; background: rgba(16,185,129,0.95); color: #fff; font-size: 12px; font-weight: 900; border-radius: 999px; z-index: 2; animation: livePulse 1.2s ease-in-out infinite; }
     .inserat-step3-pane .live-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
     .inserat-step3-pane .live-card-info { padding: 16px 20px; }
     .inserat-step3-pane .live-card-info h3 { margin: 0 0 4px; font-size: 17px; font-weight: 900; color: #0f172a; }
     .inserat-step3-pane .live-card-info p { margin: 0; font-size: 15px; font-weight: 700; color: #64748b; }
     .inserat-step3-pane .final-abhol-box { margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 12px; text-align: center; }
     .inserat-step3-pane .abhol-id { display: block; font-size: 24px; font-weight: 900; color: #10b981; }
-    .inserat-step3-pane .success-hint { text-align: center; font-size: 14px; color: #64748b; padding: 0 24px 20px; margin: 0; }
-    .inserat-step3-pane .sharing-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; color: #fff !important; font-size: 15px; font-weight: 600; padding: 12px 0; }
+    .inserat-step3-pane .step3-whatsapp-btn { width:100%; min-height:56px; border-radius:14px; border:2px solid #16a34a; background:#ffffff; color:#16a34a; font-size:16px; font-weight:800; cursor:pointer; }
+    .inserat-step3-pane .step3-whatsapp-btn:active { transform: scale(0.98); }
+    .inserat-step3-pane .step3-new-listing-btn { width:100%; min-height:52px; border-radius:12px; border:2px solid #111111; background:#ffffff; color:#111111; font-size:15px; font-weight:800; cursor:pointer; }
+    .inserat-step3-pane .step3-overview-link { background:transparent; border:none; color:#475569; text-decoration:underline; font-size:15px; font-weight:700; cursor:pointer; padding:6px 0; }
+    @keyframes livePulse { 0%{ transform: scale(1); } 50%{ transform: scale(1.06); } 100%{ transform: scale(1);} }
     .inserat-step3-pane #step3ConfettiContainer .confetti { position: absolute; width: 10px; height: 10px; background: #FFD700; border-radius: 2px; animation: confetti-fall 3s linear forwards; top: -20px; }
     @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     /* Footer: Alle Definitionen in .vendor-area .app-footer-main am Ende [cite: FINAL DESIGN-LOCK 2026-02-23] */
