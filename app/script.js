@@ -17230,7 +17230,7 @@
         /* Step 2: Final Review Card (S25 one-page, no-scroll) */
         var step2Wrap=document.createElement('div');
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f2f2f7; overflow-y:auto; overflow-x:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f9f9f9; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17248,21 +17248,21 @@
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
-        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:14px; padding:18px 20px 18px; box-sizing:border-box; width:100%;';
-        var TILE_BASE_STYLE='display:block;width:100%;min-height:104px;text-align:left;box-sizing:border-box;border:1.5px solid #dbe4ef;border-radius:20px;background:#ffffff;box-shadow:0 10px 24px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.05);padding:20px 52px 18px 18px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
-        var TILE_ACTIVE_STYLE='display:block;width:100%;min-height:104px;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:20px;background:#f0f6ff;box-shadow:0 0 0 4px rgba(0,122,255,0.12),0 12px 30px rgba(0,122,255,0.18);padding:20px 52px 18px 18px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
+        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 12px; box-sizing:border-box; width:100%;';
+        var TILE_BASE_STYLE='display:block;width:100%;min-height:124px;text-align:left;box-sizing:border-box;border:1.5px solid #e3e8ef;border-radius:12px;background:#ffffff;box-shadow:0 10px 30px rgba(0,0,0,0.05);padding:16px 52px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;transform:translateZ(0);';
+        var TILE_ACTIVE_STYLE='display:block;width:100%;min-height:124px;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:12px;background:#f0f6ff;box-shadow:0 10px 30px rgba(0,0,0,0.05),0 0 0 4px rgba(0,122,255,0.10);padding:16px 52px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;transform:translateZ(0);';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile';
         tileStandard.setAttribute('data-tile','standard');
         tileStandard.style.cssText=TILE_BASE_STYLE;
-        tileStandard.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;"><div style="font-size:15px;font-weight:800;color:#0f172a;line-height:1.2;">Standard-Inserat</div><div style="font-size:22px;font-weight:900;line-height:1;color:#0f172a;white-space:nowrap;">4,99 €</div></div><div style="margin-top:5px;font-size:12px;color:#64748b;line-height:1.4;">Dein Gericht wird veröffentlicht.</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Manuelle Abwicklung</div><div class="step2-choice-price">4,99 €</div></div><div class="step2-choice-sub">Barzahlung & Wechselgeld vor Ort</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile';
         tilePickup.setAttribute('data-tile','pickup');
         tilePickup.style.cssText=TILE_BASE_STYLE;
-        tilePickup.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;"><div style="font-size:15px;font-weight:800;color:#0f172a;line-height:1.2;">Abholnummer 🧾</div><div style="font-size:22px;font-weight:900;line-height:1;color:#0f172a;white-space:nowrap;">0,00 €</div></div><div style="margin-top:5px;font-size:12px;color:#64748b;line-height:1.4;">Inklusive Abholnummer · 0,89 € pro Vorgang</div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><span class="step2-badge-best" style="display:none;">Bestseller</span><div class="step2-choice-row"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><div class="step2-choice-price">HEUTE 0,00 €</div></div><ul class="step2-choice-list"><li>✅ Planbarkeit: Dein Zeitplan, deine Regeln.</li><li>✅ Küchen-Frieden: Kein Beleg-Chaos, alles digital.</li><li>✅ Sicher ist sicher: Online-Vorkasse inklusive.</li><li>✅ Null Verwaltung: Wir machen den Papierkram.</li></ul><div class="step2-choice-thumb-wrap"><img class="step2-choice-thumb" src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=260&q=60" alt="Abholnummer Smartphone"></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17278,19 +17278,22 @@
           /* Checkmark-Farbe: aktive Tile = blau, inaktive = grau */
           var chkS = tileStandard.querySelector('.step2-choice-check');
           var chkP = tilePickup.querySelector('.step2-choice-check');
+          var bestBadge = tilePickup.querySelector('.step2-badge-best');
           var chkActiveStyle='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #007aff;background:#007aff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#ffffff;pointer-events:none;';
           var chkIdleStyle ='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;';
           if(chkS) chkS.style.cssText = pickupEnabled ? chkIdleStyle : chkActiveStyle;
           if(chkP) chkP.style.cssText = pickupEnabled ? chkActiveStyle : chkIdleStyle;
           /* Preis-Farbe in aktiver Tile blau */
-          var priceS = tileStandard.querySelector('div > div:last-child');
-          var priceP = tilePickup.querySelector('div > div:last-child');
+          var priceS = tileStandard.querySelector('.step2-choice-price');
+          var priceP = tilePickup.querySelector('.step2-choice-price');
           if(priceS) priceS.style.color = pickupEnabled ? '#0f172a' : '#007aff';
           if(priceP) priceP.style.color = pickupEnabled ? '#007aff' : '#0f172a';
+          if(bestBadge) bestBadge.style.display = pickupEnabled ? 'inline-flex' : 'none';
           tileStandard.setAttribute('aria-pressed', (!pickupEnabled) ? 'true' : 'false');
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           if(footerBtnStep2){
-            footerBtnStep2.textContent = pickupEnabled ? 'Jetzt für 0,00 € inserieren' : 'Jetzt für 4,99 € inserieren';
+            footerBtnStep2.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
+            footerBtnStep2.classList.toggle('step2-heartbeat', pickupEnabled);
             if(pickupEnabled){
               footerBtnStep2.style.setProperty('background','#007aff','important');
               footerBtnStep2.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
@@ -17676,7 +17679,7 @@
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges category-pills';
       /* Pills direkt unter Bild, oberhalb des großen Titels [cite: AIRBNB-EDGE-TO-EDGE] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:4px; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
+      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:0; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -17818,7 +17821,7 @@
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
       scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 112px); overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
-      photoContainer.style.cssText='width:100vw; max-width:100vw; height:250px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
+      photoContainer.style.cssText='width:100vw; max-width:100vw; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* Dezentes Edit-Icon oben rechts IM BILD (eBay-Style) */
       var editPencilBtn=document.createElement('button');
@@ -17853,7 +17856,7 @@
       const stepName=document.createElement('div');
       stepName.id='step-name';
       stepName.className='inserat-section inserat-unified-title-wrap inserat-name-sticky';
-      stepName.style.cssText='width:100%; margin-top:16px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
+      stepName.style.cssText='width:100%; margin-top:6px; margin-bottom:0; display:flex; justify-content:center; background:#ffffff; padding:0 16px;';
       var nameInputWrap=document.createElement('div');
       nameInputWrap.className='inserat-name-input-wrap';
       nameInputWrap.style.cssText='position:relative; width:100%; display:flex; align-items:flex-start; min-height:44px;';
@@ -18588,7 +18591,7 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(12px + max(env(safe-area-inset-bottom, 0px), 12px)) 20px; box-sizing:border-box;';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
@@ -18660,18 +18663,17 @@
               var delta = rect.bottom - (vh - gap);
               scrollArea.scrollTop = Math.min(scrollArea.scrollTop + delta, scrollArea.scrollHeight - scrollArea.clientHeight);
             } else {
-              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.scrollIntoView({ behavior: 'auto', block: 'center' });
             }
           }
         } else {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.scrollIntoView({ behavior: 'auto', block: 'center' });
         }
       }
       sheet.addEventListener('focusin', function(e){
         var el = e.target;
         if(el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')){
           setTimeout(function(){ scrollInputAboveKeyboard(el); }, 150);
-          if(typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       });
       var vvHandler = function(){
@@ -18692,7 +18694,7 @@
         [f1,f2,f3].forEach(function(f){ if(f&&f.isConnected) f.style.setProperty('bottom', keyboardH+'px', 'important'); });
         /* 3. Scroll-Bereich: Padding für Header und Footer */
         var active = document.activeElement;
-        if(active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
+        if(keyboardH > 80 && active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
           scrollInputAboveKeyboard(active);
         }
         var sa = box.querySelector('.inserat-scroll-area');
@@ -18707,7 +18709,6 @@
       };
       if(typeof window.visualViewport !== 'undefined'){
         window.visualViewport.addEventListener('resize', vvHandler);
-        window.visualViewport.addEventListener('scroll', vvHandler);
       }
       /* Sofortige Initialisierung – Wizard-Höhe und Footer-Position direkt beim Öffnen setzen */
       setTimeout(vvHandler, 50);
