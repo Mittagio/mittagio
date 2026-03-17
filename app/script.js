@@ -18610,7 +18610,14 @@
             if(typeof showProviderWeek==='function') showProviderWeek();
             return;
           }
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+          var p = normalizeProviderProfile((provider && provider.profile) || {});
+          var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
+          if(!hasAddr){
+            if(typeof openAddressModal === 'function') openAddressModal();
+            else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
+            return;
+          }
           var usePickup=!!w.data.step2PickupEnabled;
           w.data.hasPickupCode=usePickup;
           w.data.pricingChoice=usePickup?'pro':'499';
@@ -18812,6 +18819,7 @@
       reuse: w.data.reuse||{enabled:false,deposit:0},
       day: w.data.day || isoDate(new Date()),
       active: w.data.active !== false,
+      pricingChoice: w.data.pricingChoice || (w.data.pricingOption === 'abholnummer' ? 'pro' : '499'),
       pricingOption: w.data.pricingOption || null,
       inseratFeeWaived: !!w.data.inseratFeeWaived || w.data.pricingOption === 'abholnummer',
       cookbookId: (w.ctx && (w.ctx.dishId || w.ctx.fromCookbookId)) || null
@@ -18888,6 +18896,13 @@
     const existingId = w.ctx && w.ctx.editOfferId ? w.ctx.editOfferId : null;
     const id = existingId || cryptoId();
     const out = {...o, id, day: o.day || w.data.day || isoDate(new Date()), active: o.active !== false};
+    try{
+      console.log('[publish-check]', {
+        hasPickupCode: !!out.hasPickupCode,
+        pricingChoice: out.pricingChoice || null,
+        inseratFeeWaived: !!out.inseratFeeWaived
+      });
+    }catch(e){}
     var profile = normalizeProviderProfile(provider.profile || {});
     if(!out.providerStreet && (profile.street || profile.zip || profile.city)) {
       out.providerStreet = profile.street || '';
@@ -18998,21 +19013,25 @@
       if (umsatzEl) umsatzEl.textContent = (typeof euro === 'function' ? euro(offer.umsatzVorschau || 0) : (Number(offer.umsatzVorschau || 0).toFixed(2).replace('.', ',') + ' €'));
       if (btnConfirm) btnConfirm.textContent = 'Jetzt Woche aktivieren für ' + (typeof euro === 'function' ? euro(offer.totalFee) : (Number(offer.totalFee).toFixed(2).replace('.', ',') + ' €'));
     } else {
-      if (titleEl) titleEl.textContent = 'Inserat veröffentlichen';
+      if (titleEl) titleEl.textContent = 'Fast geschafft! 🚀';
       if (umsatzWrap) umsatzWrap.style.display = 'none';
       if (amountEl){
         if(offer && (offer.inseratFeeWaived || offer.pricingOption === 'abholnummer')){
           amountEl.textContent = '0,00 €';
-          if(hintEl) hintEl.textContent = 'Inserat kostenlos – Abholnummer 0,89 € pro Vorgang';
-        } else if(offer && typeof offer.price === 'number' && offer.price !== 4.99){
-          amountEl.textContent = (typeof euro === 'function' ? euro(offer.price) : (offer.price.toFixed(2) + ' €'));
-          if(hintEl) hintEl.textContent = 'Einmalig heute für ' + (offer.dish || 'Auswahl');
+          amountEl.style.setProperty('color', '#16a34a');
+          if(hintEl) hintEl.textContent = 'Service-Gebühr: 0,89 € pro verkauftem Gericht. Keine Fixkosten.';
         } else {
           amountEl.textContent = '4,99 €';
-          if(hintEl) hintEl.textContent = 'Einmalig heute pro Gericht';
+          amountEl.style.setProperty('color', '#111111');
+          if(hintEl) hintEl.textContent = 'Einmalige Gebühr für dieses Inserat.';
         }
       }
-      if (btnConfirm) btnConfirm.textContent = 'Jetzt online stellen';
+      if (btnConfirm){
+        btnConfirm.textContent = 'Jetzt online stellen';
+        btnConfirm.style.setProperty('background', '#111111');
+        btnConfirm.style.setProperty('color', '#ffffff');
+        btnConfirm.style.setProperty('border-radius', '12px');
+      }
     }
     var syncWrap = document.getElementById('publishFeeSyncWrap');
     var syncCheck = document.getElementById('publishFeeSyncToCookbook');
@@ -19030,6 +19049,7 @@
     if(sheet){ sheet.style.display = ''; sheet.style.visibility = ''; sheet.classList.add('active'); }
     if(bd) bd.classList.add('active');
   }
+  function openAddressModal(){ showAddressRequiredModal(); }
   function closePublishFeeModal(){
     publishFeePendingOffer = null;
     publishFeeSuccessCallback = null;
@@ -19052,7 +19072,7 @@
     if(bd) bd.style.display = 'none';
     if(sheet) sheet.style.display = 'none';
   }
-  if(typeof window !== 'undefined'){ window.showAddressRequiredModal = showAddressRequiredModal; window.closeAddressRequiredModal = closeAddressRequiredModal; }
+  if(typeof window !== 'undefined'){ window.showAddressRequiredModal = showAddressRequiredModal; window.openAddressModal = openAddressModal; window.closeAddressRequiredModal = closeAddressRequiredModal; }
   var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
   var publishFeeUseStep3 = false; // bei true: Slide zu Wizard-Step 3 statt Success-Sheet [cite: 2026-02-21]
 
@@ -19109,6 +19129,11 @@
         c.style.cssText = 'position:absolute; left:' + (Math.random() * 100) + '%; width:' + (Math.random() * 8 + 5) + 'px; height:' + (Math.random() * 8 + 5) + 'px; background:' + colors[Math.floor(Math.random() * colors.length)] + '; animation:confetti-fall 3s linear forwards; animation-delay:' + (Math.random() * 2) + 's; animation-duration:' + (Math.random() * 2 + 2) + 's;';
         step3Container.appendChild(c);
       }
+    }
+    if(typeof window !== 'undefined' && typeof window.confetti === 'function'){
+      try{
+        window.confetti({ particleCount: 120, spread: 70, origin: { y: 0.65 } });
+      }catch(e){}
     }
     if(typeof vibrate === 'function') vibrate([100, 50, 100]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     slider.setAttribute('data-inserat-step', '3');
@@ -19557,13 +19582,19 @@
                 if(typeof onSuccess === 'function'){ try { onSuccess(published); } catch(e){ console.error(e); } }
                 var glow = document.getElementById('publishFeeSuccessGlow');
                 if(glow){ glow.classList.add('animate'); }
-                setTimeout(function(){
+                if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){
                   closePublishFeeModal();
                   if(glow) glow.classList.remove('animate');
-                  if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){ publishFeeUseStep3 = false; slideWizardToStep3(published); }
-                  else if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
-                  else if(typeof showProviderHome === 'function') showProviderHome();
-                }, 620);
+                  publishFeeUseStep3 = false;
+                  slideWizardToStep3(published);
+                } else {
+                  setTimeout(function(){
+                    closePublishFeeModal();
+                    if(glow) glow.classList.remove('animate');
+                    if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
+                    else if(typeof showProviderHome === 'function') showProviderHome();
+                  }, 620);
+                }
               } else closePublishFeeModal();
               console.log('Demo-Modus: Aktivierung simuliert');
             }
@@ -19594,15 +19625,19 @@
           if(typeof onSuccess === 'function'){ try { onSuccess(published); } catch(e){ console.error(e); } }
           var glow = document.getElementById('publishFeeSuccessGlow');
           if(glow){ glow.classList.add('animate'); }
-          setTimeout(function(){
+          if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){
             closePublishFeeModal();
             if(glow) glow.classList.remove('animate');
-            if(publishFeeUseStep3 && typeof slideWizardToStep3 === 'function'){
-              publishFeeUseStep3 = false;
-              slideWizardToStep3(published);
-            } else if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
-            else if(typeof showProviderHome === 'function') showProviderHome();
-          }, 620);
+            publishFeeUseStep3 = false;
+            slideWizardToStep3(published);
+          } else {
+            setTimeout(function(){
+              closePublishFeeModal();
+              if(glow) glow.classList.remove('animate');
+              if(typeof showInseratSuccessSheet === 'function') showInseratSuccessSheet(published);
+              else if(typeof showProviderHome === 'function') showProviderHome();
+            }, 620);
+          }
         } else {
           closePublishFeeModal();
         }
