@@ -17125,6 +17125,19 @@
     return 'Entwurf';
   }
 
+  function showStep(stepNumber) {
+    try{
+      document.querySelectorAll('.mastercard-step').forEach(function(s){
+        s.style.backgroundColor = '#ffffff';
+      });
+      var slider = document.querySelector('#wizard[data-flow="listing"] .inserat-steps-slider');
+      if(slider && typeof stepNumber === 'number'){
+        slider.setAttribute('data-inserat-step', String(stepNumber));
+      }
+    }catch(e){}
+  }
+  if(typeof window !== 'undefined') window.showStep = showStep;
+
   // ============================================================
   // INSERATCARD – 3-STEP FLOW [mastercard-drei-schritte-gesetz]
   // STEP_EDIT → STEP_MONEY → STEP_LIVE
@@ -17222,15 +17235,16 @@
         var track=document.createElement('div');
         track.className='inserat-steps-track';
         var step1Pane=document.createElement('div');
-        step1Pane.className='inserat-step1-pane mastercard-step-center';
+        step1Pane.className='inserat-step1-pane mastercard-step mastercard-step-center';
         step1Pane.id='mastercard-step-edit';
         var step2Pane=document.createElement('div');
-        step2Pane.className='inserat-step2-pane';
+        step2Pane.className='inserat-step2-pane mastercard-step';
         step1Container=step1Pane;
         /* Step 2: Final Review Card (S25 one-page, no-scroll) */
         var step2Wrap=document.createElement('div');
+        step2Wrap.id='mastercard-step-2';
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f9f9f9; overflow:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f6f8fa; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17242,27 +17256,23 @@
         step2Header.style.cssText='margin:0; padding:16px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
-        stampCard.className='step2-review-stamp';
+        stampCard.className='step2-review-stamp photo-preview-container';
         stampCard.style.cssText='display:flex; align-items:center; gap:12px; margin:0 20px; padding:12px; border:1px solid #ebebeb; border-radius:12px; background:#ffffff; box-shadow:0 6px 14px rgba(15,23,42,0.05);';
         stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:80px; height:80px; border-radius:12px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0;"><span id="money-dish-price" style="font-size:24px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span><span id="money-dish-name" style="font-size:17px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
         tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 12px; box-sizing:border-box; width:100%;';
-        var TILE_BASE_STYLE='display:block;width:100%;min-height:124px;text-align:left;box-sizing:border-box;border:1.5px solid #e3e8ef;border-radius:12px;background:#ffffff;box-shadow:0 10px 30px rgba(0,0,0,0.05);padding:16px 52px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;transform:translateZ(0);';
-        var TILE_ACTIVE_STYLE='display:block;width:100%;min-height:124px;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:12px;background:#f0f6ff;box-shadow:0 10px 30px rgba(0,0,0,0.05),0 0 0 4px rgba(0,122,255,0.10);padding:16px 52px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;transform:translateZ(0);';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
-        tileStandard.className='step2-choice-tile';
+        tileStandard.className='step2-choice-tile service-tile-card';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.style.cssText=TILE_BASE_STYLE;
-        tileStandard.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Manuelle Abwicklung</div><div class="step2-choice-price">4,99 €</div></div><div class="step2-choice-sub">Barzahlung & Wechselgeld vor Ort</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
-        tilePickup.className='step2-choice-tile';
+        tilePickup.className='step2-choice-tile service-tile-card';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.style.cssText=TILE_BASE_STYLE;
-        tilePickup.innerHTML='<span class="step2-choice-check" style="position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;" aria-hidden="true">✓</span><span class="step2-badge-best" style="display:none;">Bestseller</span><div class="step2-choice-row"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><div class="step2-choice-price">HEUTE 0,00 €</div></div><ul class="step2-choice-list"><li>✅ Planbarkeit: Dein Zeitplan, deine Regeln.</li><li>✅ Küchen-Frieden: Kein Beleg-Chaos, alles digital.</li><li>✅ Sicher ist sicher: Online-Vorkasse inklusive.</li><li>✅ Null Verwaltung: Wir machen den Papierkram.</li></ul><div class="step2-choice-thumb-wrap"><img class="step2-choice-thumb" src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=260&q=60" alt="Abholnummer Smartphone"></div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17271,58 +17281,47 @@
         step2Wrap.appendChild(step2Spacer);
         var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;
-        function updateStep2ChoiceUI(){
-          /* Inline-Styles direkt setzen – CSS-Spezifität irrelevant */
-          tileStandard.style.cssText = pickupEnabled ? TILE_BASE_STYLE : TILE_ACTIVE_STYLE;
-          tilePickup.style.cssText   = pickupEnabled ? TILE_ACTIVE_STYLE : TILE_BASE_STYLE;
-          /* Checkmark-Farbe: aktive Tile = blau, inaktive = grau */
-          var chkS = tileStandard.querySelector('.step2-choice-check');
-          var chkP = tilePickup.querySelector('.step2-choice-check');
+        function updateTileUI(){
           var bestBadge = tilePickup.querySelector('.step2-badge-best');
-          var chkActiveStyle='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #007aff;background:#007aff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#ffffff;pointer-events:none;';
-          var chkIdleStyle ='position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:2px solid #d1d5db;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;pointer-events:none;';
-          if(chkS) chkS.style.cssText = pickupEnabled ? chkIdleStyle : chkActiveStyle;
-          if(chkP) chkP.style.cssText = pickupEnabled ? chkActiveStyle : chkIdleStyle;
-          /* Preis-Farbe in aktiver Tile blau */
-          var priceS = tileStandard.querySelector('.step2-choice-price');
-          var priceP = tilePickup.querySelector('.step2-choice-price');
-          if(priceS) priceS.style.color = pickupEnabled ? '#0f172a' : '#007aff';
-          if(priceP) priceP.style.color = pickupEnabled ? '#007aff' : '#0f172a';
+          tileStandard.classList.toggle('active', !pickupEnabled);
+          tilePickup.classList.toggle('active', pickupEnabled);
+          tileStandard.classList.toggle('is-active', !pickupEnabled);
+          tilePickup.classList.toggle('is-active', pickupEnabled);
           if(bestBadge) bestBadge.style.display = pickupEnabled ? 'inline-flex' : 'none';
           tileStandard.setAttribute('aria-pressed', (!pickupEnabled) ? 'true' : 'false');
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
-          if(footerBtnStep2){
-            footerBtnStep2.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
-            footerBtnStep2.classList.toggle('step2-heartbeat', pickupEnabled);
-            if(pickupEnabled){
-              footerBtnStep2.style.setProperty('background','#007aff','important');
-              footerBtnStep2.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
-            } else {
-              footerBtnStep2.style.setProperty('background','#222222','important');
-              footerBtnStep2.style.setProperty('box-shadow','none','important');
-            }
+          var btn = document.getElementById('main-publish-btn') || footerBtnStep2;
+          if(btn){
+            btn.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
+            btn.classList.toggle('btn-pulse', pickupEnabled);
           }
         }
-        tileStandard.onclick=function(){
-          if(window.navigator&&navigator.vibrate) navigator.vibrate(10);
-          hapticLight();
-          pickupEnabled=false;
-          w.data.step2PickupEnabled=false;
-          w.data.hasPickupCode=false;
+        function selectPricing(type, silent){
+          if (type === 'stressfrei') {
+            pickupEnabled = true;
+            w.data.hasPickupCode = true;
+            w.data.step2PickupEnabled = true;
+            w.data.pricingChoice = 'pro';
+            w.data.inseratFeeWaived = true;
+            if(!silent && window.navigator&&navigator.vibrate) navigator.vibrate(15);
+          } else {
+            pickupEnabled = false;
+            w.data.hasPickupCode = false;
+            w.data.step2PickupEnabled = false;
+            w.data.pricingChoice = '499';
+            w.data.inseratFeeWaived = false;
+          }
+          updateTileUI();
           if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
           if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
           saveDraft();
-        };
-        tilePickup.onclick=function(){
-          if(window.navigator&&navigator.vibrate) navigator.vibrate(10);
-          hapticLight();
-          pickupEnabled=true;
-          w.data.step2PickupEnabled=true;
-          w.data.hasPickupCode=true;
-          if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
-          saveDraft();
-        };
+        }
+        if(typeof window !== 'undefined'){
+          window.selectPricing = selectPricing;
+          window.updateTileUI = updateTileUI;
+        }
+        tileStandard.onclick=function(){ hapticLight(); selectPricing('standard'); };
+        tilePickup.onclick=function(){ hapticLight(); selectPricing('stressfrei'); };
         var footerBtnStep2=null;
         updateStep2ContextZoneRef=function(){
           var t=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
@@ -17336,14 +17335,14 @@
           if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; }
           if(nameEl) nameEl.textContent=dn;
           if(priceEl) priceEl.textContent=eu;
-          updateStep2ChoiceUI();
+          updateTileUI();
         };
         updateStep2ContextZoneRef();
         step2Pane.appendChild(step2Wrap);
         step2Pane.id='mastercard-step-money';
         /* Step 3: Live-Erfolg [cite: 2026-02-21] */
         var step3Pane=document.createElement('div');
-        step3Pane.className='inserat-step3-pane';
+        step3Pane.className='inserat-step3-pane mastercard-step';
         step3Pane.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0;';
         var step3ConfettiWrap=document.createElement('div');
         step3ConfettiWrap.id='step3ConfettiContainer';
@@ -18603,11 +18602,10 @@
         airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
+        footerBtn.id='main-publish-btn';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='width:calc(100% - 40px); min-height:52px; padding:0 24px; border:none; border-radius:12px; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; transition:background 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent;';
-        footerBtn.style.setProperty('background','#007aff','important');
-        footerBtn.style.setProperty('box-shadow','0 8px 24px rgba(0,122,255,0.35)','important');
-        footerBtn.textContent='Jetzt für 0,00 € inserieren';
+        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.textContent='Jetzt für 4,99 € inserieren';
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
           hapticLight();
@@ -18659,7 +18657,7 @@
             }
           }catch(e){}
         }
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.style.overflowY=(s===2?'hidden':'auto'); scrollArea.scrollTop=0; } updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.style.overflowY=(s===2?'hidden':'auto'); scrollArea.scrollTop=0; } if(typeof showStep==='function') showStep(s); updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); requestAnimationFrame(applyListingViewportOffsets); });
       }
@@ -19159,6 +19157,19 @@
     var step3Footer = box.querySelector('[data-inserat-step="3"]');
     if(step3Footer) step3Footer.style.setProperty('display','flex','important');
   }
+
+  /** Sharing: Direkt-Trigger für WhatsApp [cite: Step3 Viral Trigger] */
+  function shareOnWhatsApp() {
+    var title = (w && w.data && (w.data.title || w.data.dish)) ? (w.data.title || w.data.dish) : 'Gericht';
+    var priceValue = (w && w.data && typeof w.data.price === 'number') ? w.data.price : Number((w && w.data && w.data.price) || 0);
+    var price = (typeof priceValue === 'number' && !isNaN(priceValue)) ? priceValue.toFixed(2).replace('.', ',') : '0,00';
+    var link = (inseratSuccessCurrentOffer && typeof buildOfferShareUrl === 'function')
+      ? buildOfferShareUrl(inseratSuccessCurrentOffer)
+      : (location.origin + (location.pathname || ''));
+    var text = 'Frisch inseriert: ' + title + ' für ' + price + '€! Jetzt direkt ansehen und stressfrei abholen: ' + link;
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
+  }
+  if(typeof window !== 'undefined') window.shareOnWhatsApp = shareOnWhatsApp;
 
   /** Sharing: Direkt-Trigger für WhatsApp [cite: Step3 Viral Trigger] */
   async function triggerLiveSharing(){

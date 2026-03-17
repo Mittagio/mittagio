@@ -10682,8 +10682,15 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 }
 
 /* Mastercard Step 2: Final Review Card (S25) */
+#mastercard-step-2 {
+  background-color: #f6f8fa;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
-  background: #ffffff !important;
+  background: #f6f8fa !important;
   overflow: hidden !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-title {
@@ -10691,7 +10698,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 }
 /* ===== STEP 2: MONETIZATION – PREMIUM CARD DESIGN ===== */
 #wizard[data-flow="listing"] #mastercard-step-money .final-review-step2 {
-  background: #f9f9f9 !important;
+  background: #f6f8fa !important;
   overflow: hidden !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp {
@@ -10719,16 +10726,18 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   box-sizing: border-box !important;
   background: transparent !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile {
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile,
+#wizard[data-flow="listing"] #mastercard-step-money .service-tile-card {
   position: relative !important;
   width: 100% !important;
   min-height: 124px !important;
   text-align: left !important;
-  border: 1.5px solid #dbe4ef !important;
+  border: 2px solid transparent !important;
   border-radius: 12px !important;
   background: #ffffff !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
   padding: 16px 52px 14px 16px !important;
+  margin: 10px 0 !important;
   cursor: pointer !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -10740,10 +10749,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile:active {
   transform: scale(0.97) !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active {
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active,
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.active,
+#wizard[data-flow="listing"] #mastercard-step-money .service-tile-card.active {
   border: 2px solid #007aff !important;
-  background: #f0f6ff !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05), 0 0 0 4px rgba(0,122,255,0.10) !important;
+  box-shadow: 0 8px 25px rgba(0,122,255,0.1) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-check {
   position: absolute !important;
@@ -10826,6 +10836,17 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   font-weight: 900 !important;
   letter-spacing: 0.02em !important;
 }
+.badge-bestseller {
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  background: #007aff;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-thumb-wrap {
   position: absolute !important;
   right: 14px !important;
@@ -10848,6 +10869,41 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   50% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
+.btn-pulse,
 #wizard[data-flow="listing"] #mastercard-footer-step2 .step2-heartbeat {
   animation: heartbeat 2s infinite ease-in-out !important;
+  background: #111111 !important;
+}
+
+/* Globaler Hintergrund fuer alle Mastercard-Container (Step 1/2/3) */
+.mastercard-container,
+#mastercard-step-1,
+#mastercard-step-2,
+#mastercard-step-3,
+#mastercard-step-edit,
+#mastercard-step-money,
+#mastercard-step-live,
+#wizard[data-flow="listing"] .mastercard-step {
+  background-color: #ffffff !important;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Preview-Stempel ohne Box-Look */
+.photo-preview-container {
+  background-color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Nur Step-2-Kacheln heben sich sauber vom Weiss ab */
+#mastercard-step-2 .service-tile-card,
+#mastercard-step-money .service-tile-card {
+  background: #ffffff !important;
+  border: 1px solid #ebebeb !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+body {
+  background-color: #ffffff;
 }
