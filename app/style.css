@@ -10466,19 +10466,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #inserat-fixed-header .header-title {
   opacity: 1 !important;
 }
-body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
-body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
-#wizard[data-flow="listing"] #mastercard-footer-step1,
-#wizard[data-flow="listing"] #mastercard-footer-step2,
-#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main {
-  position: sticky !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  margin: 0 !important;
-  z-index: 1050 !important;
-}
+/* sticky-Override entfernt – Footers nutzen position:fixed aus dem Block unten */
 
 /* Listing Footer Final: keine Legacy-Airbnb-Fixed-Leiste mehr im Wizard */
 #wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,

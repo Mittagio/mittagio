@@ -16370,7 +16370,15 @@
       return;
     }
     var p = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
-    if(p && (p.classList.contains('mastercard-container') || p.classList.contains('mastercard-main-container'))){
+    /* Listing-Flow: immer x-pop-away (smooth scale+fade), nie slide-down (display:none sofort) */
+    if(w && w.kind === 'listing'){
+      if(p && !p.classList.contains('x-pop-away')){
+        requestAnimationFrame(function(){
+          p.classList.add('x-pop-away');
+          setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280);
+        });
+      } else { closeWizard(); navigateAfterWizardExit(entryPoint); }
+    } else if(p && (p.classList.contains('mastercard-container') || p.classList.contains('mastercard-main-container'))){
       if(typeof closeMastercardWithAnim === 'function') closeMastercardWithAnim(p); else closeMastercard();
     } else if(p && !p.classList.contains('x-pop-away')){ requestAnimationFrame(function(){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit(entryPoint); }, 280); }); } else { if(typeof closeMastercardWithAnim === 'function') closeMastercardWithAnim(p); else closeMastercard(); }
   }
@@ -18667,14 +18675,27 @@
         }
       });
       var vvHandler = function(){
+        /* Keyboard-Fix: Visual Viewport Höhe bestimmen */
+        var vvH = (window.visualViewport ? Math.round(window.visualViewport.height) : window.innerHeight);
+        var winH = window.innerHeight;
+        var keyboardH = Math.max(0, winH - vvH);
+        /* 1. Wizard-Höhe auf Visual Viewport begrenzen (Samsung Internet / dvh-Fallback) */
+        var wiz = document.getElementById('wizard');
+        if(wiz && wiz.isConnected){
+          wiz.style.setProperty('height', vvH + 'px', 'important');
+          wiz.style.setProperty('max-height', vvH + 'px', 'important');
+        }
+        /* 2. Footers über Tastatur heben */
+        var f1=document.getElementById('mastercard-footer-step1');
+        var f2=document.getElementById('mastercard-footer-step2');
+        var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
+        [f1,f2,f3].forEach(function(f){ if(f&&f.isConnected) f.style.setProperty('bottom', keyboardH+'px', 'important'); });
+        /* 3. Scroll-Bereich: Padding für Header und Footer */
         var active = document.activeElement;
         if(active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
           scrollInputAboveKeyboard(active);
         }
         var sa = box.querySelector('.inserat-scroll-area');
-        var f1=document.getElementById('mastercard-footer-step1');
-        var f2=document.getElementById('mastercard-footer-step2');
-        var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
         var footerH=Math.max((f1&&f1.style.display!=='none'&&f1.offsetHeight)||0,(f2&&f2.style.display!=='none'&&f2.offsetHeight)||0,(f3&&f3.style.display!=='none'&&f3.offsetHeight)||0,92);
         var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
         if(sa){
@@ -18688,6 +18709,8 @@
         window.visualViewport.addEventListener('resize', vvHandler);
         window.visualViewport.addEventListener('scroll', vvHandler);
       }
+      /* Sofortige Initialisierung – Wizard-Höhe und Footer-Position direkt beim Öffnen setzen */
+      setTimeout(vvHandler, 50);
       setWizardContent(sheet);
       /* Sofort is-open setzen – kein rAF/setTimeout, verhindert schwarzen Screen [cite: Schwarzer Screen Fix 2026-03-02] */
       if(box && box.isConnected) box.classList.add('is-open');
