@@ -10784,11 +10784,32 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   justify-content: space-between !important;
   gap: 10px !important;
 }
+#wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {
   font-size: 16px !important;
   font-weight: 800 !important;
   color: #0f172a !important;
   line-height: 1.2 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-info-btn {
+  border: none !important;
+  background: #eef1f5 !important;
+  color: #6b7280 !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-price {
   font-size: 24px !important;
@@ -10805,6 +10826,45 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   font-size: 12px !important;
   color: #64748b !important;
   line-height: 1.4 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-marketing-checks {
+  list-style: none !important;
+  margin: 10px 0 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  color: #334155 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-marketing-checks li {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-marketing-checks .check {
+  color: #28a745 !important;
+  font-weight: 900 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-info-popover {
+  position: absolute !important;
+  right: 14px !important;
+  top: 42px !important;
+  width: min(260px, calc(100% - 28px)) !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.14) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  padding: 10px 12px !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  z-index: 1000 !important;
+  display: none !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-info-popover.is-open {
+  display: block !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-list {
   margin: 6px 72px 0 0 !important;

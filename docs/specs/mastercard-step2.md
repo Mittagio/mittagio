@@ -26,6 +26,14 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
    - Step-2-Container mit hellem Premium-Hintergrund (`#f6f8fa`)
    - Kacheln als `service-tile-card` (weiß, Radius `16px`, dezenter Schatten)
    - Aktive Kachel klar mit blauem Rahmen (`#007aff`) und blauem Check
+8. Marketing-Erweiterung:
+   - In der `Stressfrei-Autopilot`-Kachel stehen 3 Check-Items in Gruen (`#28a745`):
+     - `Kein Kassen-Chaos: Bezahlung erledigt`
+     - `Mehr Planbarkeit: Feste Abholzeiten`
+     - `Null Verwaltung: Automatische Buchung`
+   - Neben dem Abholnummer-Titel ist ein kleines Info-Icon (`ⓘ`) mit Popover.
+   - Popover-Text:
+     - `Die Abholnummer sichert deinen Verkauf. Der Kunde zahlt vorab online, erhält eine Abholnummer und du händigst das Essen stressfrei gegen die Abholnummer aus.`
 
 ## Footer-Regel
 

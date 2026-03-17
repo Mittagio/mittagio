@@ -17272,7 +17272,7 @@
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul><div class="step2-info-popover" role="tooltip" aria-hidden="true">Die Abholnummer sichert deinen Verkauf. Der Kunde zahlt vorab online, erhält eine Abholnummer und du händigst das Essen stressfrei gegen die Abholnummer aus.</div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17281,6 +17281,36 @@
         step2Wrap.appendChild(step2Spacer);
         var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;
+        var infoBtn = tilePickup.querySelector('.step2-info-btn');
+        var infoPopover = tilePickup.querySelector('.step2-info-popover');
+        function hideStep2InfoPopover(){
+          if(!infoPopover) return;
+          infoPopover.classList.remove('is-open');
+          infoPopover.setAttribute('aria-hidden', 'true');
+        }
+        function toggleStep2InfoPopover(){
+          if(!infoPopover) return;
+          var isOpen = infoPopover.classList.contains('is-open');
+          if(isOpen){
+            hideStep2InfoPopover();
+          } else {
+            infoPopover.classList.add('is-open');
+            infoPopover.setAttribute('aria-hidden', 'false');
+          }
+        }
+        if(infoBtn){
+          infoBtn.onclick = function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            hapticLight();
+            toggleStep2InfoPopover();
+          };
+        }
+        document.addEventListener('pointerdown', function(ev){
+          if(!infoPopover || !infoPopover.classList.contains('is-open')) return;
+          if(tilePickup.contains(ev.target)) return;
+          hideStep2InfoPopover();
+        }, true);
         function updateTileUI(){
           var bestBadge = tilePickup.querySelector('.step2-badge-best');
           tileStandard.classList.toggle('active', !pickupEnabled);
@@ -17297,6 +17327,7 @@
           }
         }
         function selectPricing(type, silent){
+          hideStep2InfoPopover();
           if (type === 'stressfrei') {
             pickupEnabled = true;
             w.data.hasPickupCode = true;
@@ -18623,6 +18654,7 @@
           if(!hasAddr){
             if(typeof openAddressModal === 'function') openAddressModal();
             else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
+            else if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
             return;
           }
           var usePickup=!!w.data.step2PickupEnabled;
@@ -18632,7 +18664,11 @@
           w.data.pricingOption=usePickup?'abholnummer':undefined;
           var o=previewOfferFromWizard();
           publishFeeUseStep3=true;
-          showPublishFeeModal(o);
+          if(typeof showPublishFeeModal === 'function'){
+            showPublishFeeModal(o);
+          } else if(typeof showToast === 'function'){
+            showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+          }
         };
         airbnbFooter.appendChild(footerBtn);
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
