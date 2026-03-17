@@ -10818,6 +10818,13 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   color: #0f172a !important;
   white-space: nowrap !important;
 }
+.tile-price {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  color: #007aff !important;
+  margin-left: auto !important;
+  white-space: nowrap !important;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active .step2-choice-price {
   color: #007aff !important;
 }
@@ -10946,6 +10953,19 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   border-radius: 20px;
   font-size: 10px;
   font-weight: 700;
+}
+.badge-recommendation {
+  position: absolute;
+  top: 12px;
+  right: 50px;
+  background: #007aff;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  z-index: 10;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-thumb-wrap {
   position: absolute !important;

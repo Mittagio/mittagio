@@ -17268,12 +17268,12 @@
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile service-tile-card';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);

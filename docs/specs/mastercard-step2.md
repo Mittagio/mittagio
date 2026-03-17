@@ -42,6 +42,9 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
      - `openInfoPopover()` öffnet mit Haptik (`10ms`) und sperrt Hintergrundscroll
      - `closeInfoPopover()` schließt über Backdrop oder `X`
      - Auto-Close nach `5s` via `popoverTimeout`
+9. Layout-Korrektur (Stressfrei-Kachel):
+   - Empfehlung-Badge nutzt zusaetzlich `badge-recommendation` und ist mit `right: 50px` nach links versetzt, damit Preis und Badge sich nicht ueberlagern.
+   - Preis in den Kacheln nutzt zusaetzlich `tile-price` (blau, fett, `white-space: nowrap`) fuer stabile Einzeilen-Darstellung.
 
 ## Footer-Regel
 
