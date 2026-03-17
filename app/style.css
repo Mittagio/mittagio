@@ -3922,6 +3922,18 @@
       border-radius: 8px !important;
       min-height: 48px !important;
     }
+/* Step 2 CTA niemals durch Step1-Ready-Gates blockieren */
+#wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+#wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step2-nav .btn-primary-black {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+}
+#wizard[data-flow="listing"] #mastercard-footer-step2,
+#wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step2-nav {
+  z-index: 2000001 !important;
+  pointer-events: auto !important;
+}
     /* Bottom-Nav-Style: Beide Buttons gleich groß (48px), Airbnb Black [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-step1-nav {
       display: flex; gap: 12px; width: 100%; min-height: 48px; align-items: stretch;

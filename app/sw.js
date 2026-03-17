@@ -1,5 +1,5 @@
-/* Mittagio SW v20260316 – Löscht alle alten Caches und gibt Kontrolle ab */
-const CACHE_VERSION = 'mittagio-v20260316';
+/* Mittagio SW v20260317t – Löscht alle alten Caches und gibt Kontrolle ab */
+const CACHE_VERSION = 'mittagio-v20260317t';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();

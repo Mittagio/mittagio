@@ -6547,9 +6547,12 @@
     if(!toast){
       toast = document.createElement('div');
       toast.id = 'toast';
-      toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#fff; padding:12px 20px; border-radius:12px; font-size:14px; z-index:100; opacity:0; transition:opacity .3s; pointer-events:none;';
+      toast.style.cssText = 'position:fixed; bottom:calc(90px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#fff; padding:12px 20px; border-radius:12px; font-size:14px; z-index:1200005; opacity:0; transition:opacity .3s; pointer-events:none;';
       document.body.appendChild(toast);
     }
+    /* Wizard/Footer überlagern sonst den Toast im Listing-Flow */
+    toast.style.zIndex = '1200005';
+    toast.style.bottom = 'calc(90px + env(safe-area-inset-bottom, 0px))';
     toast.textContent = message;
     toast.style.opacity = '1';
     setTimeout(() => {
@@ -18489,7 +18492,9 @@
       /* Kochbuch Quick-Select: Zuletzt verwendet ÔÇô horizontale Leiste direkt unter Header [cite: 2026-02-21] */
       var quickbookKey=LS.inseratQuickbook||'mittagio_inserat_quickbook_v1';
       var quickbookList=load(quickbookKey,[]);
-      if(Array.isArray(quickbookList)&&quickbookList.length>0){
+      /* Default ausblenden: stört den Step-1-Headerflow; nur bei explizitem Flag zeigen */
+      var showQuickbookStrip = !!(w && w.ctx && w.ctx.showQuickbookStrip);
+      if(showQuickbookStrip && Array.isArray(quickbookList)&&quickbookList.length>0){
         var cookbookQuickSelect=document.createElement('div');
         cookbookQuickSelect.className='cookbook-quick-select';
         cookbookQuickSelect.setAttribute('aria-label','Zuletzt verwendet');
@@ -18652,8 +18657,8 @@
         document.body.appendChild(fixedHeader);
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
-        airbnbFooter.className='app-footer-main inserat-step1-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        airbnbFooter.className='app-footer-main inserat-step2-nav';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:2000001; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         airbnbFooter.style.pointerEvents='auto';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
@@ -18679,26 +18684,30 @@
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           var p = normalizeProviderProfile((provider && provider.profile) || {});
           var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
-          if(!hasAddr){
-            if(typeof openAddressModal === 'function') openAddressModal();
-            else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
-            setTimeout(function(){
-              var addrBd = document.getElementById('addressRequiredBd');
-              var addrSheet = document.getElementById('addressRequiredSheet');
-              var bdVisible = !!(addrBd && getComputedStyle(addrBd).display !== 'none');
-              var sheetVisible = !!(addrSheet && getComputedStyle(addrSheet).display !== 'none');
-              if(!bdVisible && !sheetVisible && typeof showToast === 'function'){
-                showToast('Bitte zuerst Adresse im Profil ergänzen.');
-              }
-            }, 120);
-            return;
-          }
           var usePickup=!!w.data.step2PickupEnabled;
           w.data.hasPickupCode=usePickup;
           w.data.pricingChoice=usePickup?'pro':'499';
           w.data.inseratFeeWaived=usePickup;
           w.data.pricingOption=usePickup?'abholnummer':undefined;
           var o=previewOfferFromWizard();
+          if(!hasAddr){
+            var isLocalDev = false;
+            try{
+              var host = (location && location.hostname) ? String(location.hostname).toLowerCase() : '';
+              isLocalDev = (host === 'localhost' || host === '127.0.0.1');
+            }catch(e){}
+            if(isLocalDev){
+              o.providerStreet = o.providerStreet || 'Teststraße 1';
+              o.providerZip = o.providerZip || '10115';
+              o.providerCity = o.providerCity || 'Berlin';
+              if(typeof showToast === 'function') showToast('Lokaler Testmodus: Veröffentlichung ohne Profiladresse.');
+            } else {
+              if(typeof openAddressModal === 'function') openAddressModal();
+              else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
+              if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
+              return;
+            }
+          }
           /* Stressfrei-Autopilot: Direkt veröffentlichen und sofort Step 3 zeigen */
           if(usePickup){
             var publishedDirect = publishOffer(o);
@@ -19078,10 +19087,20 @@
       showToast(existingId ? 'Inserat aktualisiert' : 'Inserat veröffentlicht');
     }
     
-    renderProviderHome();
-    renderProviderPickups();
-    renderDiscover();
-    renderStart();
+    var wizEl = document.getElementById('wizard');
+    var listingWizardOpen = !!(
+      document.body &&
+      document.body.classList.contains('wizard-inserat-open') &&
+      wizEl &&
+      wizEl.classList.contains('active') &&
+      wizEl.getAttribute('data-flow') === 'listing'
+    );
+    if(!listingWizardOpen){
+      renderProviderHome();
+      renderProviderPickups();
+      renderDiscover();
+      renderStart();
+    }
     return out;
   }
 
@@ -19201,13 +19220,25 @@
 
   /** Step 3: Slide-Track auf Erfolg, Konfetti, Abholnummer-Box [cite: 2026-02-21] */
   function slideWizardToStep3(publishedOffer){
-    if(!publishedOffer) return;
+    if(!publishedOffer) return false;
     saveToInseratQuickbook(publishedOffer);
     inseratSuccessCurrentOffer = publishedOffer;
     var d = normalizeOffer(publishedOffer);
     var slider = document.querySelector('#wizard .inserat-steps-slider');
     var box = document.querySelector('#wizard .liquid-master-panel');
-    if(!slider || !box) return;
+    if(!slider || !box) return false;
+    var step3Pane = box.querySelector('#mastercard-step-live');
+    var trackEl = slider.querySelector('.inserat-steps-track');
+    if(step3Pane){
+      step3Pane.style.setProperty('display', 'flex', 'important');
+      step3Pane.style.setProperty('visibility', 'visible', 'important');
+      step3Pane.style.setProperty('opacity', '1', 'important');
+      step3Pane.style.setProperty('min-height', '0', 'important');
+    }
+    if(trackEl){
+      trackEl.style.removeProperty('transform');
+      trackEl.style.removeProperty('will-change');
+    }
     var imgEl = document.getElementById('step3FinalImg');
     var titleEl = document.getElementById('step3FinalTitle');
     var priceEl = document.getElementById('step3FinalPrice');
@@ -19250,6 +19281,7 @@
     }
     if(typeof vibrate === 'function') vibrate([100, 50, 100]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     slider.setAttribute('data-inserat-step', '3');
+    if(typeof showStep === 'function') showStep(3);
     var wizardEl = document.getElementById('wizard');
     if(wizardEl) wizardEl.classList.add('inserat-step3-active');
     var f1 = document.getElementById('mastercard-footer-step1');
@@ -19258,6 +19290,56 @@
     if(f2) f2.style.setProperty('display','none','important');
     var step3Footer = box.querySelector('[data-inserat-step="3"]');
     if(step3Footer) step3Footer.style.setProperty('display','flex','important');
+    setTimeout(function(){
+      try{
+        var pane = box.querySelector('#mastercard-step-live');
+        var content = pane ? pane.querySelector('.inserat-step3-content') : null;
+        var rect = pane ? pane.getBoundingClientRect() : null;
+        var visible = !!(
+          pane &&
+          content &&
+          rect &&
+          rect.width > 40 &&
+          rect.height > 120 &&
+          getComputedStyle(pane).display !== 'none' &&
+          getComputedStyle(pane).visibility !== 'hidden'
+        );
+        if(!visible){
+          showStep3EmergencyFallback(box, d, publishedOffer);
+        }
+      }catch(err){}
+    }, 120);
+    return true;
+  }
+
+  function showStep3EmergencyFallback(box, d, publishedOffer){
+    if(!box) return;
+    var old = box.querySelector('#step3EmergencyFallback');
+    if(old) old.remove();
+    var wrap = document.createElement('div');
+    wrap.id = 'step3EmergencyFallback';
+    wrap.style.cssText = 'position:absolute; inset:0; z-index:2000002; background:#ffffff; display:flex; flex-direction:column; padding:16px 20px calc(96px + env(safe-area-inset-bottom, 0px)); box-sizing:border-box; overflow:auto;';
+    var price = (typeof euro === 'function' ? euro(d.price) : (Number(d.price || 0).toFixed(2).replace('.', ',') + ' €'));
+    var img = d.imageUrl || d.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
+    var title = d.dish || d.title || 'Gericht';
+    wrap.innerHTML = '<h2 style="margin:6px 0 12px; font-size:24px; font-weight:900; color:#0f172a; text-align:center;">Glückwunsch! Dein Inserat ist live! 🚀</h2>' +
+      '<div style="background:#fff; border:1px solid #e2e8f0; border-radius:18px; overflow:hidden; box-shadow:0 10px 28px rgba(0,0,0,0.08);">' +
+      '<img src="'+img+'" alt="" style="width:100%; height:170px; object-fit:cover; display:block;">' +
+      '<div style="padding:14px 16px;"><div style="font-size:18px; font-weight:900; color:#0f172a;">'+esc(title)+'</div><div style="font-size:16px; font-weight:700; color:#64748b; margin-top:4px;">'+price+'</div></div></div>';
+    var footer = document.createElement('div');
+    footer.style.cssText = 'position:fixed; left:0; right:0; bottom:0; z-index:2000003; background:#fff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); box-sizing:border-box;';
+    footer.innerHTML = '<button type="button" id="step3EmergencyDashboardBtn" style="width:100%; min-height:52px; border:none; border-radius:10px; background:#111; color:#fff; font-size:16px; font-weight:800;">Zum Dashboard</button>';
+    box.appendChild(wrap);
+    box.appendChild(footer);
+    var btn = document.getElementById('step3EmergencyDashboardBtn');
+    if(btn){
+      btn.onclick = function(){
+        try{ if(typeof hapticLight === 'function') hapticLight(); }catch(e){}
+        if(footer && footer.parentNode) footer.parentNode.removeChild(footer);
+        if(wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+        if(typeof resetMastercardFromStep3 === 'function') resetMastercardFromStep3();
+      };
+    }
   }
 
   /** Sharing: Direkt-Trigger für WhatsApp [cite: Step3 Viral Trigger] */
