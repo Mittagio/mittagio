@@ -17245,7 +17245,7 @@
         var step2Wrap=document.createElement('div');
         step2Wrap.id='mastercard-step-2';
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#f6f8fa; overflow:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
@@ -17257,9 +17257,9 @@
         step2Header.style.cssText='margin:0; padding:16px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
-        stampCard.className='step2-review-stamp photo-preview-container';
-        stampCard.style.cssText='display:flex; align-items:center; gap:12px; margin:0 20px; padding:12px; border:1px solid #ebebeb; border-radius:12px; background:#ffffff; box-shadow:0 6px 14px rgba(15,23,42,0.05);';
-        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:80px; height:80px; border-radius:12px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:6px; min-width:0;"><span id="money-dish-price" style="font-size:24px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span><span id="money-dish-name" style="font-size:17px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
+        stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
+        stampCard.style.cssText='display:flex; align-items:center; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid #eee; border-bottom:2px dashed #ddd; border-radius:12px; background:#fff; opacity:0.6; box-shadow:0 6px 14px rgba(15,23,42,0.03);';
+        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:60px; height:60px; border-radius:8px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:4px; min-width:0;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span></div>';
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
@@ -17271,9 +17271,9 @@
         tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
-        tilePickup.className='step2-choice-tile service-tile-card';
+        tilePickup.className='step2-choice-tile service-tile-card has-recommendation';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><ul class="step2-marketing-checks"><li><span class="check">✓</span><span>Kein Kassen-Chaos: Bezahlung erledigt</span></li><li><span class="check">✓</span><span>Mehr Planbarkeit: Feste Abholzeiten</span></li><li><span class="check">✓</span><span>Null Verwaltung: Automatische Buchung</span></li></ul>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kein Bargeld</span><span class="step2-feature-pill">Planbar</span><span class="step2-feature-pill">Garantierte Zahlung</span></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17339,6 +17339,12 @@
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           var btn = document.getElementById('main-publish-btn') || footerBtnStep2;
           if(btn){
+            btn.disabled = false;
+            btn.removeAttribute('disabled');
+            btn.setAttribute('aria-disabled', 'false');
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            btn.style.background = '#111111';
             btn.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
             btn.classList.toggle('btn-pulse', pickupEnabled);
           }
@@ -18648,11 +18654,16 @@
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step1-nav';
         airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        airbnbFooter.style.pointerEvents='auto';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.id='main-publish-btn';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; letter-spacing:0.5px; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.disabled=false;
+        footerBtn.removeAttribute('disabled');
+        footerBtn.style.pointerEvents='auto';
+        footerBtn.style.opacity='1';
         footerBtn.textContent='Jetzt für 4,99 € inserieren';
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
@@ -18671,7 +18682,15 @@
           if(!hasAddr){
             if(typeof openAddressModal === 'function') openAddressModal();
             else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
-            else if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
+            setTimeout(function(){
+              var addrBd = document.getElementById('addressRequiredBd');
+              var addrSheet = document.getElementById('addressRequiredSheet');
+              var bdVisible = !!(addrBd && getComputedStyle(addrBd).display !== 'none');
+              var sheetVisible = !!(addrSheet && getComputedStyle(addrSheet).display !== 'none');
+              if(!bdVisible && !sheetVisible && typeof showToast === 'function'){
+                showToast('Bitte zuerst Adresse im Profil ergänzen.');
+              }
+            }, 120);
             return;
           }
           var usePickup=!!w.data.step2PickupEnabled;
@@ -18680,11 +18699,41 @@
           w.data.inseratFeeWaived=usePickup;
           w.data.pricingOption=usePickup?'abholnummer':undefined;
           var o=previewOfferFromWizard();
+          /* Stressfrei-Autopilot: Direkt veröffentlichen und sofort Step 3 zeigen */
+          if(usePickup){
+            var publishedDirect = publishOffer(o);
+            if(publishedDirect){
+              if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedDirect);
+              else if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
+            } else if(typeof showToast === 'function'){
+              showToast('Veröffentlichen fehlgeschlagen. Bitte Adresse/Profil prüfen.');
+            }
+            return;
+          }
           publishFeeUseStep3=true;
           if(typeof showPublishFeeModal === 'function'){
             showPublishFeeModal(o);
+            setTimeout(function(){
+              var bd = document.getElementById('publishFeeBd');
+              var sheet = document.getElementById('publishFeeSheet');
+              var isOpen = !!((bd && bd.classList.contains('active')) || (sheet && sheet.classList.contains('active')));
+              if(isOpen) return;
+              var publishedFallback = publishOffer(o);
+              if(publishedFallback){
+                if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedFallback);
+                else if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
+              } else if(typeof showToast === 'function'){
+                showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
+              }
+            }, 220);
           } else if(typeof showToast === 'function'){
-            showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+            var publishedNoModal = publishOffer(o);
+            if(publishedNoModal){
+              if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedNoModal);
+              else showToast('Inserat ist live! 🚀');
+            } else {
+              showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+            }
           }
         };
         airbnbFooter.appendChild(footerBtn);

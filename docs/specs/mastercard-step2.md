@@ -45,6 +45,22 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
 9. Layout-Korrektur (Stressfrei-Kachel):
    - Empfehlung-Badge nutzt zusaetzlich `badge-recommendation` und ist mit `right: 50px` nach links versetzt, damit Preis und Badge sich nicht ueberlagern.
    - Preis in den Kacheln nutzt zusaetzlich `tile-price` (blau, fett, `white-space: nowrap`) fuer stabile Einzeilen-Darstellung.
+10. Global Alignment & Cleanup:
+   - Neue Utility-Klassen fuer einheitliche Zeilen: `mastercard-row`, `mastercard-label`, `mastercard-value`.
+   - Preis-Utility `tile-price-value` fuer klare Rechtsausrichtung und starke Preis-Hierarchie.
+   - `photo-preview-container` ist in Step 2/3 bewusst entsaettigt (`opacity: 0.6`, `grayscale(40%)`) und mit dezentem Trenner versehen.
+11. Premium App-Standard (RESTRUCTURE):
+   - Top-Preview als schwebende Ticket-Card mit `border: 1px solid #eee`, `border-bottom: 2px dashed #ddd`, `background: #fff`, `opacity: 0.6`.
+   - Ticket-Layout: Bild links (`60x60`, Radius `8px`), Name und Preis rechts.
+   - Stressfrei-Kachel:
+     - Titel bleibt `Stressfrei-Autopilot 🚀`, blau und fett.
+     - `ⓘ` direkt klein hinter dem Titel.
+     - Feature-Liste als Pills (`Kein Bargeld`, `Planbar`, `Garantierte Zahlung`) statt Check-Liste.
+     - Preis `0,00 €` ganz rechts in Blau (`26px`, `900`).
+   - Badge-Logik:
+     - `EMPFEHLUNG` als schmaler Streifen oben links auf der Kachel (nie ueber dem Preis).
+   - CTA-Button:
+     - Schwarz, ohne Umrandung, `letter-spacing: 0.5px`, Text: `Küche entlasten für 0,00 €` im aktiven Stressfrei-Modus.
 
 ## Footer-Regel
 
