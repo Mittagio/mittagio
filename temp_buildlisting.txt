@@ -1,0 +1,300 @@
+﻿      const input=document.createElement('input');
+      input.className='field';
+      input.placeholder='z.B. Winterbacher Str. 24, 73614 Schorndorf';
+      input.value = w.data.address || buildAddress(w.data) || '';
+      input.oninput=()=>{ w.data.address=input.value; };
+      box.appendChild(input);
+      const h=document.createElement('div'); h.className='hint'; h.textContent='Tipp: Stra├ƒe, PLZ, Ort - getrennt mit Komma.';
+      box.appendChild(h);
+      const nav=document.createElement('div'); nav.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack=document.createElement('button'); btnBack.type='button'; btnBack.className='btn secondary'; btnBack.textContent='Zur├╝ck'; btnBack.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext=document.createElement('button'); btnNext.type='button'; btnNext.className='btn'; btnNext.textContent='Weiter'; btnNext.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav.appendChild(btnBack); nav.appendChild(btnNext); box.appendChild(nav);
+      setWizardContent(box);
+      return;
+    }
+
+    if(w.step===2){
+      setWizardQuestion('Wann k├Ânnen G├ñste dein Essen genie├ƒen?', 'Standard aus Profil, optional anpassen.');
+      if(!w.data.mealWindow) w.data.mealWindow = DEFAULT_MEAL_WINDOW;
+
+      const current = w.data.mealWindow || DEFAULT_MEAL_WINDOW;
+      const split = current.includes('ÔÇô') ? current.split('ÔÇô') : current.split('-');
+      const startDefault = split[0] ? split[0].trim() : '11:30';
+      const endDefault = split[1] ? split[1].trim() : '14:00';
+      if(!w.data.mealStart) w.data.mealStart = startDefault;
+      if(!w.data.mealEnd) w.data.mealEnd = endDefault;
+
+      const box=document.createElement('div');
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `<b>${esc(current)}</b><div class="hint">Standard aus Profil</div>`;
+      box.appendChild(summary);
+
+      const actions=document.createElement('div');
+      actions.className='answers';
+      const toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.className='ans';
+      toggle.textContent = w.data.mealCustom ? 'Fertig' : 'Essenszeit ├ñndern';
+      toggle.onclick=()=>{
+        w.data.mealCustom = !w.data.mealCustom;
+        rebuildWizard();
+      };
+      actions.appendChild(toggle);
+      box.appendChild(actions);
+
+      if(w.data.mealCustom){
+        const updateMealWindow = ()=>{
+          if(w.data.mealStart && w.data.mealEnd){
+            w.data.mealWindow = `${w.data.mealStart} ÔÇô ${w.data.mealEnd}`;
+          }
+        };
+
+        const startLabel=document.createElement('div'); startLabel.className='hint'; startLabel.textContent='Start';
+        const startRow=document.createElement('div'); startRow.className='answers';
+        ['10:30','11:00','11:30','12:00'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealStart===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealStart=t; updateMealWindow(); rebuildWizard(); };
+          startRow.appendChild(b);
+        });
+
+        const endLabel=document.createElement('div'); endLabel.className='hint'; endLabel.textContent='Ende';
+        const endRow=document.createElement('div'); endRow.className='answers';
+        ['13:00','13:30','14:00','14:30'].forEach(t=>{
+          const b=document.createElement('button');
+          b.type='button';
+          b.className='ans'+(w.data.mealEnd===t?' on':'');
+          b.textContent=t;
+          b.onclick=()=>{ w.data.mealEnd=t; updateMealWindow(); rebuildWizard(); };
+          endRow.appendChild(b);
+        });
+
+        box.appendChild(document.createElement('div')).style.height='10px';
+        box.appendChild(startLabel);
+        box.appendChild(startRow);
+        box.appendChild(document.createElement('div')).style.height='8px';
+        box.appendChild(endLabel);
+        box.appendChild(endRow);
+      }
+
+      const nav2=document.createElement('div'); nav2.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack2=document.createElement('button'); btnBack2.type='button'; btnBack2.className='btn secondary'; btnBack2.textContent='Zur├╝ck'; btnBack2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext2=document.createElement('button'); btnNext2.type='button'; btnNext2.className='btn'; btnNext2.textContent='Weiter'; btnNext2.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav2.appendChild(btnBack2); nav2.appendChild(btnNext2); box.appendChild(nav2);
+      setWizardContent(box);
+      return;
+    }
+
+    if(w.step===3){
+      setWizardQuestion('Logo hochladen?', 'Optional, sp├ñter jederzeit austauschbar.');
+      const wrap = document.createElement('div');
+      const btns=document.createElement('div');
+      btns.className='answers';
+
+      const up=document.createElement('button');
+      up.className='ans';
+      up.type='button';
+      up.textContent='Logo ausw├ñhlen';
+      up.onclick=async()=>{
+        const file = await pickImage();
+        if(!file) return;
+        w.data.logoData = await toDataUrl(file);
+        rebuildWizard();
+      };
+
+      const skip=document.createElement('button');
+      skip.className='ans';
+      skip.type='button';
+      skip.textContent='Sp├ñter';
+      skip.onclick=()=>{ w.data.logoData=''; rebuildWizard(); };
+
+      btns.appendChild(up);
+      btns.appendChild(skip);
+      wrap.appendChild(btns);
+
+      if(w.data.logoData){
+        const prev=document.createElement('div');
+        prev.style.marginTop='10px';
+        prev.innerHTML = `<div class="hint">Vorschau:</div><div class="plogo" style="width:60px;height:60px;border-radius:14px"><img src="${w.data.logoData}" alt="Logo" /></div>`;
+        wrap.appendChild(prev);
+      }
+      const nav3=document.createElement('div'); nav3.style.cssText='display:flex;gap:10px;margin-top:20px;';
+      const btnBack3=document.createElement('button'); btnBack3.type='button'; btnBack3.className='btn secondary'; btnBack3.textContent='Zur├╝ck'; btnBack3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      const btnNext3=document.createElement('button'); btnNext3.type='button'; btnNext3.className='btn'; btnNext3.textContent='Weiter'; btnNext3.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step++; rebuildWizard(); };
+      nav3.appendChild(btnBack3); nav3.appendChild(btnNext3); wrap.appendChild(nav3);
+      setWizardContent(wrap);
+      return;
+    }
+
+    if(w.step===4){
+      setWizardQuestion('Profil ist bereit', 'Kurz pr├╝fen, dann loslegen.');
+      const box=document.createElement('div');
+      const addr = buildAddress(w.data);
+      const logo = w.data.logoData ? `<img src="${w.data.logoData}" alt="Logo" />` : `<img src="assets/provider-placeholder.png" alt="Logo" />`;
+
+      const summary=document.createElement('div');
+      summary.className='panel';
+      summary.innerHTML = `
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="plogo" style="width:52px;height:52px;border-radius:14px">${logo}</div>
+          <div>
+            <div style="font-weight:950">${esc(w.data.name || 'Betrieb')}</div>
+            <div class="hint">${esc(addr || 'Adresse fehlt')}</div>
+          </div>
+        </div>
+        <div class="row"><span>Essenszeit</span><b>${esc(w.data.mealWindow || DEFAULT_MEAL_WINDOW)}</b></div>
+      `;
+
+      const cta=document.createElement('button');
+      cta.className='btn';
+      cta.type='button';
+      cta.textContent='Erstes Gericht erstellen';
+      cta.onclick=()=>{
+        if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10);
+        saveProviderProfileFromWizard();
+        closeWizard();
+        startWizard('listing');
+      };
+      const btnBack4=document.createElement('button'); btnBack4.type='button'; btnBack4.className='btn secondary'; btnBack4.textContent='Zur├╝ck'; btnBack4.onclick=()=>{ if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); w.step--; rebuildWizard(); };
+      box.appendChild(summary);
+      box.appendChild(btnBack4);
+      box.appendChild(cta);
+      setWizardContent(box);
+      return;
+    }
+  }
+
+  // --- Listing wizard (Punkt 6 final) ---
+  function updateListingPreviewContent(target){
+    target.innerHTML = '';
+    const offer = previewOfferFromWizard();
+    // Entfernung/Entfernung-Emoji f├╝r Anbieter-Vorschau entfernen (er wei├ƒ wo er ist)
+    const card = offerCard(offer, {interactive:false, previewFromWizard:true});
+    
+    // Entferne Entfernungs-Info falls vorhanden
+    const distanceInfo = card.querySelector('.listing-distance-info');
+    if(distanceInfo) distanceInfo.remove();
+    
+    // Entferne Distanz-Badge (falls es eins gibt, z.B. oben rechts)
+    const distBadge = card.querySelector('.dist-badge');
+    if(distBadge) distBadge.remove();
+
+    target.appendChild(card);
+  }
+
+  function attachListingPreview(box){
+    const wrap = document.createElement('div');
+    wrap.id = 'listingPreview';
+    wrap.style.marginTop = '12px';
+    updateListingPreviewContent(wrap);
+    box.appendChild(wrap);
+  }
+
+  function refreshListingPreview(){
+    const wrap = document.getElementById('listingPreview');
+    if(wrap){ updateListingPreviewContent(wrap); }
+  }
+
+  // InseratCard State-Machine: Karte funktioniert in allen Kontexten (DRAFT, ARCHIV, PLANNED, LIVE)
+  var CARD_STATE = { DRAFT: 'DRAFT', ARCHIV: 'ARCHIV', PLANNED: 'PLANNED', LIVE: 'LIVE' };
+  function getCardState(offerOrDish, context){
+    if(!offerOrDish && context !== 'wizard') return CARD_STATE.DRAFT;
+    if(context === 'wizard' || context === 'flow') return CARD_STATE.DRAFT;
+    var o = offerOrDish || {};
+    var isOffer = !!o.day;
+    var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
+    if(isOffer && o.day === todayKey && o.active !== false) return CARD_STATE.LIVE;
+    if(isOffer && o.day) return CARD_STATE.PLANNED;
+    return CARD_STATE.ARCHIV;
+  }
+  function getCardStateLabel(state){
+    if(state === CARD_STATE.LIVE) return 'Live';
+    if(state === CARD_STATE.PLANNED) return 'Geplant';
+    if(state === CARD_STATE.ARCHIV) return 'Archiv';
+    return 'Entwurf';
+  }
+
+  // ============================================================
+  // INSERATCARD ÔÇô Single-Source-of-Truth [cite: 2026-01-29]
+  // Die Karte im Inseratsflow IST die Karte im Kochbuch IST die Karte im Wochenplan.
+  // Keine Formular-Listen; Erstellung nur durch direkte Interaktion mit der Karte.
+  // ============================================================
+  function buildListingStep(){
+    setWizardNextDefault();
+    w.step = 0;
+    setWizardHeader('', '');
+    const profile = normalizeProviderProfile(provider.profile || {});
+    const profileWindow = profile.mealWindow || DEFAULT_MEAL_WINDOW;
+    const defaultReuseDeposit = (provider.profile && typeof provider.profile.reuseDepositDefault === 'number') ? provider.profile.reuseDepositDefault : 3;
+    // 3 S├ñulen + Abholzeiten: aus Profil ├╝bernehmen, wenn noch nicht gesetzt
+    if(!w.data.pickupWindow) w.data.pickupWindow = profileWindow;
+    if(w.data.dineInPossible === undefined) w.data.dineInPossible = (provider.profile && provider.profile.dineInPossibleDefault !== undefined) ? !!provider.profile.dineInPossibleDefault : true;
+    if(w.data.hasPickupCode === undefined) w.data.hasPickupCode = !!profile.abholnummerEnabledByDefault;
+    if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: defaultReuseDeposit };
+    else { if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault; if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = defaultReuseDeposit; }
+    if(!w.data.allergens || w.data.allergens.length === 0){ if(profile.defaultAllergens && profile.defaultAllergens.length){ w.data.allergens = profile.defaultAllergens.slice(); w.data.wantsAllergens = true; } }
+    if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
+    if(typeof window !== 'undefined' && w.data && window._wizardInitialDataSnapshot == null) window._wizardInitialDataSnapshot = JSON.parse(JSON.stringify(w.data));
+
+    // S25 InseratCard ÔÇô strikt 5 Ebenen, als .inserat-bottom-sheet gerendert [cite: BAUARBEITER]
+    {
+      setWizardQuestion('', '');
+      const sheet = document.createElement('div');
+      sheet.className = 'inserat-card-sheet';
+      sheet.setAttribute('data-inserat-card', 'true');
+      sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
+      const box = document.createElement('div');
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.setAttribute('data-inserat-card','true');
+      box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
+      var collapsingHeader=document.createElement('div');
+      collapsingHeader.className='inserat-collapsing-header mastercard-header';
+      collapsingHeader.innerHTML='<span class="inserat-collapsing-title">Dein Inserat</span>';
+      collapsingHeader.style.cssText='position:sticky; top:0; z-index:12; flex-shrink:0; padding:12px 16px; padding-top:max(12px, env(safe-area-inset-top)); background:#fff; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:center; font-family:\'Montserrat\',sans-serif; font-weight:900; font-size:18px; color:#0f172a; border-bottom:1px solid rgba(0,0,0,0.06);';
+      box.appendChild(collapsingHeader);
+      sheet.appendChild(box);
+      const saveDraft = () => { localStorage.setItem('wizard_draft', JSON.stringify(w)); };
+      const dismissKeyboard = ()=>{ try { if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch(e){} };
+      const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(navigator.vibrate) navigator.vibrate(10); } catch(e){} };
+      var entryPoint = (w.ctx && w.ctx.entryPoint) || 'dashboard';
+      var isPlanMode = (entryPoint === 'week' || entryPoint === 'cookbook');
+      var isFastTrack = (entryPoint === 'ACTIVE_LISTING' || entryPoint === 'WEEKLY_PLAN_EDIT');
+      var useTwoStepFlow = !isPlanMode && !isFastTrack && entryPoint === 'dashboard';
+      if(useTwoStepFlow && typeof w.inseratStep !== 'number') w.inseratStep = 1;
+      var inseratStep = useTwoStepFlow ? (w.inseratStep === 2 ? 2 : 1) : 1;
+      var listingDebounceTimer = null; /* Debounce f├╝r Autovervollst├ñndigung + Bildvorschl├ñge */
+      var LISTING_IMAGES_BASE = 'https://images.unsplash.com/';
+      var listingImageMap = {
+        schnitzel: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        gulasch: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        roulade: ['photo-1603133872878-684f208fb84b?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        leberkaese: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        linsen: ['photo-1547592166-23ac45744acd?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80'],
+        kaesespaetzle: ['photo-1551183053-bf91a1d81141?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1565299624946-b28f40a0ae38?w=400&q=80'],
+        frikadelle: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        currywurst: ['photo-1565299624946-b28f40a0ae38?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80'],
+        default_meat: ['photo-1546069901-d5bfd2cbfb1f?w=400&q=80','photo-1603133872878-684f208fb84b?w=400&q=80','photo-1544025162-d76694265947?w=400&q=80'],
+        default_veggie: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_vegan: ['photo-1546069901-eacef0df6022?w=400&q=80','photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80'],
+        default_salat: ['photo-1512621776951-a57141f2e7ef?w=400&q=80','photo-1546069901-eacef0df6022?w=400&q=80','photo-1546069901-d5bfd2cbfb1f?w=400&q=80']
+      };
+      function getListingSuggestionKey(){
+        var text = (w.data.dish||'').toLowerCase().trim();
+        var cat = w.data.category || 'Fleisch';
+        for(var k in listingImageMap){ if(k.indexOf('default_')===0) continue; if(text.indexOf(k)!==-1) return k; }
+        if(cat==='Fleisch') return 'default_meat'; if(cat==='Vegetarisch'||cat==='Vegan') return 'default_veggie'; if(cat==='Salat') return 'default_salat'; return 'default_meat';
+      }
+      function getListingSuggestionUrls(){
+        var key = w.data.photoSuggestionKey || getListingSuggestionKey();
+        var list = listingImageMap[key];
+        if(!list) return [];
+        var base = LISTING_IMAGES_BASE;
+        return list.map(function(f){ return (f.indexOf('http')===0||f.indexOf('data:')===0) ? f : (base + f); });
+      }
+      function listingSuggestionsVisible(){ var cat = w.data.category; return !!cat || (w.data.photoSuggestionKey && listingImageMap[w.data.photoSuggestionKey]); }
+
+      // ========== 2-SCHRITT AIRBNB-FLOW: Slider (Step 1 Ôåö Step 2) oder Step 1 nur (Plan-Mode) ==========

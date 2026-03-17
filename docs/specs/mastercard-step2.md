@@ -22,6 +22,10 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
    - Step-2 nutzt Step-1-nahe Proportionen (keine uebergrossen Titelbereiche)
    - Hero in Step-2 bleibt edge-to-edge, aber ohne negative Offset-Hacks
    - Ziel: keine abgeschnittenen Inhalte auf typischen S25-Viewport-Groessen
+7. Premium-Look:
+   - Step-2-Container mit hellem Premium-Hintergrund (`#f6f8fa`)
+   - Kacheln als `service-tile-card` (weiß, Radius `16px`, dezenter Schatten)
+   - Aktive Kachel klar mit blauem Rahmen (`#007aff`) und blauem Check
 
 ## Footer-Regel
 
@@ -35,16 +39,17 @@ Step 2 ist eine finale Review-Ansicht im S25-Look: ein kompakter Stamp-Block mit
 
 ## Pricing-Logik beim Veröffentlichen
 
-- Abholnummer aktiv:
+- Abholnummer aktiv (`selectPricing('stressfrei')`):
   - `pricingChoice = "pro"`
   - `inseratFeeWaived = true`
   - `pricingOption = "abholnummer"`
-  - CTA zeigt `0,00 EUR`
-- Standard aktiv:
+  - CTA zeigt `Küche entlasten für 0,00 €`
+  - CTA hat Klasse `btn-pulse`
+- Standard aktiv (`selectPricing('standard')`):
   - `pricingChoice = "499"`
   - `inseratFeeWaived = false`
   - `pricingOption` wird entfernt
-  - CTA zeigt `4,99 EUR`
+  - CTA zeigt `Jetzt für 4,99 € inserieren`
 
 ## S25 Layout Lock
 
