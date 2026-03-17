@@ -17248,9 +17248,9 @@
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
-        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 16px; box-sizing:border-box; width:100%;';
-        var TILE_BASE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:1.5px solid #e2e8f0;border-radius:16px;background:#ffffff;box-shadow:0 2px 12px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
-        var TILE_ACTIVE_STYLE='display:block;width:100%;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:16px;background:#f0f6ff;box-shadow:0 0 0 4px rgba(0,122,255,0.10),0 4px 16px rgba(0,122,255,0.15);padding:16px 46px 14px 16px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
+        tilesWrap.style.cssText='display:flex; flex-direction:column; gap:14px; padding:18px 20px 18px; box-sizing:border-box; width:100%;';
+        var TILE_BASE_STYLE='display:block;width:100%;min-height:104px;text-align:left;box-sizing:border-box;border:1.5px solid #dbe4ef;border-radius:20px;background:#ffffff;box-shadow:0 10px 24px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.05);padding:20px 52px 18px 18px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
+        var TILE_ACTIVE_STYLE='display:block;width:100%;min-height:104px;text-align:left;box-sizing:border-box;border:2px solid #007aff;border-radius:20px;background:#f0f6ff;box-shadow:0 0 0 4px rgba(0,122,255,0.12),0 12px 30px rgba(0,122,255,0.18);padding:20px 52px 18px 18px;cursor:pointer;position:relative;-webkit-tap-highlight-color:transparent;font-family:inherit;font-size:inherit;';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile';

@@ -3960,20 +3960,20 @@
       flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column;
     }
     .inserat-steps-track {
-      display: flex; width: 300%; flex: 1; min-height: 0;
+      display: flex; width: 300%; max-width: 300%; flex: 1; min-height: 0;
       transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .inserat-steps-slider[data-inserat-step="1"] .inserat-steps-track {
       transform: translateX(0);
     }
     .inserat-steps-slider[data-inserat-step="2"] .inserat-steps-track {
-      transform: translateX(-33.33%);
+      transform: translateX(-100%);
     }
     .inserat-steps-slider[data-inserat-step="3"] .inserat-steps-track {
-      transform: translateX(-66.66%);
+      transform: translateX(-200%);
     }
     .inserat-step1-pane, .inserat-step2-pane, .inserat-step3-pane {
-      width: 33.33%; flex-shrink: 0; min-height: 0; display: flex; flex-direction: column;
+      width: 100%; max-width: 100%; flex: 0 0 100%; min-height: 0; display: flex; flex-direction: column;
     }
     /* Step 2: Live-Flow-Card (Smartphone-Mockup) */
     .inserat-live-flow-card {
@@ -10455,6 +10455,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #wizard[data-flow="listing"] .inserat-step3-pane,
 #wizard[data-flow="listing"] #mastercard-step-edit {
   min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
   flex: 1 !important;
@@ -10695,20 +10697,21 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 10px !important;
-  padding: 16px 20px 0 !important;
+  gap: 14px !important;
+  padding: 18px 20px 0 !important;
   box-sizing: border-box !important;
   background: transparent !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile {
   position: relative !important;
   width: 100% !important;
+  min-height: 104px !important;
   text-align: left !important;
-  border: 1.5px solid #e2e8f0 !important;
-  border-radius: 16px !important;
+  border: 1.5px solid #dbe4ef !important;
+  border-radius: 20px !important;
   background: #ffffff !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04) !important;
-  padding: 16px 46px 14px 16px !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+  padding: 20px 52px 18px 18px !important;
   cursor: pointer !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease !important;
   -webkit-tap-highlight-color: transparent !important;
@@ -10723,14 +10726,14 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.is-active {
   border: 2px solid #007aff !important;
   background: #f0f6ff !important;
-  box-shadow: 0 0 0 4px rgba(0,122,255,0.10), 0 4px 16px rgba(0,122,255,0.15) !important;
+  box-shadow: 0 0 0 4px rgba(0,122,255,0.12), 0 12px 30px rgba(0,122,255,0.18) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-check {
   position: absolute !important;
-  top: 14px !important;
-  right: 14px !important;
-  width: 24px !important;
-  height: 24px !important;
+  top: 16px !important;
+  right: 16px !important;
+  width: 28px !important;
+  height: 28px !important;
   border-radius: 999px !important;
   border: 2px solid #d1d5db !important;
   color: transparent !important;
@@ -10755,13 +10758,13 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   gap: 10px !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head {
-  font-size: 15px !important;
+  font-size: 16px !important;
   font-weight: 800 !important;
   color: #0f172a !important;
   line-height: 1.2 !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-price {
-  font-size: 22px !important;
+  font-size: 24px !important;
   font-weight: 900 !important;
   line-height: 1 !important;
   color: #0f172a !important;
