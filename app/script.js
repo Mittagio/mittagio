@@ -13616,7 +13616,12 @@
     if(settingsOrt) settingsOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || addr || 'Ort').trim() || '—';
     /* Single-Page: Master-Kachel nur Anzeige (Logo+Name), kein Klick [cite: 2026-02-21] */
     var masterKachel = document.getElementById('providerProfileMasterKachel');
-    if(masterKachel && !masterKachel.classList.contains('account-profile-header')){ masterKachel.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business'); }; }
+    if(masterKachel){
+      masterKachel.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        if(typeof showProviderProfileSub === 'function') showProviderProfileSub('business');
+      };
+    }
     /* Stats befüllen: Kochbuch, Inserate, Umsatz (Mittagio-Grün #22C55E) [cite: 2026-01-29] */
     var pid = typeof providerId === 'function' ? providerId() : '';
     var cookbookCount = (typeof cookbook !== 'undefined' ? cookbook : []).filter(function(c){ return c.providerId === pid; }).length;
@@ -13663,7 +13668,12 @@
     var geldBd = document.getElementById('accountGeldOverlayBd');
     var geldSheet = document.getElementById('accountGeldOverlay');
     var geldClose = document.getElementById('accountGeldClose');
-    function closeAccountGeldOverlay(){ if(geldBd) geldBd.style.display = 'none'; if(geldSheet) geldSheet.classList.remove('active'); }
+    function closeAccountGeldOverlay(){
+      if(geldBd){ geldBd.style.display = 'none'; geldBd.setAttribute('aria-hidden','true'); }
+      if(geldSheet){ geldSheet.classList.remove('active'); geldSheet.style.display = 'none'; geldSheet.setAttribute('aria-hidden','true'); }
+    }
+    /* Profil-Sicherheitsreset: Overlay darf nie "hängen bleiben" und Main-UI blockieren */
+    closeAccountGeldOverlay();
     if(geldBd) geldBd.onclick = closeAccountGeldOverlay;
     if(geldClose) geldClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeAccountGeldOverlay(); };
     var accountGeldAbrechnungen = document.getElementById('accountGeldAbrechnungen');

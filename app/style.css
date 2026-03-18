@@ -7095,8 +7095,8 @@
     .account-legal-sep{ margin:0 8px; color:#cbd5e1; }
     /* Meine Regeln / Mein Geld Overlays (Slide-In) */
     .account-overlay-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1198; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
-    .account-regeln-sheet{ position:fixed; left:0; right:0; bottom:0; max-height:85vh; background:#fff; border-radius:24px 24px 0 0; z-index:1199; box-shadow:0 -8px 32px rgba(0,0,0,0.15); transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); overflow:hidden; display:flex; flex-direction:column; }
-    .account-regeln-sheet.active{ transform:translateY(0); }
+    .account-regeln-sheet{ position:fixed; left:0; right:0; bottom:0; max-height:85vh; background:#fff; border-radius:24px 24px 0 0; z-index:1199; box-shadow:0 -8px 32px rgba(0,0,0,0.15); transform:translateY(100%); opacity:0; visibility:hidden; pointer-events:none; transition:transform 0.35s cubic-bezier(0.32,0.72,0,1), opacity 0.2s ease; overflow:hidden; display:flex; flex-direction:column; }
+    .account-regeln-sheet.active{ transform:translateY(0); opacity:1; visibility:visible; pointer-events:auto; }
     .account-regeln-sheet-inner{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(24px + env(safe-area-inset-bottom)); flex:1; min-height:0; }
     .account-regeln-sheet-header{ display:flex; align-items:center; justify-content:space-between; padding:20px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); border-bottom:1px solid #e5e7eb; flex-shrink:0; }
     .account-regeln-sheet-header h3{ margin:0; font-size:18px; font-weight:950; color:#1a1a1a; }
