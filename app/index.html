@@ -29,7 +29,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js" crossorigin="anonymous" async></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <link rel="stylesheet" href="style.css?v=20260318a">
+  <link rel="stylesheet" href="style.css?v=20260318b">
 </head>
 <body>
 <!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05, Weisser-Screen-Fix 2026-03-10] -->
@@ -1362,7 +1362,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
     <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
-      <header class="prov-page-header dynamic-header system-header" id="v-provider-cookbook-header">
+      <header class="prov-page-header dynamic-header system-header cookbook-header-sticky" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="cookbook" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
@@ -1381,11 +1381,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </div>
           </div>
         </div>
-        <div class="cookbook-category-pills" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
+        <div class="cookbook-category-pills category-pills-row" id="cookbookCategoryPills" role="tablist" aria-label="Kategorie filter"></div>
       </header>
 
-      <div id="cookbookScrollWrap" style="flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px max(20px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box;">
-        <div id="cookbookMagazine" style="display:flex; align-items:center; justify-content:center; min-height:320px;">
+      <div id="cookbookScrollWrap" class="cookbook-scroll-wrap">
+        <div id="cookbookMagazine" class="cookbook-list-vertical">
           <!-- Eine Karte (Magazin-Flip), dynamisch -->
         </div>
         <div id="cookbookList" style="display:none; gap:16px;"></div>
@@ -3388,7 +3388,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260318a"></script>
+<script src="script.js?v=20260318b"></script>
 <script src="js/app-logic.js"></script>
 <script src="js/ui-navigation.js"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>

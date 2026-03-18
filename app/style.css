@@ -7177,47 +7177,117 @@
     #v-provider-profile .provider-profile-hero-cta--emerald{ background:#10b981; color:#fff; box-shadow:0 4px 16px rgba(16,185,129,0.25); }
     #v-provider-profile .provider-profile-hero-icon-wrap{ width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:8px; }
     #v-provider-cookbook{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; overscroll-behavior-y:none !important; }
-    #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; }
-    /* Kochbuch: Header fixiert, bündig oben – Rahmenstabilität [cite: 2026-02-25] */
+    #v-provider-cookbook.view.active{ display:flex !important; flex-direction:column !important; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; overflow:hidden; pointer-events:auto; position:relative; z-index:1; }
     #v-provider-cookbook.view.active > header{
-      position:fixed !important; top:0 !important; left:0; right:0; width:100%;
-      z-index:10001;
-      border-top:none !important;
+      position:sticky !important;
+      top:0 !important;
+      z-index:1000;
       flex-shrink:0;
-      background:rgba(245,245,240,0.98) !important;
-      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-      padding-top:env(safe-area-inset-top, 0);
+      width:100%;
+      background:#ffffff !important;
+      border-bottom:1px solid #f0f0f0;
       box-sizing:border-box;
+      transition:box-shadow 0.2s ease;
+    }
+    #v-provider-cookbook.view.active > header.cookbook-header-shadow{
+      box-shadow:0 6px 20px rgba(15,23,42,0.06);
     }
     #v-provider-cookbook.view.active > div{ position:relative; z-index:1; min-height:0; flex:1; overflow:visible; }
-    #v-provider-cookbook.view.active{ pointer-events: auto; position: relative; z-index: 1; }
     /* Kochbuch Galerie-Modus: untere Router-Navigation ausblenden [cite: 2026-01-26, 2026-02-18] */
     body.provider-cookbook-active #providerNavWrap{ display:none !important; }
-    /* Kochbuch: Scroll-Bereich feste Höhe, kein Springen [cite: 2026-02-25] */
+    /* Kochbuch: Scroll-Bereich vertikal + snap */
     #v-provider-cookbook #cookbookScrollWrap{
-      margin-top:120px;
-      height:calc(100dvh - 120px - 80px);
-      max-height:calc(100vh - 120px - 80px);
+      margin-top:0;
+      flex:1;
+      min-height:0;
+      height:auto;
+      max-height:none;
       overflow-y:auto !important;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:none !important;
       background:transparent;
       pointer-events:auto;
-      padding-bottom:calc(24px + env(safe-area-inset-bottom, 0));
+      padding:14px max(20px, env(safe-area-inset-right)) calc(140px + env(safe-area-inset-bottom, 0)) max(20px, env(safe-area-inset-left));
+      scroll-snap-type:y mandatory;
+      scroll-padding-top:10px;
     }
-    /* Kochbuch Galerie: horizontaler Snap-Scroll, keine Pfeile/Dots [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    #v-provider-cookbook #cookbookMagazine{ flex-direction:row; width:100%; align-items:stretch; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scrollbar-width:none; gap:0; padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left)); box-sizing:border-box; }
-    #v-provider-cookbook #cookbookMagazine::-webkit-scrollbar{ display:none; }
-    #v-provider-cookbook #cookbookMagazine.cookbook-price-focus{ scroll-snap-type:none; }
-    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{ flex:0 0 auto; width:88%; max-width:400px; scroll-snap-align:center; scroll-snap-stop:always; margin:0 6px; }
+    #v-provider-cookbook #cookbookMagazine{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      gap:20px;
+      overflow:visible;
+      padding:0;
+      box-sizing:border-box;
+    }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-card{
+      width:100%;
+      max-width:none;
+      margin:0;
+      scroll-snap-align:start;
+      scroll-snap-stop:always;
+      border-radius:16px;
+      box-shadow:0 8px 28px rgba(15,23,42,0.08);
+      border:1px solid rgba(15,23,42,0.06) !important;
+      overflow:hidden;
+      background:#fff;
+    }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-img-wrap{
+      width:100%;
+      aspect-ratio:16/9;
+      height:auto !important;
+      min-height:0 !important;
+    }
+    #v-provider-cookbook #cookbookMagazine .cookbook-magazine-img-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
     #v-provider-cookbook .cookbook-magazine-nav,
     #v-provider-cookbook .cookbook-magazine-dots,
     #v-provider-cookbook .cookbook-swipe-hint{ display:none !important; }
-    #v-provider-cookbook .cookbook-category-pills{ background:transparent; }
+    .cookbook-header-sticky{
+      position:sticky;
+      top:0;
+      background:#ffffff;
+      z-index:1000;
+    }
+    .cookbook-list-vertical{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+    .dish-card{
+      scroll-snap-align:start;
+    }
+    #v-provider-cookbook .cookbook-category-pills{
+      background:#ffffff;
+      padding:10px max(20px, env(safe-area-inset-left)) 12px;
+      overflow-x:auto;
+      gap:10px;
+      -webkit-overflow-scrolling:touch;
+    }
     #v-provider-cookbook .cookbook-action-bar{ background:rgba(255,255,255,0.7) !important; backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-top:1px solid rgba(255,255,255,0.4) !important; box-shadow:0 -4px 24px rgba(0,0,0,0.06); }
     /* Kochbuch: Footer fixiert, Safe-Area, nur Content scrollt [cite: 2026-02-23, 2026-02-25] */
-    .cookbook-footer-fixed{ position:fixed !important; bottom:0; left:0; width:100%; z-index:10000; background:#ffffff !important; margin:0; border-radius:0; border-top:1px solid #ebebeb; padding:16px max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-left)); padding-bottom:calc(16px + env(safe-area-inset-bottom)); display:flex; justify-content:center; align-items:center; box-sizing:border-box; }
-    .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:400px; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222 !important; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .cookbook-footer-fixed{
+      position:fixed !important;
+      left:20px;
+      right:20px;
+      bottom:calc(env(safe-area-inset-bottom, 0px) + 20px);
+      width:auto;
+      z-index:10000;
+      background:transparent !important;
+      margin:0;
+      border:0;
+      padding:0;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      box-sizing:border-box;
+    }
+    .cookbook-footer-fixed .cookbook-footer-btn-inserieren{ max-width:none; width:100%; min-height:56px; border-radius:16px; border:none; background:#222222 !important; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; box-shadow:0 12px 28px rgba(15,23,42,0.22); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren:disabled,
     .cookbook-footer-fixed .cookbook-footer-btn-inserieren[aria-disabled="true"]{ background:#94a3b8 !important; cursor:not-allowed; opacity:0.9; }
@@ -7225,7 +7295,7 @@
     #v-provider-cookbook .cookbook-footer-btn-inserieren{ width:100%; min-height:56px; border-radius:16px; border:none; background:#222222; color:#fff; font-size:16px; font-weight:800; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     #v-provider-cookbook .cookbook-footer-btn-inserieren:active{ opacity:0.9; transform:scale(0.99); }
     /* Kochbuch: editierbares Preisfeld in der Karte [cite: REFACTOR KOCHBUCH 2026-02-23] */
-    #v-provider-cookbook .cookbook-price-cell{ display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; min-height:48px; }
+    #v-provider-cookbook .cookbook-price-cell{ display:flex; flex-direction:column; align-items:flex-start; flex-shrink:0; min-height:48px; margin-left:14px; }
     #v-provider-cookbook .cookbook-price-row{ display:flex; align-items:baseline; gap:2px; }
     #v-provider-cookbook .cookbook-card-price-input{ width:4.5em; min-width:48px; font-size:22px; font-weight:400; color:#FFB800; background:transparent; border:none; border-bottom:2px solid #e2e8f0; padding:4px 4px 4px 8px; text-align:right; -moz-appearance:textfield; }
     #v-provider-cookbook .cookbook-card-price-input::-webkit-outer-spin-button,
@@ -9591,6 +9661,15 @@
 
 /* Pure Food Magazin – Schatzkammer [cite: 2026-02-18, 2026-02-25] */
 .magazine-scroll-area { background: #ffffff; }
+#cookbookMittagioLayer.cookbook-mittagio-layer{
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease;
+}
+#cookbookMittagioLayer.cookbook-mittagio-layer.is-closing{
+  transform: translateY(100%);
+  opacity: 0.92;
+}
 .treasure-card {
   background: #fff; border-radius: 24px; margin-bottom: 30px;
   overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.06);
@@ -9609,6 +9688,18 @@
   box-shadow: 0 20px 50px rgba(0,0,0,0.2);
   object-fit: cover;
   z-index: 10000;
+}
+
+/* Smart-Adopt Highlight: Vorlage aus Schatzkammer übernommen */
+#wizard.adopted-pro-dish-glow .mastercard-container,
+#wizard.adopted-pro-dish-glow .liquid-master-panel{
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.35), 0 16px 42px rgba(10, 132, 255, 0.2) !important;
+  animation: adopted-pro-dish-glow 1.2s ease-out;
+}
+@keyframes adopted-pro-dish-glow{
+  0%{ box-shadow: 0 0 0 0 rgba(10,132,255,0), 0 8px 16px rgba(10,132,255,0); }
+  35%{ box-shadow: 0 0 0 2px rgba(10,132,255,0.38), 0 18px 44px rgba(10,132,255,0.22); }
+  100%{ box-shadow: 0 0 0 1px rgba(10,132,255,0.12), 0 10px 24px rgba(10,132,255,0.12); }
 }
 
 /* Legacy v-step-* Views: Nicht mehr verwenden – InseratCard nur im #wizard [cite: STOP-ORDER] */

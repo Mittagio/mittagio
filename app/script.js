@@ -15041,37 +15041,67 @@
     });
   }
 
-  /** Pure Food Magazin: Kopieren & Fliegen – Bild gleitet in InseratCard [cite: 2026-02-18, 2026-02-25] */
-  /** Schatzkammer-Tap: Direkt vorausgefüllte InseratCard Schritt 1 (Weiter), kein Draft-Pfad [cite: FLOW FIX 2026-02-25] */
-  window.copyAndFlyToListing = function(ev, dish, defaultPrice){
-    if(!dish) return;
-    var clickedCard = ev && ev.currentTarget ? ev.currentTarget : (ev && ev.target ? ev.target.closest('.treasure-card') : null);
-    var clickedImg = clickedCard ? clickedCard.querySelector('img') : null;
-    var rect = clickedImg ? clickedImg.getBoundingClientRect() : null;
-    var price = Number(dish.price) || Number(defaultPrice) || 8.9;
-    var draftData = { dish: (dish.name || '').trim() || 'Gericht', price: price, photoData: dish.image_url || dish.imageUrl || '', category: dish.category || 'Fleisch', description: dish.description || '', allergens: Array.isArray(dish.allergens) ? dish.allergens : [] };
-    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); }catch(e){}
-    var flyContainer = document.getElementById('fly-animation-container');
-    var flyImg = null;
-    if(clickedImg && flyContainer && rect){
-      flyImg = clickedImg.cloneNode(true);
-      flyImg.className = 'fly-image';
-      flyImg.style.cssText = 'top:' + rect.top + 'px; left:' + rect.left + 'px; width:' + rect.width + 'px; height:' + rect.height + 'px;';
-      flyContainer.appendChild(flyImg);
-      setTimeout(function(){
-        flyImg.style.top = '100px';
-        flyImg.style.left = '16px';
-        flyImg.style.width = 'calc(100% - 32px)';
-        flyImg.style.height = '250px';
-        flyImg.style.borderRadius = '16px';
-        flyImg.style.opacity = '0';
-      }, 50);
-    }
-    setTimeout(function(){
+  function closeCookbookMittagioSlideDown(onDone){
+    var layer = document.getElementById('cookbookMittagioLayer');
+    if(!layer){
       if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio();
-      if(typeof openMastercard === 'function') openMastercard(draftData, 'dashboard');
-      if(flyImg && flyImg.parentNode) flyImg.remove();
-    }, flyImg ? 600 : 150);
+      if(typeof onDone === 'function') onDone();
+      return;
+    }
+    layer.classList.add('is-closing');
+    setTimeout(function(){
+      layer.classList.remove('is-closing');
+      if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio();
+      if(typeof onDone === 'function') onDone();
+    }, 260);
+  }
+
+  /** Schatzkammer -> Mastercard Step 1 (Smart Adopt) */
+  window.adoptProDish = function(dish){
+    if(!dish) return;
+    var rawCategory = (dish.category || 'Fleisch').trim();
+    var normalizedCategory = rawCategory;
+    if(rawCategory === 'Vegetarisch' || rawCategory === 'Vegan') normalizedCategory = 'Veggie';
+    if(normalizedCategory !== 'Fleisch' && normalizedCategory !== 'Eintopf' && normalizedCategory !== 'Snack' && normalizedCategory !== 'Veggie') normalizedCategory = 'Fleisch';
+    var draftData = {
+      name: (dish.name || '').trim() || 'Gericht',
+      dish: (dish.name || '').trim() || 'Gericht',
+      title: (dish.name || '').trim() || 'Gericht',
+      price: Number(dish.price) || 8.9,
+      category: normalizedCategory,
+      description: dish.description || '',
+      allergens: Array.isArray(dish.allergens) ? dish.allergens.slice() : [],
+      photoData: dish.image_url || dish.imageUrl || '',
+      tempPhoto: dish.image_url || dish.imageUrl || '',
+      photoDataIsTemplate: true,
+      photoDataIsStandard: true,
+      isDraft: true
+    };
+    w = w || {};
+    w.data = Object.assign({}, w.data || {}, draftData);
+    try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(e){}
+    closeCookbookMittagioSlideDown(function(){
+      if(typeof openMastercard === 'function') openMastercard(draftData, 'cookbook');
+      var wizardEl = document.getElementById('wizard');
+      if(wizardEl){
+        wizardEl.classList.remove('adopted-pro-dish-glow');
+        setTimeout(function(){ wizardEl.classList.add('adopted-pro-dish-glow'); }, 20);
+        setTimeout(function(){ wizardEl.classList.remove('adopted-pro-dish-glow'); }, 2200);
+      }
+      if(typeof showToast === 'function') showToast('Vorlage geladen! Preis prüfen? ✨');
+      setTimeout(function(){
+        var priceField = document.querySelector('#wizard[data-flow="listing"] .inserat-price-pill-input, #wizard[data-flow="listing"] .input-giant-price');
+        if(priceField && typeof priceField.focus === 'function'){
+          priceField.focus();
+          if(typeof priceField.select === 'function') priceField.select();
+        }
+      }, 420);
+    });
+  };
+
+  /** Backward-Compatibility: alte Schatzkammer-Hook ruft jetzt Smart-Adopt auf */
+  window.copyAndFlyToListing = function(ev, dish){
+    if(typeof window.adoptProDish === 'function') window.adoptProDish(dish);
   };
 
   window.closeSchatzkammer = function(){ if(typeof closeCookbookMittagio === 'function') closeCookbookMittagio(); };
@@ -15093,7 +15123,7 @@
       var card = document.createElement('div');
       card.className = 'treasure-card';
       card.innerHTML = (imgUrl ? '<img src="' + imgUrl + '" alt="' + (name.replace(/"/g, '&quot;')) + '">' : '<div style="width:100%; height:320px; background:#e2e8f0;"></div>') + '<div class="treasure-info"><div class="treasure-name">' + (name.replace(/</g, '&lt;')) + '</div><div class="treasure-price">' + priceStr + '</div></div>';
-      card.onclick = function(ev){ if(typeof window.copyAndFlyToListing === 'function') window.copyAndFlyToListing(ev, m, dp); };
+      card.onclick = function(){ if(typeof window.adoptProDish === 'function') window.adoptProDish(m); };
       containerEl.appendChild(card);
     });
   }
@@ -15305,6 +15335,15 @@
     const emptyEl = document.getElementById('cookbookEmpty');
     const pillsWrap = document.getElementById('cookbookCategoryPills');
     const scrollWrap = document.getElementById('cookbookScrollWrap');
+    const stickyHeader = document.getElementById('v-provider-cookbook-header');
+    if(scrollWrap && stickyHeader && !scrollWrap._cookbookStickyShadowBound){
+      scrollWrap._cookbookStickyShadowBound = true;
+      var syncCookbookHeaderShadow = function(){
+        stickyHeader.classList.toggle('cookbook-header-shadow', (scrollWrap.scrollTop || 0) > 4);
+      };
+      scrollWrap.addEventListener('scroll', syncCookbookHeaderShadow, { passive:true });
+      syncCookbookHeaderShadow();
+    }
     var pid = typeof providerId === 'function' ? providerId() : '';
     var mineEarly = cookbook.filter(function(x){ return String(x.providerId) === String(pid); });
     if(!pillsWrap){
@@ -15407,7 +15446,15 @@
     const list = filtered;
 
     if(cookbookMagazineIndex >= list.length) cookbookMagazineIndex = Math.max(0, list.length - 1);
-    selectedCookbookId = list.length ? list[cookbookMagazineIndex].id : null;
+    if(list.length){
+      if(selectedCookbookId){
+        var selectedIdx = list.findIndex(function(x){ return String(x.id) === String(selectedCookbookId); });
+        if(selectedIdx >= 0) cookbookMagazineIndex = selectedIdx;
+      }
+      selectedCookbookId = list[cookbookMagazineIndex] ? list[cookbookMagazineIndex].id : list[0].id;
+    } else {
+      selectedCookbookId = null;
+    }
 
     if(!list.length){
       var ingestOverlayEmpty = document.getElementById('cookbookIngestOverlay');
@@ -15455,9 +15502,12 @@
       var btn = document.getElementById('cookbookFooterBtnInserieren');
       if(!footerWrap || !btn || !magazineEl) return;
       var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
-      var idx = Math.min(cookbookMagazineIndex, cards.length - 1);
-      if(idx < 0 || !cards.length){ footerWrap.style.display = 'none'; return; }
-      var card = cards[idx];
+      if(!cards.length){ footerWrap.style.display = 'none'; return; }
+      var card = selectedCookbookId ? magazineEl.querySelector('.cookbook-magazine-card[data-cookbook-entry-id="' + selectedCookbookId + '"]') : null;
+      if(!card) card = cards[Math.min(cookbookMagazineIndex, cards.length - 1)];
+      if(!card){ footerWrap.style.display = 'none'; return; }
+      var idx = Array.prototype.indexOf.call(cards, card);
+      if(idx >= 0) cookbookMagazineIndex = idx;
       var priceInput = card ? card.querySelector('.cookbook-card-price-input') : null;
       var rawVal = priceInput ? priceInput.value.trim() : '';
       var priceVal = rawVal !== '' ? parseFloat(rawVal) : NaN;
@@ -15490,7 +15540,7 @@
         if(iso===yesterday) return 'Gestern';
         return d.toLocaleDateString('de-DE', {day:'2-digit', month:'short'});
       };
-      var cardsHtml = list.map(function(entry){
+      var cardsHtml = list.map(function(entry, entryIdx){
         var lastUsedLabel = !entry.lastUsed ? 'Neu' : formatDayLabel(entry.lastUsed);
         var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
         var qtyStr = orderCount > 0 ? orderCount + ' Portionen' : '–';
@@ -15500,43 +15550,23 @@
         var priceDisplay = priceVal === '' ? '' : (typeof priceVal === 'number' ? (priceVal % 1 === 0 ? String(priceVal) : priceVal.toFixed(2)) : String(priceVal));
         var historyHtml = showHistory ? '<div class="price-history" data-last-price="'+esc(String(lastPriceVal))+'" role="button" tabindex="0">Zuletzt: '+(typeof euro === 'function' ? euro(lastPriceVal) : lastPriceVal.toFixed(2) + ' €')+'</div>' : '';
         var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;" class="cookbook-magazine-img" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
-        var hasVorOrt = entry.dineInPossible !== false;
-        var hasAbholnummer = !!entry.hasPickupCode;
-        var hasMehrweg = !!(entry.reuse && entry.reuse.enabled);
-        var allergenArr = Array.isArray(entry.allergens) ? entry.allergens : [];
-        var allergenStr = allergenArr.map(function(a){ return typeof a === 'string' ? a.trim() : String(a); }).filter(Boolean).join(', ');
-        var extrasArr = Array.isArray(entry.extras) ? entry.extras : [];
-        var extrasStr = extrasArr.map(function(x){ var n = (x && (x.name || x.label)) ? String(x.name || x.label).trim() : (typeof x === 'string' ? x.trim() : ''); return n ? '+ ' + n : ''; }).filter(Boolean).join(' ');
-        var metaParts = [allergenStr, extrasStr].filter(Boolean);
-        var metaHtml = metaParts.length ? '<div class="cookbook-magazine-meta">'+esc(metaParts.join(' · '))+'</div>' : '';
-        var hasAllergens = allergenArr.length > 0;
-        var hasExtras = extrasArr.length > 0;
-        var pillarsHtml = '<div class="cookbook-magazine-pillars" style="display:flex; align-items:center; justify-content:center; gap:12px; padding:10px 16px; background:#f8fafc; border-bottom:1px solid rgba(0,0,0,0.04); flex-shrink:0;">'+
-          '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasVorOrt?'1':'0.4')+';" aria-hidden="true">🍴</span>'+
-          '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasAbholnummer?'1':'0.4')+';" aria-hidden="true">🧾</span>'+
-          '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasMehrweg?'1':'0.4')+';" aria-hidden="true">🔄</span>'+
-          '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasAllergens?'1':'0.4')+';" aria-hidden="true">⚠️</span>'+
-          '<span class="cookbook-pillar-icon" style="font-size:18px; opacity:'+(hasExtras?'1':'0.4')+';" aria-hidden="true">➕</span>'+
-          '</div>'+metaHtml;
-        return '<div class="cookbook-magazine-card tgtg-flat" role="article" data-cookbook-entry-id="'+esc(entry.id||'')+'" style="background:#fff; border:none; border-bottom:1px solid rgba(0,0,0,0.06); border-radius:20px; overflow:hidden; display:flex; flex-direction:column; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
-          '<div class="cookbook-magazine-gloss" style="position:absolute; inset:0; pointer-events:none; z-index:1; background:linear-gradient(to top right, rgba(255,255,255,0.08) 0%, transparent 50%);"></div>'+
+        return '<div class="cookbook-magazine-card dish-card tgtg-flat" role="article" data-cookbook-entry-id="'+esc(entry.id||'')+'" data-cookbook-index="'+entryIdx+'" style="display:flex; flex-direction:column; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
           '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
           imgHtml+
           '<div style="position:absolute; bottom:12px; left:12px; background:rgba(255,255,255,0.92); backdrop-filter:blur(10px); padding:6px 12px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">'+
           '<p style="margin:0 0 2px; font-size:10px; font-weight:800; color:#1D1D1F; text-transform:uppercase;">Zuletzt live</p>'+
           '<p style="margin:0; font-size:13px; font-weight:700; color:#1D1D1F;">'+esc(lastUsedLabel)+'</p></div></div>'+
-          pillarsHtml+
-          '<div style="padding:20px; flex:1; display:flex; flex-direction:column; justify-content:space-between; background:#fff;">'+
+          '<div style="padding:16px 16px 18px; display:flex; flex-direction:column; gap:14px; background:#fff;">'+
           '<div><h2 style="margin:0 0 6px; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2>'+
-          '<p style="margin:0; font-size:13px; font-weight:500; color:#94a3b8;">Zuletzt verkauft</p></div>'+
-          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top:16px;">'+
+          '<p style="margin:0; font-size:13px; font-weight:500; color:#94a3b8;">'+esc(qtyStr)+' · Zuletzt live: '+esc(lastUsedLabel)+'</p></div>'+
+          '<div style="display:flex; justify-content:flex-start; align-items:flex-start;">'+
           '<div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Menge</span><span style="font-size:16px; font-weight:700; color:#1D1D1F;">'+esc(qtyStr)+'</span></div>'+
           '<div class="cookbook-price-cell">'+
           '<span class="cookbook-price-row">'+
           '<input type="number" step="0.01" min="0" inputmode="decimal" class="cookbook-card-price-input" data-cookbook-entry-id="'+esc(entry.id||'')+'" value="'+esc(priceDisplay)+'" placeholder="0" />'+
           '<span class="cookbook-price-suffix">€</span>'+
           '<span class="cookbook-price-saved" aria-hidden="true">✅</span>'+
-          '</span>'+
+          '</span>'+ 
           historyHtml+
           '</div>'+
           '</div></div></div>';
@@ -15586,40 +15616,34 @@
         card.addEventListener('click', onCardClick, true);
       });
 
-      if(!magazineEl._cookbookScrollSnap){
-        magazineEl._cookbookScrollSnap = true;
-        magazineEl._cookbookLastSnapIndex = -1;
-        function onScrollSnap(){
-          if(magazineEl.classList.contains('cookbook-price-focus')) return;
-          var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
-          if(!cards.length) return;
-          var scrollLeft = magazineEl.scrollLeft;
-          var containerWidth = magazineEl.offsetWidth;
-          var center = scrollLeft + containerWidth / 2;
-          var idx = 0;
-          for(var i = 0; i < cards.length; i++){
-            var c = cards[i];
-            var left = c.offsetLeft;
-            var w = c.offsetWidth;
-            if(center >= left && center < left + w){ idx = i; break; }
-            if(center < left){ idx = i; break; }
-            idx = i;
-          }
-          var last = magazineEl._cookbookLastSnapIndex;
-          if(idx !== last){
-            magazineEl._cookbookLastSnapIndex = idx;
-            cookbookMagazineIndex = idx;
-            var cardAt = cards[idx];
-            selectedCookbookId = cardAt ? cardAt.getAttribute('data-cookbook-entry-id') : null;
-            try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
-            updateCookbookFooterButton();
-          }
-        }
-        magazineEl.addEventListener('scroll', function(){ onScrollSnap(); }, { passive: true });
-        if('onscrollend' in magazineEl) magazineEl.addEventListener('scrollend', onScrollSnap);
-        else magazineEl.addEventListener('touchend', function(){ setTimeout(onScrollSnap, 100); });
+      if(scrollWrap && !scrollWrap._cookbookVerticalSnapBound){
+        scrollWrap._cookbookVerticalSnapBound = true;
+        scrollWrap._cookbookSnapRaf = 0;
+        scrollWrap.addEventListener('scroll', function(){
+          if(scrollWrap._cookbookSnapRaf) return;
+          scrollWrap._cookbookSnapRaf = requestAnimationFrame(function(){
+            scrollWrap._cookbookSnapRaf = 0;
+            var cards = magazineEl ? magazineEl.querySelectorAll('.cookbook-magazine-card') : [];
+            if(!cards || !cards.length) return;
+            var wrapTop = scrollWrap.getBoundingClientRect().top;
+            var bestIdx = 0;
+            var bestDist = Number.POSITIVE_INFINITY;
+            for(var i=0; i<cards.length; i++){
+              var r = cards[i].getBoundingClientRect();
+              var dist = Math.abs(r.top - wrapTop);
+              if(dist < bestDist){
+                bestDist = dist;
+                bestIdx = i;
+              }
+            }
+            if(bestIdx !== cookbookMagazineIndex){
+              cookbookMagazineIndex = bestIdx;
+              selectedCookbookId = cards[bestIdx].getAttribute('data-cookbook-entry-id');
+              updateCookbookFooterButton();
+            }
+          });
+        }, { passive:true });
       }
-      magazineEl._cookbookLastSnapIndex = cookbookMagazineIndex;
 
       var footerWrap = document.getElementById('cookbookFooterWrap');
       var footerBtn = document.getElementById('cookbookFooterBtnInserieren');
@@ -15654,11 +15678,7 @@
         };
       }
 
-      requestAnimationFrame(function(){
-        var targetCard = magazineEl.children[cookbookMagazineIndex];
-        if(targetCard) targetCard.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-        updateCookbookFooterButton();
-      });
+      requestAnimationFrame(function(){ updateCookbookFooterButton(); });
       if(footerWrap) footerWrap.style.display = 'block';
     } else {
       var footerWrap = document.getElementById('cookbookFooterWrap');
