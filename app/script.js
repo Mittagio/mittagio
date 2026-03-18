@@ -17484,6 +17484,11 @@
       // ========== 1. EBENE: Ebay-Style Photo-Modul ÔÇô Smart-Crop, Drag-to-Pan [cite: 2026-02-21] ==========
       function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 40; }
       function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
+      function getPhotoFilterCss(preset){
+        if(preset==='lux') return 'contrast(1.08) saturate(1.12) brightness(1.04)';
+        if(preset==='bright') return 'brightness(1.12)';
+        return 'none';
+      }
       const photoContainer=document.createElement('div');
       photoContainer.id='photo-container';
       photoContainer.className='inserat-photo-container';
@@ -17497,6 +17502,7 @@
       var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
       imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||''; imgEl.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+objPos+'%;';
+      imgEl.style.filter=getPhotoFilterCss(w.data.photoFilterPreset||'none');
       if(!w.data.photoData) imgEl.style.display='none';
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
@@ -17621,16 +17627,63 @@
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
-        ov.style.cssText='position:fixed; inset:0; background:#000000; z-index:1100005; display:none; flex-direction:column; opacity:0; transition:opacity 0.22s ease;';
+        ov.className='photo-editor-floating instagram-layout';
+        ov.style.cssText='position:fixed; inset:0; z-index:1100005; display:none; opacity:0; transition:opacity 0.22s ease;';
         var oImg=document.createElement('img');
+        oImg.id='edit-preview-image';
+        oImg.className='editor-bg-image';
         oImg.src=w.data.photoData||'';
         cropCurrentPosY=getPhotoObjectPosition();
-        oImg.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+cropCurrentPosY+'%; transform:scale(1); transition:transform 0.2s ease; touch-action:none; user-select:none; -webkit-user-drag:none;';
+        var activeTool=(w.data.photoFilterPreset||'none');
+        oImg.style.cssText='object-position:center '+cropCurrentPosY+'%; filter:'+getPhotoFilterCss(activeTool)+';';
         ov.appendChild(oImg);
+        var cropGrid=document.createElement('div');
+        cropGrid.className='crop-grid-overlay';
+        ov.appendChild(cropGrid);
+        var editorHeader=document.createElement('header');
+        editorHeader.className='editor-header editor-top-nav';
+        var btnCancel=document.createElement('button');
+        btnCancel.type='button';
+        btnCancel.className='btn-link editor-top-action';
+        btnCancel.textContent='Abbrechen';
+        var headerTitle=document.createElement('span');
+        headerTitle.className='header-title';
+        headerTitle.textContent='Foto bearbeiten';
+        var btnNext=document.createElement('button');
+        btnNext.type='button';
+        btnNext.className='btn-link editor-top-action';
+        btnNext.textContent='Fertig';
+        editorHeader.appendChild(btnCancel);
+        editorHeader.appendChild(headerTitle);
+        editorHeader.appendChild(btnNext);
+        ov.appendChild(editorHeader);
+        var coachWrap=document.createElement('div');
+        coachWrap.className='photo-coach-inspiration photo-coach-floating';
+        coachWrap.innerHTML='<p class="coach-title">Pro-Tipps:</p><div class="inspiration-slider"><div class="pill">💡 Tageslicht nutzen</div><div class="pill">🧽 Linse putzen</div><div class="pill">🚫 Kein Zoom</div></div>';
+        ov.appendChild(coachWrap);
+        var toolsBar=document.createElement('div');
+        toolsBar.className='editor-tools-bar editor-bottom-nav';
+        function buildTool(id,icon,label){
+          var item=document.createElement('button');
+          item.type='button';
+          item.className='tool-item tool-btn';
+          item.setAttribute('data-tool',id);
+          item.innerHTML='<div class="tool-icon">'+icon+'</div><span>'+label+'</span>';
+          return item;
+        }
+        var toolReplace=buildTool('replace','🖼️','Ersetzen');
+        var toolCrop=buildTool('crop','📐','Zuschneiden');
+        var toolDelete=buildTool('delete','🗑️','Löschen');
+        toolsBar.appendChild(toolReplace);
+        toolsBar.appendChild(toolCrop);
+        toolsBar.appendChild(toolDelete);
+        ov.appendChild(toolsBar);
         function syncOverlayPos(){ oImg.style.objectPosition='center '+clampCrop(cropCurrentPosY)+'%'; }
-        function setCropMode(active){
-          cropModeActive=!!active;
-          oImg.style.transform=cropModeActive?'scale(1.1)':'scale(1)';
+        function setActiveTool(tool){
+          activeTool=tool;
+          cropModeActive=(tool==='crop');
+          oImg.style.filter=getPhotoFilterCss(tool);
+          [toolReplace,toolCrop,toolDelete].forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-tool')===tool); });
         }
         function onTouchStart(ev){
           if(!cropModeActive) return;
@@ -17656,86 +17709,41 @@
         oImg.addEventListener('touchstart', onTouchStart, { passive:true });
         oImg.addEventListener('touchmove', onTouchMove, { passive:false });
         oImg.addEventListener('touchend', onTouchEnd, { passive:true });
-        var topBar=document.createElement('div');
-        topBar.style.cssText='position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:flex-end; padding:12px 16px calc(8px + env(safe-area-inset-top,0)); z-index:20; background:linear-gradient(to bottom,rgba(0,0,0,0.55) 0%,transparent 100%);';
-        var btnDone=document.createElement('button');
-        btnDone.type='button';
-        btnDone.textContent='✓ Fertig';
-        btnDone.style.cssText='border:none; background:none; color:#ffffff; font-size:18px; font-weight:700; cursor:pointer; padding:8px 2px;';
-        btnDone.onclick=function(){
+        function savePhotoEdit(){
           try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
           cropCurrentPosY=clampCrop(cropCurrentPosY);
           if(imgEl){ imgEl.style.objectPosition='center '+cropCurrentPosY+'%'; }
+          if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
           setPhotoObjectPosition(cropCurrentPosY);
+          w.data.photoFilterPreset=(activeTool==='crop'?'none':activeTool);
           saveDraft();
           closePhotoEditOverlay();
-        };
-        topBar.appendChild(btnDone);
-        ov.appendChild(topBar);
-        var bottomBar=document.createElement('div');
-        bottomBar.style.cssText='position:absolute; left:0; right:0; bottom:0; padding:18px 14px calc(18px + env(safe-area-inset-bottom, 20px)); display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; background:linear-gradient(to top,rgba(0,0,0,0.68) 0%,transparent 100%); z-index:20;';
-        function makeAction(icon,label,handler){
-          var btn=document.createElement('button');
-          btn.type='button';
-          btn.style.cssText='display:flex; flex-direction:column; align-items:center; gap:6px; min-height:64px; border:none; border-radius:12px; background:rgba(255,255,255,0.12); color:#fff; cursor:pointer;';
-          btn.innerHTML='<span style="font-size:22px; line-height:1;">'+icon+'</span><span style="font-size:12px; font-weight:700;">'+label+'</span>';
-          btn.onclick=handler;
-          return btn;
         }
-        var btnReplace=makeAction('🔄','Ersetzen',function(){
+        btnCancel.onclick=function(e){ e.preventDefault(); closePhotoEditOverlay(); };
+        btnNext.onclick=function(e){ e.preventDefault(); savePhotoEdit(); };
+        toolReplace.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          cameraInput.click();
-        });
-        var btnCrop=makeAction('✂️','Zuschneiden',function(){
+          setActiveTool('none');
+          closePhotoEditOverlay();
+          if(cameraInput) cameraInput.click();
+        };
+        toolCrop.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          setCropMode(!cropModeActive);
-          btnCrop.style.background=cropModeActive?'rgba(255,255,255,0.22)':'rgba(255,255,255,0.12)';
-        });
-        var btnDelete=makeAction('🗑️','Löschen',function(){
+          setActiveTool('crop');
+        };
+        toolDelete.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          var mini=document.createElement('div');
-          mini.style.cssText='position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.72);';
-          var boxDel=document.createElement('div');
-          boxDel.style.cssText='width:min(320px,calc(100% - 32px)); background:#111; border-radius:16px; padding:20px; color:#fff; text-align:center;';
-          boxDel.innerHTML='<div style="font-size:18px; font-weight:800; margin-bottom:14px;">Foto löschen?</div>';
-          var row=document.createElement('div');
-          row.style.cssText='display:flex; gap:10px;';
-          var bCancel=document.createElement('button');
-          bCancel.type='button';
-          bCancel.textContent='Abbrechen';
-          bCancel.style.cssText='flex:1; min-height:44px; border-radius:10px; border:1px solid rgba(255,255,255,0.25); background:transparent; color:#fff; font-weight:700; cursor:pointer;';
-          bCancel.onclick=function(){ mini.remove(); };
-          var bDelete=document.createElement('button');
-          bDelete.type='button';
-          bDelete.textContent='Löschen';
-          bDelete.style.cssText='flex:1; min-height:44px; border-radius:10px; border:none; background:#dc2626; color:#fff; font-weight:800; cursor:pointer;';
-          bDelete.onclick=function(){
-            w.data.photoData=null; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
-            if(imgEl){ imgEl.src=''; imgEl.style.display='none'; }
-            var plc=photoTile.querySelector('.inserat-photo-placeholder-center');
-            if(!plc){
-              plc=document.createElement('div');
-              plc.className='inserat-photo-placeholder-center';
-              plc.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#f9f9f9; pointer-events:none;';
-              plc.innerHTML='<span style="font-size:44px; line-height:1; opacity:0.45;">📸</span><span style="font-size:14px; font-weight:400; color:#aaaaaa;">Foto hinzufügen</span>';
-              photoTile.appendChild(plc);
-            }
-            photoTile.classList.add('inserat-photo-placeholder','pulse-soft');
-            photoTile.style.border='2px dashed #e0e0e0';
-            overlay.style.pointerEvents='auto';
-            if(editPencilBtn) editPencilBtn.style.display='none';
-            if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+          if(window.confirm('Foto wirklich löschen?')){
+            w.data.photoData='';
+            w.data.photoFilterPreset='none';
+            if(typeof setPhotoObjectPosition==='function') setPhotoObjectPosition(50);
+            if(imgEl){ imgEl.style.filter='none'; imgEl.style.objectPosition='center 50%'; }
+            saveDraft();
             closePhotoEditOverlay();
-          };
-          row.appendChild(bCancel); row.appendChild(bDelete);
-          boxDel.appendChild(row);
-          mini.appendChild(boxDel);
-          ov.appendChild(mini);
-        });
-        bottomBar.appendChild(btnReplace);
-        bottomBar.appendChild(btnCrop);
-        bottomBar.appendChild(btnDelete);
-        ov.appendChild(bottomBar);
+            if(typeof renderPhotoTile==='function') renderPhotoTile();
+          }
+        };
+        setActiveTool(cropModeActive ? 'crop' : activeTool);
         document.body.appendChild(ov);
         ov.style.display='flex';
         requestAnimationFrame(function(){ ov.style.opacity='1'; });

@@ -90,3 +90,10 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Safe-Area Sync:** Oben/Unten werden `env(safe-area-inset-top)` und `env(safe-area-inset-bottom)` sauber berücksichtigt.
 - **Step-Wechsel-Fix:** `showStep(stepNumber)` setzt beim Wechsel alle `.mastercard-step`-Container explizit auf Weiß, damit kein grauer Restzustand sichtbar bleibt.
 - **Step-2 Ausnahme:** Nur die interaktiven `service-tile-card`-Kacheln haben eine dezente Airbnb-Abhebung (`#ebebeb` + softer Schatten).
+
+## Photo Editor (Instagram Screen)
+
+- **Overlay-Layout:** Der Foto-Editor nutzt ein Instagram-ähnliches Fullscreen-Layout mit Header (`Abbrechen`/`Weiter`), quadratischem Crop-Bereich, Tool-Bar und fixem Footer-CTA.
+- **Tools:** `Anpassen` (Crop), `Lux` (Kontrast/Sättigung leicht erhöht), `Helligkeit` (Brightness-Boost).
+- **Coaching:** Horizontale Tipp-Pills („Tageslicht nutzen“, „Linse putzen“, „Kein Zoom“) im mittleren Bereich.
+- **Save-Flow:** `Weiter` und „Foto für Inserat verwenden“ übernehmen Objektposition + Filterpreset ins Inserat.
