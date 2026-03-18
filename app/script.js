@@ -18708,41 +18708,11 @@
               return;
             }
           }
-          /* Stressfrei-Autopilot: Direkt veröffentlichen und sofort Step 3 zeigen */
-          if(usePickup){
-            var publishedDirect = publishOffer(o);
-            if(publishedDirect){
-              if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedDirect);
-              else if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
-            } else if(typeof showToast === 'function'){
-              showToast('Veröffentlichen fehlgeschlagen. Bitte Adresse/Profil prüfen.');
-            }
-            return;
-          }
           publishFeeUseStep3=true;
           if(typeof showPublishFeeModal === 'function'){
             showPublishFeeModal(o);
-            setTimeout(function(){
-              var bd = document.getElementById('publishFeeBd');
-              var sheet = document.getElementById('publishFeeSheet');
-              var isOpen = !!((bd && bd.classList.contains('active')) || (sheet && sheet.classList.contains('active')));
-              if(isOpen) return;
-              var publishedFallback = publishOffer(o);
-              if(publishedFallback){
-                if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedFallback);
-                else if(typeof showToast === 'function') showToast('Inserat ist live! 🚀');
-              } else if(typeof showToast === 'function'){
-                showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
-              }
-            }, 220);
           } else if(typeof showToast === 'function'){
-            var publishedNoModal = publishOffer(o);
-            if(publishedNoModal){
-              if(typeof slideWizardToStep3 === 'function') slideWizardToStep3(publishedNoModal);
-              else showToast('Inserat ist live! 🚀');
-            } else {
-              showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
-            }
+            showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
           }
         };
         airbnbFooter.appendChild(footerBtn);

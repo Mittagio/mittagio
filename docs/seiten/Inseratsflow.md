@@ -78,6 +78,12 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Actions:** Footer mit „Neues Inserat erstellen“ (Sekundär-Stil) + „Zur Übersicht“ (Text-Link), weiß und Safe-Area-konform.
 - **No-Scroll:** Step 3 ist als strahlende One-Page ohne internes Scrollen umgesetzt.
 
+## Publish-Gate (Step2 → Modal)
+
+- **Strikt:** Der Step‑2‑CTA veröffentlicht nicht direkt, sondern öffnet immer erst `showPublishFeeModal()`.
+- **Kein Auto-Fallback:** Es gibt keinen Timer-basierten Auto-Publish mehr außerhalb der Modal-Bestätigung.
+- **Flow:** Step2-CTA → Modal „Jetzt online stellen“ → Publish → sofort Step 3.
+
 ## Mastercard Step1/2/3 (White Surface Sync)
 
 - **Global White Layer:** `mastercard-container` und alle Step-Flächen (`#mastercard-step-1/2/3` bzw. `#mastercard-step-edit/money/live`) laufen auf absolutem Weiß.
