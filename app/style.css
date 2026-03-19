@@ -5243,7 +5243,7 @@
       background: transparent;
       min-height: 44px;
       padding: 8px 16px;
-      padding-top: calc(8px + env(safe-area-inset-top, 0px));
+      padding-top: 8px;
       padding-left: max(16px, env(safe-area-inset-left, 0));
       padding-right: max(16px, env(safe-area-inset-right, 0));
       z-index: 10;
@@ -5786,10 +5786,10 @@
     #v-discover .dish-card-image-wrapper{ border-radius: var(--tgtg-img-radius); overflow: hidden; }
     #v-discover .dish-card .pillar-pill, #v-discover .dish-card .distance-chip{ font-size: 13px; font-weight: 600; color: #64748b; }
     /* Pure-Clean: Discover auf warmem Hintergrund [cite: 2.2] */
-    #v-discover{ background: #F7F6F0 !important; }
+    #v-discover{ background: #fcfcfc !important; }
     /* Content: TGTG-Weißraum – Design-System padding-bottom 120px */
     body:not(.provider-mode) #v-discover .discover-main{
-      padding-top: calc(130px + env(safe-area-inset-top, 0px));
+      padding-top: 0 !important;
       padding-left: max(16px, env(safe-area-inset-left, 0));
       padding-right: max(16px, env(safe-area-inset-right, 0));
       padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
@@ -8925,6 +8925,13 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+    }
+    /* Discover-spezifisch: kein doppelter Top-Offset [cite: 2026-03-11] */
+    #v-discover .cust-header-sticky.discover-header-sticky {
+      padding: 0 !important;
+      padding-top: env(safe-area-inset-top, 0px) !important;
+      min-height: 60px;
+      box-shadow: none !important;
     }
     /* Seitentitel: Design-System --size-h2/--weight-heavy (Discover etc.), Checkout/Rechtliches --size-h1 */
     .customer-view .cust-header-sticky h1,
