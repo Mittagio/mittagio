@@ -8912,8 +8912,7 @@
       top: 0;
       z-index: 100;
       min-height: 60px;
-      padding: 12px 16px;
-      padding-top: 12px;
+      padding: 0 16px;
       background: #ffffff;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
@@ -8925,6 +8924,12 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+    }
+    /* Kundenseiten (ohne Discover): Header startet ganz oben, kein Top-Gap */
+    body:not(.provider-mode) .customer-view:not(#v-discover) > .cust-header-sticky {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+      top: 0 !important;
     }
     /* Discover-Header: eigene Regeln (padding/shadow) in .discover-header-sticky weiter oben */
     /* Seitentitel: Design-System --size-h2/--weight-heavy (Discover etc.), Checkout/Rechtliches --size-h1 */
@@ -10584,8 +10589,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   opacity: 0.7;
 }
 
-/* Instagram-Style Foto-Editor (Step 1) */
-#photo-edit-overlay.photo-editor-floating {
+/* Foto-Editor: 50/50 Split-Screen (Mastercard Step 1) */
+#photo-edit-overlay.photo-editor-floating.photo-editor-split {
   background: #000;
   height: 100dvh;
   width: 100vw;
@@ -10598,19 +10603,30 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   opacity: 0;
   transition: opacity 0.22s ease;
 }
-#photo-edit-overlay.photo-editor-floating.is-open {
+#photo-edit-overlay.photo-editor-floating.photo-editor-split.is-open {
   opacity: 1;
 }
-#photo-edit-overlay.photo-editor-floating.is-closing {
+#photo-edit-overlay.photo-editor-floating.photo-editor-split.is-closing {
   opacity: 0;
   pointer-events: none;
 }
+#photo-edit-overlay .image-display-zone {
+  position: relative;
+  height: 50dvh;
+  width: 100vw;
+  overflow: hidden;
+  background: #000;
+}
 #photo-edit-overlay .editor-bg-image {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   object-fit: cover;
+  transform: translate(-50%, -50%);
   touch-action: none;
   -webkit-user-drag: none;
   transition: transform 0.2s ease, filter 0.2s ease;
@@ -10624,39 +10640,84 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
     linear-gradient(90deg, rgba(255,255,255,0.30) 1px, transparent 1px);
   background-size: 33.33% 33.33%;
 }
-#photo-edit-overlay .editor-top-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+#photo-edit-overlay .editor-controls-sheet {
+  position: relative;
+  height: 50dvh;
+  margin-top: -20px;
+  border-radius: 24px 24px 0 0;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.10);
+  border-top: 1px solid rgba(255,255,255,0.7);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 10px;
+  flex-direction: column;
+  padding: 20px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 2;
 }
-#photo-edit-overlay .editor-top-action {
-  background: transparent;
+#photo-edit-overlay .photo-coach-floating {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: 2;
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255,255,255,0.80);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(15,23,42,0.08);
+}
+#photo-edit-overlay .coach-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+}
+#photo-edit-overlay .inspiration-slider {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#photo-edit-overlay .pill {
+  background: rgba(255,255,255,0.95);
+  border: 1px solid rgba(15,23,42,0.10);
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #334155;
+}
+#photo-edit-overlay .save-photo-btn {
+  width: 100%;
+  max-width: 420px;
+  align-self: center;
+  margin-top: 20px;
+  padding: 16px;
   border: none;
+  border-radius: 16px;
+  background: #111827;
   color: #fff;
   font-size: 16px;
   font-weight: 800;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  padding: 8px 0;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 22px rgba(15,23,42,0.18);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
-#photo-edit-overlay .editor-top-action.is-loading {
+#photo-edit-overlay .save-photo-btn:active {
+  transform: scale(0.98);
+}
+#photo-edit-overlay .save-photo-btn.is-loading {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  opacity: 0.95;
   pointer-events: none;
 }
-#photo-edit-overlay .editor-top-action.is-saved {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #34d399;
+#photo-edit-overlay .save-photo-btn.is-saved {
+  background: #10b981;
   pointer-events: none;
 }
 #photo-edit-overlay .editor-save-spinner {
@@ -10670,69 +10731,27 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 @keyframes photo-editor-spin {
   to { transform: rotate(360deg); }
 }
-#photo-edit-overlay .header-title {
-  color: #fff;
-  font-size: 15px;
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-#photo-edit-overlay .photo-coach-floating {
+#photo-edit-overlay .editor-bottom-nav {
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 122px);
-  z-index: 2;
-  border-radius: 20px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.24);
-}
-#photo-edit-overlay .coach-title {
-  margin: 0 0 6px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-}
-#photo-edit-overlay .inspiration-slider {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#photo-edit-overlay .pill {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.25);
-  padding: 6px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-  font-size: 12px;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-}
-#photo-edit-overlay .editor-bottom-nav {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
-  left: 20px;
-  right: 20px;
-  z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+  z-index: 3;
   display: flex;
   justify-content: space-around;
   align-items: center;
   gap: 10px;
   padding: 14px 12px;
-  background: rgba(255,255,255,0.10);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 30px;
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(15,23,42,0.08);
+  border-radius: 22px;
 }
 #photo-edit-overlay .tool-btn {
   text-align: center;
   font-size: 11px;
-  color: #fff;
+  color: #0f172a;
   background: transparent;
   border: none;
   min-height: 60px;
@@ -10743,19 +10762,17 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #photo-edit-overlay .tool-btn .tool-icon {
   font-size: 23px;
   margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
 }
 #photo-edit-overlay .tool-btn span {
   display: block;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  color: #0f172a;
 }
 #photo-edit-overlay .tool-btn.active {
   opacity: 1;
 }
 #photo-edit-overlay .tool-btn:not(.active) {
-  opacity: 0.85;
+  opacity: 0.75;
 }
 #photo-edit-overlay .tool-btn:active {
   transform: scale(0.96);

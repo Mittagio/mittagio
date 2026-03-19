@@ -37,3 +37,9 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - `position: sticky` bleibt unveraendert fuer alle Kunden-Header (`.cust-header-sticky`).
 - Der braune Schleier wurde entfernt: Hintergrund jetzt voll weiss (`#ffffff`) statt halbtransparentem Glas-Layer.
 - Blur-Filters in `.cust-header-sticky` wurden deaktiviert (`backdrop-filter: none`), damit keine Farbstiche aus dem Seitenhintergrund mehr durchscheinen.
+
+## Update: Globaler Top-Gap Fix (Kunden-Header)
+
+- Fuer alle Kunden-Views ausser Discover startet der Header nun ohne oberen Innenabstand.
+- Regel: `body:not(.provider-mode) .customer-view:not(#v-discover) > .cust-header-sticky { padding-top: 0; margin-top: 0; top: 0; }`
+- `position: sticky` bleibt aktiv; es wurde nur der sichtbare Top-Rand entfernt.

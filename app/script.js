@@ -17928,8 +17928,10 @@
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
-        ov.className='photo-editor-floating instagram-layout is-hidden';
+        ov.className='photo-editor-floating photo-editor-split is-hidden';
         ov.style.cssText='position:fixed; inset:0; z-index:1100005;';
+        var imageZone=document.createElement('div');
+        imageZone.className='image-display-zone';
         var oImg=document.createElement('img');
         oImg.id='edit-preview-image';
         oImg.className='editor-bg-image';
@@ -17937,31 +17939,22 @@
         cropCurrentPosY=getPhotoObjectPosition();
         var activeTool=(w.data.photoFilterPreset||'none');
         oImg.style.cssText='object-position:center '+cropCurrentPosY+'%; filter:'+getPhotoFilterCss(activeTool)+';';
-        ov.appendChild(oImg);
+        imageZone.appendChild(oImg);
         var cropGrid=document.createElement('div');
         cropGrid.className='crop-grid-overlay';
-        ov.appendChild(cropGrid);
-        var editorHeader=document.createElement('header');
-        editorHeader.className='editor-header editor-top-nav';
-        var btnCancel=document.createElement('button');
-        btnCancel.type='button';
-        btnCancel.className='btn-link editor-top-action';
-        btnCancel.textContent='Abbrechen';
-        var headerTitle=document.createElement('span');
-        headerTitle.className='header-title';
-        headerTitle.textContent='Foto bearbeiten';
-        var btnNext=document.createElement('button');
-        btnNext.type='button';
-        btnNext.className='btn-link editor-top-action';
-        btnNext.textContent='Fertig';
-        editorHeader.appendChild(btnCancel);
-        editorHeader.appendChild(headerTitle);
-        editorHeader.appendChild(btnNext);
-        ov.appendChild(editorHeader);
+        imageZone.appendChild(cropGrid);
+        ov.appendChild(imageZone);
+        var controlsSheet=document.createElement('div');
+        controlsSheet.className='editor-controls-sheet';
         var coachWrap=document.createElement('div');
         coachWrap.className='photo-coach-inspiration photo-coach-floating';
         coachWrap.innerHTML='<p class="coach-title">Pro-Tipps:</p><div class="inspiration-slider"><div class="pill">💡 Tageslicht nutzen</div><div class="pill">🧽 Linse putzen</div><div class="pill">🚫 Kein Zoom</div></div>';
-        ov.appendChild(coachWrap);
+        controlsSheet.appendChild(coachWrap);
+        var saveBtn=document.createElement('button');
+        saveBtn.type='button';
+        saveBtn.className='save-photo-btn';
+        saveBtn.textContent='FOTO SPEICHERN';
+        controlsSheet.appendChild(saveBtn);
         var toolsBar=document.createElement('div');
         toolsBar.className='editor-tools-bar editor-bottom-nav';
         function buildTool(id,icon,label){
@@ -17978,7 +17971,8 @@
         toolsBar.appendChild(toolReplace);
         toolsBar.appendChild(toolCrop);
         toolsBar.appendChild(toolDelete);
-        ov.appendChild(toolsBar);
+        controlsSheet.appendChild(toolsBar);
+        ov.appendChild(controlsSheet);
         function syncOverlayPos(){ oImg.style.objectPosition='center '+clampCrop(cropCurrentPosY)+'%'; }
         function setActiveTool(tool){
           activeTool=tool;
@@ -18012,24 +18006,24 @@
         oImg.addEventListener('touchend', onTouchEnd, { passive:true });
         var isPhotoSavePending=false;
         function setEditorSaveState(isPending){
-          if(!btnNext) return;
+          if(!saveBtn) return;
           if(isPending){
-            btnNext.classList.add('is-loading');
-            btnNext.disabled=true;
-            btnNext.innerHTML='<span class="editor-save-spinner" aria-hidden="true"></span><span>Speichern...</span>';
+            saveBtn.classList.add('is-loading');
+            saveBtn.disabled=true;
+            saveBtn.innerHTML='<span class="editor-save-spinner" aria-hidden="true"></span><span>Speichern...</span>';
             return;
           }
-          btnNext.classList.remove('is-loading');
-          btnNext.classList.remove('is-saved');
-          btnNext.disabled=false;
-          btnNext.textContent='Fertig';
+          saveBtn.classList.remove('is-loading');
+          saveBtn.classList.remove('is-saved');
+          saveBtn.disabled=false;
+          saveBtn.textContent='FOTO SPEICHERN';
         }
         function setEditorSavedState(){
-          if(!btnNext) return;
-          btnNext.classList.remove('is-loading');
-          btnNext.classList.add('is-saved');
-          btnNext.disabled=true;
-          btnNext.innerHTML='<span aria-hidden="true">✓</span><span>Gespeichert</span>';
+          if(!saveBtn) return;
+          saveBtn.classList.remove('is-loading');
+          saveBtn.classList.add('is-saved');
+          saveBtn.disabled=true;
+          saveBtn.innerHTML='<span aria-hidden="true">✓</span><span>Gespeichert</span>';
         }
         function runPhotoSaveSuccessPulse(){
           if(!imgEl) return;
@@ -18059,8 +18053,7 @@
             }, 400);
           }, 800);
         }
-        btnCancel.onclick=function(e){ e.preventDefault(); closePhotoEditOverlay(); };
-        btnNext.onclick=function(e){ e.preventDefault(); savePhotoEdit(); };
+        saveBtn.onclick=function(e){ e.preventDefault(); savePhotoEdit(); };
         toolReplace.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
           setActiveTool('none');
