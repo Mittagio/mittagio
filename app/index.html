@@ -1505,73 +1505,84 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <i data-lucide="chevron-right" class="provider-profile-mein-betrieb-chevron" style="width:20px;height:20px;color:#94a3b8;"></i>
         </div>
-        <!-- KPIs: 2x2 Grid "Deine Gesamtleistung" – Dashboard-Parameter (Grüner Umsatz, Höhe, Padding, Font-Weights) [cite: 2026-02-25] -->
-        <div class="provider-profile-kpis-wrap">
-          <h3 class="provider-profile-kpis-title">Deine Gesamtleistung</h3>
-          <div class="provider-profile-kpis-grid dashboard-kasten-kpis-profile" id="providerProfileKpisGrid">
-            <div class="provider-profile-kpi-cell" id="profileKpiUmsatz" role="button" tabindex="0">
-              <p class="kpi-label kpi-label-umsatz">Umsatz</p>
-              <p id="accountStatUmsatz" class="kpi-umsatz-value">0,00 €</p>
-            </div>
-            <div class="provider-profile-kpi-cell" id="profileKpiInserate" role="button" tabindex="0">
-              <p class="kpi-label">Inserate</p>
-              <p id="accountStatInserate">0</p>
-            </div>
-            <div class="provider-profile-kpi-cell" id="profileKpiKochbuch" role="button" tabindex="0">
-              <p class="kpi-label">Kochbuch</p>
-              <p id="accountStatKochbuch">0</p>
-            </div>
-            <div class="provider-profile-kpi-cell" id="profileKpiAbholungen" role="button" tabindex="0">
-              <p class="kpi-label">Abholnummern</p>
-              <p id="accountStatAbholungen">0</p>
-            </div>
+        <section class="provider-kpi-cockpit" id="providerKpiCockpit">
+          <button type="button" class="provider-kpi-item" id="providerKpiRevenue" aria-label="Umsatz anzeigen">
+            <span class="revenue-value-wrapper">
+              <span class="provider-kpi-value" id="accountStatUmsatz">0,00 €</span>
+              <span class="trend-arrow trend-arrow-flat" id="providerRevenueTrendArrow" aria-label="Umsatz stabil">—</span>
+            </span>
+            <span class="provider-kpi-label">Umsatz</span>
+          </button>
+          <button type="button" class="provider-kpi-item" id="providerKpiLiveInserate" aria-label="Live Inserate öffnen">
+            <span class="provider-kpi-value" id="accountStatLiveInserate">0</span>
+            <span class="provider-kpi-label">Live-Inserate</span>
+          </button>
+          <button type="button" class="provider-kpi-item" id="providerKpiViews" aria-label="Aufrufe anzeigen">
+            <span class="provider-kpi-value" id="accountStatAufrufe">0</span>
+            <span class="provider-kpi-label">Aufrufe</span>
+          </button>
+        </section>
+        <!-- Glamour Dashboard: 2x2 Airbnb Grid -->
+        <section class="provider-glam-dashboard" id="providerGlamDashboard">
+          <div class="provider-glam-grid" id="providerProfileFourPillars">
+            <button type="button" id="btnAccountMeineRegeln" class="provider-glam-tile" aria-label="Meine Regeln öffnen">
+              <span class="provider-glam-icon" aria-hidden="true">✨</span>
+              <span class="provider-glam-title">Meine Regeln</span>
+              <span class="provider-glam-subtitle">Prozess veredeln</span>
+            </button>
+            <button type="button" id="btnAccountMeinGeld" class="provider-glam-tile provider-glam-tile-billing" aria-label="Abrechnungen öffnen">
+              <span class="provider-glam-icon" aria-hidden="true">💶</span>
+              <span class="provider-glam-title">Abrechnungen</span>
+              <span class="provider-glam-subtitle" id="providerBillingTileSubtitle">Transparenz &amp; Verdienst</span>
+            </button>
+            <button type="button" id="btnAccountMeinSupport" class="provider-glam-tile" aria-label="Support öffnen">
+              <span class="provider-glam-icon" aria-hidden="true">💬</span>
+              <span class="provider-glam-title">Support</span>
+              <span class="provider-glam-subtitle">Direkter Draht</span>
+            </button>
+            <button type="button" id="btnAccountFaqTile" class="provider-glam-tile" aria-label="FAQ öffnen">
+              <span class="provider-glam-icon" aria-hidden="true">💡</span>
+              <span class="provider-glam-title">FAQ</span>
+              <span class="provider-glam-subtitle">Was ist das?</span>
+            </button>
           </div>
-        </div>
+        </section>
 
-        <!-- 4er-Kachel-Grid: Die Schaltzentrale [cite: 2026-02-21] -->
-        <h3 class="provider-profile-grid-title">Hauptmenü</h3>
-        <div class="account-grid-nav account-grid-4" id="providerProfileFourPillars">
-          <button type="button" id="btnAccountMeinGeld" class="account-tile is-hidden" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-            <span>Mein Geld</span>
-          </button>
-          <button type="button" id="btnAccountMeineRegeln" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="m8 7 4-4 4 4"/><path d="m8 17 4 4 4-4"/><path d="M3 12h3"/><path d="M18 12h3"/><path d="M4 18 2 20"/><path d="M20 18 22 20"/><path d="M4 6 2 4"/><path d="M20 6 22 4"/></svg>
-            <span>Meine Regeln</span>
-          </button>
-          <button type="button" id="btnAccountMeinKochbuch" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            <span>Mein Kochbuch</span>
-          </button>
-          <button type="button" id="btnAccountMeinSupport" class="account-tile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-            <span>Mein Support</span>
-          </button>
-        </div>
-
-        <!-- Was ist was: Accordion [cite: 2026-02-18] -->
-        <section class="account-faq-section" id="accountWasIstWasSection">
-          <h3 class="account-faq-title">Was ist was?</h3>
-          <div class="account-accordion" id="accountWasIstWasAccordion">
-            <div class="account-accordion-item" data-accordion="abholnummer">
-              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Abholnummer</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="account-accordion-content"><div class="account-accordion-inner">Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Pro Vorgang 0,89 €.</div></div>
-            </div>
-            <div class="account-accordion-item" data-accordion="kochbuch">
-              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Kochbuch</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="account-accordion-content"><div class="account-accordion-inner">Dein digitales Kochbuch speichert Gerichte mit Bild und Allergenen. Von hier schaltest du blitzschnell in den Wochenplan oder als Inserat.</div></div>
-            </div>
-            <div class="account-accordion-item" data-accordion="wochenplan">
-              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Wochenplan</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="account-accordion-content"><div class="account-accordion-inner">Plane Mo–So. Gerichte per „Folgetag“ kopieren. Einmal einrichten, jede Woche nutzen.</div></div>
-            </div>
-            <div class="account-accordion-item" data-accordion="allergene">
-              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Allergene</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="account-accordion-content"><div class="account-accordion-inner">Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</div></div>
-            </div>
-            <div class="account-accordion-item" data-accordion="mehrweg">
-              <button type="button" class="account-accordion-trigger" aria-expanded="false"><span>Mehrweg</span><svg class="account-accordion-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
-              <div class="account-accordion-content"><div class="account-accordion-inner">Vytal, Recup oder eigenes Pfandsystem. Zeige deinen Gästen, dass du Mehrweg anbietest.</div></div>
+        <div id="providerFaqOverlayBd" class="provider-faq-overlay-backdrop is-hidden" aria-hidden="true"></div>
+        <section id="providerFaqOverlay" class="provider-faq-overlay is-hidden" aria-hidden="true" role="dialog" aria-label="FAQ">
+          <header class="provider-faq-overlay-header">
+            <h3>FAQ</h3>
+            <button type="button" id="providerFaqOverlayClose" aria-label="FAQ schließen">×</button>
+          </header>
+          <div class="provider-faq-overlay-body">
+            <div class="provider-faq-accordion" id="providerFaqAccordion">
+              <article class="provider-faq-item">
+                <button type="button" class="provider-faq-trigger" aria-expanded="false">
+                  <span>Was ist die Abholnummer?</span>
+                  <i data-lucide="chevron-down" class="provider-faq-chevron"></i>
+                </button>
+                <div class="provider-faq-content">
+                  <p>Die Abholnummer ersetzt Warteschlangen. Dein Gast zeigt sie dir, du siehst sofort die Bestellung und sparst Zeit im Mittagsgeschäft.</p>
+                </div>
+              </article>
+              <article class="provider-faq-item">
+                <button type="button" class="provider-faq-trigger" aria-expanded="false">
+                  <span>Wie funktioniert die Abrechnung?</span>
+                  <i data-lucide="chevron-down" class="provider-faq-chevron"></i>
+                </button>
+                <div class="provider-faq-content">
+                  <p>Unter Abrechnungen siehst du transparent alle Beträge, Gebühren und Belege. Das PDF-Archiv ist direkt aus dem Bereich erreichbar.</p>
+                </div>
+              </article>
+              <article class="provider-faq-item">
+                <button type="button" class="provider-faq-trigger" aria-expanded="false">
+                  <span>Wo passe ich meine Standards an?</span>
+                  <i data-lucide="chevron-down" class="provider-faq-chevron"></i>
+                </button>
+                <div class="provider-faq-content">
+                  <p>Über Meine Regeln öffnest du die Inseratseinstellungen mit Zeitfenstern, Service-Logik und Extras als Standard für neue Inserate.</p>
+                </div>
+              </article>
             </div>
           </div>
         </section>

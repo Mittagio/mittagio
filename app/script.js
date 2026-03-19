@@ -1345,6 +1345,102 @@
     else { text = name ? 'Gute Nacht, ' + name + '! 🌙' : fallback; }
     el.textContent = text;
   }
+  function calculateRevenueTrend(yesterdayRevenue, todayRevenue){
+    var prev = Number(yesterdayRevenue) || 0;
+    var next = Number(todayRevenue) || 0;
+    if(next > prev){
+      return { direction: 'up', symbol: '↗', className: 'trend-arrow-up', ariaLabel: 'Umsatz steigt' };
+    }
+    if(next < prev){
+      return { direction: 'down', symbol: '↘', className: 'trend-arrow-down', ariaLabel: 'Umsatz sinkt' };
+    }
+    return { direction: 'flat', symbol: '—', className: 'trend-arrow-flat', ariaLabel: 'Umsatz stabil' };
+  }
+  function getRevenueTrendPercentText(yesterdayRevenue, todayRevenue){
+    var prev = Number(yesterdayRevenue) || 0;
+    var next = Number(todayRevenue) || 0;
+    if(prev === 0){
+      if(next > 0) return '+100% vs gestern';
+      return '0% vs gestern';
+    }
+    var deltaPct = ((next - prev) / Math.abs(prev)) * 100;
+    var rounded = Math.round(deltaPct);
+    if(rounded > 0) return '+' + String(rounded) + '% vs gestern';
+    if(rounded < 0) return String(rounded) + '% vs gestern';
+    return '0% vs gestern';
+  }
+  function animateValue(id, start, end, duration, formatter, onComplete){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var from = Number(start) || 0;
+    var to = Number(end) || 0;
+    var total = Math.max(1, Number(duration) || 1);
+    var startTs = null;
+    function step(ts){
+      if(startTs === null) startTs = ts;
+      var progress = Math.min((ts - startTs) / total, 1);
+      var current = from + (to - from) * progress;
+      var value = progress >= 1 ? to : Math.floor(current);
+      el.textContent = (typeof formatter === 'function') ? formatter(value) : String(value);
+      if(progress < 1){
+        window.requestAnimationFrame(step);
+      } else {
+        el.classList.remove('provider-kpi-value-finished');
+        el.offsetHeight;
+        el.classList.add('provider-kpi-value-finished');
+        if(typeof onComplete === 'function') onComplete();
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+  function animateProviderKpis(){
+    var configs = [
+      {
+        id: 'accountStatUmsatz',
+        start: 0,
+        end: 1250,
+        duration: 1500,
+        formatter: function(v){ return Number(v).toLocaleString('de-DE') + ' €'; },
+        onComplete: function(){
+          var trendArrow = document.getElementById('providerRevenueTrendArrow');
+          if(!trendArrow) return;
+          trendArrow.classList.remove('active');
+          trendArrow.offsetHeight;
+          trendArrow.classList.add('active');
+        }
+      },
+      {
+        id: 'accountStatLiveInserate',
+        start: 0,
+        end: 4,
+        duration: 800,
+        formatter: function(v){ return String(v); }
+      },
+      {
+        id: 'accountStatAufrufe',
+        start: 0,
+        end: 380,
+        duration: 1200,
+        formatter: function(v){ return String(v); }
+      }
+    ];
+    configs.forEach(function(cfg){
+      animateValue(cfg.id, cfg.start, cfg.end, cfg.duration, cfg.formatter, cfg.onComplete);
+    });
+  }
+  function maybeAnimateProviderKpisOncePerSession(){
+    var key = 'mittagio_kpi_countup_done_v1';
+    try{
+      if(sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    }catch(e){}
+    animateProviderKpis();
+  }
+  if(typeof document !== 'undefined'){
+    document.addEventListener('DOMContentLoaded', function(){
+      maybeAnimateProviderKpisOncePerSession();
+    });
+  }
   if(typeof window !== 'undefined'){ window.ensureProviderFab = ensureProviderFab; window.updateProviderProfileWelcome = updateProviderProfileWelcome; }
   let currentPickupOrderId = null;
 
@@ -13625,29 +13721,86 @@
     /* Stats befüllen: Kochbuch, Inserate, Umsatz (Mittagio-Grün #22C55E) [cite: 2026-01-29] */
     var pid = typeof providerId === 'function' ? providerId() : '';
     var cookbookCount = (typeof cookbook !== 'undefined' ? cookbook : []).filter(function(c){ return c.providerId === pid; }).length;
-    var inserateCount = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === pid; }).length;
+    var providerOffers = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === pid; });
+    var inserateCount = providerOffers.length;
+    var liveInserateCount = providerOffers.filter(function(o){ return o.active !== false; }).length;
+    var viewsCount = providerOffers.reduce(function(sum, o){
+      return sum + Number(o.views || o.viewCount || o.impressions || o.clicks || 0);
+    }, 0);
     var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
     var todayOrders = typeof loadOrders === 'function' ? loadOrders().filter(function(o){ var offer = (typeof offers !== 'undefined' ? offers : []).find(function(off){ return off.id === o.dishId || off.providerId === o.providerId; }); return offer && offer.providerId === pid && offer.day === todayKey && o.status === 'PAID'; }) : [];
+    var yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    var yesterdayKey = typeof isoDate === 'function' ? isoDate(yesterdayDate) : '';
+    var yesterdayOrders = typeof loadOrders === 'function' ? loadOrders().filter(function(o){ var offer = (typeof offers !== 'undefined' ? offers : []).find(function(off){ return off.id === o.dishId || off.providerId === o.providerId; }); return offer && offer.providerId === pid && offer.day === yesterdayKey && o.status === 'PAID'; }) : [];
     var tagesumsatzCents = todayOrders.reduce(function(s, o){ return s + (o.totalCents || o.total || 0); }, 0);
+    var yesterdayUmsatzCents = yesterdayOrders.reduce(function(s, o){ return s + (o.totalCents || o.total || 0); }, 0);
     var nettoEuro = (tagesumsatzCents / 100 - todayOrders.length * 0.89).toFixed(2);
+    var yesterdayNettoEuro = (yesterdayUmsatzCents / 100 - yesterdayOrders.length * 0.89).toFixed(2);
     var statKochbuch = document.getElementById('accountStatKochbuch');
     var statInserate = document.getElementById('accountStatInserate');
+    var statLiveInserate = document.getElementById('accountStatLiveInserate');
+    var statAufrufe = document.getElementById('accountStatAufrufe');
     var statUmsatz = document.getElementById('accountStatUmsatz');
+    var statUmsatzTrend = document.getElementById('providerRevenueTrendArrow');
     var statAbholungen = document.getElementById('accountStatAbholungen');
     if(statKochbuch) statKochbuch.textContent = cookbookCount;
     if(statInserate) statInserate.textContent = inserateCount;
+    if(statLiveInserate) statLiveInserate.textContent = String(liveInserateCount);
+    if(statAufrufe) statAufrufe.textContent = String(viewsCount);
     if(statUmsatz){ statUmsatz.textContent = nettoEuro.replace('.', ',') + ' €'; statUmsatz.style.color = tagesumsatzCents > 0 ? '#22C55E' : '#1a1a1a'; }
+    if(statUmsatzTrend){
+      var trend = calculateRevenueTrend(Number(yesterdayNettoEuro), Number(nettoEuro));
+      var trendPercentText = getRevenueTrendPercentText(Number(yesterdayNettoEuro), Number(nettoEuro));
+      statUmsatzTrend.textContent = trend.symbol;
+      statUmsatzTrend.setAttribute('aria-label', trend.ariaLabel);
+      statUmsatzTrend.setAttribute('title', trendPercentText);
+      statUmsatzTrend.setAttribute('data-trend-tooltip', trendPercentText);
+      statUmsatzTrend.classList.remove('trend-arrow-up', 'trend-arrow-down', 'trend-arrow-flat');
+      statUmsatzTrend.classList.add(trend.className);
+    }
     if(statAbholungen) statAbholungen.textContent = todayOrders.length || 0;
+    var kpiRevenue = document.getElementById('providerKpiRevenue');
+    var kpiLive = document.getElementById('providerKpiLiveInserate');
+    if(kpiRevenue) kpiRevenue.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      if(btnAccountMeinGeld && typeof btnAccountMeinGeld.scrollIntoView === 'function'){
+        btnAccountMeinGeld.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+    if(kpiLive) kpiLive.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      if(typeof showProviderCookbook === 'function') showProviderCookbook();
+    };
+    maybeAnimateProviderKpisOncePerSession();
     var masterName = document.getElementById('providerProfileMasterName');
     var masterOrt = document.getElementById('providerProfileMasterOrt');
     var masterLogo = document.getElementById('providerProfileMasterLogo');
     if(masterName) masterName.textContent = (p.name || p.businessName || 'Betriebsname').trim() || 'Betriebsname';
     if(masterOrt) masterOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || buildAddress(p) || 'Ort').trim() || '—';
     if(masterLogo && p.logoUrl) masterLogo.src = p.logoUrl;
-    /* 4er-Grid: Mein Geld, Meine Regeln, Mein Kochbuch, Mein Support [cite: 2026-02-21] */
+    /* Glamour-Grid: Meine Regeln, Abrechnungen, Support, FAQ */
+    var currentBillingMonthKey = (function(){
+      var d = new Date();
+      return String(d.getFullYear()) + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    })();
+    var billingSeenKey = 'mittagio_profile_billing_seen_month_v1';
+    var billingLastSeen = '';
+    try { billingLastSeen = localStorage.getItem(billingSeenKey) || ''; } catch(e) {}
     var btnAccountMeinGeld = document.getElementById('btnAccountMeinGeld');
+    var billingTileSubtitle = document.getElementById('providerBillingTileSubtitle');
+    if(btnAccountMeinGeld){
+      var hasFreshBilling = billingLastSeen !== currentBillingMonthKey;
+      btnAccountMeinGeld.classList.toggle('is-fresh-billing', hasFreshBilling);
+      if(billingTileSubtitle){
+        billingTileSubtitle.textContent = hasFreshBilling ? 'Neue Abrechnung verfügbar' : 'Transparenz & Verdienst';
+      }
+    }
     if(btnAccountMeinGeld) btnAccountMeinGeld.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
+      try { localStorage.setItem(billingSeenKey, currentBillingMonthKey); } catch(e) {}
+      btnAccountMeinGeld.classList.remove('is-fresh-billing');
+      if(billingTileSubtitle) billingTileSubtitle.textContent = 'Transparenz & Verdienst';
       if(typeof showProviderProfileSub === 'function') showProviderProfileSub('geld');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     };
@@ -13660,9 +13813,44 @@
       if(sub){ sub.style.display = 'flex'; sub.classList.add('as-regeln-overlay', 'active'); }
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     };
-    var btnAccountMeinKochbuch = document.getElementById('btnAccountMeinKochbuch');
-    if(btnAccountMeinKochbuch) btnAccountMeinKochbuch.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderCookbook === 'function') showProviderCookbook(); };
     var btnAccountMeinSupport = document.getElementById('btnAccountMeinSupport');
+    var btnAccountFaqTile = document.getElementById('btnAccountFaqTile');
+    var faqOverlayBd = document.getElementById('providerFaqOverlayBd');
+    var faqOverlay = document.getElementById('providerFaqOverlay');
+    var faqOverlayClose = document.getElementById('providerFaqOverlayClose');
+    function openProviderFaqOverlay(){
+      if(faqOverlayBd){ if(typeof show === 'function') show(faqOverlayBd); else faqOverlayBd.classList.remove('is-hidden'); }
+      if(faqOverlay){
+        if(typeof setVisible === 'function') setVisible(faqOverlay, 'flex'); else faqOverlay.classList.remove('is-hidden');
+        faqOverlay.classList.add('is-open');
+        faqOverlay.removeAttribute('aria-hidden');
+      }
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    }
+    function closeProviderFaqOverlay(){
+      if(faqOverlay){
+        faqOverlay.classList.remove('is-open');
+        faqOverlay.setAttribute('aria-hidden', 'true');
+      }
+      if(faqOverlayBd){ if(typeof hide === 'function') hide(faqOverlayBd); else faqOverlayBd.classList.add('is-hidden'); }
+      if(faqOverlay){ if(typeof hide === 'function') hide(faqOverlay); else faqOverlay.classList.add('is-hidden'); }
+    }
+    if(btnAccountFaqTile) btnAccountFaqTile.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      openProviderFaqOverlay();
+    };
+    if(faqOverlayBd) faqOverlayBd.onclick = closeProviderFaqOverlay;
+    if(faqOverlayClose) faqOverlayClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeProviderFaqOverlay(); };
+    document.querySelectorAll('#providerFaqAccordion .provider-faq-trigger').forEach(function(trigger){
+      trigger.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var item = trigger.closest('.provider-faq-item');
+        if(!item) return;
+        var isOpen = item.classList.contains('open');
+        item.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      };
+    });
     var regelnBd = document.getElementById('accountRegelnOverlayBd');
     if(regelnBd) regelnBd.onclick = function(){ if(typeof haptic === 'function') haptic(6); var sub = document.getElementById('providerProfileSubService'); if(sub){ sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none'; } regelnBd.style.display = 'none'; };
     var geldBd = document.getElementById('accountGeldOverlayBd');
@@ -13687,7 +13875,12 @@
     var supportModal = document.getElementById('accountSupportModal');
     function openSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'block'; if(supportModal) supportModal.style.display = 'block'; }
     function closeSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'none'; if(supportModal) supportModal.style.display = 'none'; }
-    if(btnAccountMeinSupport) btnAccountMeinSupport.onclick = function(){ if(typeof haptic === 'function') haptic(6); openSupportModal(); };
+    if(btnAccountMeinSupport) btnAccountMeinSupport.onclick = function(){
+      if(typeof haptic === 'function') haptic(6);
+      var wa = 'https://wa.me/49XXXXXXXXX?text=' + encodeURIComponent('Hallo Mittagio Support!');
+      window.open(wa, '_blank');
+      if(typeof showToast === 'function') showToast('WhatsApp geöffnet');
+    };
     if(supportBackdrop) supportBackdrop.onclick = closeSupportModal;
     var supportClose = document.querySelector('.account-support-close');
     if(supportClose) supportClose.onclick = function(){ if(typeof haptic === 'function') haptic(6); closeSupportModal(); };
@@ -13724,6 +13917,63 @@
     const profileEmail = document.getElementById('providerProfileEmail');
     const profileWebsite = document.getElementById('providerProfileWebsite');
     const btnSaveBusiness = document.getElementById('btnProviderSaveBusiness');
+    const businessFields = [profileBusinessName, profileStreet, profileZip, profileCity, profilePhone, profileEmail, profileWebsite].filter(Boolean);
+    const lastBusinessField = businessFields.length ? businessFields[businessFields.length - 1] : null;
+    let businessFinalizeHintTimer = null;
+    let businessFinalizeLockUntil = 0;
+
+    function isBusinessFieldValid(field){
+      if(!field) return false;
+      var value = String(field.value || '').trim();
+      if(!value) return false;
+      var type = String(field.type || '').toLowerCase();
+      if(type === 'email') return MittagioForm.validate(value, { email: true });
+      if(type === 'url'){
+        // URL darf mit oder ohne Protokoll eingegeben werden.
+        return /^(https?:\/\/)?[a-z0-9][a-z0-9.-]*\.[a-z]{2,}(\/.*)?$/i.test(value);
+      }
+      return true;
+    }
+    function highlightBusinessPrimaryAction(){
+      if(!btnSaveBusiness) return;
+      btnSaveBusiness.classList.remove('button-attention-hint');
+      btnSaveBusiness.offsetHeight;
+      btnSaveBusiness.classList.add('button-attention-hint');
+      if(businessFinalizeHintTimer) clearTimeout(businessFinalizeHintTimer);
+      businessFinalizeHintTimer = setTimeout(function(){
+        if(btnSaveBusiness) btnSaveBusiness.classList.remove('button-attention-hint');
+      }, 1000);
+    }
+    function scrollBusinessPrimaryActionIntoFocus(){
+      var businessSub = document.getElementById('providerProfileSubBusiness');
+      var scrollHost = businessSub ? businessSub.querySelector('.provider-sub-scroll') : null;
+      if(scrollHost){
+        scrollHost.scrollTo({ top: scrollHost.scrollHeight, behavior: 'smooth' });
+      }
+      if(btnSaveBusiness && typeof btnSaveBusiness.scrollIntoView === 'function'){
+        btnSaveBusiness.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if(typeof window !== 'undefined' && window.scrollTo){
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }
+    function finalizeBusinessForm(reason){
+      var now = Date.now();
+      if(now < businessFinalizeLockUntil) return;
+      businessFinalizeLockUntil = now + 1200;
+      var active = document.activeElement;
+      if(active && typeof active.blur === 'function') active.blur();
+      setTimeout(function(){
+        scrollBusinessPrimaryActionIntoFocus();
+        highlightBusinessPrimaryAction();
+        try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([10, 50, 10]); }catch(e){}
+      }, 300);
+    }
+    function maybeFinalizeBusinessForm(reason){
+      if(!lastBusinessField) return;
+      if(reason !== 'autofill' && !isBusinessFieldValid(lastBusinessField)) return;
+      if(reason === 'autofill' && !isBusinessFieldValid(lastBusinessField)) return;
+      finalizeBusinessForm(reason);
+    }
 
     const saveAllBusinessData = () => {
       if(!provider.profile) provider.profile = {};
@@ -13751,7 +14001,23 @@
       if(!el) return;
       if(el.value && el.value.trim()) el.classList.add('floating-filled'); else el.classList.remove('floating-filled');
       el.addEventListener('input', function(){ if(this.value && this.value.trim()) this.classList.add('floating-filled'); else this.classList.remove('floating-filled'); });
+      el.addEventListener('change', function(){
+        setTimeout(function(){
+          var active = document.activeElement;
+          var focusStillInBusinessFields = !!(active && businessFields.indexOf(active) >= 0);
+          if(!focusStillInBusinessFields && isBusinessFieldValid(lastBusinessField)) maybeFinalizeBusinessForm('autofill');
+        }, 80);
+      });
     });
+    if(lastBusinessField){
+      lastBusinessField.addEventListener('blur', function(){ maybeFinalizeBusinessForm('blur'); });
+      lastBusinessField.addEventListener('keydown', function(ev){
+        if(ev.key !== 'Enter') return;
+        if(!isBusinessFieldValid(lastBusinessField)) return;
+        ev.preventDefault();
+        maybeFinalizeBusinessForm('enter');
+      });
+    }
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
 
     // Google Places Autocomplete: Betriebsname/Adresse suchen, Rest ausfüllen
@@ -16383,6 +16649,20 @@
   function handleWizardExit(panel){
     if(!w || w.kind !== 'listing'){ var p = panel || document.querySelector('#wizard .liquid-master-panel'); if(p && !p.classList.contains('x-pop-away')){ p.classList.add('x-pop-away'); setTimeout(function(){ closeWizard(); navigateAfterWizardExit('dashboard'); }, 280); } else { closeWizard(); navigateAfterWizardExit('dashboard'); } return; }
     var entryPoint = normalizeWizardEntryPoint((w.ctx && w.ctx.entryPoint) || 'newListing');
+    // Kochbuch/Wochenplan-Exit via X: direkt schließen (kein Save-Prompt-Dialog).
+    if(entryPoint === 'cookbook' || entryPoint === 'weeklyPlan'){
+      var cookbookPanel = panel || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
+      if(cookbookPanel && !cookbookPanel.classList.contains('x-pop-away')){
+        requestAnimationFrame(function(){
+          cookbookPanel.classList.add('x-pop-away');
+          setTimeout(function(){ closeWizard(true); navigateAfterWizardExit(entryPoint); }, 280);
+        });
+      } else {
+        closeWizard(true);
+        navigateAfterWizardExit(entryPoint);
+      }
+      return;
+    }
     if(isWizardDataDirty() && typeof showWizardExitSavePrompt === 'function'){
       showWizardExitSavePrompt(
         function(){
@@ -17639,7 +17919,8 @@
       function closePhotoEditOverlay(){
         var ov=document.getElementById('photo-edit-overlay');
         if(!ov) return;
-        ov.style.opacity='0';
+        ov.classList.remove('is-open');
+        ov.classList.add('is-closing');
         setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },220);
       }
       function openPhotoEditOverlay(){
@@ -17647,8 +17928,8 @@
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
-        ov.className='photo-editor-floating instagram-layout';
-        ov.style.cssText='position:fixed; inset:0; z-index:1100005; display:none; opacity:0; transition:opacity 0.22s ease;';
+        ov.className='photo-editor-floating instagram-layout is-hidden';
+        ov.style.cssText='position:fixed; inset:0; z-index:1100005;';
         var oImg=document.createElement('img');
         oImg.id='edit-preview-image';
         oImg.className='editor-bg-image';
@@ -17729,15 +18010,54 @@
         oImg.addEventListener('touchstart', onTouchStart, { passive:true });
         oImg.addEventListener('touchmove', onTouchMove, { passive:false });
         oImg.addEventListener('touchend', onTouchEnd, { passive:true });
+        var isPhotoSavePending=false;
+        function setEditorSaveState(isPending){
+          if(!btnNext) return;
+          if(isPending){
+            btnNext.classList.add('is-loading');
+            btnNext.disabled=true;
+            btnNext.innerHTML='<span class="editor-save-spinner" aria-hidden="true"></span><span>Speichern...</span>';
+            return;
+          }
+          btnNext.classList.remove('is-loading');
+          btnNext.classList.remove('is-saved');
+          btnNext.disabled=false;
+          btnNext.textContent='Fertig';
+        }
+        function setEditorSavedState(){
+          if(!btnNext) return;
+          btnNext.classList.remove('is-loading');
+          btnNext.classList.add('is-saved');
+          btnNext.disabled=true;
+          btnNext.innerHTML='<span aria-hidden="true">✓</span><span>Gespeichert</span>';
+        }
+        function runPhotoSaveSuccessPulse(){
+          if(!imgEl) return;
+          imgEl.classList.remove('pulse-highlight');
+          imgEl.offsetHeight;
+          imgEl.classList.add('pulse-highlight');
+          setTimeout(function(){ if(imgEl){ imgEl.classList.remove('pulse-highlight'); } }, 1000);
+        }
         function savePhotoEdit(){
-          try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
-          cropCurrentPosY=clampCrop(cropCurrentPosY);
-          if(imgEl){ imgEl.style.objectPosition='center '+cropCurrentPosY+'%'; }
-          if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
-          setPhotoObjectPosition(cropCurrentPosY);
-          w.data.photoFilterPreset=(activeTool==='crop'?'none':activeTool);
-          saveDraft();
-          closePhotoEditOverlay();
+          if(isPhotoSavePending) return;
+          isPhotoSavePending=true;
+          try{ if(navigator.vibrate) navigator.vibrate([15,30,15]); }catch(e){}
+          setEditorSaveState(true);
+          setTimeout(function(){
+            cropCurrentPosY=clampCrop(cropCurrentPosY);
+            if(imgEl){ imgEl.style.objectPosition='center '+cropCurrentPosY+'%'; }
+            if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
+            setPhotoObjectPosition(cropCurrentPosY);
+            w.data.photoFilterPreset=(activeTool==='crop'?'none':activeTool);
+            saveDraft();
+            runPhotoSaveSuccessPulse();
+            setEditorSavedState();
+            setTimeout(function(){
+              closePhotoEditOverlay();
+              isPhotoSavePending=false;
+              setEditorSaveState(false);
+            }, 400);
+          }, 800);
         }
         btnCancel.onclick=function(e){ e.preventDefault(); closePhotoEditOverlay(); };
         btnNext.onclick=function(e){ e.preventDefault(); savePhotoEdit(); };
@@ -17765,8 +18085,9 @@
         };
         setActiveTool(cropModeActive ? 'crop' : activeTool);
         document.body.appendChild(ov);
-        ov.style.display='flex';
-        requestAnimationFrame(function(){ ov.style.opacity='1'; });
+        if(typeof setVisible==='function') setVisible(ov, 'flex');
+        else ov.classList.remove('is-hidden');
+        requestAnimationFrame(function(){ ov.classList.add('is-open'); });
       }
       function enterCropMode(){ cropModeActive=true; }
       function exitCropMode(){ cropModeActive=false; closePhotoEditOverlay(); }

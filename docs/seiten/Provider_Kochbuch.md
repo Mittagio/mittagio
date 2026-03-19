@@ -37,3 +37,9 @@ Anbieter verwaltet Gerichte. Kategorie-Pills, Karten, Bar: Bearbeiten | Wochenpl
 - **Preis-Fokus:** Nach dem Öffnen wird das Preisfeld automatisch fokussiert und markiert, damit der eigene Preis direkt überschrieben werden kann.
 - **Feedback beim Einstieg:** Toast „Vorlage geladen! Preis prüfen? ✨“ plus kurzzeitiger blauer Glow-Rand an der Mastercard.
 - **Foto-Vorlage:** Das Profi-Bild wird als temporäre Vorlage in Step 1 gezeigt und kann dort direkt über den Foto-Flow ersetzt werden.
+
+## Fix: X-Verhalten aus Mein Kochbuch
+
+- **Kein Save-Popup beim X:** Wenn die InseratCard aus dem Kochbuch- oder Wochenplan-Kontext geöffnet wurde, schließt `X` die Karte jetzt direkt mit der Pop-Away-Animation.
+- **Rücksprung bleibt gleich:** Nach dem Schließen bleibt der Nutzer im jeweiligen Kontext (`entryPoint: cookbook` bzw. `entryPoint: weeklyPlan`).
+- **Scope:** Der Bypass gilt für Kochbuch + Wochenplan; andere EntryPoints behalten ihren bisherigen Dirty-Check/Save-Dialog.

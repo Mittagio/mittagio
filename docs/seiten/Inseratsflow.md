@@ -44,6 +44,7 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Fotohöhe kompakter:** Hero in Step 1 ist auf `190px` gesetzt, damit keine große Leerfläche zwischen Bild und Inhalt entsteht.
 - **Scroll-Jump behoben:** Kein erzwungenes `scrollIntoView(..., smooth)` mehr beim normalen Scrollen; Keyboard-Repositionierung greift nur bei tatsächlich geöffneter Tastatur.
 - **Sichtbarkeits-Hotfix:** Step-Track nutzt `width: 100%` (nicht 300%), damit Step‑1‑Inhalt nicht seitlich außerhalb des Viewports gerendert wird.
+- **Foto-Save-Feedback:** Beim Speichern im Foto-Editor läuft jetzt ein klarer Save-State (`Speichern...` mit Spinner), danach schließt das Overlay weich und das Hero-Bild in Step 1 bekommt einen kurzen Erfolgs-Glow.
 
 ## Mastercard Step2 (Umbau: Reihenfolge + Marketing)
 
@@ -97,3 +98,4 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Tools:** `Anpassen` (Crop), `Lux` (Kontrast/Sättigung leicht erhöht), `Helligkeit` (Brightness-Boost).
 - **Coaching:** Horizontale Tipp-Pills („Tageslicht nutzen“, „Linse putzen“, „Kein Zoom“) im mittleren Bereich.
 - **Save-Flow:** `Weiter` und „Foto für Inserat verwenden“ übernehmen Objektposition + Filterpreset ins Inserat.
+- **Save-UX (Mastercard Step1):** Speichern nutzt Haptik + Ladezustand (`Speichern...`) mit Spinner, simuliert kurze Verarbeitung (`~800ms`) und zeigt anschließend am Step‑1‑Preview-Bild eine kurze `pulse-highlight`-Animation.
