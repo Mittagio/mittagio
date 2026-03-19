@@ -31,3 +31,9 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Doppelter Safe-Area-Offset entfernt: `discover-header-top-row` nutzt kein zusaetzliches `env(safe-area-inset-top)` mehr (nur noch `padding-top: 8px`).
 - Legacy-Offset entfernt: `#v-discover .discover-main` hat `padding-top: 0`, dadurch kein kuenstlicher oberer Leerraum mehr.
 - Discover-Header wird explizit gegen `.cust-header-sticky`-Defaults ueberschrieben (`#v-discover .cust-header-sticky.discover-header-sticky`) - nur eine Safe-Area, kein doppelter Offset.
+
+## Update: Customer Header bleibt sticky (kein Braunstich)
+
+- `position: sticky` bleibt unveraendert fuer alle Kunden-Header (`.cust-header-sticky`).
+- Der braune Schleier wurde entfernt: Hintergrund jetzt voll weiss (`#ffffff`) statt halbtransparentem Glas-Layer.
+- Blur-Filters in `.cust-header-sticky` wurden deaktiviert (`backdrop-filter: none`), damit keine Farbstiche aus dem Seitenhintergrund mehr durchscheinen.
