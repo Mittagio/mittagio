@@ -8906,14 +8906,14 @@
       box-sizing: border-box;
     }
 
-    /* Modern Sticky Header – Design-System Kundenseiten: 60px, safe-area, Native App */
+    /* Modern Sticky Header – Design-System Kundenseiten: 60px, Native App [cite: 2026-03-11 Top-Rand-Fix] */
     .cust-header-sticky {
       position: sticky;
       top: 0;
       z-index: 100;
       min-height: 60px;
       padding: 12px 16px;
-      padding-top: calc(12px + env(safe-area-inset-top, 0px));
+      padding-top: 12px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -8926,13 +8926,7 @@
       flex-direction: column;
       justify-content: center;
     }
-    /* Discover-spezifisch: kein doppelter Top-Offset [cite: 2026-03-11] */
-    #v-discover .cust-header-sticky.discover-header-sticky {
-      padding: 0 !important;
-      padding-top: env(safe-area-inset-top, 0px) !important;
-      min-height: 60px;
-      box-shadow: none !important;
-    }
+    /* Discover-Header: eigene Regeln (padding/shadow) in .discover-header-sticky weiter oben */
     /* Seitentitel: Design-System --size-h2/--weight-heavy (Discover etc.), Checkout/Rechtliches --size-h1 */
     .customer-view .cust-header-sticky h1,
     #v-discover .discover-header-sticky h1 {
