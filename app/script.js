@@ -11100,70 +11100,154 @@
     renderProviderWeekPreview();
     if (typeof toast === 'function') toast('Gericht verschoben');
   }
+  function closeWeekSwipeCards(grid, exceptSlot){
+    if(!grid) return;
+    grid.querySelectorAll('.kw-slot.swipe-open').forEach(function(slotEl){
+      if (exceptSlot && slotEl === exceptSlot) return;
+      slotEl.classList.remove('swipe-open');
+      var contentEl = slotEl.querySelector('.week-card-foreground');
+      if (contentEl) contentEl.classList.remove('is-swiped');
+    });
+  }
+  // Saubere Swipe-Logik für stabilen Inhalt
+  function handleSwipe(element){
+    if(!element || element._stableSwipeBound) return;
+    element._stableSwipeBound = true;
+    var startX = 0;
+    var card = element.querySelector('.week-card-foreground');
+    if(!card) return;
+    element.addEventListener('touchstart', function(e){
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+    element.addEventListener('touchend', function(e){
+      var diffX = startX - e.changedTouches[0].clientX;
+      if (diffX > 50) {
+        var grid = element.closest('#kwGrid');
+        if (grid) closeWeekSwipeCards(grid, element);
+        card.classList.add('is-swiped');
+        element.classList.add('swipe-open');
+        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
+      } else {
+        card.classList.remove('is-swiped');
+        element.classList.remove('swipe-open');
+      }
+    }, { passive: true });
+  }
+  if (typeof window !== 'undefined') window.handleSwipe = handleSwipe;
   function attachKWBoardSlotGestures(grid){
     if (!grid) return;
-    var SWIPE_THRESHOLD = 56;
+    var SWIPE_REVEAL_THRESHOLD = 50;
     var LONG_PRESS_MS = 500;
-    var slots = grid.querySelectorAll('.kw-slot[data-draft="1"]');
+    var slots = grid.querySelectorAll('.kw-slot[data-slot]');
     slots.forEach(function(slotEl){
       var dayKey = slotEl.getAttribute('data-day');
       var slotIdx = parseInt(slotEl.getAttribute('data-slot'), 10) || 0;
-      var startX = 0, currentX = 0, longPressTimer = null;
+      var startX = 0, endX = 0, longPressTimer = null;
+      var contentEl = slotEl.querySelector('.week-card-foreground');
+      if(!contentEl) return;
+      if (typeof handleSwipe === 'function') handleSwipe(slotEl);
       function clearLongPress(){ if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } }
-      function updateSwipeVisual(){
-        if (currentX < -SWIPE_THRESHOLD) { slotEl.classList.add('kw-slot-swipe-delete'); slotEl.classList.remove('kw-slot-swipe-copy'); }
-        else if (currentX > SWIPE_THRESHOLD) { slotEl.classList.add('kw-slot-swipe-copy'); slotEl.classList.remove('kw-slot-swipe-delete'); }
-        else { slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy'); }
+      function closeSwipe(){
+        slotEl.classList.remove('swipe-open');
+        contentEl.classList.remove('is-swiped');
       }
       function handleSwipeEnd(){
-        if (currentX < -SWIPE_THRESHOLD) {
+        var diffX = startX - endX;
+        if (diffX > SWIPE_REVEAL_THRESHOLD) {
+          closeWeekSwipeCards(grid, slotEl);
+          slotEl.classList.add('swipe-open');
+          contentEl.classList.add('is-swiped');
           if (typeof haptic === 'function') haptic(6);
-          if (typeof deletePlannedEntryWithUndo === 'function') deletePlannedEntryWithUndo(dayKey, slotIdx);
-        } else if (currentX > SWIPE_THRESHOLD && typeof copyWeekEntryToNextDay === 'function') {
-          if (typeof haptic === 'function') haptic(6);
-          copyWeekEntryToNextDay(dayKey, slotIdx);
-          if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-          if (typeof showToast === 'function') showToast('Kopie zum Folgetag');
+        } else {
+          closeSwipe();
         }
-        slotEl.style.transform = '';
-        slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy');
       }
       slotEl.addEventListener('touchstart', function(e){
+        if (slotEl.classList.contains('swipe-open')) { closeSwipe(); return; }
+        closeWeekSwipeCards(grid, slotEl);
         startX = e.touches[0].clientX;
-        currentX = 0;
+        endX = startX;
         clearLongPress();
         longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
-      }, { passive: true });
-      slotEl.addEventListener('touchmove', function(e){
-        currentX = e.touches[0].clientX - startX;
-        if (currentX < -20 || currentX > 20) clearLongPress();
-        currentX = Math.max(-120, Math.min(120, currentX));
-        slotEl.style.transform = 'translateX(' + currentX + 'px)';
-        updateSwipeVisual();
       }, { passive: true });
       slotEl.addEventListener('touchend', function(){
         clearLongPress();
-        handleSwipeEnd();
       }, { passive: true });
       slotEl.addEventListener('mousedown', function(e){
         if (e.button !== 0) return;
+        if (slotEl.classList.contains('swipe-open')) { closeSwipe(); return; }
+        closeWeekSwipeCards(grid, slotEl);
         startX = e.clientX;
-        currentX = 0;
+        endX = startX;
         clearLongPress();
         longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
       });
-      slotEl.addEventListener('mousemove', function(e){
-        if (e.buttons !== 1) return;
-        currentX = e.clientX - startX;
-        if (currentX < -20 || currentX > 20) clearLongPress();
-        currentX = Math.max(-120, Math.min(120, currentX));
-        slotEl.style.transform = 'translateX(' + currentX + 'px)';
-        updateSwipeVisual();
-      });
+      slotEl.addEventListener('mousemove', function(e){ if (e.buttons === 1) endX = e.clientX; });
+      slotEl.addEventListener('touchmove', function(e){ endX = e.touches[0].clientX; if (Math.abs(startX - endX) > 20) clearLongPress(); }, { passive: true });
       slotEl.addEventListener('mouseup', function(){ clearLongPress(); handleSwipeEnd(); });
-      slotEl.addEventListener('mouseleave', function(){ clearLongPress(); slotEl.style.transform = ''; slotEl.classList.remove('kw-slot-swipe-delete', 'kw-slot-swipe-copy'); });
+      slotEl.addEventListener('mouseleave', function(){ clearLongPress(); if (!slotEl.classList.contains('swipe-open')) closeSwipe(); });
+    });
+    if (!grid._weekSwipeCloseBound){
+      grid._weekSwipeCloseBound = true;
+      grid.addEventListener('click', function(e){
+        if (!e.target.closest('.kw-slot.swipe-open')) closeWeekSwipeCards(grid, null);
+      });
+    }
+  }
+  function startListingFlowFromRenner(date, cookbookId){
+    if (typeof startListingFlow !== 'function') return;
+    startListingFlow({ date: date, entryPoint: 'week', dishId: cookbookId });
+  }
+  if (typeof window !== 'undefined') window.startListingFlowFromRenner = startListingFlowFromRenner;
+  function handleDropOnWeekSlot(e){
+    e.preventDefault();
+    var slot = e.currentTarget;
+    if (!slot) return;
+    slot.classList.remove('kw-slot-drop-over', 'drag-over-active');
+    var cookbookId = '';
+    try { cookbookId = e.dataTransfer ? e.dataTransfer.getData('text/plain') : ''; } catch(err){}
+    var dayKey = slot.getAttribute('data-day') || slot.getAttribute('data-date');
+    if(!cookbookId || !dayKey) return;
+    if(typeof window.spawnSmartBubble === 'function') window.spawnSmartBubble(e.clientX, e.clientY);
+    try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); } catch(err){}
+    if(typeof haptic === 'function') haptic(10);
+    if(typeof startListingFlowFromRenner === 'function') startListingFlowFromRenner(dayKey, cookbookId);
+  }
+  if (typeof window !== 'undefined') window.handleDropOnWeekSlot = handleDropOnWeekSlot;
+  function initThekenRennerDrag(){
+    var rennerCards = document.querySelectorAll('#v-provider-week .theken-renner-card, #v-provider-week .renner-card');
+    var slots = document.querySelectorAll('#v-provider-week .week-grid-slot');
+    rennerCards.forEach(function(card){
+      if (card._thekenDragBound) return;
+      card._thekenDragBound = true;
+      card.draggable = true;
+      if (!card.ondragstart) {
+        card.addEventListener('dragstart', function(e){
+          var cookbookId = card.getAttribute('data-cookbook-id') || '';
+          if(e.dataTransfer){
+            e.dataTransfer.setData('text/plain', cookbookId);
+            e.dataTransfer.effectAllowed = 'copy';
+          }
+          try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(8); } catch(err){}
+        });
+      }
+    });
+    slots.forEach(function(slot){
+      if (slot._thekenDropBound) return;
+      slot._thekenDropBound = true;
+      if (!slot.ondragover) {
+        slot.addEventListener('dragover', function(e){
+          e.preventDefault();
+          slot.classList.add('kw-slot-drop-over', 'drag-over-active');
+        });
+      }
+      if (!slot.ondragleave) {
+        slot.addEventListener('dragleave', function(){ slot.classList.remove('kw-slot-drop-over', 'drag-over-active'); });
+      }
+      if (!slot.ondrop) slot.addEventListener('drop', handleDropOnWeekSlot);
     });
   }
+  if (typeof window !== 'undefined') window.initThekenRennerDrag = initThekenRennerDrag;
   function openKWBoardMoveSheet(fromDay, fromSlot){
     var arr = week[fromDay];
     if (!arr || !arr[fromSlot]) return;
@@ -11833,6 +11917,8 @@
         return '<div class="renner-card" data-cookbook-id="' + esc(String(c.id)) + '" role="button" tabindex="0" aria-label="' + esc(c.dish || 'Gericht') + ' – Schnell zuweisen"><div class="renner-card-img-wrap"><img src="' + esc(imgUrl) + '" alt=""></div><span class="renner-card-name">' + esc(name) + '</span></div>';
       }).join('');
       rennerScroll.querySelectorAll('.renner-card').forEach(function(card){
+        card.classList.add('theken-renner-card');
+        card.draggable = true;
         var cookbookId = card.getAttribute('data-cookbook-id');
         card.ondragstart = function(e){
           e.dataTransfer.setData('text/plain', cookbookId);
@@ -11888,20 +11974,42 @@
           var badgeHtml = hasAbhol ? '<span class="slot-abholnummer-badge">\uD83C\uDFAB1\uFE0F\u20E3</span>' : '';
           var imgHtml = img ? '<img src="' + esc(img) + '" alt="">' : '';
           var slotCard = document.createElement('div');
-          slotCard.className = 'slot-card kw-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
+          slotCard.className = 'slot-card kw-slot week-grid-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
           slotCard.setAttribute('data-day', key);
           slotCard.setAttribute('data-slot', String(slot));
           slotCard.setAttribute('data-offer-id', isLive && items[slot] && items[slot].id ? String(items[slot].id) : '');
           slotCard.setAttribute('data-cookbook-id', entry.cookbookId ? String(entry.cookbookId) : '');
           if (!isLive) slotCard.setAttribute('data-draft', '1');
-          slotCard.innerHTML = '<div class="slot-card-img-wrap">' + imgHtml + badgeHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div>';
-          slotCard.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotCard.classList.contains('kw-slot-swipe-delete') || slotCard.classList.contains('kw-slot-swipe-copy')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
+          slotCard.innerHTML = '<div class="swipe-container"><button type="button" class="delete-action-bg" aria-label="Gericht löschen"><i data-lucide="trash-2" style="width:18px;height:18px;"></i></button><div class="week-card-foreground"><div class="slot-card-img-wrap">' + imgHtml + badgeHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div></div></div>';
+          slotCard.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotCard.classList.contains('swipe-open')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
+          var deleteBtn = slotCard.querySelector('.delete-action-bg');
+          if (deleteBtn) {
+            deleteBtn.onclick = (function(k, idx, liveFlag, offerObj){
+              return function(ev){
+                ev.preventDefault();
+                ev.stopPropagation();
+                if (typeof haptic === 'function') haptic(8);
+                if (liveFlag && offerObj && offerObj.id) {
+                  var offerIdx = offers.findIndex(function(o){ return String(o.id) === String(offerObj.id); });
+                  if (offerIdx >= 0) {
+                    offers.splice(offerIdx, 1);
+                    if (typeof save === 'function') save(LS.offers, offers);
+                    if (typeof showToast === 'function') showToast('Gericht gelöscht');
+                    if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+                    if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
+                    return;
+                  }
+                }
+                if (typeof deletePlannedEntryWithUndo === 'function') deletePlannedEntryWithUndo(k, idx);
+              };
+            })(key, slot, isLive, items[slot]);
+          }
           slotsWrap.appendChild(slotCard);
         }
       }
       if (showVeggieSog && veggieSuggestions.length > 0) {
         var sogSlot = document.createElement('div');
-        sogSlot.className = 'veggie-sog-slot kw-slot';
+        sogSlot.className = 'veggie-sog-slot veggie-add-card kw-slot week-grid-slot';
         sogSlot.setAttribute('data-day', key);
         sogSlot.setAttribute('data-sog', '1');
         var top2 = veggieSuggestions.slice(0, 2);
@@ -11910,7 +12018,7 @@
           var vName = (v.dish || 'Gericht').substring(0, 12) + ((v.dish || '').length > 12 ? '…' : '');
           return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><div class="veggie-sog-btn-img"><img src="' + esc(imgUrl) + '" alt=""></div><span class="veggie-sog-btn-name">' + esc(vName) + '</span></button>';
         }).join('');
-        sogSlot.innerHTML = '<span class="veggie-sog-text">+ Vegetarisches Gericht ergänzen? \uD83C\uDF3F</span>' + btnsHtml;
+        sogSlot.innerHTML = '<span class="veggie-sog-text"><span class="veggie-icon">\uD83C\uDF3F</span> Vegetarisches Gericht ergänzen?</span>' + btnsHtml;
         sogSlot.querySelectorAll('.veggie-sog-btn').forEach(function(btn){
           var cid = btn.getAttribute('data-cookbook-id');
           btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof addCookbookEntryToWeek === 'function'){ addCookbookEntryToWeek(key, cid); renderWeekPlanBoard(); if(typeof showToast === 'function') showToast('Gericht eingetragen'); } };
@@ -11921,7 +12029,7 @@
       if (items.length < maxFilled && !showVeggieSog) {
         var empty = document.createElement('button');
         empty.type = 'button';
-        empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
+        empty.className = 'kw-slot kw-slot-empty kw-slot-silent week-grid-slot';
         empty.setAttribute('data-day', key);
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
@@ -11931,7 +12039,7 @@
       } else if (items.length < maxFilled && showVeggieSog) {
         var empty = document.createElement('button');
         empty.type = 'button';
-        empty.className = 'kw-slot kw-slot-empty kw-slot-silent';
+        empty.className = 'kw-slot kw-slot-empty kw-slot-silent week-grid-slot';
         empty.setAttribute('data-day', key);
         empty.setAttribute('aria-label', 'Gericht hinzufügen');
         empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">Gericht hinzufügen</span>';
@@ -11947,22 +12055,12 @@
       slotEl.ondragover = function(e){
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
-        if(!slotEl.classList.contains('kw-slot-drop-over')){ slotEl.classList.add('kw-slot-drop-over'); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(2); }catch(err){} }
+        if(!slotEl.classList.contains('kw-slot-drop-over')){ slotEl.classList.add('kw-slot-drop-over', 'drag-over-active'); try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(2); }catch(err){} }
       };
-      slotEl.ondragleave = function(){ slotEl.classList.remove('kw-slot-drop-over'); };
-      slotEl.ondrop = function(e){
-        e.preventDefault();
-        slotEl.classList.remove('kw-slot-drop-over');
-        var cookbookId = e.dataTransfer.getData('text/plain');
-        if(!cookbookId || typeof addCookbookEntryToWeek !== 'function') return;
-        try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([20, 50, 20]); } catch(err){}
-        if(typeof window.spawnSmartBubble === 'function') window.spawnSmartBubble(e.clientX, e.clientY);
-        addCookbookEntryToWeek(dayKey, cookbookId);
-        if(typeof haptic === 'function') haptic(6);
-        renderWeekPlanBoard();
-        if(typeof showToast === 'function') showToast('Gericht eingetragen');
-      };
+      slotEl.ondragleave = function(){ slotEl.classList.remove('kw-slot-drop-over', 'drag-over-active'); };
+      slotEl.ondrop = handleDropOnWeekSlot;
     });
+    if (typeof initThekenRennerDrag === 'function') initThekenRennerDrag();
     if (typeof updateWeekViewFooter === 'function') updateWeekViewFooter();
     var emptyCta = document.getElementById('kwEmptyWeekTemplateCta');
     if (emptyCta) {
@@ -11999,7 +12097,7 @@
     var btnKwPdf = document.getElementById('weekKebabPdf');
     var btnKwShare = document.getElementById('weekKebabShare');
     if (btnKwPdf) btnKwPdf.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof triggerPrint==='function')triggerPrint(); else if(typeof printWeekCard==='function')printWeekCard(); };
-    if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof shareWeekPlanAsImage==='function') shareWeekPlanAsImage(); else if(typeof shareWeekPlan==='function') shareWeekPlan(); };
+    if (btnKwShare) btnKwShare.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); if(typeof haptic==='function')haptic(10); if(typeof triggerWeekSharing==='function') triggerWeekSharing(); };
     var btnKwScreenshot = document.getElementById('weekKebabScreenshot');
     if (btnKwScreenshot) btnKwScreenshot.onclick = function(){ var d=document.getElementById('weekKebabDropdown'); if(d&&typeof hide==='function')hide(d); try { if(navigator.vibrate) navigator.vibrate(40); } catch(e){} if(typeof haptic==='function')haptic(10); document.body.classList.add('week-preview-mode'); if(typeof showToast==='function') showToast('Wochenplan-Vorschau – Schließen zum Beenden'); };
     var monday = getWeekMonday(weekPlanKWIndex);
@@ -12174,6 +12272,15 @@
     if (opening && typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
   }
   if (typeof window !== 'undefined') window.toggleWeekKebabMenu = toggleWeekKebabMenu;
+  function openWochenplanKebab(){
+    if (typeof toggleWeekKebabMenu === 'function') toggleWeekKebabMenu();
+  }
+  if (typeof window !== 'undefined') window.openWochenplanKebab = openWochenplanKebab;
+  function triggerWeekSharing(){
+    if (typeof shareWeekPlanAsImage === 'function') shareWeekPlanAsImage();
+    else if (typeof shareWeekPlan === 'function') shareWeekPlan();
+  }
+  if (typeof window !== 'undefined') window.triggerWeekSharing = triggerWeekSharing;
 
   /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
   function initWeekPlanInteractions(){
@@ -12211,7 +12318,7 @@
     if (kebabBtn && kebabDrop) {
       kebabBtn.onclick = function(e){
         e.stopPropagation();
-        if (typeof toggleWeekKebabMenu === 'function') toggleWeekKebabMenu();
+        if (typeof openWochenplanKebab === 'function') openWochenplanKebab();
       };
       if (!document.__weekKebabCloseBound) {
         document.__weekKebabCloseBound = true;
@@ -12227,7 +12334,7 @@
     if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint H erreicht (Zeile ~12205)');
     /* Header-Schatten beim Scrollen: feine Trennung Content/Header [cite: 2026-03-02] */
     var scrollEl = document.getElementById('kwBoardScroll');
-    var headerEl = document.getElementById('weekHeaderCompact');
+    var headerEl = document.getElementById('v-provider-week-header') || document.getElementById('weekHeaderCompact');
     if (scrollEl && headerEl && !scrollEl._weekHeaderScrollBound) {
       scrollEl._weekHeaderScrollBound = true;
       scrollEl.addEventListener('scroll', function(){
