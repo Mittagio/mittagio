@@ -1857,10 +1857,10 @@
     /* 2. COMPACT LAYOUT: Ein-Screen-Garantie S25 */
     #mastercard-step-edit .inserat-scroll-area.mastercard-content,
     #mastercard-step-edit .mastercard-scroll-area {
-      padding: 60px 0 120px !important;
+      padding: 52px 0 88px !important;
       display: flex !important;
       flex-direction: column !important;
-      overflow-y: auto !important;
+      overflow-y: hidden !important;
       -webkit-overflow-scrolling: touch !important;
       gap: 0 !important;
       align-items: stretch !important;
@@ -1983,7 +1983,7 @@
       animation: pillIntroRun 0.6s ease-out forwards;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Pills→Name→PowerBar→Preis */
-    #mastercard-step-edit .inserat-scroll-area { padding: 60px 0 120px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 52px 0 88px !important; overflow-y: hidden !important; -webkit-overflow-scrolling: touch !important; }
     #mastercard-step-edit .pill-group { margin-top: 0; box-shadow: none !important; }
     #mastercard-step-edit .category-pill { box-shadow: none !important; }
     #mastercard-step-edit .category-pill.active { background: #222222 !important; color: #ffffff !important; }
@@ -3366,7 +3366,10 @@
       flex: 1; min-height: 0; overflow-y: auto; padding: 0;
       -webkit-overflow-scrolling: touch;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 60px 0 120px; overflow-y: auto; font-family: var(--font-main); -webkit-overflow-scrolling: touch; }
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-scroll-area {
+      overflow-y: hidden !important;
+    }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 52px 0 88px; overflow-y: hidden !important; font-family: var(--font-main); -webkit-overflow-scrolling: touch; }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -3467,8 +3470,8 @@
     }
     /* Scroll-Bereich: Platz für fixierten Footer (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
-      padding-bottom: 120px !important;
-      overflow-y: auto !important;
+      padding-bottom: 88px !important;
+      overflow-y: hidden !important;
       -webkit-overflow-scrolling: touch !important;
     }
     /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
@@ -3534,7 +3537,56 @@
     #wizard[data-flow="listing"] .inserat-content-sheet.wizard-content .floating-badges {
       margin-top: 0 !important;
       margin-bottom: 0;
-  padding-bottom: 0;
+      padding-bottom: 0;
+    }
+    /* Kategorie-Badges: immer eine Zeile; bei Bedarf horizontal wischen [User 2026-03-23] */
+    #wizard[data-flow="listing"] .floating-badges.category-pills {
+      flex-wrap: nowrap !important;
+      justify-content: center;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    #wizard[data-flow="listing"] .floating-badges.category-pills::-webkit-scrollbar {
+      display: none;
+    }
+    #wizard[data-flow="listing"] .floating-badges.category-pills .category-badge {
+      flex: 0 0 auto;
+    }
+    /* Service-Leiste: volle Viewport-Breite (grauer Streifen edge-to-edge) [User 2026-03-23] */
+    #wizard[data-flow="listing"] .inserat-content-sheet .info-section {
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: 0;
+      margin-top: 4px;
+      margin-bottom: 6px;
+      border-radius: 0;
+      box-sizing: border-box;
+      padding-left: max(8px, env(safe-area-inset-left, 0px));
+      padding-right: max(8px, env(safe-area-inset-right, 0px));
+    }
+    #wizard[data-flow="listing"] .inserat-service-grid.service-grid,
+    #wizard[data-flow="listing"] .inserat-service-grid {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
+      box-sizing: border-box !important;
+    }
+    /* Step-1-Cockpit: kein vertikaler Scroll im Hauptbereich [User 2026-03-23] */
+    #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
+    #wizard[data-flow="listing"] #mastercardScrollArea.inserat-scroll-area {
+      overflow-y: hidden !important;
+      overscroll-behavior-y: none;
+    }
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+      overflow-y: hidden !important;
+    }
+    /* Etwas straffere Abstände, damit alles in den sichtbaren Bereich passt */
+    #wizard[data-flow="listing"] .liquid-master-panel .inserat-section {
+      margin-bottom: 12px;
     }
     #wizard[data-flow="listing"] .wizard-content #step-name,
     #wizard[data-flow="listing"] .inserat-content-sheet #step-name {
@@ -3598,10 +3650,10 @@
       height: auto; min-height: 0;
       transition: max-height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    /* Listing: Foto 250px – scrollt normal unter Fixed Header [cite: S25-PREMIUM-NAV 2026-03-11] */
+    /* Listing: Foto 190px – kompakt, ein Screen ohne Scroll [cite: script buildListingStep + User 2026-03-23] */
     #wizard[data-flow="listing"] .liquid-master-panel .photo-header,
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-photo-tile.photo-header {
-      height: 250px !important; min-height: 250px !important; max-height: 250px !important; aspect-ratio: auto;
+      height: 190px !important; min-height: 190px !important; max-height: 190px !important; aspect-ratio: auto;
       box-shadow: none; border: none;
     }
     .liquid-master-panel .photo-header img,
@@ -9577,7 +9629,7 @@
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  padding: 60px 0 120px !important;
+  padding: 52px 0 88px !important;
 }
 #wizard[data-flow="listing"] .inserat-photo-tile.photo-header {
   margin-top: 0 !important;
@@ -10650,9 +10702,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   min-height: 48px !important;
   align-items: stretch !important;
 }
-/* Scroll-Reserve: letzter Inhalt bleibt über klebendem Footer sichtbar */
+/* Scroll-Reserve Step 1: kompakt, kein Innen-Scroll [User 2026-03-23] */
 #wizard[data-flow="listing"] #mastercard-step-edit .mastercard-scroll-area,
-#wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area,
+#wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
 #wizard[data-flow="listing"] #mastercard-step-money .inserat-step2-wrap {
   padding-bottom: calc(132px + env(safe-area-inset-bottom, 20px)) !important;
 }
@@ -10663,11 +10717,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
    =================================================================== */
 
 /* 30vh Photo-Block entfernt – Airbnb-Block weiter unten setzt 250px [cite: PURGE 2026-03-12] */
-/* Photo-Tile im Scroll: einheitlich 250px */
+/* Photo-Tile: Höhe vom Container (190px), nicht 250px [User 2026-03-23] */
 #wizard[data-flow="listing"] .inserat-photo-tile.inserat-photo-in-scroll {
-  height: 250px !important;
-  min-height: 250px !important;
-  max-height: 250px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
 }
 
 /* Fixed Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
@@ -11002,7 +11056,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 /* Großer Titel (H1): direkt unter Pills, 28px, 800 */
 #wizard[data-flow="listing"] .wizard-content #step-name,
 #wizard[data-flow="listing"] .wizard-content .inserat-unified-title-wrap {
-  margin-top: 16px !important;
+  margin-top: 6px !important;
 }
 #wizard[data-flow="listing"] .wizard-content #step-name .input-giant-name,
 #wizard[data-flow="listing"] .wizard-content .inserat-detail-style-title.inserat-gericht-name-extra {
@@ -11010,17 +11064,17 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   font-weight: 800 !important;
 }
 
-/* 1. ScrollArea: padding für Header (60px) + Footer (120px) */
+/* 1. ScrollArea: padding für Header + Footer, kein vertikaler Scroll [User 2026-03-23] */
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .inserat-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
   display: flex !important;
   flex-direction: column !important;
-  overflow-y: auto !important;
+  overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: contain !important;
-  padding-top: 60px !important;
-  padding-bottom: 120px !important;
+  overscroll-behavior: none !important;
+  padding-top: 52px !important;
+  padding-bottom: 88px !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
   align-items: stretch !important;
@@ -11064,8 +11118,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   align-items: center !important;
   justify-content: flex-start !important;
   overflow: visible !important;
-  padding: 0 20px 16px !important;
-  gap: 8px !important;
+  padding: 0 20px 6px !important;
+  gap: 4px !important;
   flex: 0 0 auto !important;
   box-sizing: border-box !important;
 }
@@ -11104,7 +11158,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
   flex: 1 !important;
   min-height: 0 !important;
-  overflow-y: auto !important;
+  overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch !important;
 }
 #app-sticky-header .header-title,
@@ -11174,9 +11228,6 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   background: transparent !important;
   border: none !important;
 }
-#wizard[data-flow="listing"] .inserat-scroll-area {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
-}
 
 /* MASTERCARD STEP 1 FINAL: 5 Icons + Airbnb Footer Single Source */
 #wizard[data-flow="listing"] .inserat-service-grid,
@@ -11185,11 +11236,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
   justify-items: center !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 6px !important;
   width: 100% !important;
-  max-width: 100% !important;
-  padding: 0 16px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
   box-sizing: border-box !important;
 }
 #wizard[data-flow="listing"] .inserat-service-tile,
@@ -11257,10 +11308,6 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   background: transparent !important;
   border: none !important;
 }
-#wizard[data-flow="listing"] .inserat-scroll-area,
-body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
-}
 
 /* UNIVERSAL DEVICE FIX: iPhone/iPad/Samsung viewport + footer stability */
 body.wizard-inserat-open #wizard[data-flow="listing"],
@@ -11289,7 +11336,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 }
 #wizard[data-flow="listing"] .inserat-scroll-area,
 body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
-  padding-bottom: var(--listing-footer-offset, calc(104px + max(env(safe-area-inset-bottom, 0px), 12px))) !important;
+  padding-bottom: var(--listing-footer-offset, calc(80px + max(env(safe-area-inset-bottom, 0px), 12px))) !important;
 }
 
 /* Edge-to-Edge Consistency: gleiche Typo-/Inset-Basis auf iOS/Android */

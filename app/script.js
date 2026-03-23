@@ -18203,7 +18203,7 @@
       var floatingBadges=document.createElement('div');
       floatingBadges.className='floating-badges category-pills';
       /* Pills direkt unter Bild, oberhalb des großen Titels [cite: AIRBNB-EDGE-TO-EDGE] */
-      floatingBadges.style.cssText='position:relative; display:flex; gap:8px; justify-content:center; width:100%; margin-top:0; margin-bottom:0; padding:0 16px; pointer-events:auto; flex-wrap:wrap;';
+      floatingBadges.style.cssText='position:relative; display:flex; flex-wrap:nowrap; gap:6px; justify-content:center; align-items:center; width:100%; margin-top:0; margin-bottom:0; padding:0 12px; pointer-events:auto; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;';
       var badgeDefs=[
         {type:'Fleisch',emoji:'🥩',label:'Fleisch'},
         {type:'Veggie',emoji:'🥦',label:'Veggie'},
@@ -18343,7 +18343,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 112px); overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:hidden; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:none;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100vw; max-width:100vw; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
