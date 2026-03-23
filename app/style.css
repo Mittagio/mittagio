@@ -10558,7 +10558,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   box-sizing: border-box;
 }
 
-/* Rebowl-Row innerhalb des Grids */
+/* Rebowl-Row (Legacy) – Pfand/Mehrweg-Bestätigung läuft über .inserat-service-confirmation-pills */
 .inserat-service-rebowl {
   grid-column: 1 / -1;
   display: flex;
@@ -10571,6 +10571,43 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   font-size: 13px;
   font-weight: 600;
   color: #0f172a;
+}
+
+/* Bestätigungs-Pills unter der 5er-Service-Leiste (InseratCard) */
+#wizard[data-flow="listing"] .inserat-service-confirmation-pills {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #f1f5f9;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+#wizard[data-flow="listing"] .inserat-service-confirmation-pills:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  min-height: 0 !important;
+}
+#wizard[data-flow="listing"] .inserat-service-confirm-pill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  line-height: 1.25;
 }
 
 /* ============================================================

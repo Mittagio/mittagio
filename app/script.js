@@ -18700,6 +18700,51 @@
       /* powerBar alias für Legacy-Referenzen */
       const powerBar=document.createElement('div');
       powerBar.className='inserat-service-grid service-grid';
+      var confirmationPillsWrap=document.createElement('div');
+      confirmationPillsWrap.className='inserat-service-confirmation-pills';
+
+      function fmtConfirmEuro(n){
+        var v=Number(n)||0;
+        return (typeof euro==='function')?euro(v):(v.toFixed(2).replace('.',',')+' \u20AC');
+      }
+      function renderConfirmationPills(){
+        confirmationPillsWrap.innerHTML='';
+        function addPill(text, ariaLabel){
+          var el=document.createElement('span');
+          el.className='inserat-service-confirm-pill';
+          el.setAttribute('role','status');
+          if(ariaLabel) el.setAttribute('aria-label',ariaLabel);
+          el.textContent=text;
+          confirmationPillsWrap.appendChild(el);
+        }
+        var reuseOn=!!(w.data.reuse&&w.data.reuse.enabled);
+        if(reuseOn){
+          w.data.reuse=w.data.reuse||{};
+          var dep=Number(w.data.reuse.deposit)||0;
+          if(dep>0){
+            var depStr=fmtConfirmEuro(dep);
+            addPill('\uD83D\uDD04 Mehrweg + '+depStr, 'Mehrweg mit Pfand '+depStr);
+          } else {
+            addPill('\uD83D\uDD04 Mehrweg', 'Mehrweg aktiviert, ohne Pfand');
+          }
+        }
+        var ag=w.data.allergens||[];
+        if(ag.length){
+          addPill('\uD83C\uDF3F Allergene ('+ag.length+')', 'Allergene: '+ag.join(', '));
+        }
+        var extrasList=w.data.extras||[];
+        var extrasNamed=extrasList.filter(function(e){ return e&&String(e.name||'').trim(); });
+        if(extrasNamed.length){
+          if(extrasNamed.length===1){
+            var e0=extrasNamed[0];
+            var p=Number(e0.price)||0;
+            var line='\u2795 '+String(e0.name).trim()+(p>0?' + '+fmtConfirmEuro(p):'');
+            addPill(line, line);
+          } else {
+            addPill('\u2795 Extras ('+extrasNamed.length+')', extrasNamed.map(function(e){ var pr=Number(e.price)||0; return String(e.name).trim()+(pr>0?' '+fmtConfirmEuro(pr):''); }).join('; '));
+          }
+        }
+      }
 
       function updatePowerBarFromBox(){
         var dineInTile=powerBar.querySelector('.inserat-service-tile[data-type="vor-ort"]');
@@ -18717,9 +18762,7 @@
         if(allergenTile){ var on=!!(w.data.allergens&&w.data.allergens.length); allergenTile.classList.toggle('active',on); allergenTile.classList.toggle('is-active',on); }
         if(extrasTile){ var on=!!(w.data.extras&&w.data.extras.length); extrasTile.classList.toggle('active',on); extrasTile.classList.toggle('is-active',on); }
         if(typeof updateMastercardFeedback==='function') updateMastercardFeedback();
-        /* Rebowl-Zeile ein-/ausblenden */
-        var rebowlRow=powerBar.querySelector('.inserat-service-rebowl');
-        if(rebowlRow) rebowlRow.style.display=(w.data.reuse&&w.data.reuse.enabled)?'flex':'none';
+        renderConfirmationPills();
       }
       function makeTile(emoji, label, type, isActive){
         var btn=document.createElement('button');
@@ -18852,6 +18895,7 @@
         w.data.reuse=w.data.reuse||{}; w.data.reuse.enabled=val;
         tileMehrweg.classList.toggle('active',val); tileMehrweg.classList.toggle('is-active',val);
         saveDraft();
+        if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
       }));
       /* Pfand-Zeile */
       var pfandRow=document.createElement('div');
@@ -18861,11 +18905,16 @@
       pfandToggleBtn.type='button';
       pfandToggleBtn.style.cssText='padding:8px 16px; border-radius:999px; border:1.5px solid #10b981; background:#fff; color:#10b981; font-size:13px; font-weight:700; cursor:pointer;';
       pfandToggleBtn.textContent=(w.data.reuse&&w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen';
-      pfandToggleBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandToggleBtn.textContent=(w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen'; };
+      pfandToggleBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandToggleBtn.textContent=(w.data.reuse.deposit>0)?'5,00 €':'+ Hinzufügen'; if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
       pfandRow.appendChild(pfandToggleBtn);
       mehrwegSheet.appendChild(pfandRow);
       mehrwegSheet.appendChild(makeFertigBtn(mehrwegSheet));
-      tileMehrweg.onclick=function(){ openSheet(mehrwegSheet); };
+      tileMehrweg.onclick=function(){
+        w.data.reuse=w.data.reuse||{};
+        var d=Number(w.data.reuse.deposit)||0;
+        pfandToggleBtn.textContent=d>0?(d===5?'5,00 \u20AC':fmtConfirmEuro(d)):'+ Hinzuf\u00FCgen';
+        openSheet(mehrwegSheet);
+      };
 
       /* ---- Abholzeit Sheet ---- */
       var timeSheet=makeSheet('Abholzeit einstellen');
@@ -18961,7 +19010,7 @@
           tile.className='sub-menu-allergen-tile'+(active?' active':'');
           tile.setAttribute('aria-label',item.name);
           tile.innerHTML='<span class="allergen-emoji">'+item.emoji+'</span><span class="allergen-code">'+item.code+' '+item.name+'</span>';
-          tile.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; var idx=w.data.allergens.indexOf(item.code); if(idx>=0){ w.data.allergens.splice(idx,1); } else{ w.data.allergens.push(item.code); } w.data.wantsAllergens=true; saveDraft(); tile.classList.toggle('active',(w.data.allergens||[]).indexOf(item.code)!==-1); tileAllergen.classList.toggle('active',!!(w.data.allergens&&w.data.allergens.length)); };
+          tile.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; var idx=w.data.allergens.indexOf(item.code); if(idx>=0){ w.data.allergens.splice(idx,1); } else{ w.data.allergens.push(item.code); } w.data.wantsAllergens=true; saveDraft(); tile.classList.toggle('active',(w.data.allergens||[]).indexOf(item.code)!==-1); tileAllergen.classList.toggle('active',!!(w.data.allergens&&w.data.allergens.length)); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
           allergenGridEl.appendChild(tile);
         });
       }
@@ -18994,20 +19043,8 @@
       powerBar.appendChild(tileTime);
       powerBar.appendChild(tileAllergen);
       powerBar.appendChild(tileExtras);
-
-      /* Rebowl-Zeile (Mehrweg-Pfand) */
-      var rebowlRow=document.createElement('div');
-      rebowlRow.className='inserat-service-rebowl';
-      rebowlRow.style.display=(hasReuse)?'flex':'none';
-      rebowlRow.innerHTML='<span>\uD83D\uDD04 Rebowl-Pfand</span>';
-      var pfandBtn=document.createElement('button');
-      pfandBtn.type='button';
-      pfandBtn.className='inserat-pfand-toggle';
-      pfandBtn.textContent=(w.data.reuse&&w.data.reuse.deposit>0)?'5,00 \u20AC':'+ Hinzuf\u00FCgen';
-      pfandBtn.style.cssText='padding:6px 12px; border-radius:8px; border:1px solid #10b981; background:#fff; color:#10b981; font-size:12px; font-weight:700; cursor:pointer;';
-      pfandBtn.onclick=function(){ hapticLight(); w.data.reuse=w.data.reuse||{}; w.data.reuse.deposit=w.data.reuse.deposit>0?0:5; saveDraft(); pfandBtn.textContent=(w.data.reuse.deposit>0)?'5,00 \u20AC':'+ Hinzuf\u00FCgen'; };
-      rebowlRow.appendChild(pfandBtn);
-      powerBar.appendChild(rebowlRow);
+      powerBar.appendChild(confirmationPillsWrap);
+      updatePowerBarFromBox();
 
       function updateMastercardFeedback(){ /* Validierung ohne Rekursion – kein updatePowerBarFromBox-Aufruf */ }
       function renderPowerBarExtras(){}
@@ -19070,7 +19107,7 @@
             var code=a.short; var label=(a.legal)?(a.name||code)+' ('+a.legal+')':(a.name||code); var active=(w.data.allergens||[]).includes(code);
             var pill=document.createElement('button'); pill.type='button'; pill.className='inserat-allergen-pill'+(active?' active':'');
             pill.textContent=label; pill.title=label;
-            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.classList.toggle('active',(w.data.allergens||[]).includes(code)); };
+            pill.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; if((w.data.allergens||[]).includes(code)){ w.data.allergens=w.data.allergens.filter(function(x){ return x!==code; }); } else{ w.data.allergens.push(code); } w.data.wantsAllergens=true; saveDraft(); pill.classList.toggle('active',(w.data.allergens||[]).includes(code)); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
             wrap.appendChild(pill);
           });
           quickAdjustPanel.appendChild(wrap);
@@ -19089,9 +19126,9 @@
             var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
             var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
             var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } };
+            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
             pillWrap.appendChild(btn);
-            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
+            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
             extrasListWrap.appendChild(pillWrap);
           });
           quickAdjustPanel.appendChild(extrasListWrap);
