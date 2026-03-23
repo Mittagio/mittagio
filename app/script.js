@@ -18594,7 +18594,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:hidden; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:none;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100vw; max-width:100vw; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -19568,7 +19568,7 @@
             }
           }catch(e){}
         }
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.style.overflowY=(s===2?'hidden':'auto'); scrollArea.scrollTop=0; } if(typeof showStep==='function') showStep(s); updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
+        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.scrollTop=0; } if(typeof showStep==='function') showStep(s); updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); requestAnimationFrame(applyListingViewportOffsets); });
       }

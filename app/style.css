@@ -1878,13 +1878,13 @@
       background: #ffffff !important;
       filter: none !important;
     }
-    /* 2. COMPACT LAYOUT: Ein-Screen-Garantie S25 */
+    /* 2. COMPACT LAYOUT: Step 1 scrollbar (kleine Viewports / Footer sichtbar); Step 2/3 via Wizard-Klasse ohne Scroll */
     #mastercard-step-edit .inserat-scroll-area.mastercard-content,
     #mastercard-step-edit .mastercard-scroll-area {
       padding: 52px 0 88px !important;
       display: flex !important;
       flex-direction: column !important;
-      overflow-y: hidden !important;
+      overflow-y: auto !important;
       -webkit-overflow-scrolling: touch !important;
       gap: 0 !important;
       align-items: stretch !important;
@@ -2007,7 +2007,7 @@
       animation: pillIntroRun 0.6s ease-out forwards;
     }
     /* FINALE NEUAUFBAU Schritt 1: Kompaktheit [cite: ZERO-CLICK FOCUS 2026-02-23] Foto 170px→Pills→Name→PowerBar→Preis */
-    #mastercard-step-edit .inserat-scroll-area { padding: 52px 0 88px !important; overflow-y: hidden !important; -webkit-overflow-scrolling: touch !important; }
+    #mastercard-step-edit .inserat-scroll-area { padding: 52px 0 88px !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
     #mastercard-step-edit .pill-group { margin-top: 0; box-shadow: none !important; }
     #mastercard-step-edit .category-pill { box-shadow: none !important; }
     #mastercard-step-edit .category-pill.active { background: #222222 !important; color: #ffffff !important; }
@@ -3391,9 +3391,9 @@
       -webkit-overflow-scrolling: touch;
     }
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-scroll-area {
-      overflow-y: hidden !important;
+      overflow-y: auto !important;
     }
-    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 52px 0 88px; overflow-y: hidden !important; font-family: var(--font-main); -webkit-overflow-scrolling: touch; }
+    #wizard[data-flow="listing"] .inserat-scroll-area { padding: 52px 0 88px; overflow-y: auto !important; font-family: var(--font-main); -webkit-overflow-scrolling: touch; }
     /* App-like: ein Bildschirm, klare Sektionen [cite: Plan Inseratsflow] */
     .liquid-master-panel .inserat-scroll-area {
       --inserat-section-gap: 28px;
@@ -3492,10 +3492,10 @@
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel .inserat-action-section {
       padding-bottom: max(20px, calc(16px + env(safe-area-inset-bottom, 0px))) !important;
     }
-    /* Scroll-Bereich: Platz für fixierten Footer (Fixed Cockpit) [cite: S25-FIXED-COCKPIT 2026-03-11] */
+    /* Scroll-Bereich: Platz für fixierten Footer + vertikal scrollen (Handy: Footer/CTA erreichbar) */
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
       padding-bottom: 88px !important;
-      overflow-y: hidden !important;
+      overflow-y: auto !important;
       -webkit-overflow-scrolling: touch !important;
     }
     /* Step1-Nav: 2 Buttons gleich groß wie system-bottom-nav (48px, gap 12px) */
@@ -3599,14 +3599,22 @@
       padding-right: 4px !important;
       box-sizing: border-box !important;
     }
-    /* Step-1-Cockpit: kein vertikaler Scroll im Hauptbereich [User 2026-03-23] */
+    /* Step-1: vertikaler Scroll; Step 2/3: Scroll aus (siehe Override unten) */
     #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
     #wizard[data-flow="listing"] #mastercardScrollArea.inserat-scroll-area {
-      overflow-y: hidden !important;
-      overscroll-behavior-y: none;
+      overflow-y: auto !important;
+      overscroll-behavior-y: contain;
     }
     body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+      overflow-y: auto !important;
+    }
+    /* Step 2/3: kein vertikaler Scroll auf der (ausgeblendeten) Step-1-Fläche */
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"].inserat-step2-active #mastercardScrollArea.inserat-scroll-area,
+    body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"].inserat-step3-active #mastercardScrollArea.inserat-scroll-area,
+    #wizard[data-flow="listing"].inserat-step2-active #mastercardScrollArea.inserat-scroll-area,
+    #wizard[data-flow="listing"].inserat-step3-active #mastercardScrollArea.inserat-scroll-area {
       overflow-y: hidden !important;
+      overscroll-behavior-y: none;
     }
     /* Etwas straffere Abstände, damit alles in den sichtbaren Bereich passt */
     #wizard[data-flow="listing"] .liquid-master-panel .inserat-section {
@@ -10884,7 +10892,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   min-height: 48px !important;
   align-items: stretch !important;
 }
-/* Scroll-Reserve Step 1: kompakt, kein Innen-Scroll [User 2026-03-23] */
+/* Scroll-Reserve Step 1: Footer + Safe-Area; Inhalt scrollbar */
 #wizard[data-flow="listing"] #mastercard-step-edit .mastercard-scroll-area,
 #wizard[data-flow="listing"] #mastercard-step-edit .inserat-scroll-area {
   padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
@@ -11399,15 +11407,15 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   font-weight: 800 !important;
 }
 
-/* 1. ScrollArea: padding für Header + Footer, kein vertikaler Scroll [User 2026-03-23] */
+/* 1. ScrollArea: padding für Header + Footer, Step 1 vertikal scrollbar */
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area,
 #mastercard-step-edit .inserat-scroll-area,
 #mastercard-step-edit .mastercard-scroll-area {
   display: flex !important;
   flex-direction: column !important;
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: none !important;
+  overscroll-behavior: contain !important;
   padding-top: 52px !important;
   padding-bottom: 88px !important;
   padding-left: 0 !important;
@@ -11493,7 +11501,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 #wizard[data-flow="listing"] .inserat-scroll-area.mastercard-scroll-area {
   flex: 1 !important;
   min-height: 0 !important;
-  overflow-y: hidden !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
 }
 #app-sticky-header .header-title,
