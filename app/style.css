@@ -10754,6 +10754,72 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   text-align: center;
 }
 
+.sub-menu-allergen-tile--add {
+  border-style: dashed;
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.sub-menu-allergen-tile--add .allergen-code {
+  font-size: 8px;
+  line-height: 1.15;
+}
+
+.sub-menu-allergen-custom-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sub-menu-allergen-custom-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.sub-menu-allergen-custom-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.sub-menu-allergen-custom-chip-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.sub-menu-allergen-custom-chip-remove {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 10px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sub-menu-allergen-custom-chip-remove:active {
+  opacity: 0.85;
+}
+
 .sub-menu-drawer-fertig {
   width: 100%;
   min-height: 52px;

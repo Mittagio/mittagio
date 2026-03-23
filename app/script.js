@@ -5423,9 +5423,11 @@
     // Allergene: Label oben, Kürzel als graue Pills (#F2F2F2, border-radius 8px), ⓘ öffnet Legende
     const sAllergensCodesWrap = document.getElementById('sAllergensCodesWrap');
     if(aw){
-      if(o.allergens && o.allergens.length){
+      var customAllergenArr = Array.isArray(o.allergensCustom) ? o.allergensCustom.map(function(x){ return String(x||'').trim(); }).filter(Boolean) : [];
+      var hasCustomAllerg = customAllergenArr.length > 0;
+      if(o.allergens && o.allergens.length || hasCustomAllerg){
         aw.style.display = 'flex';
-        const r = o.allergens.map(a => String(a||'').trim());
+        const r = (o.allergens && o.allergens.length) ? o.allergens.map(a => String(a||'').trim()) : [];
         const codes = [];
         r.forEach(v => {
           const u = v.toUpperCase();
@@ -5436,9 +5438,15 @@
         });
         const seen = {};
         const uniq = codes.filter(c => { if(seen[c]) return false; seen[c]=1; return true; });
-        if(sAllergensCodes) sAllergensCodes.textContent = uniq.length ? uniq.join(', ') : '–';
+        var customPillsHtml = customAllergenArr.map(function(t){
+          return '<span class="allergen-pill allergen-pill--custom">' + (typeof esc === 'function' ? esc(t) : t) + '</span>';
+        }).join('');
+        var stdPillsHtml = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '';
+        var codesText = [uniq.join(', '), customAllergenArr.join(', ')].filter(Boolean).join(' · ') || '–';
+        if(sAllergensCodes) sAllergensCodes.textContent = codesText;
         if(sAllergensCodesWrap){
-          sAllergensCodesWrap.innerHTML = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+          var wrapInner = (stdPillsHtml || customPillsHtml) ? (stdPillsHtml + customPillsHtml) : '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+          sAllergensCodesWrap.innerHTML = wrapInner;
         }
         if(sAllergens){
           const list = uniq.map(c => {
@@ -5450,7 +5458,13 @@
               <span style="color:rgba(255,255,255,0.75); font-size:12px;">${esc(word)}</span>
             </div>`;
           }).join('');
-          sAllergens.innerHTML = list || '';
+          var customList = customAllergenArr.map(function(t){
+            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <i data-lucide="shield-alert" style="width:16px;height:16px;color:rgba(255,255,255,0.7);flex-shrink:0;"></i>
+              <span style="font-weight:700; color:rgba(255,255,255,0.9);">${typeof esc === 'function' ? esc(t) : t}</span>
+            </div>`;
+          }).join('');
+          sAllergens.innerHTML = (list || '') + (customList || '');
         }
       } else {
         aw.style.display = 'flex';
@@ -16359,8 +16373,8 @@
     {name:'Soja', short:'SO', legal:'F'},
     {name:'Weichtiere', short:'WE', legal:'R'}
   ];
-  /** Emoji pro Allergen (für kleine Pills). */
-  const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🫘', WE:'🦑' };
+  /** Emoji pro Allergen (für kleine Pills). SS=Sesam bewusst ⚪ (breite Font-Unterstützung). */
+  const ALLERGEN_EMOJI = { GL:'🌾', KR:'🦐', EI:'🥚', FI:'🐟', EN:'🥜', SO:'🫘', MI:'🥛', SF:'🌰', SE:'🥬', SN:'🟡', SS:'⚪', SU:'🍷', LU:'🌼', WE:'🦑' };
   /** Gerichtname (lowercase) → vorgeschlagene Allergen-Codes (short). Bei Eingabe vorauswählen. */
   /** Gerichtname (lowercase) → Allergen-Kürzel für Vorselektion im Header-Morph [🌾]. Smart-Pill [cite: 2026-02-16]. */
   /** EU-Allergen-Code (A,C,G,L,M,D) → ALLERGENS_14 short (GL,EI,MI,SE,SN,FI) [cite: 2026-02-21 Top-30] */
@@ -17019,7 +17033,8 @@
             hasPickupCode: !!o.hasPickupCode,
             dineInPossible: !!o.dineInPossible,
             allergens: Array.isArray(o.allergens) ? [...o.allergens] : [],
-            wantsAllergens: !!(o.allergens && Array.isArray(o.allergens) && o.allergens.length > 0),
+            allergensCustom: Array.isArray(o.allergensCustom) ? o.allergensCustom.slice() : [],
+            wantsAllergens: !!((o.allergens && Array.isArray(o.allergens) && o.allergens.length > 0) || (o.allergensCustom && o.allergensCustom.length > 0)),
             extras: Array.isArray(o.extras) ? JSON.parse(JSON.stringify(o.extras)) : [],
             reuse: o.reuse ? JSON.parse(JSON.stringify(o.reuse)) : {enabled:false, deposit:0},
             photoData: o.imageUrl || '',
@@ -17050,7 +17065,8 @@
             hasPickupCode: isRennerFastTrack ? true : (x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer),
             dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : defaultVorOrt,
             allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
-            wantsAllergens: !!(x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0),
+            allergensCustom: Array.isArray(x.allergensCustom) ? x.allergensCustom.slice() : [],
+            wantsAllergens: !!((x.allergens && Array.isArray(x.allergens) && x.allergens.length > 0) || (x.allergensCustom && x.allergensCustom.length > 0)),
             extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
             reuse: x.reuse && (x.reuse.enabled !== undefined || x.reuse.deposit !== undefined) ? JSON.parse(JSON.stringify(x.reuse)) : { enabled: globalReuseEnabled, deposit: globalReuseEnabled ? defaultReuseDeposit : 0 },
             photoData: x.photoData || x.imageUrl || '',
@@ -17070,6 +17086,7 @@
             hasPickupCode: !!profile.abholnummerEnabledByDefault,
             dineInPossible: defaultVorOrt,
             allergens:[],
+            allergensCustom:[],
             wantsAllergens: false,
             extras:[],
             reuse:{ enabled: globalReuseEnabled, deposit: globalReuseEnabled ? 3 : 0 },
@@ -17090,7 +17107,7 @@
               pickupWindow: profile.mealWindow || DEFAULT_MEAL_WINDOW,
               hasPickupCode: !!profile.abholnummerEnabledByDefault,
               dineInPossible: true,
-              allergens: [], wantsAllergens: false,
+              allergens: [], allergensCustom: [], wantsAllergens: false,
               extras: [], reuse: { enabled: true, deposit: 5 },
               photoData: '', photoDataIsStandard: false, cookbookId: null,
               day: ctx.date || createFlowPreselectedDate || isoDate(new Date())
@@ -17112,6 +17129,7 @@
           hasPickupCode: defaultAbholnummer,
           dineInPossible: defaultVorOrt,
           allergens:[],
+          allergensCustom:[],
           wantsAllergens: false,
           extras:[],
           reuse:{ enabled: true, deposit: 5 },
@@ -17139,7 +17157,8 @@
       w.data.hasPickupCode = !!w.data.hasPickupCode;
       w.data.dineInPossible = !!w.data.dineInPossible;
       w.data.allergens = Array.isArray(w.data.allergens) ? w.data.allergens : [];
-      if(w.data.wantsAllergens === undefined) w.data.wantsAllergens = !!(w.data.allergens && w.data.allergens.length > 0);
+      w.data.allergensCustom = Array.isArray(w.data.allergensCustom) ? w.data.allergensCustom.map(function(s){ return String(s || '').trim(); }).filter(function(s){ return s.length > 0; }) : [];
+      if(w.data.wantsAllergens === undefined) w.data.wantsAllergens = !!((w.data.allergens && w.data.allergens.length > 0) || (w.data.allergensCustom && w.data.allergensCustom.length > 0));
       w.data.extras = Array.isArray(w.data.extras) ? w.data.extras : [];
       // Mehrweg: aus Profil wenn nicht gesetzt
       if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: profile.reuseEnabledByDefault ? 3 : 0 };
@@ -17175,7 +17194,8 @@
         hasPickupCode: x.hasPickupCode !== undefined ? !!x.hasPickupCode : defaultAbholnummer,
         dineInPossible: x.dineInPossible !== undefined ? !!x.dineInPossible : defaultVorOrt,
         allergens: Array.isArray(x.allergens) ? [...x.allergens] : [],
-        wantsAllergens: !!(x.allergens && x.allergens.length),
+        allergensCustom: Array.isArray(x.allergensCustom) ? x.allergensCustom.slice() : [],
+        wantsAllergens: !!((x.allergens && x.allergens.length) || (x.allergensCustom && x.allergensCustom.length)),
         extras: Array.isArray(x.extras) ? JSON.parse(JSON.stringify(x.extras)) : [],
         reuse: x.reuse ? JSON.parse(JSON.stringify(x.reuse)) : { enabled: globalReuseEnabled, deposit: defaultReuseDeposit },
         photoData: x.photoData || x.imageUrl || '',
@@ -17586,6 +17606,23 @@
     if(!w.data.reuse) w.data.reuse = { enabled: !!profile.reuseEnabledByDefault, deposit: defaultReuseDeposit };
     else { if(w.data.reuse.enabled === undefined) w.data.reuse.enabled = !!profile.reuseEnabledByDefault; if(w.data.reuse.enabled && (w.data.reuse.deposit === undefined || w.data.reuse.deposit === 0)) w.data.reuse.deposit = defaultReuseDeposit; }
     if(!w.data.allergens || w.data.allergens.length === 0){ if(profile.defaultAllergens && profile.defaultAllergens.length){ w.data.allergens = profile.defaultAllergens.slice(); w.data.wantsAllergens = true; } }
+    if(!Array.isArray(w.data.allergensCustom)) w.data.allergensCustom = [];
+    else w.data.allergensCustom = w.data.allergensCustom.map(function(s){ return String(s || '').trim(); }).filter(function(s){ return s.length > 0; });
+    /* Alte Drawer-Kürzel I,J,K → Standard L,M,N (L nicht mappen: Konflikt Sellerie vs. früheres „L=Sulfite“) */
+    if(w.data.allergens && w.data.allergens.length){
+      var _legMap = { I:'L', J:'M', K:'N' };
+      var _seen = {};
+      var _mig = [];
+      w.data.allergens.forEach(function(c){
+        var u = String(c || '').toUpperCase();
+        var next = (u.length === 1 && _legMap[u]) ? _legMap[u] : c;
+        var key = String(next);
+        if(_seen[key]) return;
+        _seen[key] = 1;
+        _mig.push(next);
+      });
+      w.data.allergens = _mig;
+    }
     if(typeof w.data.allergeneExpanded === 'undefined') w.data.allergeneExpanded = !!w.data.wantsAllergens;
     if(typeof window !== 'undefined' && w.data && window._wizardInitialDataSnapshot == null) window._wizardInitialDataSnapshot = JSON.parse(JSON.stringify(w.data));
 
@@ -18690,7 +18727,10 @@
       // ========== 6. SERVICE-GRID: 5 quadratische Kacheln (S25 Cockpit) ==========
       var hasDineIn=w.data.dineInPossible!==false;
       var hasReuse=!!(w.data.reuse&&w.data.reuse.enabled);
-      var hasAllergens=!!(w.data.allergens&&w.data.allergens.length);
+      function listingAllergenBarActive(){
+        return !!((w.data.allergens && w.data.allergens.length) || (w.data.allergensCustom && w.data.allergensCustom.length));
+      }
+      var hasAllergens=listingAllergenBarActive();
       var hasExtras=!!(w.data.extras&&w.data.extras.length);
       var hasAbholnummer=!!w.data.hasPickupCode;
       /* Info-Section: Wrapper für Service-Grid [cite: 2026-03-10] */
@@ -18729,8 +18769,12 @@
           }
         }
         var ag=w.data.allergens||[];
-        if(ag.length){
-          addPill('\uD83C\uDF3F Allergene ('+ag.length+')', 'Allergene: '+ag.join(', '));
+        var ac=w.data.allergensCustom||[];
+        var allergenTotal=ag.length+ac.length;
+        if(allergenTotal){
+          var parts=ag.slice();
+          if(ac.length) Array.prototype.push.apply(parts, ac);
+          addPill('\uD83C\uDF3F Allergene ('+allergenTotal+')', 'Allergene: '+parts.join(', '));
         }
         var extrasList=w.data.extras||[];
         var extrasNamed=extrasList.filter(function(e){ return e&&String(e.name||'').trim(); });
@@ -18759,7 +18803,7 @@
         if(timeTile){ var curPw=w.data.pickupWindow||(provider&&provider.profile&&provider.profile.mealWindow)||'11:30–14:00'; timeTile.querySelector('.tile-label').textContent=curPw; }
         /* Abholnummer: Sync mit Step 2 – aktiv wenn hasPickupCode oder step2PickupEnabled */
         if(abholnummerTile){ var abholOn=!!w.data.hasPickupCode||!!w.data.step2PickupEnabled; abholnummerTile.classList.toggle('active',abholOn); abholnummerTile.classList.toggle('is-active',abholOn); }
-        if(allergenTile){ var on=!!(w.data.allergens&&w.data.allergens.length); allergenTile.classList.toggle('active',on); allergenTile.classList.toggle('is-active',on); }
+        if(allergenTile){ var on=listingAllergenBarActive(); allergenTile.classList.toggle('active',on); allergenTile.classList.toggle('is-active',on); }
         if(extrasTile){ var on=!!(w.data.extras&&w.data.extras.length); extrasTile.classList.toggle('active',on); extrasTile.classList.toggle('is-active',on); }
         if(typeof updateMastercardFeedback==='function') updateMastercardFeedback();
         renderConfirmationPills();
@@ -18986,21 +19030,63 @@
       var drawerHandle=document.createElement('div'); drawerHandle.className='sub-menu-drawer-handle';
       var drawerTitle=document.createElement('div'); drawerTitle.className='sub-menu-drawer-title'; drawerTitle.textContent='Allergene';
       var allergenGridEl=document.createElement('div'); allergenGridEl.className='sub-menu-allergen-grid';
-      /* Allergen-Daten: Emoji + Kürzel */
+      var allergenCustomChipsWrap=document.createElement('div');
+      allergenCustomChipsWrap.className='sub-menu-allergen-custom-wrap';
+      /* Kürzel = ALLERGENE_STANDARD (A–H, L, M, N, O, P, R). Milch zeigt „Milch“ statt nur Laktose. */
       var ALLERGEN_TILES=[
         {emoji:'\uD83C\uDF3E',code:'A',name:'Gluten'},
-        {emoji:'\uD83E\uDD5B',code:'G',name:'Laktose'},
-        {emoji:'\uD83E\uDD5A',code:'C',name:'Ei'},
-        {emoji:'\uD83E\uDD5C',code:'E',name:'Erdnuss'},
-        {emoji:'\uD83D\uDC1F',code:'D',name:'Fisch'},
         {emoji:'\uD83E\uDD90',code:'B',name:'Krebst.'},
-        {emoji:'\uD83FABE8',code:'F',name:'Soja'},
+        {emoji:'\uD83E\uDD5A',code:'C',name:'Ei'},
+        {emoji:'\uD83D\uDC1F',code:'D',name:'Fisch'},
+        {emoji:'\uD83E\uDD5C',code:'E',name:'Erdnuss'},
+        {emoji:'\uD83E\uDED8',code:'F',name:'Soja'},
+        {emoji:'\uD83E\uDD5B',code:'G',name:'Milch'},
         {emoji:'\uD83C\uDF30',code:'H',name:'Schalen'},
-        {emoji:'\uD83E\uDD57',code:'I',name:'Sellerie'},
-        {emoji:'\uD83C\uDF2D',code:'J',name:'Senf'},
-        {emoji:'\uD83E\uDED3',code:'K',name:'Sesam'},
-        {emoji:'\uD83C\uDF77',code:'L',name:'Sulfite'}
+        {emoji:'\uD83E\uDD57',code:'L',name:'Sellerie'},
+        {emoji:'\uD83C\uDF2D',code:'M',name:'Senf'},
+        {emoji:'\u26AA',code:'N',name:'Sesam'},
+        {emoji:'\uD83C\uDF77',code:'O',name:'Sulfite'},
+        {emoji:'\uD83C\uDF3C',code:'P',name:'Lupinen'},
+        {emoji:'\uD83E\uDD91',code:'R',name:'Weichtiere'}
       ];
+      function syncAllergenPowerTile(){
+        if(tileAllergen) tileAllergen.classList.toggle('active',listingAllergenBarActive());
+        if(tileAllergen) tileAllergen.classList.toggle('is-active',listingAllergenBarActive());
+      }
+      function renderAllergenCustomChips(){
+        allergenCustomChipsWrap.innerHTML='';
+        var list=w.data.allergensCustom||[];
+        if(!list.length) return;
+        var hint=document.createElement('div');
+        hint.className='sub-menu-allergen-custom-hint';
+        hint.textContent='Eigene Hinweise:';
+        allergenCustomChipsWrap.appendChild(hint);
+        list.forEach(function(text){
+          var chip=document.createElement('div');
+          chip.className='sub-menu-allergen-custom-chip';
+          var span=document.createElement('span');
+          span.className='sub-menu-allergen-custom-chip-text';
+          span.textContent=text;
+          var rm=document.createElement('button');
+          rm.type='button';
+          rm.className='sub-menu-allergen-custom-chip-remove';
+          rm.setAttribute('aria-label','Entfernen');
+          rm.innerHTML='\u00D7';
+          rm.onclick=function(e){
+            e.stopPropagation();
+            hapticLight();
+            if(!w.data.allergensCustom) return;
+            var rmText=text;
+            w.data.allergensCustom=w.data.allergensCustom.filter(function(x){ return String(x)!==rmText; });
+            saveDraft();
+            renderAllergenGrid();
+            if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+          };
+          chip.appendChild(span);
+          chip.appendChild(rm);
+          allergenCustomChipsWrap.appendChild(chip);
+        });
+      }
       function renderAllergenGrid(){
         allergenGridEl.innerHTML='';
         ALLERGEN_TILES.forEach(function(item){
@@ -19010,11 +19096,44 @@
           tile.className='sub-menu-allergen-tile'+(active?' active':'');
           tile.setAttribute('aria-label',item.name);
           tile.innerHTML='<span class="allergen-emoji">'+item.emoji+'</span><span class="allergen-code">'+item.code+' '+item.name+'</span>';
-          tile.onclick=function(){ hapticLight(); if(!w.data.allergens) w.data.allergens=[]; var idx=w.data.allergens.indexOf(item.code); if(idx>=0){ w.data.allergens.splice(idx,1); } else{ w.data.allergens.push(item.code); } w.data.wantsAllergens=true; saveDraft(); tile.classList.toggle('active',(w.data.allergens||[]).indexOf(item.code)!==-1); tileAllergen.classList.toggle('active',!!(w.data.allergens&&w.data.allergens.length)); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
+          tile.onclick=function(){
+            hapticLight();
+            if(!w.data.allergens) w.data.allergens=[];
+            var idx=w.data.allergens.indexOf(item.code);
+            if(idx>=0){ w.data.allergens.splice(idx,1); } else { w.data.allergens.push(item.code); }
+            w.data.wantsAllergens=true;
+            saveDraft();
+            tile.classList.toggle('active',(w.data.allergens||[]).indexOf(item.code)!==-1);
+            syncAllergenPowerTile();
+            if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+          };
           allergenGridEl.appendChild(tile);
         });
+        var addTile=document.createElement('button');
+        addTile.type='button';
+        addTile.className='sub-menu-allergen-tile sub-menu-allergen-tile--add';
+        addTile.setAttribute('aria-label','Weiteres Allergen hinzufügen');
+        addTile.innerHTML='<span class="allergen-emoji">\u2795</span><span class="allergen-code">Hinzufügen</span>';
+        addTile.onclick=function(){
+          hapticLight();
+          var t='';
+          try{ t=window.prompt('Weiteres Allergen oder Hinweis (wird bei den Gästen angezeigt):','')||''; }catch(e){ t=''; }
+          t=String(t).trim();
+          if(!t) return;
+          if(t.length>120){ if(typeof showToast==='function') showToast('Max. 120 Zeichen.'); return; }
+          w.data.allergensCustom=w.data.allergensCustom||[];
+          if(w.data.allergensCustom.indexOf(t)>=0){ if(typeof showToast==='function') showToast('Bereits eingetragen.'); return; }
+          if(w.data.allergensCustom.length>=8){ if(typeof showToast==='function') showToast('Max. 8 eigene Hinweise.'); return; }
+          w.data.allergensCustom.push(t);
+          w.data.wantsAllergens=true;
+          saveDraft();
+          renderAllergenGrid();
+          syncAllergenPowerTile();
+          if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+        };
+        allergenGridEl.appendChild(addTile);
+        renderAllergenCustomChips();
       }
-      renderAllergenGrid();
       var allergenDisclaimer=document.createElement('p');
       allergenDisclaimer.className='sub-menu-allergen-disclaimer';
       allergenDisclaimer.textContent='Kennzeichnung erfolgt eigenverantwortlich durch den Anbieter.';
@@ -19025,11 +19144,13 @@
       allergenDrawer.appendChild(drawerHandle);
       allergenDrawer.appendChild(drawerTitle);
       allergenDrawer.appendChild(allergenGridEl);
+      allergenDrawer.appendChild(allergenCustomChipsWrap);
       allergenDrawer.appendChild(allergenDisclaimer);
       allergenDrawer.appendChild(btnDrawerFertig);
+      renderAllergenGrid();
       document.body.appendChild(allergenDrawerBackdrop);
       document.body.appendChild(allergenDrawer);
-      function openAllergenDrawer(){ hapticLight(); closeAllPowerbarSheets(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
+      function openAllergenDrawer(){ hapticLight(); closeAllPowerbarSheets(); renderAllergenGrid(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
       function closeAllergenDrawer(){ allergenDrawer.classList.remove('is-open'); allergenDrawerBackdrop.classList.remove('is-open'); updatePowerBarFromBox(); }
       tileAllergen.onclick=function(){ openAllergenDrawer(); };
       allergenDrawerBackdrop.onclick=closeAllergenDrawer;
@@ -19612,6 +19733,7 @@
       hasPickupCode: !!w.data.hasPickupCode || w.data.pricingOption === 'abholnummer',
       dineInPossible: !!w.data.dineInPossible,
       allergens: w.data.allergens||[],
+      allergensCustom: Array.isArray(w.data.allergensCustom) ? w.data.allergensCustom.slice() : [],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
       day: w.data.day || isoDate(new Date()),
@@ -19734,6 +19856,7 @@
           category: out.category || 'Veggie',
           price: Number(out.price || 0),
           allergens: out.allergens || [],
+          allergensCustom: Array.isArray(out.allergensCustom) ? out.allergensCustom.slice() : [],
           extras: out.extras || [],
           reuse: out.reuse || { enabled: false, deposit: 0 },
           photoData: out.imageUrl || out.photoData || '',
@@ -19794,6 +19917,7 @@
     if(published.price != null) ent.price = published.price;
     ent.photoData = published.imageUrl || published.photoData || ent.photoData || '';
     ent.allergens = Array.isArray(published.allergens) ? published.allergens.slice() : (ent.allergens || []);
+    ent.allergensCustom = Array.isArray(published.allergensCustom) ? published.allergensCustom.slice() : (ent.allergensCustom || []);
     ent.extras = Array.isArray(published.extras) ? published.extras.slice() : (ent.extras || []);
     ent.description = published.description != null ? published.description : ent.description;
     ent.category = published.category || ent.category || 'Veggie';
@@ -20621,7 +20745,7 @@
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
     if(bd){ bd.style.pointerEvents='auto'; bd.style.opacity='1'; bd.classList.add('active'); }
     if(sheet){ sheet.style.transform='translateY(0)'; sheet.classList.add('active'); }
-    var list=sheet&&sheet.querySelector('.info-legend-list'); if(list&&w&&w.data){ list.querySelectorAll('.info-legend-item').forEach(function(li){ li.classList.remove('active'); var key=li.getAttribute('data-legend'); if(key==='vorort'&&w.data.dineInPossible) li.classList.add('active'); if(key==='mehrweg'&&w.data.reuse&&w.data.reuse.enabled) li.classList.add('active'); if(key==='zeit'&&(w.data.pickupWindow&&String(w.data.pickupWindow).trim())) li.classList.add('active'); if(key==='allergene'&&(w.data.allergens&&w.data.allergens.length)) li.classList.add('active'); if(key==='extras'&&(w.data.extras&&w.data.extras.length)) li.classList.add('active'); if(key==='abholnummer'&&w.data.hasPickupCode) li.classList.add('active'); }); }
+    var list=sheet&&sheet.querySelector('.info-legend-list'); if(list&&w&&w.data){ list.querySelectorAll('.info-legend-item').forEach(function(li){ li.classList.remove('active'); var key=li.getAttribute('data-legend'); if(key==='vorort'&&w.data.dineInPossible) li.classList.add('active'); if(key==='mehrweg'&&w.data.reuse&&w.data.reuse.enabled) li.classList.add('active'); if(key==='zeit'&&(w.data.pickupWindow&&String(w.data.pickupWindow).trim())) li.classList.add('active'); if(key==='allergene'&&((w.data.allergens&&w.data.allergens.length)||(w.data.allergensCustom&&w.data.allergensCustom.length))) li.classList.add('active'); if(key==='extras'&&(w.data.extras&&w.data.extras.length)) li.classList.add('active'); if(key==='abholnummer'&&w.data.hasPickupCode) li.classList.add('active'); }); }
     var btn=document.getElementById('infoLegendVerstandenBtn'); if(btn&&!btn._bound){ btn._bound=true; btn.onclick=function(){ closeInfoLegendSheet(); }; }
   }
   function closeInfoLegendSheet(){
@@ -20642,6 +20766,7 @@
       category: w.data.category||'Veggie',
       price: Number(w.data.price||0),
       allergens: w.data.allergens||[],
+      allergensCustom: Array.isArray(w.data.allergensCustom) ? w.data.allergensCustom.slice() : [],
       extras: w.data.extras||[],
       reuse: w.data.reuse||{enabled:false,deposit:0},
       photoData: w.data.photoData||'',
