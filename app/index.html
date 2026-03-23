@@ -1486,19 +1486,26 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
     <!-- Provider-Profil "Meins" – Single-Page: Mein Betrieb-Karte, 2x2 KPIs, 4-Säulen-Grid [cite: 2026-02-18, 2026-02-25] -->
     <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
+      <header class="prov-page-header dynamic-header system-header" id="v-provider-profile-header" aria-label="Profil">
+        <div class="prov-page-header-row">
+          <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="profile" role="button" tabindex="0" aria-label="Zum Seitenanfang">
+            <h1 class="prov-page-header-title system-header-title">Profil</h1>
+          </div>
+        </div>
+      </header>
       <div id="providerProfileContent" class="provider-profile-content-rebuild provider-profile-single-page">
         <div id="providerProfileMainContent" class="account-settings-airbnb">
         <!-- Header: Klickbare Karte "Mein Betrieb" für Logo- und Namens-Edits [cite: 2026-02-18] -->
         <div id="providerProfileMasterKachel" class="account-master-kachel account-profile-header provider-profile-mein-betrieb-card" role="button" tabindex="0" aria-label="Mein Betrieb bearbeiten">
           <span class="provider-profile-mein-betrieb-label">Mein Betrieb</span>
-          <div class="account-master-left">
+          <div class="provider-profile-mein-betrieb-row">
             <img id="providerProfileMasterLogo" src="assets/images/mittagio-logo.png" alt="" class="account-master-logo" />
-            <div>
+            <div class="provider-profile-mein-betrieb-text">
               <h2 id="providerProfileMasterName" class="account-master-name">Betriebsname</h2>
               <p id="providerProfileMasterOrt" class="account-master-ort">Ort</p>
             </div>
+            <i data-lucide="chevron-right" class="provider-profile-mein-betrieb-chevron" style="width:20px;height:20px;color:#94a3b8;"></i>
           </div>
-          <i data-lucide="chevron-right" class="provider-profile-mein-betrieb-chevron" style="width:20px;height:20px;color:#94a3b8;"></i>
         </div>
         <section class="provider-kpi-cockpit" id="providerKpiCockpit">
           <button type="button" class="provider-kpi-item" id="providerKpiRevenue" aria-label="Umsatz anzeigen">

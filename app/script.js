@@ -13906,7 +13906,10 @@
     var masterLogo = document.getElementById('providerProfileMasterLogo');
     if(masterName) masterName.textContent = (p.name || p.businessName || 'Betriebsname').trim() || 'Betriebsname';
     if(masterOrt) masterOrt.textContent = (p.city || (p.zip && p.city ? p.zip + ' ' + p.city : '') || buildAddress(p) || 'Ort').trim() || '—';
-    if(masterLogo && p.logoUrl) masterLogo.src = p.logoUrl;
+    if(masterLogo){
+      var logoSrc = (p.logoUrl || p.logoData || '').trim();
+      if(logoSrc) masterLogo.src = logoSrc;
+    }
     /* Glamour-Grid: Meine Regeln, Abrechnungen, Support, FAQ */
     var currentBillingMonthKey = (function(){
       var d = new Date();
