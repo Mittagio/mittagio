@@ -18093,10 +18093,8 @@
         controlsSheet.className='editor-lower';
         var metaHead=document.createElement('div');
         metaHead.className='photo-editor-meta-head';
-        var dishTitleEl=document.createElement('h2');
-        dishTitleEl.className='photo-editor-dish-title';
-        dishTitleEl.textContent=((w.data.dish||'').trim())||'Dein Gericht';
-        metaHead.appendChild(dishTitleEl);
+        var toolFrame=document.createElement('div');
+        toolFrame.className='photo-editor-toolbar-frame';
         var toolsBar=document.createElement('div');
         toolsBar.className='tool-row';
         function buildTool(id,icon,label){
@@ -18113,7 +18111,8 @@
         toolsBar.appendChild(toolReplace);
         toolsBar.appendChild(toolCrop);
         toolsBar.appendChild(toolDelete);
-        metaHead.appendChild(toolsBar);
+        toolFrame.appendChild(toolsBar);
+        metaHead.appendChild(toolFrame);
         var coachWrap=document.createElement('div');
         coachWrap.className='photo-editor-checklist-wrap';
         coachWrap.setAttribute('aria-hidden','true');
