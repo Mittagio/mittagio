@@ -1479,11 +1479,18 @@
     { id: 'providerProfileEmail', type: 'email', label: 'E-Mail', autocomplete: 'email' },
     { id: 'providerProfileWebsite', type: 'url', label: 'Webseite', autocomplete: 'url' }
   ];
+  function createProviderBusinessInputGroup(fieldDef){
+    return MittagioForm.createInputGroup(Object.assign({
+      groupClass: 'input-group provider-business-field',
+      inputClass: 'provider-business-input',
+      placeholder: ''
+    }, fieldDef));
+  }
   function createProviderBusinessDataCard(){
     var wrap = document.createElement('div');
     wrap.id = 'providerBusinessDataCardWrap';
     wrap.className = 'provider-settings-card provider-business-data-card';
-    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06);');
+    wrap.setAttribute('style', 'background:#fff; border-radius:24px; padding:24px; border:none; box-shadow:0 1px 3px rgba(0,0,0,0.06); width:100%; max-width:100%; box-sizing:border-box; min-width:0;');
     var title = document.createElement('h3');
     title.setAttribute('style', 'margin:0 0 6px; font-size:17px; font-weight:800; color:#1a1a1a;');
     title.textContent = 'Betriebsdaten';
@@ -1492,13 +1499,13 @@
     subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
     subtitle.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
     wrap.appendChild(subtitle);
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[4]));
-    wrap.appendChild(MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[5]));
-    var webGroup = MittagioForm.createInputGroup(PROVIDER_BUSINESS_FIELDS[6]);
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[2]));
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[3]));
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[4]));
+    wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[5]));
+    var webGroup = createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[6]);
     webGroup.style.marginBottom = '24px';
     wrap.appendChild(webGroup);
     var btn = document.createElement('button');
@@ -18594,9 +18601,9 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain; touch-action:pan-y;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
-      photoContainer.style.cssText='width:100vw; max-width:100vw; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0 0 0 calc(-50vw + 50%); padding:0; display:block; line-height:0; border-radius:0;';
+      photoContainer.style.cssText='width:100%; max-width:100%; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
       /* Dezentes Edit-Icon oben rechts IM BILD (eBay-Style) */
       var editPencilBtn=document.createElement('button');
@@ -18623,8 +18630,8 @@
       /* Content-Sheet: Flex:1, space-evenly – füllt verbleibenden Platz [cite: S25-FIXED-COCKPIT 2026-03-11] */
       var contentSheet=document.createElement('div');
       contentSheet.className='inserat-cockpit-body inserat-content-sheet wizard-content';
-      /* ContentSheet: normaler Flow, kompakt [cite: CLEAN-SWEEP 2026-03-12] */
-      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:center; gap:0; padding:0 0 16px;';
+      /* stretch: volle Breite für Service-Grid (kein Safari/Chrome-Zentrier-Mismatch bei align-items:center) */
+      contentSheet.style.cssText='width:100%; display:flex; flex-direction:column; align-items:stretch; gap:0; padding:0 0 16px;';
       scrollArea.appendChild(contentSheet);
 
       // ========== 2. EBENE (Titel): Textarea + Mülleimer rechts [cite: REFACTOR 2026-02-23] ==========
@@ -19601,16 +19608,25 @@
           setTimeout(function(){ scrollInputAboveKeyboard(el); }, 150);
         }
       });
+      var vvRaf = null;
       var vvHandler = function(){
+        if(vvRaf) return;
+        vvRaf = requestAnimationFrame(function(){
+          vvRaf = null;
         /* Keyboard-Fix: Visual Viewport Höhe bestimmen */
         var vvH = (window.visualViewport ? Math.round(window.visualViewport.height) : window.innerHeight);
         var winH = window.innerHeight;
         var keyboardH = Math.max(0, winH - vvH);
-        /* 1. Wizard-Höhe auf Visual Viewport begrenzen (Samsung Internet / dvh-Fallback) */
+        /* 1. Wizard-Höhe nur bei Tastatur an vvH koppeln – weniger Sprünge bei URL-Leiste ein/aus */
         var wiz = document.getElementById('wizard');
         if(wiz && wiz.isConnected){
-          wiz.style.setProperty('height', vvH + 'px', 'important');
-          wiz.style.setProperty('max-height', vvH + 'px', 'important');
+          if(keyboardH > 72){
+            wiz.style.setProperty('height', vvH + 'px', 'important');
+            wiz.style.setProperty('max-height', vvH + 'px', 'important');
+          } else {
+            wiz.style.removeProperty('height');
+            wiz.style.removeProperty('max-height');
+          }
         }
         /* 2. Footers über Tastatur heben */
         var f1=document.getElementById('mastercard-footer-step1');
@@ -19631,6 +19647,7 @@
         }
         box.style.setProperty('--listing-header-offset', headerH+'px');
         box.style.setProperty('--listing-footer-offset', (footerH+12)+'px');
+        });
       };
       if(typeof window.visualViewport !== 'undefined'){
         window.visualViewport.addEventListener('resize', vvHandler);
