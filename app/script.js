@@ -17667,7 +17667,8 @@
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
         step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow:hidden;';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-        var objPos2=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
         var priceS2=Number(w.data.price)||0;
         var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
@@ -17679,7 +17680,7 @@
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
         stampCard.style.cssText='display:flex; align-items:center; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid #eee; border-bottom:2px dashed #ddd; border-radius:12px; background:#fff; opacity:0.6; box-shadow:0 6px 14px rgba(15,23,42,0.03);';
-        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:60px; height:60px; border-radius:8px; object-fit:cover; object-position:center '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:4px; min-width:0;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span></div>';
+        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:60px; height:60px; border-radius:8px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:4px; min-width:0;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span></div>';
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
@@ -17806,7 +17807,10 @@
           var imgEl=document.getElementById('money-dish-img');
           var nameEl=document.getElementById('money-dish-name');
           var priceEl=document.getElementById('money-dish-price');
-          if(imgEl){ imgEl.src=t; imgEl.style.objectPosition='center '+op+'%'; }
+          if(imgEl){
+            var px=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
+            imgEl.src=t; imgEl.style.objectPosition=px+'% '+op+'%';
+          }
           if(nameEl) nameEl.textContent=dn;
           if(priceEl) priceEl.textContent=eu;
           updateTileUI();
@@ -17834,11 +17838,12 @@
         liveStatusCard.className='live-status-card';
         liveStatusCard.style.cssText='position:relative;';
         var thumbS3=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
-        var objPosS3=(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var objPosS3=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
+        var objPanS3=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
         var dishS3=(w.data.dish||'').trim()||'Gericht';
         var priceS3=Number(w.data.price)||0;
         var euroS3=typeof euro==='function'?euro(priceS3):(priceS3.toFixed(2).replace('.',',')+' Ôé¼');
-        liveStatusCard.innerHTML='<div class="live-card-badge">● LIVE</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:center '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
+        liveStatusCard.innerHTML='<div class="live-card-badge">● LIVE</div><img src="'+thumbS3+'" id="step3FinalImg" class="live-card-img" alt="" style="object-position:'+objPanS3+'% '+objPosS3+'%;"><div class="live-card-info"><h3 id="step3FinalTitle">'+esc(dishS3)+'</h3><p id="step3FinalPrice">'+euroS3+'</p><div class="final-abhol-box" id="step3AbholBox" style="display:none;"><span>Deine <strong>Abholnummer</strong>:</span><span class="abhol-id" id="step3AbholId">#A-01</span></div></div>';
         step3Content.appendChild(liveStatusCard);
         var waShareBtn=document.createElement('button');
         waShareBtn.type='button';
@@ -17889,8 +17894,21 @@
       {
 
       // ========== 1. EBENE: Ebay-Style Photo-Modul ÔÇô Smart-Crop, Drag-to-Pan [cite: 2026-02-21] ==========
-      function getPhotoObjectPosition(){ var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 40; }
-      function setPhotoObjectPosition(p){ w.data.photoObjectPosition=Math.max(0,Math.min(100,p)); w.data.photoCropY=undefined; saveDraft(); }
+      function getPhotoObjectPosition(){
+        if(typeof w.data.photoObjectPanY==='number') return Math.max(0,Math.min(100,w.data.photoObjectPanY));
+        var v=w.data.photoObjectPosition; if(typeof v==='number') return Math.max(0,Math.min(100,v)); var cy=w.data.photoCropY; if(typeof cy==='number') return Math.round(50+(cy/80)*50); return 40;
+      }
+      function setPhotoObjectPosition(p){
+        p=Math.max(0,Math.min(100,p));
+        w.data.photoObjectPosition=p;
+        w.data.photoObjectPanY=p;
+        w.data.photoCropY=undefined;
+        saveDraft();
+      }
+      function getPhotoObjectPanX(){ var v=w.data.photoObjectPanX; if(typeof v==='number') return Math.max(0,Math.min(100,v)); return 50; }
+      function setPhotoObjectPanX(p){ w.data.photoObjectPanX=Math.max(0,Math.min(100,p)); saveDraft(); }
+      function getPhotoObjectPanY(){ return getPhotoObjectPosition(); }
+      function applyMainImageObjectPosition(){ if(!imgEl) return; imgEl.style.objectPosition=getPhotoObjectPanX()+'% '+getPhotoObjectPanY()+'%'; }
       function getPhotoFilterCss(preset){
         if(preset==='lux') return 'contrast(1.08) saturate(1.12) brightness(1.04)';
         if(preset==='bright') return 'brightness(1.12)';
@@ -17906,9 +17924,9 @@
       /* height:100% – füllt den flex:0 0 30vh photoContainer [cite: S25-FIXED-COCKPIT 2026-03-11] */
       photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:100%; min-height:0; margin:0; padding:0; z-index:1;';
       var imgSrc=w.data.photoData||'';
-      var objPos=getPhotoObjectPosition();
       var imgEl=document.createElement('img');
-      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||''; imgEl.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center '+objPos+'%;';
+      imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||''; imgEl.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover;';
+      applyMainImageObjectPosition();
       imgEl.style.filter=getPhotoFilterCss(w.data.photoFilterPreset||'none');
       if(!w.data.photoData) imgEl.style.display='none';
       var cameraInput=document.createElement('input');
@@ -17969,11 +17987,11 @@
           if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
           /* INSTANT: Sofortige Anzeige mit ObjectURL, kein Warten [cite: INSTANT PHOTO 2026-02-23] */
           var objectUrl=URL.createObjectURL(f);
-          if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; }
+          if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
           var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
           photoTile.classList.remove('inserat-photo-placeholder','pulse-soft');
           photoTile.style.border='none';
-          w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; setPhotoObjectPosition(50); saveDraft();
+          w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; saveDraft();
           overlay.style.pointerEvents='none'; overlay.style.cursor='default';
           if(editPencilBtn) editPencilBtn.style.display='flex';
           closePhotoEditOverlay(); /* Overlay schließen falls offen (z.B. via 🔄 Ersetzen) */
@@ -18003,7 +18021,7 @@
         var sugWrap=document.createElement('div');
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; imgEl.style.objectPosition='center 50%'; } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); setPhotoObjectPanX(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; applyMainImageObjectPosition(); } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -18019,8 +18037,11 @@
       /* Photo-Edit-Overlay: eBay-Style Vollbild + nativer Touch-Drag-Crop */
       var cropModeActive=false;
       var cropStartY=0;
+      var cropStartX=0;
       var cropStartPosY=50;
+      var cropStartPosX=50;
       var cropCurrentPosY=50;
+      var cropCurrentPosX=50;
       var cropTouching=false;
       function clampCrop(v){ return Math.max(0, Math.min(100, v)); }
       function closePhotoEditOverlay(){
@@ -18035,39 +18056,46 @@
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
-        ov.className='photo-editor-floating photo-editor-split is-hidden';
+        ov.className='is-hidden';
         ov.style.cssText='position:fixed; inset:0; z-index:1100005;';
         var imageZone=document.createElement('div');
-        imageZone.className='image-display-zone';
+        imageZone.className='editor-upper';
+        var viewport=document.createElement('div');
+        viewport.className='photo-viewport';
         var oImg=document.createElement('img');
         oImg.id='edit-preview-image';
         oImg.className='editor-bg-image';
         oImg.src=w.data.photoData||'';
-        cropCurrentPosY=getPhotoObjectPosition();
+        cropCurrentPosY=getPhotoObjectPanY();
+        cropCurrentPosX=getPhotoObjectPanX();
         var activeTool=(w.data.photoFilterPreset||'none');
-        oImg.style.cssText='object-position:center '+cropCurrentPosY+'%; filter:'+getPhotoFilterCss(activeTool)+';';
-        imageZone.appendChild(oImg);
+        oImg.style.cssText='object-position:'+cropCurrentPosX+'% '+cropCurrentPosY+'%; filter:'+getPhotoFilterCss(activeTool)+';';
+        viewport.appendChild(oImg);
         var cropGrid=document.createElement('div');
-        cropGrid.className='crop-grid-overlay';
-        imageZone.appendChild(cropGrid);
+        cropGrid.className='photo-viewport-grid';
+        viewport.appendChild(cropGrid);
+        var resetHintEl=document.createElement('div');
+        resetHintEl.className='photo-editor-reset-hint';
+        resetHintEl.textContent='Zentriert';
+        resetHintEl.setAttribute('aria-hidden','true');
+        viewport.appendChild(resetHintEl);
+        var resetHintTimer=null;
+        imageZone.appendChild(viewport);
         ov.appendChild(imageZone);
         var controlsSheet=document.createElement('div');
-        controlsSheet.className='editor-controls-sheet';
-        var coachWrap=document.createElement('div');
-        coachWrap.className='photo-coach-inspiration photo-coach-floating';
-        coachWrap.innerHTML='<p class="coach-title">Pro-Tipps:</p><div class="inspiration-slider"><div class="pill">💡 Tageslicht nutzen</div><div class="pill">🧽 Linse putzen</div><div class="pill">🚫 Kein Zoom</div></div>';
-        controlsSheet.appendChild(coachWrap);
-        var saveBtn=document.createElement('button');
-        saveBtn.type='button';
-        saveBtn.className='save-photo-btn';
-        saveBtn.textContent='FOTO SPEICHERN';
-        controlsSheet.appendChild(saveBtn);
+        controlsSheet.className='editor-lower';
+        var btnCloseEditor=document.createElement('button');
+        btnCloseEditor.type='button';
+        btnCloseEditor.className='editor-close-btn';
+        btnCloseEditor.setAttribute('aria-label','Schließen');
+        btnCloseEditor.innerHTML='&#10005;';
+        btnCloseEditor.onclick=function(e){ e.preventDefault(); closePhotoEditOverlay(); };
         var toolsBar=document.createElement('div');
-        toolsBar.className='editor-tools-bar editor-bottom-nav';
+        toolsBar.className='tool-row';
         function buildTool(id,icon,label){
           var item=document.createElement('button');
           item.type='button';
-          item.className='tool-item tool-btn';
+          item.className='tool-item tool-btn editor-tool';
           item.setAttribute('data-tool',id);
           item.innerHTML='<div class="tool-icon">'+icon+'</div><span>'+label+'</span>';
           return item;
@@ -18078,39 +18106,200 @@
         toolsBar.appendChild(toolReplace);
         toolsBar.appendChild(toolCrop);
         toolsBar.appendChild(toolDelete);
-        controlsSheet.appendChild(toolsBar);
+        var coachWrap=document.createElement('div');
+        coachWrap.className='tip-pills';
+        coachWrap.innerHTML='<span class="tip-pill" role="note">💡 Tageslicht</span><span class="tip-pill" role="note">🧽 Linse sauber</span><span class="tip-pill" role="note">🔍 Kein Zoom</span>';
+        var saveFooter=document.createElement('div');
+        saveFooter.className='save-footer';
+        var saveBtn=document.createElement('button');
+        saveBtn.type='button';
+        saveBtn.className='save-photo-btn';
+        saveBtn.textContent='FOTO SPEICHERN';
+        saveFooter.appendChild(saveBtn);
+        var lowerHead=document.createElement('div');
+        lowerHead.className='editor-lower-head';
+        lowerHead.appendChild(btnCloseEditor);
+        lowerHead.appendChild(toolsBar);
+        controlsSheet.appendChild(lowerHead);
+        controlsSheet.appendChild(coachWrap);
+        controlsSheet.appendChild(saveFooter);
         ov.appendChild(controlsSheet);
-        function syncOverlayPos(){ oImg.style.objectPosition='center '+clampCrop(cropCurrentPosY)+'%'; }
+        function syncOverlayPos(){ oImg.style.objectPosition=clampCrop(cropCurrentPosX)+'% '+clampCrop(cropCurrentPosY)+'%'; }
+        function showPhotoEditorResetHint(){
+          if(!resetHintEl) return;
+          resetHintEl.classList.add('is-visible');
+          if(resetHintTimer) clearTimeout(resetHintTimer);
+          resetHintTimer=setTimeout(function(){ if(resetHintEl) resetHintEl.classList.remove('is-visible'); resetHintTimer=null; }, 850);
+        }
+        function performPhotoEditorReset(){
+          cropCurrentPosX=50;
+          cropCurrentPosY=50;
+          syncOverlayPos();
+          if(typeof setPhotoObjectPanX==='function') setPhotoObjectPanX(50);
+          if(typeof setPhotoObjectPosition==='function') setPhotoObjectPosition(50);
+          if(imgEl&&typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition();
+          try{ if(navigator.vibrate) navigator.vibrate([8,40,8]); }catch(e){}
+          oImg.classList.remove('photo-editor-reset-pulse');
+          oImg.offsetHeight;
+          oImg.classList.add('photo-editor-reset-pulse');
+          setTimeout(function(){ if(oImg) oImg.classList.remove('photo-editor-reset-pulse'); }, 500);
+          showPhotoEditorResetHint();
+        }
         function setActiveTool(tool){
           activeTool=tool;
           cropModeActive=(tool==='crop');
           oImg.style.filter=getPhotoFilterCss(tool);
           [toolReplace,toolCrop,toolDelete].forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-tool')===tool); });
         }
-        function onTouchStart(ev){
-          if(!cropModeActive) return;
-          var t=ev.touches&&ev.touches[0]; if(!t) return;
+        var activePointerId=null;
+        var gestureStartX=0;
+        var gestureStartY=0;
+        var lastEditorTapTime=0;
+        var lastEditorTapX=0;
+        var lastEditorTapY=0;
+        function onPointerDown(ev){
+          if(!ev.isPrimary) return;
+          if(ev.pointerType==='mouse'&&ev.button!==0) return;
+          activePointerId=ev.pointerId;
+          try{ oImg.setPointerCapture(ev.pointerId); }catch(err){}
           cropTouching=true;
-          cropStartY=t.clientY;
+          cropStartY=ev.clientY;
+          cropStartX=ev.clientX;
+          gestureStartX=ev.clientX;
+          gestureStartY=ev.clientY;
           cropStartPosY=cropCurrentPosY;
+          cropStartPosX=cropCurrentPosX;
         }
-        function onTouchMove(ev){
-          if(!cropModeActive || !cropTouching) return;
-          var t=ev.touches&&ev.touches[0]; if(!t) return;
+        function onPointerMove(ev){
+          if(!cropTouching||!ev.isPrimary) return;
+          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
           ev.preventDefault();
-          var deltaY=(t.clientY-cropStartY)*0.5;
+          var deltaY=(ev.clientY-cropStartY)*0.5;
+          var deltaX=(ev.clientX-cropStartX)*0.5;
           cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
+          cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
           syncOverlayPos();
         }
-        function onTouchEnd(){
-          if(!cropModeActive) return;
+        function finishGesture(clientX, clientY, pointerType){
+          var gdx=clientX-gestureStartX;
+          var gdy=clientY-gestureStartY;
+          var gestureDist=Math.sqrt(gdx*gdx+gdy*gdy);
+          var isLikelyTap=gestureDist<14;
+          activePointerId=null;
           cropTouching=false;
           cropCurrentPosY=clampCrop(cropCurrentPosY);
+          cropCurrentPosX=clampCrop(cropCurrentPosX);
+          syncOverlayPos();
+          if(isLikelyTap&&(pointerType==='touch'||pointerType==='pen')){
+            var nowTap=Date.now();
+            var tdx=clientX-lastEditorTapX;
+            var tdy=clientY-lastEditorTapY;
+            var tapSep=Math.sqrt(tdx*tdx+tdy*tdy);
+            if(lastEditorTapTime>0&&(nowTap-lastEditorTapTime)<320&&tapSep<48){
+              performPhotoEditorReset();
+              lastEditorTapTime=0;
+            }else{
+              lastEditorTapTime=nowTap;
+              lastEditorTapX=clientX;
+              lastEditorTapY=clientY;
+            }
+          }
+        }
+        function onPointerUp(ev){
+          if(!cropTouching||!ev.isPrimary) return;
+          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
+          try{ oImg.releasePointerCapture(ev.pointerId); }catch(err){}
+          finishGesture(ev.clientX, ev.clientY, ev.pointerType||'');
+        }
+        function onPointerCancel(ev){
+          if(!cropTouching||!ev.isPrimary) return;
+          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
+          try{ oImg.releasePointerCapture(ev.pointerId); }catch(err){}
+          activePointerId=null;
+          cropTouching=false;
+          cropCurrentPosY=clampCrop(cropCurrentPosY);
+          cropCurrentPosX=clampCrop(cropCurrentPosX);
           syncOverlayPos();
         }
-        oImg.addEventListener('touchstart', onTouchStart, { passive:true });
-        oImg.addEventListener('touchmove', onTouchMove, { passive:false });
-        oImg.addEventListener('touchend', onTouchEnd, { passive:true });
+        var usePointerApi=(typeof window.PointerEvent==='function'&&typeof oImg.setPointerCapture==='function');
+        if(usePointerApi){
+          oImg.addEventListener('pointerdown', onPointerDown);
+          oImg.addEventListener('pointermove', onPointerMove, { passive:false });
+          oImg.addEventListener('pointerup', onPointerUp);
+          oImg.addEventListener('pointercancel', onPointerCancel);
+          oImg.addEventListener('lostpointercapture', function(ev){
+            if(ev.pointerId===activePointerId){ activePointerId=null; cropTouching=false; }
+          });
+        }else{
+          oImg.addEventListener('touchstart', function(ev){
+            if(!ev.touches||ev.touches.length!==1) return;
+            ev.preventDefault();
+            var t=ev.touches[0];
+            activePointerId=-1;
+            cropTouching=true;
+            cropStartY=t.clientY;
+            cropStartX=t.clientX;
+            gestureStartX=t.clientX;
+            gestureStartY=t.clientY;
+            cropStartPosY=cropCurrentPosY;
+            cropStartPosX=cropCurrentPosX;
+          }, { passive:false });
+          oImg.addEventListener('touchmove', function(ev){
+            if(!cropTouching||!ev.touches||ev.touches.length!==1) return;
+            ev.preventDefault();
+            var t=ev.touches[0];
+            var deltaY=(t.clientY-cropStartY)*0.5;
+            var deltaX=(t.clientX-cropStartX)*0.5;
+            cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
+            cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
+            syncOverlayPos();
+          }, { passive:false });
+          oImg.addEventListener('touchend', function(ev){
+            if(!cropTouching) return;
+            var t=ev.changedTouches&&ev.changedTouches[0];
+            var cx=t?t.clientX:gestureStartX;
+            var cy=t?t.clientY:gestureStartY;
+            finishGesture(cx, cy, 'touch');
+          });
+          oImg.addEventListener('touchcancel', function(){
+            cropTouching=false;
+            activePointerId=null;
+            cropCurrentPosY=clampCrop(cropCurrentPosY);
+            cropCurrentPosX=clampCrop(cropCurrentPosX);
+            syncOverlayPos();
+          });
+          var editorMouseDown=false;
+          oImg.addEventListener('mousedown', function(ev){
+            if(ev.button!==0) return;
+            try{ ev.preventDefault(); }catch(e){}
+            editorMouseDown=true;
+            cropTouching=true;
+            cropStartY=ev.clientY;
+            cropStartX=ev.clientX;
+            gestureStartX=ev.clientX;
+            gestureStartY=ev.clientY;
+            cropStartPosY=cropCurrentPosY;
+            cropStartPosX=cropCurrentPosX;
+          });
+          document.addEventListener('mousemove', function(ev){
+            if(!editorMouseDown||!cropTouching) return;
+            var deltaY=(ev.clientY-cropStartY)*0.5;
+            var deltaX=(ev.clientX-cropStartX)*0.5;
+            cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
+            cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
+            syncOverlayPos();
+          });
+          document.addEventListener('mouseup', function(ev){
+            if(!editorMouseDown) return;
+            editorMouseDown=false;
+            finishGesture(ev.clientX, ev.clientY, 'mouse');
+          });
+        }
+        oImg.addEventListener('dblclick', function(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+          performPhotoEditorReset();
+        });
         var isPhotoSavePending=false;
         function setEditorSaveState(isPending){
           if(!saveBtn) return;
@@ -18146,9 +18335,11 @@
           setEditorSaveState(true);
           setTimeout(function(){
             cropCurrentPosY=clampCrop(cropCurrentPosY);
-            if(imgEl){ imgEl.style.objectPosition='center '+cropCurrentPosY+'%'; }
-            if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
+            cropCurrentPosX=clampCrop(cropCurrentPosX);
+            setPhotoObjectPanX(cropCurrentPosX);
             setPhotoObjectPosition(cropCurrentPosY);
+            if(imgEl){ applyMainImageObjectPosition(); }
+            if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
             w.data.photoFilterPreset=(activeTool==='crop'?'none':activeTool);
             saveDraft();
             runPhotoSaveSuccessPulse();
@@ -18177,7 +18368,7 @@
             w.data.photoData='';
             w.data.photoFilterPreset='none';
             if(typeof setPhotoObjectPosition==='function') setPhotoObjectPosition(50);
-            if(imgEl){ imgEl.style.filter='none'; imgEl.style.objectPosition='center 50%'; }
+            if(imgEl){ imgEl.style.filter='none'; setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
             saveDraft();
             closePhotoEditOverlay();
             if(typeof renderPhotoTile==='function') renderPhotoTile();
@@ -18971,7 +19162,7 @@
           label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
           wrap.appendChild(thumb);
           wrap.appendChild(label);
-          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; img.style.objectPosition='center '+(w.data.photoObjectPosition||50)+'%'; } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); w.data.photoObjectPanX=(typeof item.objectPanX==='number')?Math.max(0,Math.min(100,item.objectPanX)):50; saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; if(typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition(); } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
           cookbookQuickSelect.appendChild(wrap);
         });
         step1Container.appendChild(cookbookQuickSelect);
@@ -19640,7 +19831,10 @@
     var objPos=50;
     if(w&&w.data&&typeof w.data.photoObjectPosition==='number') objPos=w.data.photoObjectPosition;
     else if(d.photoObjectPosition!=null) objPos=Number(d.photoObjectPosition)||50;
-    var entry={ id: Date.now(), dish: d.dish||d.title||'', price: Number(d.price)||0, image: d.imageUrl||d.photoData||w.data.photoData||'', objectPosition: objPos, timestamp: new Date().toISOString() };
+    var objPan=50;
+    if(w&&w.data&&typeof w.data.photoObjectPanX==='number') objPan=w.data.photoObjectPanX;
+    else if(d.photoObjectPanX!=null) objPan=Number(d.photoObjectPanX)||50;
+    var entry={ id: Date.now(), dish: d.dish||d.title||'', price: Number(d.price)||0, image: d.imageUrl||d.photoData||w.data.photoData||'', objectPosition: objPos, objectPanX: objPan, timestamp: new Date().toISOString() };
     var list=load(LS.inseratQuickbook,[]);
     if(!Array.isArray(list)) list=[];
     list=([entry].concat(list)).filter(function(x,i,a){ return a.findIndex(function(y){ return y.dish===x.dish&&y.price===x.price; })===i; }).slice(0,10);
