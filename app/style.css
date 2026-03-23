@@ -4173,6 +4173,14 @@
     /* Save-Scope-Dialog: Nur aktuell vs. Kochbuch [cite: Asset-Logik] */
     .save-scope-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1998; }
     .save-scope-sheet { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: min(400px, 100%); background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px max(env(safe-area-inset-bottom), 20px); box-shadow: 0 -10px 40px rgba(0,0,0,0.15); z-index: 1999; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
+
+    /* Beenden-Dialog muss über dem Listing-Wizard liegen (Wizard z-index ~1e6), sonst „X tut nichts“ */
+    body.wizard-inserat-open #wizardExitSaveBd {
+      z-index: 1000003 !important;
+    }
+    body.wizard-inserat-open #wizardExitSaveSheet {
+      z-index: 1000004 !important;
+    }
     .save-scope-title { margin: 0 0 8px; font-size: 16px; font-weight: 800; color: #0f172a; }
     .save-scope-btn { min-height: 48px; border-radius: 14px; border: none; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; }
     .save-scope-btn-current { background: #f1f5f9; color: #0f172a; }
@@ -10846,6 +10854,10 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   transform: translateY(-50%);
   font-size: 24px;
   color: #888;
+  z-index: 10;
+  pointer-events: auto;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* ✏️ Edit-Icon oben rechts im Foto (dunkler Glas-Kreis) */

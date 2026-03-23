@@ -19151,7 +19151,7 @@
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
         if(price<=0) priceSection.classList.add('inserat-validation-error');
-        var targetBtn=btn||document.querySelector('#mastercard-footer-step1 .btn-primary-black')||document.querySelector('#mastercard-footer-step2 .btn-primary-black');
+        var targetBtn=btn||document.getElementById('btnNext')||document.querySelector('#mastercard-footer-step2 .btn-primary-black');
         if(targetBtn){
           targetBtn.classList.remove('btn-shake');
           targetBtn.offsetHeight;
@@ -19219,7 +19219,7 @@
       }
       function updateWizardFooter(){
         var valid = isPrimaryValid();
-        var primaryBtn = document.querySelector('#mastercard-footer-step1 .btn-primary-black');
+        var primaryBtn = document.getElementById('btnNext');
         if (primaryBtn) {
           if (valid) {
             primaryBtn.classList.add('is-ready');
@@ -19235,9 +19235,9 @@
         }
         var linkSpeichern = box.querySelector('#btnSpeichernKochbuch');
         if (linkSpeichern) {
-            linkSpeichern.disabled = !valid;
-          linkSpeichern.style.opacity = valid ? '1' : '0.3';
-          linkSpeichern.style.pointerEvents = valid ? 'auto' : 'none';
+          linkSpeichern.disabled = !valid;
+          if (valid) linkSpeichern.classList.add('is-ready');
+          else linkSpeichern.classList.remove('is-ready');
         }
         if (stepName) stepName.classList.remove('inserat-validation-error');
         if (priceSection) priceSection.classList.remove('inserat-validation-error');
@@ -19280,26 +19280,25 @@
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:48px; height:48px; padding:0 16px; border:none; border-radius:8px; background:#222222 !important; color:#fff !important; font-size:16px; font-weight:800; cursor:pointer; box-sizing:border-box; align-self:stretch;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
         linkSpeichern.id='btnSpeichernKochbuch';
-        linkSpeichern.className='inserat-footer-link btn-secondary-link';
-        linkSpeichern.style.cssText='background:none; border:none; padding:12px 0; font-size:15px; font-weight:800; color:#222222; cursor:pointer; text-decoration:underline; flex-shrink:0; min-height:48px; align-self:center;';
+        linkSpeichern.className='btn-primary-black footer-main-button inserat-step1-save-btn';
+        linkSpeichern.style.cssText=step1PrimaryBtnStyle;
         linkSpeichern.textContent='Speichern';
         linkSpeichern.disabled=!primaryValid;
-        linkSpeichern.style.opacity=primaryValid?'1':'0.3';
-        linkSpeichern.style.pointerEvents=primaryValid?'auto':'none';
+        if(primaryValid) linkSpeichern.classList.add('is-ready'); else linkSpeichern.classList.remove('is-ready');
         linkSpeichern.onclick=function(){
           if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Bitte Name, Preis und Foto eingeben.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
           linkSpeichern.textContent='Gespeichert ✅';
-          linkSpeichern.style.color='#4caf50';
-          linkSpeichern.style.textDecoration='none';
+          try{ linkSpeichern.style.setProperty('background', '#10b981', 'important'); }catch(e){ linkSpeichern.style.background='#10b981'; }
           try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
           hapticLight();
           setTimeout(function(){
             var id=typeof saveToCookbookFromWizard==='function'?saveToCookbookFromWizard():null;
-            if(!id){ if(typeof showToast==='function') showToast('Speichern fehlgeschlagen'); return; }
+            if(!id){ if(typeof showToast==='function') showToast('Speichern fehlgeschlagen'); linkSpeichern.textContent='Speichern'; try{ linkSpeichern.style.setProperty('background', '#222222', 'important'); }catch(e2){ linkSpeichern.style.background='#222222'; } return; }
             if(typeof haptic==='function') haptic(50);
             routeAfterSave();
           }, 500);
@@ -19310,8 +19309,8 @@
       btnWeiter.type='button';
       btnWeiter.id='btnNext';
       btnWeiter.className='btn-primary-black footer-main-button';
-      /* Weiter-Button: flex:1 = füllt verfügbare Breite [cite: S25-GRID-FIX 2026-03-12] */
-      btnWeiter.style.cssText='flex:1; min-height:48px; height:48px; padding:0 24px; border:none; border-radius:8px; background:#222222 !important; color:white !important; font-size:16px; font-weight:800; cursor:pointer; box-sizing:border-box;';
+      /* Weiter + Speichern: gleiche Breite (flex 1 1 0) [cite: UX 2026-03-23] */
+      btnWeiter.style.cssText=step1PrimaryBtnStyle;
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
       btnWeiter.style.opacity='0.3';
