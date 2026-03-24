@@ -229,6 +229,14 @@
       --content-padding-bottom-compact: 90px;
       --list-photo-size: 100px;
       --list-photo-radius: 16px;
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-right: env(safe-area-inset-right, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-area-left: env(safe-area-inset-left, 0px);
+      --app-height: 100vh;
+    }
+    @supports (height: 100dvh) {
+      :root { --app-height: 100dvh; }
     }
     /* ========== EISERNE SCHRIFT-REGEL (Typography Master) [cite: 2026-02-19] ========== */
     /* Haupttitel (zentriert): 20px, 900, -0.03em, Midnight Blue #0f172a */
@@ -272,23 +280,21 @@
     /* VIEW-SWITCH: nur aktive View sichtbar (gemeinsam) */
     #app .view:not(.active){ display:none !important; min-height:0 !important; visibility:hidden !important; }
     #app .view.active{ display:block !important; }
-    body.provider-mode #app .view.active{ min-height:100dvh; min-height:100vh; }
+    body.provider-mode #app .view.active{ min-height:100vh; min-height:var(--app-height); }
     #app .view.active#v-pickup-code{ display:flex !important; }
     #app .view.active[id^="v-provider-"]{ display:block !important; }
     #app .view.active#v-provider-week{ display:flex !important; }
     .backdrop:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
     .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
 
-    html,body{
-      min-height:100dvh;
-      min-height:100vh;
-      height:100%;
-      width:100%;
-      max-width:100%;
-      margin:0;
-      padding:0;
-      overflow-x:hidden;
-      box-sizing:border-box;
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      min-height: var(--app-height);
+      overflow-x: hidden;
+      box-sizing: border-box;
     }
     body{
       margin:0; padding:0; width:100%; max-width:100%;
@@ -319,13 +325,18 @@
     .app{ padding-bottom:calc(78px + env(safe-area-inset-bottom, 0px)); }
 
     /* ========== NUR ANBIETER (body.provider-mode) – keine Regel hier darf Kunde betreffen ========== */
-    body.provider-mode .app, body.provider-mode #app{ min-height:100dvh; height:100dvh; max-height:100dvh; overflow:hidden; }
+    body.provider-mode .app,
+    body.provider-mode #app {
+      min-height: var(--app-height);
+      height: var(--app-height);
+      overflow: hidden;
+    }
     body.provider-mode .app main, body.provider-mode #app main{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
     /* ========== NUR KUNDE (body:not(.provider-mode)) – keine Regel hier darf Anbieter betreffen ========== */
-    body:not(.provider-mode) .app, body:not(.provider-mode) #app{ min-height:100%; min-height:100dvh; margin-top:0; padding-top:0; }
+    body:not(.provider-mode) .app, body:not(.provider-mode) #app{ min-height:100%; min-height:var(--app-height); margin-top:0; padding-top:0; }
     body:not(.provider-mode) .app main, body:not(.provider-mode) #app main{ min-height:auto; overflow-y:visible; -webkit-overflow-scrolling:touch; margin-top:0; }
-    body:not(.provider-mode) #v-discover.view.active{ margin-top:0; padding-top:0; min-height:100dvh; display:block !important; background:#fcfcfc !important; }
+    body:not(.provider-mode) #v-discover.view.active{ margin-top:0; padding-top:0; min-height:var(--app-height); display:block !important; background:#fcfcfc !important; }
     .topbar{
       position:sticky; top:0; z-index:10;
       width:100%;
@@ -1723,8 +1734,8 @@
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
-      height: 100vh !important;
-      max-height: 100vh !important;
+      height: var(--app-height) !important;
+      max-height: var(--app-height) !important;
       width: 100vw !important;
       background: #ffffff !important;
       isolation: isolate !important;
@@ -1831,7 +1842,7 @@
     #wizard[data-flow="listing"].sheet--kitchen{
       margin: 0 !important; margin-left:0 !important; margin-right:0 !important;
       max-width:100% !important; width: 100vw !important;
-      height: 100vh !important; max-height: 100vh !important;
+      height: var(--app-height) !important; max-height: var(--app-height) !important;
       border-radius: 0 !important;
       background:#fff !important;
       border: none !important;
@@ -4130,7 +4141,7 @@
     @keyframes step2-slot-sweep { 0% { transform: translateY(-50%) translateX(-80%) rotate(-35deg); opacity: 1; } 100% { transform: translateY(-50%) translateX(120%) rotate(-35deg); opacity: 0.3; } }
     /* Step 2 + Step 3: Full-Screen 100vh wenn aktiv [cite: 2026-02-21] */
     #wizard.inserat-step2-active.sheet--kitchen, #wizard.inserat-step2-active[data-flow="listing"],
-    #wizard.inserat-step3-active.sheet--kitchen, #wizard.inserat-step3-active[data-flow="listing"] { height: 100vh !important; max-height: 100vh !important; }
+    #wizard.inserat-step3-active.sheet--kitchen, #wizard.inserat-step3-active[data-flow="listing"] { height: var(--app-height) !important; max-height: var(--app-height) !important; }
     /* Step 3: Live-Erfolg [cite: 2026-02-21] */
     .inserat-step3-pane { position: relative; overflow: hidden; background: #f8fafc; }
     .inserat-step3-pane .success-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
@@ -4404,8 +4415,8 @@
     body.provider-mode #v-provider-profile,
     body.provider-mode #v-provider-billing{ background: var(--provider-bg) !important; }
     body.provider-mode #v-provider-billing.view{
-      min-height:100dvh;
       min-height:100vh;
+      min-height:var(--app-height);
       max-width:100%;
       box-sizing:border-box;
       padding-bottom:max(20px, env(safe-area-inset-bottom, 0px)) !important;
@@ -10326,7 +10337,7 @@ html, body {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: var(--app-height);
   background: #ffffff !important;
   z-index: 100;
   display: block !important;
@@ -12160,4 +12171,58 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 
 body {
   background-color: #ffffff;
+}
+
+/* Mobile parity base: einheitliche Safe-Area und Viewport-Hoehe fuer iOS/Android/PWA */
+.bottom{
+  height: calc(60px + var(--safe-area-bottom));
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
+body:not(.provider-mode) .bottom-nav{
+  padding-left: var(--safe-area-left) !important;
+  padding-right: var(--safe-area-right) !important;
+  padding-bottom: var(--safe-area-bottom) !important;
+  height: calc(65px + var(--safe-area-bottom)) !important;
+}
+#providerNavWrap.provider-nav-wrap-pill{
+  padding-left: var(--safe-area-left) !important;
+  padding-right: var(--safe-area-right) !important;
+  padding-bottom: max(20px, var(--safe-area-bottom)) !important;
+}
+#providerNavWrap #providerNav{
+  padding-left: max(24px, var(--safe-area-left));
+  padding-right: max(24px, var(--safe-area-right));
+  padding-bottom: calc(12px + var(--safe-area-bottom));
+}
+#createFlowDashboardContent{
+  max-height: min(85vh, calc(var(--app-height) - 24px));
+  padding-left: max(20px, var(--safe-area-left));
+  padding-right: max(20px, var(--safe-area-right));
+  padding-bottom: max(80px, var(--safe-area-bottom));
+}
+#createFlowSheet .create-flow-footer-ghost,
+.system-bottom-nav{
+  padding-left: max(24px, var(--safe-area-left));
+  padding-right: max(24px, var(--safe-area-right));
+  padding-bottom: calc(12px + var(--safe-area-bottom));
+}
+body.provider-mode .inserat-bottom-sheet{
+  padding-left: max(20px, var(--safe-area-left));
+  padding-right: max(20px, var(--safe-area-right));
+  padding-bottom: calc(24px + var(--safe-area-bottom));
+}
+#wizard[data-flow="listing"] .inserat-step1-nav.inserat-airbnb-footer,
+.airbnb-footer-minimal,
+#wizard[data-flow="listing"] .inserat-step1-nav.inserat-immo-footer{
+  padding-left: max(16px, var(--safe-area-left));
+  padding-right: max(16px, var(--safe-area-right));
+  padding-bottom: max(20px, calc(16px + var(--safe-area-bottom)));
+}
+#pricingFairnessOverlay{
+  max-height: min(85vh, calc(var(--app-height) - var(--safe-area-top)));
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+  padding-bottom: var(--safe-area-bottom);
 }
