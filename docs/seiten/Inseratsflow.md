@@ -1,7 +1,7 @@
 # Inseratsflow
 
 **Sheet-ID:** `#wizard` (kind=listing) · Anbieterseite  
-**Stand:** 14.02.2026
+**Stand:** 18.03.2026
 
 ---
 
@@ -47,6 +47,12 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Scroll-Jump behoben:** Kein erzwungenes `scrollIntoView(..., smooth)` mehr beim normalen Scrollen; Keyboard-Repositionierung greift nur bei tatsächlich geöffneter Tastatur.
 - **Sichtbarkeits-Hotfix:** Step-Track nutzt `width: 100%` (nicht 300%), damit Step‑1‑Inhalt nicht seitlich außerhalb des Viewports gerendert wird.
 - **Foto-Save-Feedback:** Beim Speichern im Foto-Editor läuft jetzt ein klarer Save-State (`Speichern...` mit Spinner), danach schließt das Overlay weich und das Hero-Bild in Step 1 bekommt einen kurzen Erfolgs-Glow.
+- **Empty-State (Airbnb-Style):** Wenn noch kein Foto gesetzt ist, zeigt das Hero eine klare Launch-Card mit CTA „Foto aufnehmen oder auswählen“, kurzer Orientierung und Premium-Optik statt grauer Leerfläche.
+- **Footer-Konsistenz:** `#mastercard-footer-step1` bleibt in Position/Spacing unverändert fix am unteren Rand; der Empty-State ändert nur die Foto-Fläche.
+- **Footer 1:1 Sync (Bild 1 → Bild 2):** Step‑1-Buttons sind im leeren Zustand visuell identisch zum gefüllten Zustand (keine graue Sonderoptik mehr), bleiben aber funktional gesperrt bis zur Validierung.
+- **Header-Aufbau identisch (Neu/Empty):** Der „Neues Gericht“-Modus nutzt jetzt denselben Hero-Aufbau wie die gefüllte InseratCard; die frühere Launch-Card im Bildbereich wurde entfernt und durch einen dezenten Minimal-Placeholder ersetzt.
+- **Feinschliff Empty-Hero:** Placeholder wurde klarer sichtbar gemacht (größeres Icon, neutral hellgrauer Hero-Ton), ohne den Aufbau zu verändern.
+- **Feinschliff Typo/Input:** Titel-Placeholder, Untertitel und Preisfeld wurden visuell veredelt (ruhigere Typo, bessere Lesbarkeit, hochwertigeres Preisfeld mit subtiler Fokuskontur), ohne Layout-Shift.
 
 ## Mastercard Step2 (Umbau: Reihenfolge + Marketing)
 
@@ -107,5 +113,30 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Split-Screen:** Foto-Editor ist jetzt exakt in 50/50 geteilt (`image-display-zone` oben, `editor-controls-sheet` unten).
 - **Oben (50vh):** Nur Foto mit `object-fit: cover`; keine Top-Texte „Abbrechen/Foto bearbeiten/Fertig“ mehr.
 - **Unten (50vh):** Glassmorphism-Steuerfläche mit `rgba(255,255,255,0.85)`, Blur und oberen 24px-Radien.
-- **Stapel-Logik:** Pro-Tipps oben im Glass-Sheet, Tool-Reihe (`Ersetzen/Zuschneiden/Löschen`) schwebend nahe Bottom-Safe-Area.
+- **Stapel-Logik:** Kompakter Hinweis oben im Controls-Sheet, Tool-Reihe (`Ersetzen/Löschen`) reduziert und klar tappbar.
 - **Key Action:** Zentraler Primary-Button `FOTO SPEICHERN` übernimmt den Save-Flow inklusive Haptik/Spinner/Success-State.
+
+## Photo Editor (Simplified Zoom + Crop)
+
+- **Native Gesten:** 1 Finger ziehen = Bild verschieben, 2 Finger Pinch = rein/raus zoomen, Doppeltipp = Reset/Zentrieren.
+- **Einfacheres UI:** Toolbar reduziert auf `Ersetzen` und `Löschen`; Zuschneiden erfolgt direkt über den sichtbaren Ausschnitt.
+- **Echtes Zuschneiden beim Speichern:** `FOTO SPEICHERN` rendert den aktuellen Viewport-Ausschnitt als neues Bild (Canvas) und setzt dieses als `photoData`.
+- **Konsistenz im Flow:** Nach dem Speichern wird das zugeschnittene Bild in Step 1 sofort übernommen (inkl. Filter-Preset und Save-Feedback).
+
+## Step1 Empty-State (Premium Cleaner, warm)
+
+- **Klarer Aufbau bleibt:** Keine Strukturänderung an der InseratCard; nur visuelles Tuning.
+- **Warmer Hero-Ton:** Empty-Foto-Hintergrund auf warm-neutrale, helle Verlaufstöne abgestimmt.
+- **Empty-Aktion vereinfacht:** Keine Bildvorschläge und kein Kamera-Icon mehr. Stattdessen nur ein zentrierter Primär-Button „Foto hinzufügen“.
+- **Quelle wählen:** `Foto hinzufügen` öffnet die Auswahl `Kamera` oder `Foto auswählen`.
+- **Direkt in den Editor:** Nach Auswahl eines Bildes öffnet sich unmittelbar der Photoeditor-Modus.
+- **Typo/Inputs wärmer:** Placeholder- und Untertitel-Farben auf warme Grautöne umgestellt; Preisfeld mit warmem Off-White, subtiler Border/Shadow und warmem Fokus-Ring.
+- **Single-Source-Karte:** „Neues Gericht“ und Edit-InseratCard teilen denselben Kartenaufbau; Empty-Sonderpfade (z. B. Extra-Suggestions im Hero) sind deaktiviert, damit spätere Edit-Änderungen automatisch auch im leeren Modus gelten.
+- **Footer-Konsistenz Renner/Neu:** Der generische `Gespeichert`-Toast beim Listing-Exit wurde entfernt, damit unter dem Footer keine zusätzliche Badge/Toast-Fläche auftaucht und beide Modi identisch wirken.
+- **Clean Empty-Hero:** Kein Schleier/Gradient/Glow im leeren Foto-Bereich; neutral weiße Fläche mit zentriertem `Foto hinzufügen`-Button.
+- **Pixel-Feinschliff:** Empty-Button im Hero visuell exakt mittig justiert (leichter Vertical-Nudge).
+- **No-Glow Footer Step1:** Für `Neues Gericht` und `Edit` wird im Step‑1‑Footer Shadow/Glow/Animation per Override deaktiviert, damit beide visuell identisch clean wirken.
+- **Step1 Footer Lock:** Für `Renner`, `Neues Gericht` und `Aktive Angebote (Edit)` ist der Step‑1‑Footer jetzt mit einem finalen Lock-Override vereinheitlicht (identische Position, Padding, Button-Höhe, Radius, Typo, Farben).
+- **Pixel-Feinschliff Footer:** Zusätzlich sind Font-Stack, Letter-Spacing, Text-Ausrichtung und Disabled-State für `Speichern`/`Weiter` hart synchronisiert, damit der Footer in allen Einstiegen 1:1 gleich wirkt.
+- **Provider-Footer Sichtbarkeit:** Anbieter-Footer wird außerhalb von Wizard/Create-Flow/Cookbook-Zuständen erzwungen sichtbar gehalten; Auto-Hide ist aktuell neutralisiert, damit der Footer nicht unsichtbar bleibt.
+- **Kein Kunden-Footer-Blitz:** `#customerNav` ist im `provider-mode` hart ausgeblendet, damit beim Aktualisieren kein kurzes Aufblitzen der Kundennavigation sichtbar ist.

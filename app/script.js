@@ -9854,6 +9854,91 @@
     }, 300);
   })();
 
+  // Provider Bottom-Nav: temporär ausblenden beim Runterscrollen, wieder einblenden beim Hochscrollen.
+  (function setupProviderFooterAutoHideOnScroll(){
+    var navWrap = document.getElementById('providerNavWrap');
+    if(!navWrap) return;
+
+    var lastTopByEl = new WeakMap();
+    var HIDE_THRESHOLD = 16;
+    var SHOW_THRESHOLD = 6;
+    var SHOW_AT_TOP = 24;
+    var MIN_TOP_FOR_HIDE = 80;
+    var IDLE_SHOW_MS = 380;
+    var idleTimer = null;
+
+    function isProviderScrollContainer(el){
+      if(!el || el === document || el === window) return false;
+      if(el.id === 'pickupsFloatingWrap') return true;
+      if(el.id === 'kwBoardScroll') return true;
+      if(el.id === 'cookbookScrollWrap') return true;
+      if(el.id === 'providerProfileContent') return true;
+      if(el.classList && el.classList.contains('provider-sub-scroll')) return true;
+      if(el.classList && el.classList.contains('dashboard-floating-wrap') && el.closest('#v-provider-home')) return true;
+      return false;
+    }
+
+    function shouldAutoHideRun(){
+      if(!document.body) return false;
+      if(!document.body.classList.contains('provider-mode')) return false;
+      if(document.body.classList.contains('wizard-inserat-open')) return false;
+      if(document.body.classList.contains('create-flow-open')) return false;
+      return true;
+    }
+
+    function showFooter(){
+      navWrap.classList.remove('is-scroll-hidden');
+    }
+
+    function hideFooter(){
+      navWrap.classList.add('is-scroll-hidden');
+    }
+
+    function scheduleIdleShow(){
+      if(idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(function(){
+        showFooter();
+      }, IDLE_SHOW_MS);
+    }
+
+    if(document.body) document.body.classList.add('footer-autohide');
+    showFooter();
+
+    document.addEventListener('scroll', function(e){
+      if(!shouldAutoHideRun()){
+        showFooter();
+        return;
+      }
+      var scroller = e && e.target ? e.target : null;
+      if(!isProviderScrollContainer(scroller)) return;
+      if((scroller.scrollHeight - scroller.clientHeight) < 8) return;
+
+      var currentTop = Math.max(scroller.scrollTop || 0, 0);
+      var lastTop = lastTopByEl.has(scroller) ? lastTopByEl.get(scroller) : currentTop;
+      var delta = currentTop - lastTop;
+      lastTopByEl.set(scroller, currentTop);
+      scheduleIdleShow();
+
+      if(currentTop <= SHOW_AT_TOP || delta <= -SHOW_THRESHOLD){
+        showFooter();
+        return;
+      }
+      if(currentTop >= MIN_TOP_FOR_HIDE && delta >= HIDE_THRESHOLD){
+        hideFooter();
+      }
+    }, true);
+
+    document.addEventListener('click', function(e){
+      var navClick = e.target && e.target.closest ? e.target.closest('#providerNav .navbtn') : null;
+      if(navClick) showFooter();
+    }, true);
+
+    document.addEventListener('touchend', function(){
+      if(!shouldAutoHideRun()) return;
+      scheduleIdleShow();
+    }, { passive: true });
+  })();
+
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint B erreicht (Zeile ~9750)');
   // Provider nav handlers – Kalender-Icon (Wochenplan) triggert showProviderWeek [cite: 2026-02-18]
   var providerNavEl = document.getElementById('providerNav');
@@ -16817,7 +16902,6 @@
           navigateAfterWizardExit(entryPoint);
           if(entryPoint === 'weeklyPlan' && typeof showToast === 'function') showToast('Im Wochenplan gespeichert 📅');
           else if(entryPoint === 'cookbook' && typeof showToast === 'function') showToast('Gericht im Kochbuch aktualisiert 📖');
-          else if(typeof showToast === 'function') showToast('Gespeichert');
         },
         function(){ closeWizard(true); navigateAfterWizardExit(entryPoint); }
       );
@@ -17977,7 +18061,7 @@
       photoContainer.style.cssText='position:relative; overflow:hidden; flex-shrink:0; width:100%; height:190px; min-height:190px; max-height:190px; margin:0; padding:0;';
       const photoTile=document.createElement('section');
       photoTile.id='photoModule';
-      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' pulse-soft inserat-photo-placeholder');
+      photoTile.className='inserat-photo-tile photo-section photo-section-ebay photo-module-ebay photo-header'+(w.data.photoData ? '' : ' is-empty-photo');
       /* height:100% – füllt den flex:0 0 30vh photoContainer [cite: S25-FIXED-COCKPIT 2026-03-11] */
       photoTile.style.cssText='position:relative; overflow:hidden; width:100%; height:100%; min-height:0; margin:0; padding:0; z-index:1;';
       var imgSrc=w.data.photoData||'';
@@ -17988,10 +18072,49 @@
       if(!w.data.photoData) imgEl.style.display='none';
       var cameraInput=document.createElement('input');
       cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
+      var galleryInput=document.createElement('input');
+      galleryInput.type='file'; galleryInput.id='galleryInput'; galleryInput.accept='image/*'; galleryInput.style.display='none';
       var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
       overlay.style.cssText='position:absolute;inset:0;cursor:pointer;';
       overlay.style.setProperty('pointer-events', w.data.photoData?'none':'auto', 'important');
-      photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(overlay);
+      photoTile.appendChild(imgEl); photoTile.appendChild(cameraInput); photoTile.appendChild(galleryInput); photoTile.appendChild(overlay);
+      function openPhotoSourcePicker(){
+        if(document.getElementById('photoSourceSheetBd')) return;
+        var bd=document.createElement('div');
+        bd.id='photoSourceSheetBd';
+        bd.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,0.42);z-index:2100000;display:flex;align-items:flex-end;justify-content:center;padding:16px;';
+        var sheet=document.createElement('div');
+        sheet.id='photoSourceSheet';
+        sheet.style.cssText='width:100%;max-width:420px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,0.25);';
+        sheet.innerHTML=''
+          +'<button type="button" data-src="camera" style="width:100%;min-height:56px;border:none;border-radius:14px;background:#111;color:#fff;font-size:16px;font-weight:800;cursor:pointer;">Kamera</button>'
+          +'<button type="button" data-src="gallery" style="width:100%;min-height:56px;border:1px solid #e5e7eb;border-radius:14px;background:#fff;color:#111;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;">Foto auswählen</button>'
+          +'<button type="button" data-src="cancel" style="width:100%;min-height:52px;border:none;border-radius:12px;background:#f1f5f9;color:#334155;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;">Abbrechen</button>';
+        function closePicker(){
+          if(bd&&bd.parentNode) bd.parentNode.removeChild(bd);
+        }
+        bd.addEventListener('click', function(ev){
+          if(ev.target===bd) closePicker();
+        });
+        sheet.addEventListener('click', function(ev){
+          var btn=ev.target.closest('button[data-src]');
+          if(!btn) return;
+          var src=btn.getAttribute('data-src');
+          if(src==='camera'){
+            closePicker();
+            cameraInput.click();
+            return;
+          }
+          if(src==='gallery'){
+            closePicker();
+            galleryInput.click();
+            return;
+          }
+          closePicker();
+        });
+        bd.appendChild(sheet);
+        document.body.appendChild(bd);
+      }
       /* Crop-Modus: Fertig-Overlay (positioniert unten mittig im Foto) */
       var cropFertigOverlay=document.createElement('div');
       cropFertigOverlay.id='crop-fertig-overlay';
@@ -18003,11 +18126,18 @@
       cropFertigOverlay.appendChild(cropFertigBtn);
       photoTile.appendChild(cropFertigOverlay);
       if(!w.data.photoData){
-        photoTile.style.border='2px dashed #e0e0e0';
         var placeholderCenter=document.createElement('div');
         placeholderCenter.className='inserat-photo-placeholder-center';
-        placeholderCenter.style.cssText='position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#f9f9f9; pointer-events:none;';
-        placeholderCenter.innerHTML='<span style="font-size:44px; line-height:1; opacity:0.45;">📸</span><span style="font-size:14px; font-weight:400; color:#aaaaaa; font-family:system-ui,-apple-system,sans-serif; letter-spacing:0.01em;">Foto hinzufügen</span>';
+        placeholderCenter.style.cssText='position:absolute; inset:0; pointer-events:none;';
+        placeholderCenter.innerHTML='<button type="button" class="inserat-photo-empty-upload-btn">Foto hinzufügen</button>';
+        var emptyUploadBtn=placeholderCenter.querySelector('.inserat-photo-empty-upload-btn');
+        if(emptyUploadBtn){
+          emptyUploadBtn.onclick=function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            openPhotoSourcePicker();
+          };
+        }
         photoTile.appendChild(placeholderCenter);
       }
       photoContainer.appendChild(photoTile);
@@ -18016,14 +18146,14 @@
         if(e.target.closest('.photo-suggestion')) return;
         e.stopPropagation();
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){}
-        if(!w.data.photoData){ cameraInput.click(); return; }
+        if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         openPhotoEditOverlay();
       };
       photoTile.onclick=function(ev){
         if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return;
         if(ev.target.closest('.photo-suggestion')) return;
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); }catch(x){}
-        if(!w.data.photoData){ cameraInput.click(); return; }
+        if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         openPhotoEditOverlay();
       };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
@@ -18033,52 +18163,57 @@
       photoContainer.onclick=function(ev){
         if(ev.target.closest('.close-wizard-x')||ev.target.closest('.btn-close-master')) return;
         try{if(navigator.vibrate)navigator.vibrate(20);}catch(e){}
-        if(!w.data.photoData){ cameraInput.click(); return; }
+        if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         openPhotoEditOverlay();
       };
-      if(cameraInput){
-        cameraInput.onchange=async function(){
+      async function handleSelectedPhotoFile(f){
+        if(!f) return;
+        if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+        var objectUrl=URL.createObjectURL(f);
+        if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
+        var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
+        photoTile.classList.remove('is-empty-photo');
+        photoTile.style.border='none';
+        w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; saveDraft();
+        overlay.style.pointerEvents='none'; overlay.style.cursor='default';
+        if(editPencilBtn) editPencilBtn.style.display='flex';
+        closePhotoEditOverlay();
+        if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+        setTimeout(function(){ openPhotoEditOverlay(); }, 30);
+        try {
+          var dataUrl=await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsDataURL(f); });
+          var img=new Image();
+          await new Promise(function(res,rej){ img.onload=res; img.onerror=rej; img.src=dataUrl; });
+          var canvas=document.createElement('canvas'); var MAX_W=1200; var ww=img.width; var hh=img.height;
+          if(ww>MAX_W){ hh*=MAX_W/ww; ww=MAX_W; }
+          canvas.width=ww; canvas.height=hh; canvas.getContext('2d').drawImage(img,0,0,ww,hh);
+          dataUrl=canvas.toDataURL('image/jpeg',0.8);
+          if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
+          w.data.photoData=dataUrl; saveDraft();
+          if(imgEl&&imgEl.isConnected){ imgEl.src=dataUrl; }
+          var editorImg=document.getElementById('edit-preview-image');
+          if(editorImg) editorImg.src=dataUrl;
+          if(objectUrl) try{ URL.revokeObjectURL(objectUrl); }catch(e){}
+        }catch(err){}
+      }
+      function bindPhotoInput(inputEl){
+        if(!inputEl) return;
+        inputEl.onchange=async function(){
           var f=this.files&&this.files[0];
           this.value='';
-          if(!f) return;
-          if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
-          /* INSTANT: Sofortige Anzeige mit ObjectURL, kein Warten [cite: INSTANT PHOTO 2026-02-23] */
-          var objectUrl=URL.createObjectURL(f);
-          if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
-          var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
-          photoTile.classList.remove('inserat-photo-placeholder','pulse-soft');
-          photoTile.style.border='none';
-          w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; saveDraft();
-          overlay.style.pointerEvents='none'; overlay.style.cursor='default';
-          if(editPencilBtn) editPencilBtn.style.display='flex';
-          closePhotoEditOverlay(); /* Overlay schließen falls offen (z.B. via 🔄 Ersetzen) */
-          if(typeof checkMastercardValidation==='function') checkMastercardValidation();
-          /* Hintergrund: Resize + Filter für Upload, dann dataUrl speichern */
-          (async function(){
-            try {
-              var dataUrl=await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(r.result); }; r.onerror=rej; r.readAsDataURL(f); });
-              var img=new Image();
-              await new Promise(function(res,rej){ img.onload=res; img.onerror=rej; img.src=dataUrl; });
-              var canvas=document.createElement('canvas'); var MAX_W=1200; var ww=img.width; var hh=img.height;
-              if(ww>MAX_W){ hh*=MAX_W/ww; ww=MAX_W; }
-              canvas.width=ww; canvas.height=hh; canvas.getContext('2d').drawImage(img,0,0,ww,hh);
-              dataUrl=canvas.toDataURL('image/jpeg',0.8);
-              if(typeof applyAppetizerFilter==='function') dataUrl=await applyAppetizerFilter(dataUrl);
-              w.data.photoData=dataUrl; saveDraft();
-              if(imgEl&&imgEl.isConnected){ imgEl.src=dataUrl; }
-              if(objectUrl) try{ URL.revokeObjectURL(objectUrl); }catch(e){}
-            }catch(err){}
-          })();
+          await handleSelectedPhotoFile(f);
         };
       }
+      bindPhotoInput(cameraInput);
+      bindPhotoInput(galleryInput);
       /* AUTO-CAMERA deaktiviert: Start immer mit leerem Platzhalter, Trigger nur nativ per Klick */
       var urls=getListingSuggestionUrls();
-      var showSuggestions=!w.data.photoData&&listingSuggestionsVisible()&&urls.length;
+      var showSuggestions=false; /* Single-Source-Card: keine Extra-Suggestions im Empty-Mode */
       if(showSuggestions){
         var sugWrap=document.createElement('div');
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); setPhotoObjectPanX(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; applyMainImageObjectPosition(); } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('inserat-photo-placeholder','pulse-soft'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); setPhotoObjectPanX(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; applyMainImageObjectPosition(); } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('is-empty-photo'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -18092,15 +18227,13 @@
       photoEditBar.appendChild(btnCropCircle);
       photoEditBar.appendChild(btnChangeCircle);
       /* Photo-Edit-Overlay: eBay-Style Vollbild + nativer Touch-Drag-Crop */
-      var cropModeActive=false;
-      var cropStartY=0;
-      var cropStartX=0;
-      var cropStartPosY=50;
-      var cropStartPosX=50;
-      var cropCurrentPosY=50;
-      var cropCurrentPosX=50;
-      var cropTouching=false;
-      function clampCrop(v){ return Math.max(0, Math.min(100, v)); }
+      var editorPanX=0;
+      var editorPanY=0;
+      var editorScale=1;
+      var MIN_EDITOR_SCALE=1;
+      var MAX_EDITOR_SCALE=4;
+      var isEditorPanning=false;
+      function clampEditorScale(v){ return Math.max(MIN_EDITOR_SCALE, Math.min(MAX_EDITOR_SCALE, v)); }
       function closePhotoEditOverlay(){
         var ov=document.getElementById('photo-edit-overlay');
         if(!ov) return;
@@ -18109,7 +18242,7 @@
         setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },220);
       }
       function openPhotoEditOverlay(){
-        if(!w.data.photoData){ cameraInput.click(); return; }
+        if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
@@ -18130,10 +18263,8 @@
         oImg.id='edit-preview-image';
         oImg.className='editor-bg-image';
         oImg.src=w.data.photoData||'';
-        cropCurrentPosY=getPhotoObjectPanY();
-        cropCurrentPosX=getPhotoObjectPanX();
-        var activeTool=(w.data.photoFilterPreset||'none');
-        oImg.style.cssText='object-position:'+cropCurrentPosX+'% '+cropCurrentPosY+'%; filter:'+getPhotoFilterCss(activeTool)+';';
+        var activeTool=((w.data.photoFilterPreset||'none')==='crop'?'none':(w.data.photoFilterPreset||'none'));
+        oImg.style.cssText='object-position:50% 50%; filter:'+getPhotoFilterCss(activeTool)+';';
         viewport.appendChild(oImg);
         var cropGrid=document.createElement('div');
         cropGrid.className='photo-viewport-grid';
@@ -18163,36 +18294,15 @@
           return item;
         }
         var toolReplace=buildTool('replace','🖼️','Ersetzen');
-        var toolCrop=buildTool('crop','📐','Zuschneiden');
         var toolDelete=buildTool('delete','🗑️','Löschen');
         toolsBar.appendChild(toolReplace);
-        toolsBar.appendChild(toolCrop);
         toolsBar.appendChild(toolDelete);
         toolFrame.appendChild(toolsBar);
+        var gestureHint=document.createElement('div');
+        gestureHint.className='photo-editor-gesture-hint';
+        gestureHint.textContent='Pinch zum Zoomen, ziehen zum Zuschneiden, Doppeltipp zum Zentrieren.';
+        metaHead.appendChild(gestureHint);
         metaHead.appendChild(toolFrame);
-        var coachWrap=document.createElement('div');
-        coachWrap.className='photo-editor-checklist-wrap';
-        coachWrap.setAttribute('aria-hidden','true');
-        [['Tageslicht nutzen','Helles Licht, keine harten Schatten.'],['Linse sauber halten','Keine Flecken oder Weichzeichnung.'],['Kein Digitalzoom','Lieber näher ans Motiv gehen.']].forEach(function(pair){
-          var row=document.createElement('div');
-          row.className='photo-editor-checklist-row';
-          var mark=document.createElement('span');
-          mark.className='photo-editor-check-static';
-          mark.textContent='\u2713';
-          var textCol=document.createElement('div');
-          textCol.className='photo-editor-checklist-text';
-          var t1=document.createElement('span');
-          t1.className='photo-editor-checklist-title';
-          t1.textContent=pair[0];
-          var t2=document.createElement('span');
-          t2.className='photo-editor-checklist-sub';
-          t2.textContent=pair[1];
-          textCol.appendChild(t1);
-          textCol.appendChild(t2);
-          row.appendChild(mark);
-          row.appendChild(textCol);
-          coachWrap.appendChild(row);
-        });
         var saveFooter=document.createElement('div');
         saveFooter.className='save-footer';
         var saveBtn=document.createElement('button');
@@ -18201,10 +18311,90 @@
         saveBtn.textContent='FOTO SPEICHERN';
         saveFooter.appendChild(saveBtn);
         controlsSheet.appendChild(metaHead);
-        controlsSheet.appendChild(coachWrap);
         controlsSheet.appendChild(saveFooter);
         ov.appendChild(controlsSheet);
-        function syncOverlayPos(){ oImg.style.objectPosition=clampCrop(cropCurrentPosX)+'% '+clampCrop(cropCurrentPosY)+'%'; }
+        function getViewportSize(){
+          return {
+            width: Math.max(1, viewport.clientWidth || 1),
+            height: Math.max(1, viewport.clientHeight || 1)
+          };
+        }
+        function getBaseCoverSize(){
+          var vp=getViewportSize();
+          var nw=Math.max(1, oImg.naturalWidth || vp.width);
+          var nh=Math.max(1, oImg.naturalHeight || vp.height);
+          var imageRatio=nw/nh;
+          var viewportRatio=vp.width/vp.height;
+          var baseWidth=0;
+          var baseHeight=0;
+          if(imageRatio>viewportRatio){
+            baseHeight=vp.height;
+            baseWidth=baseHeight*imageRatio;
+          }else{
+            baseWidth=vp.width;
+            baseHeight=baseWidth/imageRatio;
+          }
+          return { width: baseWidth, height: baseHeight };
+        }
+        function getPanLimits(scaleValue){
+          var vp=getViewportSize();
+          var base=getBaseCoverSize();
+          var scaledWidth=base.width*scaleValue;
+          var scaledHeight=base.height*scaleValue;
+          return {
+            x: Math.max(0, (scaledWidth-vp.width)/2),
+            y: Math.max(0, (scaledHeight-vp.height)/2)
+          };
+        }
+        function clampPanByScale(){
+          var limits=getPanLimits(editorScale);
+          editorPanX=Math.max(-limits.x, Math.min(limits.x, editorPanX));
+          editorPanY=Math.max(-limits.y, Math.min(limits.y, editorPanY));
+        }
+        function applyEditorTransform(){
+          clampPanByScale();
+          oImg.style.transform='translate3d('+editorPanX+'px, '+editorPanY+'px, 0) scale('+editorScale+')';
+        }
+        function toViewportPoint(clientX, clientY){
+          var rect=viewport.getBoundingClientRect();
+          return { x: clientX-rect.left, y: clientY-rect.top };
+        }
+        function zoomAtPoint(targetScale, pointX, pointY){
+          var vp=getViewportSize();
+          var newScale=clampEditorScale(targetScale);
+          var oldScale=editorScale;
+          if(Math.abs(newScale-oldScale)<0.0001) return;
+          var originX=pointX-(vp.width/2)-editorPanX;
+          var originY=pointY-(vp.height/2)-editorPanY;
+          var ratio=newScale/oldScale;
+          editorPanX-=(originX*(ratio-1));
+          editorPanY-=(originY*(ratio-1));
+          editorScale=newScale;
+          applyEditorTransform();
+        }
+        function exportEditorCropDataUrl(){
+          var vp=getViewportSize();
+          var outWidth=1200;
+          var outHeight=Math.max(700, Math.round(outWidth*(vp.height/vp.width)));
+          var canvas=document.createElement('canvas');
+          canvas.width=outWidth;
+          canvas.height=outHeight;
+          var ctx=canvas.getContext('2d');
+          if(!ctx) return null;
+          var base=getBaseCoverSize();
+          var outputScale=outWidth/vp.width;
+          ctx.fillStyle='#0f172a';
+          ctx.fillRect(0,0,outWidth,outHeight);
+          ctx.save();
+          ctx.scale(outputScale, outputScale);
+          ctx.translate(vp.width/2, vp.height/2);
+          ctx.translate(editorPanX, editorPanY);
+          ctx.scale(editorScale, editorScale);
+          ctx.filter=getPhotoFilterCss(activeTool)||'none';
+          ctx.drawImage(oImg, -base.width/2, -base.height/2, base.width, base.height);
+          ctx.restore();
+          return canvas.toDataURL('image/jpeg', 0.92);
+        }
         function showPhotoEditorResetHint(){
           if(!resetHintEl) return;
           resetHintEl.classList.add('is-visible');
@@ -18212,12 +18402,10 @@
           resetHintTimer=setTimeout(function(){ if(resetHintEl) resetHintEl.classList.remove('is-visible'); resetHintTimer=null; }, 850);
         }
         function performPhotoEditorReset(){
-          cropCurrentPosX=50;
-          cropCurrentPosY=50;
-          syncOverlayPos();
-          if(typeof setPhotoObjectPanX==='function') setPhotoObjectPanX(50);
-          if(typeof setPhotoObjectPosition==='function') setPhotoObjectPosition(50);
-          if(imgEl&&typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition();
+          editorPanX=0;
+          editorPanY=0;
+          editorScale=1;
+          applyEditorTransform();
           try{ if(navigator.vibrate) navigator.vibrate([8,40,8]); }catch(e){}
           oImg.classList.remove('photo-editor-reset-pulse');
           oImg.offsetHeight;
@@ -18227,49 +18415,78 @@
         }
         function setActiveTool(tool){
           activeTool=tool;
-          cropModeActive=(tool==='crop');
           oImg.style.filter=getPhotoFilterCss(tool);
-          [toolReplace,toolCrop,toolDelete].forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-tool')===tool); });
+          [toolReplace,toolDelete].forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-tool')===tool); });
         }
-        var activePointerId=null;
-        var gestureStartX=0;
-        var gestureStartY=0;
+        var pointerPositions=new Map();
+        var dragPointerId=null;
+        var dragStartX=0;
+        var dragStartY=0;
+        var dragStartPanX=0;
+        var dragStartPanY=0;
+        var pinchStartDistance=0;
+        var pinchStartScale=1;
         var lastEditorTapTime=0;
         var lastEditorTapX=0;
         var lastEditorTapY=0;
+        function getPointerValues(){
+          var arr=[];
+          pointerPositions.forEach(function(val, key){ arr.push({ x: val.x, y: val.y, pointerType: val.pointerType, pointerId: key }); });
+          return arr;
+        }
+        function distanceBetween(p1,p2){
+          var dx=p2.x-p1.x;
+          var dy=p2.y-p1.y;
+          return Math.sqrt(dx*dx+dy*dy);
+        }
         function onPointerDown(ev){
-          if(!ev.isPrimary) return;
           if(ev.pointerType==='mouse'&&ev.button!==0) return;
-          activePointerId=ev.pointerId;
+          pointerPositions.set(ev.pointerId, {x:ev.clientX, y:ev.clientY, pointerType:ev.pointerType||''});
           try{ oImg.setPointerCapture(ev.pointerId); }catch(err){}
-          cropTouching=true;
-          cropStartY=ev.clientY;
-          cropStartX=ev.clientX;
-          gestureStartX=ev.clientX;
-          gestureStartY=ev.clientY;
-          cropStartPosY=cropCurrentPosY;
-          cropStartPosX=cropCurrentPosX;
+          var pointers=getPointerValues();
+          if(pointers.length===1){
+            dragPointerId=ev.pointerId;
+            isEditorPanning=true;
+            dragStartX=ev.clientX;
+            dragStartY=ev.clientY;
+            dragStartPanX=editorPanX;
+            dragStartPanY=editorPanY;
+          }else if(pointers.length===2){
+            isEditorPanning=false;
+            dragPointerId=null;
+            pinchStartDistance=distanceBetween(pointers[0], pointers[1]) || 1;
+            pinchStartScale=editorScale;
+          }
         }
         function onPointerMove(ev){
-          if(!cropTouching||!ev.isPrimary) return;
-          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
+          if(!pointerPositions.has(ev.pointerId)) return;
+          pointerPositions.set(ev.pointerId, {x:ev.clientX, y:ev.clientY, pointerType:ev.pointerType||''});
           ev.preventDefault();
-          var deltaY=(ev.clientY-cropStartY)*0.5;
-          var deltaX=(ev.clientX-cropStartX)*0.5;
-          cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
-          cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
-          syncOverlayPos();
+          var pointers=getPointerValues();
+          if(pointers.length>=2){
+            var p1=pointers[0];
+            var p2=pointers[1];
+            var currentDistance=distanceBetween(p1,p2) || 1;
+            var centerX=(p1.x+p2.x)/2;
+            var centerY=(p1.y+p2.y)/2;
+            var local=toViewportPoint(centerX, centerY);
+            zoomAtPoint(pinchStartScale*(currentDistance/pinchStartDistance), local.x, local.y);
+            return;
+          }
+          if(pointers.length===1&&isEditorPanning&&dragPointerId===ev.pointerId){
+            editorPanX=dragStartPanX+(ev.clientX-dragStartX);
+            editorPanY=dragStartPanY+(ev.clientY-dragStartY);
+            applyEditorTransform();
+          }
         }
-        function finishGesture(clientX, clientY, pointerType){
-          var gdx=clientX-gestureStartX;
-          var gdy=clientY-gestureStartY;
+        function finishPointer(clientX, clientY, pointerType){
+          var gdx=clientX-dragStartX;
+          var gdy=clientY-dragStartY;
           var gestureDist=Math.sqrt(gdx*gdx+gdy*gdy);
           var isLikelyTap=gestureDist<14;
-          activePointerId=null;
-          cropTouching=false;
-          cropCurrentPosY=clampCrop(cropCurrentPosY);
-          cropCurrentPosX=clampCrop(cropCurrentPosX);
-          syncOverlayPos();
+          isEditorPanning=false;
+          dragPointerId=null;
+          applyEditorTransform();
           if(isLikelyTap&&(pointerType==='touch'||pointerType==='pen')){
             var nowTap=Date.now();
             var tdx=clientX-lastEditorTapX;
@@ -18286,20 +18503,29 @@
           }
         }
         function onPointerUp(ev){
-          if(!cropTouching||!ev.isPrimary) return;
-          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
           try{ oImg.releasePointerCapture(ev.pointerId); }catch(err){}
-          finishGesture(ev.clientX, ev.clientY, ev.pointerType||'');
+          var pointerInfo=pointerPositions.get(ev.pointerId);
+          pointerPositions.delete(ev.pointerId);
+          if(pointerPositions.size===1){
+            var remaining=getPointerValues()[0];
+            dragPointerId=remaining.pointerId;
+            isEditorPanning=true;
+            dragStartX=remaining.x;
+            dragStartY=remaining.y;
+            dragStartPanX=editorPanX;
+            dragStartPanY=editorPanY;
+          }else if(pointerPositions.size===0&&pointerInfo){
+            finishPointer(pointerInfo.x, pointerInfo.y, pointerInfo.pointerType||'');
+          }
         }
         function onPointerCancel(ev){
-          if(!cropTouching||!ev.isPrimary) return;
-          if(activePointerId!==null&&ev.pointerId!==activePointerId) return;
           try{ oImg.releasePointerCapture(ev.pointerId); }catch(err){}
-          activePointerId=null;
-          cropTouching=false;
-          cropCurrentPosY=clampCrop(cropCurrentPosY);
-          cropCurrentPosX=clampCrop(cropCurrentPosX);
-          syncOverlayPos();
+          pointerPositions.delete(ev.pointerId);
+          if(pointerPositions.size===0){
+            isEditorPanning=false;
+            dragPointerId=null;
+          }
+          applyEditorTransform();
         }
         var usePointerApi=(typeof window.PointerEvent==='function'&&typeof oImg.setPointerCapture==='function');
         if(usePointerApi){
@@ -18308,78 +18534,82 @@
           oImg.addEventListener('pointerup', onPointerUp);
           oImg.addEventListener('pointercancel', onPointerCancel);
           oImg.addEventListener('lostpointercapture', function(ev){
-            if(ev.pointerId===activePointerId){ activePointerId=null; cropTouching=false; }
+            pointerPositions.delete(ev.pointerId);
+            if(pointerPositions.size===0){ isEditorPanning=false; dragPointerId=null; }
           });
         }else{
+          var lastTouchDistance=0;
+          var touchStartScale=1;
+          var touchStartPanX=0;
+          var touchStartPanY=0;
+          var touchStartX=0;
+          var touchStartY=0;
           oImg.addEventListener('touchstart', function(ev){
-            if(!ev.touches||ev.touches.length!==1) return;
+            if(!ev.touches||!ev.touches.length) return;
             ev.preventDefault();
-            var t=ev.touches[0];
-            activePointerId=-1;
-            cropTouching=true;
-            cropStartY=t.clientY;
-            cropStartX=t.clientX;
-            gestureStartX=t.clientX;
-            gestureStartY=t.clientY;
-            cropStartPosY=cropCurrentPosY;
-            cropStartPosX=cropCurrentPosX;
+            if(ev.touches.length===1){
+              isEditorPanning=true;
+              touchStartX=ev.touches[0].clientX;
+              touchStartY=ev.touches[0].clientY;
+              touchStartPanX=editorPanX;
+              touchStartPanY=editorPanY;
+            }else if(ev.touches.length>=2){
+              isEditorPanning=false;
+              var t1=ev.touches[0];
+              var t2=ev.touches[1];
+              var dx=t2.clientX-t1.clientX;
+              var dy=t2.clientY-t1.clientY;
+              lastTouchDistance=Math.sqrt(dx*dx+dy*dy)||1;
+              touchStartScale=editorScale;
+            }
           }, { passive:false });
           oImg.addEventListener('touchmove', function(ev){
-            if(!cropTouching||!ev.touches||ev.touches.length!==1) return;
+            if(!ev.touches||!ev.touches.length) return;
             ev.preventDefault();
-            var t=ev.touches[0];
-            var deltaY=(t.clientY-cropStartY)*0.5;
-            var deltaX=(t.clientX-cropStartX)*0.5;
-            cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
-            cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
-            syncOverlayPos();
+            if(ev.touches.length===1&&isEditorPanning){
+              editorPanX=touchStartPanX+(ev.touches[0].clientX-touchStartX);
+              editorPanY=touchStartPanY+(ev.touches[0].clientY-touchStartY);
+              applyEditorTransform();
+            }else if(ev.touches.length>=2){
+              var t1=ev.touches[0];
+              var t2=ev.touches[1];
+              var dx=t2.clientX-t1.clientX;
+              var dy=t2.clientY-t1.clientY;
+              var center=toViewportPoint((t1.clientX+t2.clientX)/2, (t1.clientY+t2.clientY)/2);
+              var distance=Math.sqrt(dx*dx+dy*dy)||1;
+              zoomAtPoint(touchStartScale*(distance/lastTouchDistance), center.x, center.y);
+            }
           }, { passive:false });
           oImg.addEventListener('touchend', function(ev){
-            if(!cropTouching) return;
             var t=ev.changedTouches&&ev.changedTouches[0];
-            var cx=t?t.clientX:gestureStartX;
-            var cy=t?t.clientY:gestureStartY;
-            finishGesture(cx, cy, 'touch');
+            if(ev.touches&&ev.touches.length===1){
+              touchStartX=ev.touches[0].clientX;
+              touchStartY=ev.touches[0].clientY;
+              touchStartPanX=editorPanX;
+              touchStartPanY=editorPanY;
+              isEditorPanning=true;
+            }else if(ev.touches&&ev.touches.length===0){
+              finishPointer(t?t.clientX:touchStartX, t?t.clientY:touchStartY, 'touch');
+            }
           });
           oImg.addEventListener('touchcancel', function(){
-            cropTouching=false;
-            activePointerId=null;
-            cropCurrentPosY=clampCrop(cropCurrentPosY);
-            cropCurrentPosX=clampCrop(cropCurrentPosX);
-            syncOverlayPos();
-          });
-          var editorMouseDown=false;
-          oImg.addEventListener('mousedown', function(ev){
-            if(ev.button!==0) return;
-            try{ ev.preventDefault(); }catch(e){}
-            editorMouseDown=true;
-            cropTouching=true;
-            cropStartY=ev.clientY;
-            cropStartX=ev.clientX;
-            gestureStartX=ev.clientX;
-            gestureStartY=ev.clientY;
-            cropStartPosY=cropCurrentPosY;
-            cropStartPosX=cropCurrentPosX;
-          });
-          document.addEventListener('mousemove', function(ev){
-            if(!editorMouseDown||!cropTouching) return;
-            var deltaY=(ev.clientY-cropStartY)*0.5;
-            var deltaX=(ev.clientX-cropStartX)*0.5;
-            cropCurrentPosY=clampCrop(cropStartPosY+(deltaY/3));
-            cropCurrentPosX=clampCrop(cropStartPosX-(deltaX/3));
-            syncOverlayPos();
-          });
-          document.addEventListener('mouseup', function(ev){
-            if(!editorMouseDown) return;
-            editorMouseDown=false;
-            finishGesture(ev.clientX, ev.clientY, 'mouse');
+            isEditorPanning=false;
+            applyEditorTransform();
           });
         }
+        viewport.addEventListener('wheel', function(ev){
+          ev.preventDefault();
+          var local=toViewportPoint(ev.clientX, ev.clientY);
+          var nextScale=editorScale + (ev.deltaY<0 ? 0.08 : -0.08);
+          zoomAtPoint(nextScale, local.x, local.y);
+        }, { passive:false });
         oImg.addEventListener('dblclick', function(ev){
           ev.preventDefault();
           ev.stopPropagation();
           performPhotoEditorReset();
         });
+        oImg.addEventListener('load', function(){ applyEditorTransform(); });
+        applyEditorTransform();
         var isPhotoSavePending=false;
         function setEditorSaveState(isPending){
           if(!saveBtn) return;
@@ -18414,13 +18644,17 @@
           try{ if(navigator.vibrate) navigator.vibrate([15,30,15]); }catch(e){}
           setEditorSaveState(true);
           setTimeout(function(){
-            cropCurrentPosY=clampCrop(cropCurrentPosY);
-            cropCurrentPosX=clampCrop(cropCurrentPosX);
-            setPhotoObjectPanX(cropCurrentPosX);
-            setPhotoObjectPosition(cropCurrentPosY);
+            applyEditorTransform();
+            var croppedDataUrl=exportEditorCropDataUrl();
+            if(croppedDataUrl){
+              w.data.photoData=croppedDataUrl;
+              if(imgEl) imgEl.src=croppedDataUrl;
+            }
+            setPhotoObjectPanX(50);
+            setPhotoObjectPosition(50);
             if(imgEl){ applyMainImageObjectPosition(); }
             if(imgEl){ imgEl.style.filter=getPhotoFilterCss(activeTool); }
-            w.data.photoFilterPreset=(activeTool==='crop'?'none':activeTool);
+            w.data.photoFilterPreset=activeTool;
             saveDraft();
             runPhotoSaveSuccessPulse();
             setEditorSavedState();
@@ -18438,10 +18672,6 @@
           closePhotoEditOverlay();
           if(cameraInput) cameraInput.click();
         };
-        toolCrop.onclick=function(){
-          try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          setActiveTool('crop');
-        };
         toolDelete.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
           if(window.confirm('Foto wirklich löschen?')){
@@ -18454,14 +18684,12 @@
             if(typeof renderPhotoTile==='function') renderPhotoTile();
           }
         };
-        setActiveTool(cropModeActive ? 'crop' : activeTool);
+        setActiveTool(activeTool);
         document.body.appendChild(ov);
         if(typeof setVisible==='function') setVisible(ov, 'flex');
         else ov.classList.remove('is-hidden');
         requestAnimationFrame(function(){ ov.classList.add('is-open'); });
       }
-      function enterCropMode(){ cropModeActive=true; }
-      function exitCropMode(){ cropModeActive=false; closePhotoEditOverlay(); }
       cropFertigBtn.onclick=function(e){ e.stopPropagation(); closePhotoEditOverlay(); };
       var closeX=document.createElement('button');
       closeX.type='button';
@@ -19363,7 +19591,7 @@
           label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
           wrap.appendChild(thumb);
           wrap.appendChild(label);
-          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); w.data.photoObjectPanX=(typeof item.objectPanX==='number')?Math.max(0,Math.min(100,item.objectPanX)):50; saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; if(typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition(); } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;pointer-events:none;'; div.innerHTML='<span style="font-size:48px;opacity:0.5;">📷</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('inserat-photo-placeholder',!w.data.photoData); pt.classList.toggle('pulse-soft',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); w.data.photoObjectPanX=(typeof item.objectPanX==='number')?Math.max(0,Math.min(100,item.objectPanX)):50; saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; if(typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition(); } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;'; div.innerHTML='<span class="inserat-photo-empty-minimal-icon" aria-hidden="true">📸</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('is-empty-photo',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
           cookbookQuickSelect.appendChild(wrap);
         });
         step1Container.appendChild(cookbookQuickSelect);
@@ -19402,12 +19630,12 @@
           if (valid) {
             primaryBtn.classList.add('is-ready');
             primaryBtn.disabled = false;
-            primaryBtn.style.opacity = '1';
+            primaryBtn.style.opacity = '';
             primaryBtn.style.pointerEvents = 'auto';
           } else {
             primaryBtn.classList.remove('is-ready');
             primaryBtn.disabled = true;
-            primaryBtn.style.opacity = '0.3';
+            primaryBtn.style.opacity = '';
             primaryBtn.style.pointerEvents = 'none';
           }
         }
@@ -19458,7 +19686,7 @@
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
-      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:48px; height:48px; padding:0 16px; border:none; border-radius:8px; background:#222222 !important; color:#fff !important; font-size:16px; font-weight:800; cursor:pointer; box-sizing:border-box; align-self:stretch;';
+      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; border:none; cursor:pointer; box-sizing:border-box; align-self:stretch;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -19491,7 +19719,7 @@
       btnWeiter.style.cssText=step1PrimaryBtnStyle;
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
-      btnWeiter.style.opacity='0.3';
+      btnWeiter.style.opacity='';
       btnWeiter.style.pointerEvents='none';
       btnWeiter.onclick=function(){ switchToStep2(); };
       step1NavRow.appendChild(btnWeiter);
