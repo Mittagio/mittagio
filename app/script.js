@@ -16686,6 +16686,8 @@
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     document.body.style.overflow = 'auto';
     document.body.style.overscrollBehavior = 'auto';
+    var cookbookFooter = document.getElementById('cookbookFooterWrap');
+    if(cookbookFooter) cookbookFooter.style.display = 'none';
     /* Radikaler Cleanup: alle Wizard-Sheets und Backdrops restlos vernichten [cite: 2026-03-10] */
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
@@ -16730,6 +16732,8 @@
     document.body.style.overflow = 'auto';
     document.body.style.overscrollBehavior = 'auto';
     document.body.classList.remove('vendor-area', 'wizard-inserat-open');
+    var cookbookFooter = document.getElementById('cookbookFooterWrap');
+    if(cookbookFooter) cookbookFooter.style.display = 'none';
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');

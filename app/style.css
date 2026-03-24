@@ -6959,11 +6959,11 @@
     #v-provider-home .dashboard-kasten-kpis.kpis-scrolled{
       box-shadow:0 2px 8px rgba(0,0,0,0.04);
     }
-    /* KPI-Labels: 10px / 800, Uppercase, dezent grau */
+    /* KPI-Labels: kompakt und gut lesbar */
     #v-provider-home .dashboard-kasten-kpis .kpi-label{
-      font-size:10px !important; font-weight:800 !important;
-      color:#94a3b8 !important; text-transform:uppercase;
-      letter-spacing:0.12em; margin-bottom:4px !important;
+      font-size:11px !important; font-weight:800 !important;
+      color:#94a3b8 !important; text-transform:none;
+      letter-spacing:0.02em; margin-bottom:4px !important;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;

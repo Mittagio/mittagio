@@ -1151,15 +1151,15 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div class="dashboard-kasten dashboard-kasten-kpis sticky-sub-bar" id="dashboardKpisBlock">
           <div class="prov-stats-stolz dashboard-kpi-row dashboard-kpi-grid">
             <div id="kpiTagesessen" role="button" tabindex="0" class="dashboard-kpi-cell" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Aktive Tagesessen heute</p>
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Aktive Essen</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiBestellungen" role="button" tabindex="0" class="dashboard-kpi-cell" onclick="if(typeof showProviderPickups==='function') showProviderPickups();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); if(typeof showProviderPickups==='function') showProviderPickups();}" title="Abholnummern heute">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholnummern heute</p>
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholnummern</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" class="dashboard-kpi-cell dashboard-kpi-cell--wide" onclick="if(typeof showProviderBilling==='function') showProviderBilling();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); if(typeof showProviderBilling==='function') showProviderBilling();}" title="Tagesumsatz">
-              <p id="kpiLabelUmsatz" class="kpi-label kpi-label-umsatz" style="margin:0 0 2px;">Umsatz Heute</p>
+              <p id="kpiLabelUmsatz" class="kpi-label kpi-label-umsatz" style="margin:0 0 2px;">Umsatz</p>
               <p id="dashboardUmsatzToday" class="kpi-umsatz-value" style="margin:0;">0,00 €</p>
             </div>
           </div>
