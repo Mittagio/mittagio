@@ -12239,3 +12239,85 @@ body.provider-mode .inserat-bottom-sheet{
   padding-right: var(--safe-area-right);
   padding-bottom: var(--safe-area-bottom);
 }
+
+/* Provider-Footer-Systemflaeche: auf allen Geraeten unten buendig */
+:root{
+  --provider-system-footer-bg: #ffffff;
+  --provider-system-footer-border: #ebebeb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --provider-system-footer-bg: #000000;
+    --provider-system-footer-border: rgba(255,255,255,0.12);
+  }
+}
+body.provider-mode #providerNavWrap.provider-nav-wrap-pill{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: var(--provider-system-footer-bg) !important;
+  border-top: 1px solid var(--provider-system-footer-border) !important;
+  padding-left: var(--safe-area-left) !important;
+  padding-right: var(--safe-area-right) !important;
+  padding-bottom: max(0px, var(--safe-area-bottom)) !important;
+}
+body.provider-mode #providerNavWrap #providerNav{
+  background: var(--provider-system-footer-bg) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-left: max(12px, var(--safe-area-left)) !important;
+  padding-right: max(12px, var(--safe-area-right)) !important;
+  padding-bottom: calc(12px + var(--safe-area-bottom)) !important;
+}
+body.provider-mode #weekViewFooter.week-view-footer-fixed{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: var(--provider-system-footer-bg) !important;
+  border-top: 1px solid var(--provider-system-footer-border) !important;
+  padding-left: max(16px, var(--safe-area-left)) !important;
+  padding-right: max(16px, var(--safe-area-right)) !important;
+  padding-bottom: calc(12px + var(--safe-area-bottom)) !important;
+}
+body.provider-mode #cookbookFooterWrap.cookbook-footer-fixed{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: var(--provider-system-footer-bg) !important;
+  border-top: 1px solid var(--provider-system-footer-border) !important;
+  padding: 12px max(16px, var(--safe-area-right)) calc(12px + var(--safe-area-bottom)) max(16px, var(--safe-area-left)) !important;
+  box-sizing: border-box !important;
+}
+body.provider-mode #cookbookFooterWrap .cookbook-footer-btn-inserieren{
+  width: 100% !important;
+  max-width: none !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-layer,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-action-section.inserat-action-pricing{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: var(--provider-system-footer-bg) !important;
+  border-top: 1px solid var(--provider-system-footer-border) !important;
+  padding-left: max(16px, var(--safe-area-left)) !important;
+  padding-right: max(16px, var(--safe-area-right)) !important;
+  padding-bottom: calc(12px + var(--safe-area-bottom)) !important;
+}

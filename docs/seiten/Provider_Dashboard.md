@@ -21,3 +21,6 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 
 - Helles Layout (#F8F7F2)
 - Silent Defaults: 3 Säulen nur bei Abweichung
+- Footer-Systemfläche (global Anbieter): Bottom-Navigation, Wochenplan-Footer, Kochbuch-Footer und Wizard-Footer sind immer `position: fixed`, `left/right/bottom: 0`, ohne seitlichen Versatz.
+- Safe-Area: Footer-Padding unten über `env(safe-area-inset-bottom)` / `--safe-area-bottom`, damit der Footer am Geräte-Rand klebt.
+- Systemfarbe unten: Footer-Hintergrund folgt dem Geräteschema (`prefers-color-scheme`) – hell: weiß, dunkel: schwarz.

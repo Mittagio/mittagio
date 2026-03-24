@@ -10201,13 +10201,13 @@
       if(dashUmsatz){ dashUmsatz.textContent = bruttoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#2ecc71' : '#1a1a1a'; dashUmsatz.style.fontWeight = '900'; }
       if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
 
-      // KPI: Tagesessen-Label immer anzeigen; Abholungen/Umsatz-Labels ausblenden bei Aktivität
+      // KPI: Alle drei Labels immer anzeigen
       const kpiLabelTagesessen = document.getElementById('kpiLabelTagesessen');
       const kpiLabelAbholungen = document.getElementById('kpiLabelAbholungen');
       const kpiLabelUmsatz = document.getElementById('kpiLabelUmsatz');
       if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = '';
-      if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = todayPickups > 0 ? 'none' : '';
-      if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = hasRevenue ? 'none' : '';
+      if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = '';
+      if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = '';
 
       // KPI Click-Handler
       const kpiTagesessen = document.getElementById('kpiTagesessen');
@@ -15894,10 +15894,16 @@
     if(emptyEl) emptyEl.style.display = 'none';
     if(box) box.style.display = 'none';
 
+    function isCookbookViewActive(){
+      var cbView = document.getElementById('v-provider-cookbook');
+      return !!(cbView && cbView.classList && cbView.classList.contains('active') && document.body.classList.contains('provider-cookbook-active'));
+    }
+
     function updateCookbookFooterButton(){
       var footerWrap = document.getElementById('cookbookFooterWrap');
       var btn = document.getElementById('cookbookFooterBtnInserieren');
       if(!footerWrap || !btn || !magazineEl) return;
+      if(!isCookbookViewActive()){ footerWrap.style.display = 'none'; return; }
       var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
       if(!cards.length){ footerWrap.style.display = 'none'; return; }
       var card = selectedCookbookId ? magazineEl.querySelector('.cookbook-magazine-card[data-cookbook-entry-id="' + selectedCookbookId + '"]') : null;
@@ -16076,7 +16082,7 @@
       }
 
       requestAnimationFrame(function(){ updateCookbookFooterButton(); });
-      if(footerWrap) footerWrap.style.display = 'block';
+      if(footerWrap) footerWrap.style.display = isCookbookViewActive() ? 'block' : 'none';
     } else {
       var footerWrap = document.getElementById('cookbookFooterWrap');
       if(footerWrap) footerWrap.style.display = 'none';
