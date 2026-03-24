@@ -20,6 +20,7 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 
 - Helles Layout
 - Swipe: Reveal-Delete (rote Fläche + Mülleimer), Undo-Snackbar
+- KW-Label in der Header-Mitte bleibt einzeilig und zentriert (`.kw-label` mit `white-space: nowrap`, responsive `clamp(14px, 4vw, 16px)`).
 
 ## Phase 2 – Interaktion & Mechanik
 

@@ -7809,7 +7809,7 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      gap:20px;
+      gap:12px;
     }
     #v-provider-week #v-provider-week-header .week-nav-btn{
       min-width:60px;
@@ -7841,9 +7841,14 @@
       min-width:0;
     }
     #v-provider-week #v-provider-week-header .kw-label{
-      font-size:18px;
+      font-size:clamp(14px, 4vw, 16px);
       font-weight:800;
       color:#1a1a1a;
+      line-height:1.1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
     }
     #v-provider-week #v-provider-week-header .date-range{
       display:block;
