@@ -6916,12 +6916,12 @@
       flex-shrink:0;
       margin-bottom:0;
     }
-    /* KPI-Cockpit: 2-Spalten-Grid, responsive Typo & vmax-Abstände */
+    /* KPI-Cockpit: 3 KPIs fest in einer Zeile */
     #v-provider-home .dashboard-kpi-row.dashboard-kpi-grid{
       display:grid;
-      grid-template-columns:repeat(2, 1fr);
-      gap:2vmax;
-      align-items:end;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:12px;
+      align-items:start;
       justify-items:stretch;
       border:none;
       padding:0;
@@ -6937,7 +6937,7 @@
       flex:1 1 auto;
     }
     #v-provider-home .dashboard-kpi-grid .dashboard-kpi-cell--wide{
-      grid-column:1 / -1;
+      grid-column:auto;
       text-align:center;
     }
     #v-provider-home .dashboard-kpi-row:not(.dashboard-kpi-grid){ gap:1.5rem; }
@@ -6954,6 +6954,9 @@
       font-size:10px !important; font-weight:800 !important;
       color:#94a3b8 !important; text-transform:uppercase;
       letter-spacing:0.12em; margin-bottom:4px !important;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     /* KPI-Werte: iPhone SE–tauglich, keine Zeilenumbrüche */
     #v-provider-home .dashboard-kasten-kpis [id^="dashboard"],
