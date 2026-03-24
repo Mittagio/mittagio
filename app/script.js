@@ -17722,7 +17722,7 @@
         var step2Wrap=document.createElement('div');
         step2Wrap.id='mastercard-step-2';
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow:hidden;';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(132px + env(safe-area-inset-bottom, 20px));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
@@ -17756,7 +17756,7 @@
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
         var step2Spacer=document.createElement('div');
-        step2Spacer.style.cssText='flex:1; min-height:8px;';
+        step2Spacer.style.cssText='display:none;';
         step2Wrap.appendChild(step2Spacer);
         var pickupEnabled = (w.data.step2PickupEnabled !== false);
         w.data.step2PickupEnabled = pickupEnabled;

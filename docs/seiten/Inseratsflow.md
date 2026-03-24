@@ -37,6 +37,8 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Cutoff-Fix:** Step-Slider nutzt feste 100%-Pane-Breiten (3x 100%) und Track-Transition `0% / -100% / -200%`, damit Step 2 auf Mobile nicht links abgeschnitten wird.
 - **Tile-Höhe:** Auswahl-Kacheln in Step 2 sind größer (`min-height: 104px`) für bessere Daumen-Bedienung.
 - **App-Style:** stärkere Card-Optik mit größerem Radius, tieferem Shadow und klarerer Active-Glow-Darstellung.
+- **Viewport-Fix (SE/S8):** Step-2-Container scrollt vertikal (`overflow-y:auto`) und reserviert unten festen Platz für den fixen Footer (`padding-bottom` inkl. Safe-Area).
+- **Footer-Stabilität:** Step-2-Footer wird bei aktivem Step immer angezeigt und bleibt am unteren Rand (`position: fixed`, `left/right/bottom: 0`, volle Breite).
 
 ## Mastercard Step1 (UI/Scroll-Fix)
 
