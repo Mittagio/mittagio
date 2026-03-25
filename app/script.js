@@ -17763,6 +17763,10 @@
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = normalizeWizardEntryPoint((w.ctx && w.ctx.entryPoint) || 'newListing');
       if(w && w.ctx) w.ctx.entryPoint = entryPoint;
+      var wizardRoot = document.getElementById('wizard');
+      if(wizardRoot){
+        wizardRoot.classList.remove('inserat-step2-active','inserat-step3-active');
+      }
       /* 3-Schritt Mastercard: Immer Editierung → Monetarisierung → Live [cite: FLOW FIX 2026-02-26] */
       if(typeof w.inseratStep !== 'number') w.inseratStep = 1;
       var inseratStep = Math.max(1, Math.min(3, w.inseratStep));
@@ -19827,7 +19831,29 @@
             }
           }catch(e){}
         }
-        var updateFooterVisibility=function(){ var s=1; try{ var sl=box.querySelector('.inserat-steps-slider'); if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10); }catch(e){} var f1=document.getElementById('mastercard-footer-step1'); var f2=document.getElementById('mastercard-footer-step2'); if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); } if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); } var sf=box.querySelector('[data-inserat-step="3"]'); if(sf) sf.style.setProperty('display',s===3?'flex':'none','important'); if(scrollArea){ scrollArea.scrollTop=0; } if(typeof showStep==='function') showStep(s); updateHeaderTitleByStep(s); requestAnimationFrame(applyListingViewportOffsets); };
+        var updateFooterVisibility=function(){
+          var s=1;
+          try{
+            var sl=box.querySelector('.inserat-steps-slider');
+            if(sl) s=parseInt(sl.getAttribute('data-inserat-step')||'1',10);
+          }catch(e){}
+          if(s!==1 && s!==2 && s!==3) s=1;
+          var wiz=document.getElementById('wizard');
+          if(wiz){
+            wiz.classList.toggle('inserat-step2-active', s===2);
+            wiz.classList.toggle('inserat-step3-active', s===3);
+          }
+          var f1=document.getElementById('mastercard-footer-step1');
+          var f2=document.getElementById('mastercard-footer-step2');
+          if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); }
+          if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); }
+          var sf=box.querySelector('[data-inserat-step="3"]');
+          if(sf) sf.style.setProperty('display',s===3?'flex':'none','important');
+          if(scrollArea){ scrollArea.scrollTop=0; }
+          if(typeof showStep==='function') showStep(s);
+          updateHeaderTitleByStep(s);
+          requestAnimationFrame(applyListingViewportOffsets);
+        };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); requestAnimationFrame(applyListingViewportOffsets); });
       }
