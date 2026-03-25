@@ -94,7 +94,8 @@
     favPillars: 'mittagio_fav_pillars_v1', // { [dishId]: { vorOrt, abholnummer, mehrweg } } – 3-Säulen beim Favorisieren einfrieren
     transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
     weekTemplates: 'mittagio_week_templates_v1', // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
-    inseratQuickbook: 'mittagio_inserat_quickbook_v1' // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
+    inseratQuickbook: 'mittagio_inserat_quickbook_v1', // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
+    weekVeggieReminder: 'mittagio_week_veggie_reminder_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -9854,55 +9855,13 @@
     }, 300);
   })();
 
-  // Provider Bottom-Nav: temporär ausblenden beim Runterscrollen, wieder einblenden beim Hochscrollen.
-  (function setupProviderFooterAutoHideOnScroll(){
+  // Provider Bottom-Nav: dauerhaft sichtbar (Fallback auf alten Stand).
+  (function keepProviderFooterAlwaysVisible(){
     var navWrap = document.getElementById('providerNavWrap');
     if(!navWrap) return;
     var navInner = document.getElementById('providerNav');
 
-    var lastTopByEl = new WeakMap();
-    var HIDE_THRESHOLD = 16;
-    var SHOW_THRESHOLD = 6;
-    var SHOW_AT_TOP = 24;
-    var MIN_TOP_FOR_HIDE = 80;
-    var IDLE_SHOW_MS = 380;
-    var idleTimer = null;
-
-    function isProviderScrollContainer(el){
-      if(!el || el === document || el === window) return false;
-      if(el.id === 'pickupsFloatingWrap') return true;
-      if(el.id === 'kwBoardScroll') return true;
-      if(el.id === 'cookbookScrollWrap') return true;
-      if(el.id === 'providerProfileContent') return true;
-      if(el.classList && el.classList.contains('provider-sub-scroll')) return true;
-      if(el.classList && el.classList.contains('dashboard-floating-wrap') && el.closest('#v-provider-home')) return true;
-      return false;
-    }
-
-    function shouldAutoHideRun(){
-      if(!document.body) return false;
-      if(!document.body.classList.contains('provider-mode')) return false;
-      if(document.body.classList.contains('wizard-inserat-open')) return false;
-      if(document.body.classList.contains('create-flow-open')) return false;
-      return true;
-    }
-
-    function showFooter(){
-      navWrap.classList.remove('is-scroll-hidden');
-    }
-
-    function hideFooter(){
-      navWrap.classList.add('is-scroll-hidden');
-    }
-
-    function scheduleIdleShow(){
-      if(idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(function(){
-        showFooter();
-      }, IDLE_SHOW_MS);
-    }
-
-    function forceProviderFooterVisible(){
+    function ensureVisible(){
       if(!document.body || !document.body.classList.contains('provider-mode')) return;
       if(document.body.classList.contains('wizard-inserat-open')) return;
       if(document.body.classList.contains('create-flow-open')) return;
@@ -9918,51 +9877,17 @@
       }
     }
 
-    if(document.body) document.body.classList.add('footer-autohide');
-    showFooter();
-    forceProviderFooterVisible();
-
-    document.addEventListener('scroll', function(e){
-      if(!shouldAutoHideRun()){
-        showFooter();
-        return;
-      }
-      var scroller = e && e.target ? e.target : null;
-      if(!isProviderScrollContainer(scroller)) return;
-      if((scroller.scrollHeight - scroller.clientHeight) < 8) return;
-
-      var currentTop = Math.max(scroller.scrollTop || 0, 0);
-      var lastTop = lastTopByEl.has(scroller) ? lastTopByEl.get(scroller) : currentTop;
-      var delta = currentTop - lastTop;
-      lastTopByEl.set(scroller, currentTop);
-      scheduleIdleShow();
-
-      if(currentTop <= SHOW_AT_TOP || delta <= -SHOW_THRESHOLD){
-        showFooter();
-        return;
-      }
-      if(currentTop >= MIN_TOP_FOR_HIDE && delta >= HIDE_THRESHOLD){
-        hideFooter();
-      }
-    }, true);
-
+    if(document.body) document.body.classList.remove('footer-autohide');
+    ensureVisible();
     document.addEventListener('click', function(e){
       var navClick = e.target && e.target.closest ? e.target.closest('#providerNav .navbtn') : null;
-      if(navClick){
-        showFooter();
-        forceProviderFooterVisible();
-      }
+      if(navClick) ensureVisible();
     }, true);
-
-    document.addEventListener('touchend', function(){
-      if(!shouldAutoHideRun()) return;
-      scheduleIdleShow();
-    }, { passive: true });
-    window.addEventListener('pageshow', forceProviderFooterVisible, true);
+    window.addEventListener('pageshow', ensureVisible, true);
+    window.addEventListener('resize', ensureVisible, true);
     document.addEventListener('visibilitychange', function(){
-      if(document.visibilityState === 'visible') forceProviderFooterVisible();
+      if(document.visibilityState === 'visible') ensureVisible();
     }, true);
-    window.addEventListener('resize', forceProviderFooterVisible, true);
   })();
 
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint B erreicht (Zeile ~9750)');
@@ -10126,7 +10051,7 @@
     updateSessionActivity();
     if(document.body){
       document.body.classList.add('provider-mode');
-      document.body.classList.remove('provider-cookbook-active', 'cookbook-active', 'wizard-inserat-open', 'create-flow-open');
+      document.body.classList.remove('provider-cookbook-active', 'cookbook-active', 'cookbook-from-dashboard', 'wizard-inserat-open', 'create-flow-open');
     }
     var providerNavWrapEl = document.getElementById('providerNavWrap');
     if(providerNavWrapEl){
@@ -11478,6 +11403,56 @@
     veggie.sort(function(a,b){ return (b._veggieScore || 0) - (a._veggieScore || 0); });
     return veggie.slice(0, 4);
   }
+  function getEntryFoodType(entry){
+    var cat = '';
+    var dish = '';
+    var cb = null;
+    if (entry && entry.cookbookId && Array.isArray(cookbook)) {
+      cb = cookbook.find(function(c){ return String(c.id) === String(entry.cookbookId); }) || null;
+    }
+    if (entry && entry.category) cat = String(entry.category).toLowerCase();
+    if (cb && cb.category) cat = String(cb.category).toLowerCase();
+    if (entry && entry.dish) dish = String(entry.dish).toLowerCase();
+    if (cb && cb.dish) dish = String(cb.dish).toLowerCase();
+    var text = (cat + ' ' + dish).trim();
+    if (!text) return 'unknown';
+    if (/veggie|vegetar|salat|gemüse|tofu|pilz|maultasche|spätzle|käse|risotto/i.test(text)) return 'vegetarian';
+    if (/vegan|falafel|buddha|quinoa|avocado/i.test(text)) return 'vegan';
+    if (/fleisch|rind|schwein|huhn|pute|wurst|schnitzel|gulasch|steak|braten|hack|carbonara/i.test(text)) return 'meat';
+    return 'unknown';
+  }
+  function getWeekVeggieReminderState(){
+    if (typeof load !== 'function' || typeof LS === 'undefined') return {};
+    return load(LS.weekVeggieReminder, {});
+  }
+  function saveWeekVeggieReminderState(state){
+    if (typeof save !== 'function' || typeof LS === 'undefined') return;
+    save(LS.weekVeggieReminder, state || {});
+  }
+  function rememberWeekVeggieReminder(dayKey, action){
+    if (!dayKey) return;
+    var state = getWeekVeggieReminderState();
+    state[String(dayKey)] = { action: action || 'shown', ts: Date.now() };
+    saveWeekVeggieReminderState(state);
+  }
+  function shouldShowWeekVeggieReminder(dayKey, items, veggieSuggestions){
+    if (!dayKey || !Array.isArray(items) || !Array.isArray(veggieSuggestions) || veggieSuggestions.length === 0) return false;
+    var hasVegetarian = false;
+    var hasMeatOrVegan = false;
+    items.forEach(function(entry){
+      var t = getEntryFoodType(entry);
+      if (t === 'vegetarian') hasVegetarian = true;
+      if (t === 'meat' || t === 'vegan') hasMeatOrVegan = true;
+    });
+    if (!hasMeatOrVegan || hasVegetarian) return false;
+    var state = getWeekVeggieReminderState();
+    var rec = state[String(dayKey)];
+    if (!rec || !rec.ts) return true;
+    if (rec.action === 'added') return false;
+    var ageMs = Date.now() - Number(rec.ts || 0);
+    var cooldownMs = 24 * 60 * 60 * 1000;
+    return ageMs >= cooldownMs;
+  }
   /** Smart Suggestions: Wochentag (z.B. Freitag = Fisch/veggie), Saison (Sommer = leicht, Winter = Eintopf), Renner (häufig inseriert). */
   function getSmartSuggestions(focusDayKey){
     var pid = typeof providerId === 'function' ? providerId() : '';
@@ -12044,10 +12019,6 @@
       try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(100); } catch(err){}
     })();
     var dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    var p = (provider && provider.profile) ? provider.profile : {};
-    var defaultDineIn = p.dineInPossibleDefault !== false;
-    var defaultPickup = !!p.abholnummerEnabledByDefault;
-    var defaultReuse = !!p.reuseEnabledByDefault;
     /* Renner-Karussell: Deine Renner als Quick-Select [cite: 2026-03-02] */
     var rennerScroll = document.getElementById('rennerScroll');
     if (rennerScroll) {
@@ -12103,8 +12074,9 @@
       var maxFilled = 5;
       var slot = 0;
       var firstEntry = items[0];
-      var showVeggieSog = firstEntry && items.length < maxFilled;
-      var veggieSuggestions = showVeggieSog && typeof getSmartVeggieSuggestions === 'function' ? getSmartVeggieSuggestions(key, firstEntry) : [];
+      var canShowVeggieReminder = !!firstEntry && items.length < maxFilled;
+      var veggieSuggestions = canShowVeggieReminder && typeof getSmartVeggieSuggestions === 'function' ? getSmartVeggieSuggestions(key, firstEntry) : [];
+      var showVeggieReminder = canShowVeggieReminder && typeof shouldShowWeekVeggieReminder === 'function' ? shouldShowWeekVeggieReminder(key, items, veggieSuggestions) : false;
       for (slot = 0; slot < items.length && slot < maxFilled; slot++) {
         var entry = items[slot];
         if (entry) {
@@ -12113,8 +12085,6 @@
           var price = (cb && cb.price) || entry.price || 0;
           var priceStr = typeof euro === 'function' ? euro(price) : (Number(price || 0).toFixed(2).replace('.', ',') + ' €');
           var img = (cb && cb.photoData) || entry.photoData || entry.imageUrl || '';
-          var hasAbhol = !!(entry.hasPickupCode !== undefined ? entry.hasPickupCode : defaultPickup);
-          var badgeHtml = hasAbhol ? '<span class="slot-abholnummer-badge">\uD83C\uDFAB1\uFE0F\u20E3</span>' : '';
           var imgHtml = img ? '<img src="' + esc(img) + '" alt="">' : '';
           var slotCard = document.createElement('div');
           slotCard.className = 'slot-card kw-slot week-grid-slot kw-slot-filled' + (isLive ? ' kw-slot-live' : ' kw-slot-offline');
@@ -12123,7 +12093,7 @@
           slotCard.setAttribute('data-offer-id', isLive && items[slot] && items[slot].id ? String(items[slot].id) : '');
           slotCard.setAttribute('data-cookbook-id', entry.cookbookId ? String(entry.cookbookId) : '');
           if (!isLive) slotCard.setAttribute('data-draft', '1');
-          slotCard.innerHTML = '<div class="swipe-container"><button type="button" class="delete-action-bg" aria-label="Gericht löschen"><i data-lucide="trash-2" style="width:18px;height:18px;"></i></button><div class="week-card-foreground"><div class="slot-card-img-wrap">' + imgHtml + badgeHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div></div></div>';
+          slotCard.innerHTML = '<div class="swipe-container"><button type="button" class="delete-action-bg" aria-label="Gericht löschen"><i data-lucide="trash-2" style="width:18px;height:18px;"></i></button><div class="week-card-foreground"><div class="slot-card-img-wrap">' + imgHtml + '</div><div class="slot-card-body"><div class="slot-card-title">' + esc(name) + '</div><div class="slot-card-price">' + esc(priceStr) + '</div></div></div></div>';
           slotCard.onclick = (function(k, idx, ent){ return function(e){ e.stopPropagation(); if(slotCard.classList.contains('swipe-open')) return; var dishId = ent ? ent.cookbookId : undefined; if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(isLive && items[idx] && items[idx].id){ if(typeof startListingFlow === 'function') startListingFlow({ editOfferId: items[idx].id, date: k, entryPoint: 'week' }); } else { if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week', dishId: dishId }); } }; })(key, slot, entry);
           var deleteBtn = slotCard.querySelector('.delete-action-bg');
           if (deleteBtn) {
@@ -12150,26 +12120,62 @@
           slotsWrap.appendChild(slotCard);
         }
       }
-      if (showVeggieSog && veggieSuggestions.length > 0) {
-        var sogSlot = document.createElement('div');
-        sogSlot.className = 'veggie-sog-slot veggie-add-card kw-slot week-grid-slot';
-        sogSlot.setAttribute('data-day', key);
-        sogSlot.setAttribute('data-sog', '1');
-        var top2 = veggieSuggestions.slice(0, 2);
-        var btnsHtml = top2.map(function(v){
-          var imgUrl = v.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
-          var vName = (v.dish || 'Gericht').substring(0, 12) + ((v.dish || '').length > 12 ? '…' : '');
-          return '<button type="button" class="veggie-sog-btn" data-cookbook-id="' + esc(String(v.id)) + '" aria-label="' + esc(v.dish || 'Gericht') + ' hinzufügen"><div class="veggie-sog-btn-img"><img src="' + esc(imgUrl) + '" alt=""></div><span class="veggie-sog-btn-name">' + esc(vName) + '</span></button>';
-        }).join('');
-        sogSlot.innerHTML = '<span class="veggie-sog-text"><span class="veggie-icon">\uD83C\uDF3F</span> Vegetarisches Gericht ergänzen?</span>' + btnsHtml;
-        sogSlot.querySelectorAll('.veggie-sog-btn').forEach(function(btn){
-          var cid = btn.getAttribute('data-cookbook-id');
-          btn.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); if(typeof haptic === 'function') haptic(6); if(typeof addCookbookEntryToWeek === 'function'){ addCookbookEntryToWeek(key, cid); renderWeekPlanBoard(); if(typeof showToast === 'function') showToast('Gericht eingetragen'); } };
-        });
-        sogSlot.onclick = function(e){ if(e.target.closest && e.target.closest('.veggie-sog-btn')) return; if(typeof haptic === 'function') haptic(6); weekPlanDay = key; if(typeof startListingFlow === 'function') startListingFlow({ date: key, entryPoint: 'week' }); };
-        slotsWrap.appendChild(sogSlot);
+      if (showVeggieReminder && veggieSuggestions.length > 0) {
+        var reminder = document.createElement('div');
+        var topPick = veggieSuggestions[0];
+        var topPickId = topPick && topPick.id ? String(topPick.id) : '';
+        var topPickName = topPick && topPick.dish ? String(topPick.dish) : 'Vegetarisches Gericht';
+        reminder.className = 'veggie-reminder-chip';
+        reminder.setAttribute('data-day', key);
+        reminder.setAttribute('data-sog', '1');
+        reminder.innerHTML =
+          '<button type="button" class="veggie-reminder-main" aria-label="Vegetarische Option ergänzen">' +
+            '<span class="veggie-reminder-arrow">↗</span>' +
+            '<span class="veggie-reminder-text">Noch eine vegetarische Option ergänzen?</span>' +
+          '</button>' +
+          '<button type="button" class="veggie-reminder-quick" data-cookbook-id="' + esc(topPickId) + '" aria-label="' + esc(topPickName) + ' eintragen">' + esc(topPickName) + '</button>' +
+          '<button type="button" class="veggie-reminder-dismiss" aria-label="Erinnerung schließen">×</button>';
+        var mainBtn = reminder.querySelector('.veggie-reminder-main');
+        var quickBtn = reminder.querySelector('.veggie-reminder-quick');
+        var dismissBtn = reminder.querySelector('.veggie-reminder-dismiss');
+        if (mainBtn) {
+          mainBtn.onclick = function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            if(typeof haptic === 'function') haptic(6);
+            rememberWeekVeggieReminder(key, 'opened');
+            weekPlanDay = key;
+            if(typeof startListingFlow === 'function') startListingFlow({ date: key, entryPoint: 'week' });
+          };
+        }
+        if (quickBtn) {
+          quickBtn.onclick = function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            var cid = quickBtn.getAttribute('data-cookbook-id');
+            if (!cid) return;
+            if(typeof haptic === 'function') haptic(6);
+            if(typeof addCookbookEntryToWeek === 'function'){
+              addCookbookEntryToWeek(key, cid);
+              rememberWeekVeggieReminder(key, 'added');
+              renderWeekPlanBoard();
+              if(typeof showToast === 'function') showToast('Vegetarische Option ergänzt');
+            }
+          };
+        }
+        if (dismissBtn) {
+          dismissBtn.onclick = function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            rememberWeekVeggieReminder(key, 'dismissed');
+            if(typeof haptic === 'function') haptic(4);
+            if (reminder && reminder.parentNode) reminder.parentNode.removeChild(reminder);
+          };
+        }
+        slotsWrap.appendChild(reminder);
+        rememberWeekVeggieReminder(key, 'shown');
       }
-      if (items.length < maxFilled && !showVeggieSog) {
+      if (items.length < maxFilled) {
         var empty = document.createElement('button');
         empty.type = 'button';
         empty.className = 'kw-slot kw-slot-empty kw-slot-silent week-grid-slot';
@@ -12177,15 +12183,6 @@
         empty.setAttribute('aria-label', isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen für ' + dayLabel + ', ' + dateLabel);
         var emptyText = isDayEmpty ? 'Noch nichts geplant' : 'Gericht hinzufügen';
         empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">' + emptyText + '</span>';
-        empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
-        slotsWrap.appendChild(empty);
-      } else if (items.length < maxFilled && showVeggieSog) {
-        var empty = document.createElement('button');
-        empty.type = 'button';
-        empty.className = 'kw-slot kw-slot-empty kw-slot-silent week-grid-slot';
-        empty.setAttribute('data-day', key);
-        empty.setAttribute('aria-label', 'Gericht hinzufügen');
-        empty.innerHTML = '<span class="kw-slot-empty-icon">+</span><span class="kw-slot-empty-text">Gericht hinzufügen</span>';
         empty.onclick = (function(k){ return function(e){ e.stopPropagation(); if(typeof haptic === 'function') haptic(6); weekPlanDay = k; if(typeof startListingFlow === 'function') startListingFlow({ date: k, entryPoint: 'week' }); }; })(key);
         slotsWrap.appendChild(empty);
       }
@@ -15604,8 +15601,6 @@
       var wizardEl = document.getElementById('wizard');
       if(wizardEl){
         wizardEl.classList.remove('adopted-pro-dish-glow');
-        setTimeout(function(){ wizardEl.classList.add('adopted-pro-dish-glow'); }, 20);
-        setTimeout(function(){ wizardEl.classList.remove('adopted-pro-dish-glow'); }, 2200);
       }
       if(typeof showToast === 'function') showToast('Vorlage geladen! Preis prüfen? ✨');
       setTimeout(function(){
@@ -17861,8 +17856,8 @@
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
-        stampCard.style.cssText='display:flex; align-items:center; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid #eee; border-bottom:2px dashed #ddd; border-radius:12px; background:#fff; opacity:0.6; box-shadow:0 6px 14px rgba(15,23,42,0.03);';
-        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:60px; height:60px; border-radius:8px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; flex-direction:column; gap:4px; min-width:0;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><span id="money-dish-price" style="font-size:22px; line-height:1; font-weight:900; color:#111827;">'+euroS2+'</span></div>';
+        stampCard.style.cssText='display:flex; align-items:stretch; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid rgba(250,204,21,0.55); border-radius:14px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%); box-shadow:0 10px 24px rgba(15,23,42,0.08);';
+        stampCard.innerHTML='<span class="step2-thron-badge">DEIN INSERAT</span><img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:64px; height:64px; border-radius:10px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:grid; grid-template-rows:minmax(0,1fr) auto; min-width:0; flex:1; align-items:end;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><div style="justify-self:end; text-align:right; display:flex; flex-direction:column; gap:2px; align-items:flex-end;"><span class="money-dish-price-label">Gerichtspreis</span><span id="money-dish-price" style="font-size:28px; line-height:1; font-weight:700; color:#374151; justify-self:end; text-align:right;">'+euroS2+'</span></div></div>';
         step2Wrap.appendChild(stampCard);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
@@ -17876,7 +17871,7 @@
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card has-recommendation';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer</div><div class="step2-choice-sub">0,89 € pro Vorgang</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kein Bargeld</span><span class="step2-feature-pill">Planbar</span><span class="step2-feature-pill">Garantierte Zahlung</span></div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer (0,89 € pro Vorgang)</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -17949,7 +17944,7 @@
             btn.style.opacity = '1';
             btn.style.background = '#111111';
             btn.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
-            btn.classList.toggle('btn-pulse', pickupEnabled);
+            btn.classList.remove('btn-pulse');
           }
         }
         function selectPricing(type, silent){
@@ -18449,9 +18444,6 @@
           applyEditorTransform();
           try{ if(navigator.vibrate) navigator.vibrate([8,40,8]); }catch(e){}
           oImg.classList.remove('photo-editor-reset-pulse');
-          oImg.offsetHeight;
-          oImg.classList.add('photo-editor-reset-pulse');
-          setTimeout(function(){ if(oImg) oImg.classList.remove('photo-editor-reset-pulse'); }, 500);
           showPhotoEditorResetHint();
         }
         function setActiveTool(tool){
@@ -18675,9 +18667,6 @@
         function runPhotoSaveSuccessPulse(){
           if(!imgEl) return;
           imgEl.classList.remove('pulse-highlight');
-          imgEl.offsetHeight;
-          imgEl.classList.add('pulse-highlight');
-          setTimeout(function(){ if(imgEl){ imgEl.classList.remove('pulse-highlight'); } }, 1000);
         }
         function savePhotoEdit(){
           if(isPhotoSavePending) return;
@@ -19983,7 +19972,7 @@
       }
       /* Keyboard Management: Kein automatischer Focus – Tastatur nur bei aktivem Berühren [cite: Anti-Flash 2026-02-23] */
       var photoEl = box.querySelector('.photo-header, .inserat-photo-tile');
-      if(photoEl && !w.data.photoData) photoEl.classList.add('inserat-card-photo-pulse');
+      if(photoEl) photoEl.classList.remove('inserat-card-photo-pulse');
       return;
     }
 

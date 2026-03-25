@@ -136,6 +136,7 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Clean Empty-Hero:** Kein Schleier/Gradient/Glow im leeren Foto-Bereich; neutral weiße Fläche mit zentriertem `Foto hinzufügen`-Button.
 - **Pixel-Feinschliff:** Empty-Button im Hero visuell exakt mittig justiert (leichter Vertical-Nudge).
 - **No-Glow Footer Step1:** Für `Neues Gericht` und `Edit` wird im Step‑1‑Footer Shadow/Glow/Animation per Override deaktiviert, damit beide visuell identisch clean wirken.
+- **No-Glow InseratCard global:** In Step 1/2 wurden verbleibende Pulse-/Glow-Effekte entfernt (Foto-Placeholder-Pulse, Adopt-Glow, Reset-/Save-Pulse im Fotoeditor sowie CTA-Heartbeat), damit die InseratCard durchgehend statisch-clean bleibt.
 - **Step1 Footer Lock:** Für `Renner`, `Neues Gericht` und `Aktive Angebote (Edit)` ist der Step‑1‑Footer jetzt mit einem finalen Lock-Override vereinheitlicht (identische Position, Padding, Button-Höhe, Radius, Typo, Farben).
 - **Pixel-Feinschliff Footer:** Zusätzlich sind Font-Stack, Letter-Spacing, Text-Ausrichtung und Disabled-State für `Speichern`/`Weiter` hart synchronisiert, damit der Footer in allen Einstiegen 1:1 gleich wirkt.
 - **Device-Fix Footer-Anker (SE/S8/S20/iPhone14):** Footer wird nur dann angehoben, wenn im Wizard wirklich ein `input/textarea` fokussiert ist **und** die Tastaturhöhe erkennbar ist (`keyboardH > 72`). Ohne fokussiertes Feld bleibt `bottom: 0`, damit der Footer auf neueren Geräten nicht mehr zu hoch sitzt.
@@ -143,4 +144,20 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Footer-Fix Neues Gericht:** Beim Aufbau der InseratCard wird der Wizard-Step-State sofort auf Step 1 zurückgesetzt und in `updateFooterVisibility()` strikt mit dem Slider synchronisiert (Fallback immer Step 1). Dadurch bleibt der Step‑1‑Footer auch im Modus „Neues Gericht“ zuverlässig unten sichtbar.
 - **Provider-Footer Sichtbarkeit:** Anbieter-Footer wird außerhalb von Wizard/Create-Flow/Cookbook-Zuständen erzwungen sichtbar gehalten; Auto-Hide ist aktuell neutralisiert, damit der Footer nicht unsichtbar bleibt.
 - **Provider-Footer Guard (Runtime):** Zusätzlicher JS-Guard stellt bei `pageshow`, `visibilitychange`, `resize` und Nav-Klicks sicher, dass `#providerNavWrap`/`#providerNav` im `provider-mode` wieder sichtbar sind, falls ein versteckter Restzustand hängen bleibt.
+- **Stuck-State Fix (`cookbook-from-dashboard`):** Beim Rendern von `Meine Küche` wird der Body-State `cookbook-from-dashboard` aktiv entfernt. Zusätzlich versteckt die CSS-Regel den Anbieter-Footer nur noch, wenn **gleichzeitig** `provider-cookbook-active` gesetzt ist.
+- **Footer-Only Rollback (Stand `70cd1c5`):** Anbieter-Bottom-Nav wurde auf „immer sichtbar“ zurückgestellt (kein Scroll-Autohide), inklusive alter System-Footer-Geometrie ohne schwebende Pill-Optik.
 - **Kein Kunden-Footer-Blitz:** `#customerNav` ist im `provider-mode` hart ausgeblendet, damit beim Aktualisieren kein kurzes Aufblitzen der Kundennavigation sichtbar ist.
+
+## Mastercard Step2 (Thron + Hero-Kachel)
+
+- **Thron-Karte oben:** Die Vorschau `Dein Gericht` ist nicht mehr grau/ausgewaschen, sondern als hochwertige Karte umgesetzt (heller Verlauf, dezenter Gold-Akzent, tieferer Shadow).
+- **Thron-Badge sichtbar:** Die obere Karte trägt jetzt ein klares Label `DEIN INSERAT` (mit Krone), damit der „Thron“-Status sofort erkennbar ist.
+- **Karten-Reihenfolge wie Wochenplan:** Bild links, Name mittig/oben, Preis deutlich rechts unten ausgerichtet.
+- **Stressfrei als Hero:** `Stressfrei-Autopilot 🚀` ist visuell klar hervorgehoben (stärkerer Rahmen/Shadow, light shine).
+- **Größenverhältnis fixiert:** Die Stressfrei-Kachel ist visuell ca. **30 % größer** als die Standard-Kachel (größere Höhe + Padding), damit die Hierarchie eindeutig ist.
+- **Breiter-Wirkung (ohne Layout-Shift):** Seitlicher Aura-Glow + feine Inset-Lichtkante lassen die Hero-Kachel zusätzlich breiter und präsenter wirken, ohne die tatsächliche Kartenbreite zu ändern.
+- **Subline aktualisiert:** Hero-Text ist jetzt exakt `Inklusive Abholnummer (0,89 € pro Vorgang)`.
+- **Pills aktualisiert:** Hero-Pills heißen jetzt `Kontaktlose Bezahlung`, `Planbarkeit`, `Weniger Chaos`.
+- **Standard bewusst ruhiger:** `Standard-Inserat` bleibt bewusst neutraler, damit die Hero-Kachel klar im Fokus steht.
+- **Preis-Rollen getrennt:** In der oberen Karte ist der Wert jetzt als neutraler **Gerichtspreis** mit Label (`Gerichtspreis`) dargestellt; die monetären Entscheidungs-Preise bleiben visuell unten in den Optionen.
+- **Grauschleier entfernt:** Die obere Karte nutzt eine klare weiße Fläche mit vollem Kontrast (kein ausgegrauter Eindruck mehr).

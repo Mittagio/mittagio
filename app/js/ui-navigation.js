@@ -600,10 +600,15 @@
   function showProviderWeek(preselectDay, preselectKW){
     if(!checkSessionValidity()) return;
     var params = new URLSearchParams(location.search);
-    var urlWeek = params.get('week');
-    var urlDay = params.get('day');
+    var urlWeek = params.get('week') || params.get('/week');
+    var urlDay = params.get('day') || params.get('/day');
     if (urlWeek !== null && urlWeek !== '') { var w = parseInt(urlWeek, 10); if (!isNaN(w) && w >= 0 && w < 8) window.weekPlanKWIndex = w; }
     if (urlDay !== null && urlDay !== '' && /^\d{4}-\d{2}-\d{2}$/.test(urlDay)) window.weekPlanDay = urlDay;
+    if (typeof history !== 'undefined' && typeof history.replaceState === 'function' && location.search && (location.search.indexOf('?/week=') === 0 || location.search.indexOf('?/day=') === 0 || location.search.indexOf('&/week=') > -1 || location.search.indexOf('&/day=') > -1)) {
+      var cleanWeek = (typeof window.weekPlanKWIndex === 'number' && window.weekPlanKWIndex >= 0) ? window.weekPlanKWIndex : 0;
+      var cleanDay = (typeof window.weekPlanDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(window.weekPlanDay)) ? window.weekPlanDay : (typeof isoDate === 'function' ? isoDate(new Date()) : '');
+      history.replaceState(history.state || {}, '', location.pathname + '?week=' + cleanWeek + '&day=' + cleanDay);
+    }
     if (preselectDay && typeof preselectDay === 'string') { window.weekPlanDay = preselectDay; if (typeof getWeekIndexForDate === 'function') window.weekPlanKWIndex = Math.max(0, getWeekIndexForDate(preselectDay)); }
     if (typeof preselectKW === 'number' && preselectKW >= 0 && preselectKW < 8) window.weekPlanKWIndex = preselectKW;
     window.weekPlanMode = 'overview';

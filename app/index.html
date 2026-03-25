@@ -3446,9 +3446,17 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 </body>
 <script>
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js?v=20260317t').then(function(reg){
-      if(reg && typeof reg.update === 'function') reg.update();
-    }).catch(function(){});
+    var host = (location && location.hostname ? location.hostname : '').toLowerCase();
+    var isLocalDev = host === '127.0.0.1' || host === 'localhost';
+    if(isLocalDev){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        (regs || []).forEach(function(reg){ try { reg.unregister(); } catch(e){} });
+      }).catch(function(){});
+    } else {
+      navigator.serviceWorker.register('./sw.js?v=20260317t').then(function(reg){
+        if(reg && typeof reg.update === 'function') reg.update();
+      }).catch(function(){});
+    }
   }
 </script>
 </html>

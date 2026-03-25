@@ -53,3 +53,23 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 
 - Beim Rendern von `v-provider-home` wird `#providerNavWrap` defensiv wieder auf sichtbar gesetzt (inkl. Entfernen von `is-scroll-hidden`).
 - Alte Restzustände (`provider-cookbook-active`, `cookbook-active`, `wizard-inserat-open`, `create-flow-open`) werden im Dashboard-Kontext bereinigt, damit die Anbieter-Nav nicht fälschlich verborgen bleibt.
+
+## Browser-Stabilität (Desktop + Mobile Browser)
+
+- Query-Parameter aus Legacy/Back-Navigation werden normalisiert: `?/week=...` bzw. `?/day=...` werden auf saubere URLs (`?week=...&day=...`) umgeschrieben, damit Wochenplan/Dashboard konsistent rendern.
+- `showProviderWeek()` akzeptiert sowohl `week/day` als auch legacy `/week`-Keys, damit alte History-Einträge keine unfertigen Layoutzustände triggern.
+- In lokalen Browser-Umgebungen (`localhost`, `127.0.0.1`) wird kein Service Worker registriert; vorhandene Registrierungen werden deaktiviert, um Cache-Mischzustände zwischen PWA und Browser zu verhindern.
+
+## Mobile Feinschliff (Meine Küche)
+
+- Wochenvorschau im Dashboard wurde verdichtet: kompaktere Abstände, reduzierte Corner-Radien, ruhigere Schatten.
+- Gerichtszeilen in `#providerWeekDayContent` sind auf mobile Lesbarkeit optimiert (kleinere Thumb-/Badge-Dimensionen, ausgewogenere Typografie, kontrollierter Textumbruch).
+- Geplante/Online-Karten bleiben semantisch unterscheidbar, aber ohne überzeichnete Formfaktoren.
+- FAB im Dashboard wurde tiefer und etwas kleiner positioniert, damit er Inhalte weniger überlagert.
+
+## Header + Kachelbereinigung
+
+- Anbieter-Header im Dashboard und im Profil laufen jetzt auf weißer Fläche (`#ffffff`/`rgba(255,255,255,0.96)`), damit die Topbar visuell mit dem Gerät verschmilzt.
+- Rote Swipe-/Testflächen bei aktiven Angebotskacheln sind deaktiviert (keine farbigen Box-Ränder im Normalzustand).
+- Anbieter-Header sind global vereinheitlicht (wie „Meine Küche“): identische Headerfarbe, identische Typografie (`Montserrat/Inter`, `20px`, `900`, `-0.03em`) und konsistente Top-Positionierung/Row-Ausrichtung über Dashboard, Abholnummern, Wochenplan, Kochbuch und Profil.
+- Dashboard-spezifischer Header-Override wurde auf fixe `20px` angehoben (statt responsive `clamp(...)`), damit `Meine Küche` nicht kleiner als die übrigen Anbieter-Header rendert.

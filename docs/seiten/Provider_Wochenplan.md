@@ -21,6 +21,14 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Helles Layout
 - Swipe: Reveal-Delete (rote Fläche + Mülleimer), Undo-Snackbar
 - KW-Label in der Header-Mitte bleibt einzeilig und zentriert (`.kw-label` mit `white-space: nowrap`, responsive `clamp(14px, 4vw, 16px)`).
+- KW-Navigation ist als eine visuell abgesetzte, interaktive Zeile umgesetzt: `<` · `KW + Datumsbereich` · `>` in **einer** Reihe, mit dezentem Border/Background als klarer Hinweis auf Änderbarkeit.
+- Wochenplan-Meal-Karten sind homogen aufgebaut: Bild links, Name rechts, Preis unten rechts; responsiv mit `clamp(...)` für saubere Skalierung auf kleinen und größeren Handys.
+- Bild-Overlays auf Wochenplan-Gerichten sind deaktiviert (keine Icons direkt auf dem Gerichtsbild), damit die Karte ruhiger und fotozentriert bleibt.
+- Preisdarstellung ist bewusst dezenter: kleiner und weniger fett, damit Name/Bild Priorität behalten.
+- Smart-Reminder „Vegetarische Option ergänzen“ läuft als dezenter Hint (kein Vollformat-Slot): Trigger nur bei Fleisch/Vegan ohne vegetarische Option, mit Cooldown und Dismiss, damit die Erinnerung hilft ohne zu nerven.
+- Wochenplan-Karten im Tagesbereich sind auf eine einheitliche feste Höhe gesetzt, damit alle Slots homogen wirken (kein visuelles Springen bei unterschiedlichen Titellängen).
+- Alte rote Offline-/Test-Markierungen auf Slot-Karten sind entfernt; Entwurfs- und Live-Karten bleiben im ruhigen, neutralen Kartenstil.
+- Tages-Slotkarten werden als Block mit voller Containerbreite gerendert (`.kw-slot.slot-card`), damit kurze Titel (z. B. „Käsespätzle“) nicht zu schmalen Karten führen.
 
 ## Phase 2 – Interaktion & Mechanik
 
