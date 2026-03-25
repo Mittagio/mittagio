@@ -9858,6 +9858,7 @@
   (function setupProviderFooterAutoHideOnScroll(){
     var navWrap = document.getElementById('providerNavWrap');
     if(!navWrap) return;
+    var navInner = document.getElementById('providerNav');
 
     var lastTopByEl = new WeakMap();
     var HIDE_THRESHOLD = 16;
@@ -9901,8 +9902,25 @@
       }, IDLE_SHOW_MS);
     }
 
+    function forceProviderFooterVisible(){
+      if(!document.body || !document.body.classList.contains('provider-mode')) return;
+      if(document.body.classList.contains('wizard-inserat-open')) return;
+      if(document.body.classList.contains('create-flow-open')) return;
+      if(document.body.classList.contains('provider-cookbook-active')) return;
+      navWrap.classList.remove('is-scroll-hidden');
+      navWrap.style.setProperty('display', 'block', 'important');
+      navWrap.style.setProperty('visibility', 'visible', 'important');
+      navWrap.style.setProperty('opacity', '1', 'important');
+      if(navInner){
+        navInner.style.setProperty('display', 'flex', 'important');
+        navInner.style.setProperty('visibility', 'visible', 'important');
+        navInner.style.setProperty('opacity', '1', 'important');
+      }
+    }
+
     if(document.body) document.body.classList.add('footer-autohide');
     showFooter();
+    forceProviderFooterVisible();
 
     document.addEventListener('scroll', function(e){
       if(!shouldAutoHideRun()){
@@ -9930,13 +9948,21 @@
 
     document.addEventListener('click', function(e){
       var navClick = e.target && e.target.closest ? e.target.closest('#providerNav .navbtn') : null;
-      if(navClick) showFooter();
+      if(navClick){
+        showFooter();
+        forceProviderFooterVisible();
+      }
     }, true);
 
     document.addEventListener('touchend', function(){
       if(!shouldAutoHideRun()) return;
       scheduleIdleShow();
     }, { passive: true });
+    window.addEventListener('pageshow', forceProviderFooterVisible, true);
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'visible') forceProviderFooterVisible();
+    }, true);
+    window.addEventListener('resize', forceProviderFooterVisible, true);
   })();
 
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint B erreicht (Zeile ~9750)');
@@ -19910,7 +19936,9 @@
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
-        var keyboardOpen = keyboardH > 72;
+        var activeEl = document.activeElement;
+        var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
+        var keyboardOpen = editableFocused && keyboardH > 72;
         [f1,f2,f3].forEach(function(f){
           if(!f || !f.isConnected) return;
           if(keyboardOpen){
@@ -19920,9 +19948,8 @@
           }
         });
         /* 3. Scroll-Bereich: Padding für Header und Footer */
-        var active = document.activeElement;
-        if(keyboardH > 80 && active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){
-          scrollInputAboveKeyboard(active);
+        if(keyboardH > 80 && editableFocused){
+          scrollInputAboveKeyboard(activeEl);
         }
         var sa = box.querySelector('.inserat-scroll-area');
         var footerH=Math.max((f1&&f1.style.display!=='none'&&f1.offsetHeight)||0,(f2&&f2.style.display!=='none'&&f2.offsetHeight)||0,(f3&&f3.style.display!=='none'&&f3.offsetHeight)||0,92);
