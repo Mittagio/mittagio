@@ -161,3 +161,13 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Standard bewusst ruhiger:** `Standard-Inserat` bleibt bewusst neutraler, damit die Hero-Kachel klar im Fokus steht.
 - **Preis-Rollen getrennt:** In der oberen Karte ist der Wert jetzt als neutraler **Gerichtspreis** mit Label (`Gerichtspreis`) dargestellt; die monetären Entscheidungs-Preise bleiben visuell unten in den Optionen.
 - **Grauschleier entfernt:** Die obere Karte nutzt eine klare weiße Fläche mit vollem Kontrast (kein ausgegrauter Eindruck mehr).
+- **Section-Trenner ergänzt:** Zwischen oberer Gerichtskarte und den Auswahlkacheln steht jetzt das ruhige Label `Deine Optionen` als klare inhaltliche Trennung.
+- **Customer-Card-Light für obere Karte:** Step-2-Preview nutzt nun bewusst den klaren Kundenkarten-Stil (volle Deckkraft, kein Grayscale/kein Dim, weißes Surface mit sauberem Radius und weichem Shadow).
+- **Mikro-Feinschliff Bildwirkung:** Das Preview-Bild links in der oberen Karte erhält einen sehr dezenten Boost (`contrast/saturate`), damit es auf hellen Motiven lebendiger wirkt.
+- **Preisinfos oben entfernt:** In der oberen Gerichtskarte werden `Gerichtspreis` und Betrag nicht mehr angezeigt; die Karte fokussiert nur auf Bild + Gerichtsname.
+- **Obere Karte vergrößert:** Die Gerichtskarte in Step 2 wurde bewusst größer gemacht (mehr Höhe und größere Bild-/Titelwirkung).
+- **Empfehlungskachel höher:** Die untere `Empfehlung`-Kachel ist um etwa zwei Textzeilen vergrößert, damit sie klarer als Hero wirkt.
+- **Adresspflicht auch lokal:** In Step 2 gibt es keinen Localhost-Testmodus mehr. Ohne Profiladresse wird immer der Adress-Dialog geöffnet und die Veröffentlichung blockiert (gleiches Verhalten wie live).
+- **Adress-Dialog Layer-Fix:** `addressRequired`-Backdrop und Sheet werden beim Öffnen auf Top-Layer gesetzt (über Wizard/Footer), damit der Dialog bei fehlender Adresse immer sichtbar und klickbar erscheint.
+- **Step2 Publish Guard:** Klick auf den unteren Publish-Button ist jetzt mit Fehler-Guard abgesichert (`try/catch`) und zeigt bei Laufzeitfehlern einen klaren Toast statt stillem „nichts passiert“.
+- **Step2 CTA Click-Through-Fix:** Die leere Fläche von `.sheet-body.wizard-sheet-body` blockiert keine Taps mehr; nur echte Inhalte bleiben klickbar. Dadurch ist der untere Publish-Button in Step 2 wieder zuverlässig anklickbar.

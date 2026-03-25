@@ -4043,10 +4043,23 @@
   pointer-events: auto !important;
   opacity: 1 !important;
   cursor: pointer !important;
+  touch-action: manipulation !important;
 }
 #wizard[data-flow="listing"] #mastercard-footer-step2,
 #wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step2-nav {
-  z-index: 2000001 !important;
+  z-index: 4100000 !important;
+  pointer-events: auto !important;
+}
+#wizard[data-flow="listing"] #main-publish-btn {
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 4100001 !important;
+}
+/* Click-Through-Fix: leere wizard-sheet-body Fläche darf Step2-CTA nicht blockieren */
+#wizard[data-flow="listing"] .sheet-body.wizard-sheet-body {
+  pointer-events: none !important;
+}
+#wizard[data-flow="listing"] .sheet-body.wizard-sheet-body > * {
   pointer-events: auto !important;
 }
 #wizard.inserat-step2-active #mastercard-footer-step2,
@@ -12037,7 +12050,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   border: 1px solid rgba(245, 158, 11, 0.65) !important;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(245, 158, 11, 0.1) !important;
   background: #ffffff !important;
-  padding: 18px 12px 10px !important;
+  padding: 22px 14px 14px !important;
+  min-height: 118px !important;
   opacity: 1 !important;
   position: relative !important;
   overflow: hidden !important;
@@ -12068,24 +12082,12 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   line-height: 1;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-name {
-  font-size: clamp(16px, 4.4vw, 18px) !important;
+  font-size: clamp(17px, 4.6vw, 20px) !important;
   color: #1f2937 !important;
   font-weight: 800 !important;
 }
-#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-price {
-  font-size: clamp(22px, 5vw, 26px) !important;
-  justify-self: end !important;
-  text-align: right !important;
-  color: #374151 !important;
-  font-weight: 700 !important;
-}
-#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp .money-dish-price-label {
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.03em !important;
-  text-transform: uppercase !important;
-  color: #6b7280 !important;
-  line-height: 1.1 !important;
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-img {
+  filter: contrast(1.04) saturate(1.06) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles {
   width: 100% !important;
@@ -12095,6 +12097,15 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   padding: 16px 20px 0 !important;
   box-sizing: border-box !important;
   background: transparent !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-options-label {
+  margin: 14px 20px 0 !important;
+  padding: 0 2px !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  color: #64748b !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile,
 #wizard[data-flow="listing"] #mastercard-step-money .service-tile-card {
@@ -12130,8 +12141,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%) !important;
   box-shadow: 0 12px 30px rgba(0,122,255,0.2), 0 0 0 1px rgba(0,122,255,0.15), inset 0 0 0 1px rgba(255,255,255,0.72) !important;
   overflow: hidden !important;
-  min-height: 152px !important;
-  padding: 18px 54px 16px 16px !important;
+  min-height: 186px !important;
+  padding: 20px 54px 18px 16px !important;
   transform: translateZ(0) !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.has-recommendation::before {
@@ -12480,11 +12491,17 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
 }
 #wizard[data-flow="listing"] #mastercard-step-money .photo-preview-container,
 #wizard[data-flow="listing"] #mastercard-step-live .photo-preview-container {
-  opacity: 0.6 !important;
-  filter: grayscale(40%) !important;
-  border-bottom: 1px solid #ebebeb !important;
-  padding-bottom: 15px !important;
-  margin-bottom: 20px !important;
+  opacity: 1 !important;
+  filter: none !important;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+#wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp {
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.06) !important;
 }
 
 /* Nur Step-2-Kacheln heben sich sauber vom Weiss ab */

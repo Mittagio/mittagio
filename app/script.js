@@ -17847,8 +17847,6 @@
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
-        var priceS2=Number(w.data.price)||0;
-        var euroS2=typeof euro==='function'?euro(priceS2):(priceS2.toFixed(2).replace('.',',')+' €');
         var step2Header=document.createElement('h3');
         step2Header.className='step2-review-title';
         step2Header.textContent='Dein Gericht';
@@ -17857,8 +17855,12 @@
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
         stampCard.style.cssText='display:flex; align-items:stretch; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid rgba(250,204,21,0.55); border-radius:14px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%); box-shadow:0 10px 24px rgba(15,23,42,0.08);';
-        stampCard.innerHTML='<span class="step2-thron-badge">DEIN INSERAT</span><img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:64px; height:64px; border-radius:10px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:grid; grid-template-rows:minmax(0,1fr) auto; min-width:0; flex:1; align-items:end;"><span id="money-dish-name" style="font-size:16px; line-height:1.15; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span><div style="justify-self:end; text-align:right; display:flex; flex-direction:column; gap:2px; align-items:flex-end;"><span class="money-dish-price-label">Gerichtspreis</span><span id="money-dish-price" style="font-size:28px; line-height:1; font-weight:700; color:#374151; justify-self:end; text-align:right;">'+euroS2+'</span></div></div>';
+        stampCard.innerHTML='<span class="step2-thron-badge">DEIN INSERAT</span><img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:78px; height:78px; border-radius:12px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; align-items:center; min-width:0; flex:1;"><span id="money-dish-name" style="font-size:18px; line-height:1.2; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
         step2Wrap.appendChild(stampCard);
+        var optionsLabel=document.createElement('div');
+        optionsLabel.className='step2-options-label';
+        optionsLabel.textContent='Deine Optionen';
+        step2Wrap.appendChild(optionsLabel);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
         tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 12px; box-sizing:border-box; width:100%;';
@@ -19766,13 +19768,13 @@
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step2-nav';
-        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:2000001; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
         airbnbFooter.style.pointerEvents='auto';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.id='main-publish-btn';
         footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; letter-spacing:0.5px; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent;';
+        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; letter-spacing:0.5px; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation;';
         footerBtn.disabled=false;
         footerBtn.removeAttribute('disabled');
         footerBtn.style.pointerEvents='auto';
@@ -19780,47 +19782,40 @@
         footerBtn.textContent='Jetzt für 4,99 € inserieren';
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
-          hapticLight();
-          var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
-          if(bulkDates.length>0){
-            var useAbholnummer=!!w.data.step2PickupEnabled;
-            if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
-            closeWizard(true);
-            if(typeof showProviderWeek==='function') showProviderWeek();
-            return;
-          }
-          if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
-          var p = normalizeProviderProfile((provider && provider.profile) || {});
-          var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
-          var usePickup=!!w.data.step2PickupEnabled;
-          w.data.hasPickupCode=usePickup;
-          w.data.pricingChoice=usePickup?'pro':'499';
-          w.data.inseratFeeWaived=usePickup;
-          w.data.pricingOption=usePickup?'abholnummer':undefined;
-          var o=previewOfferFromWizard();
-          if(!hasAddr){
-            var isLocalDev = false;
-            try{
-              var host = (location && location.hostname) ? String(location.hostname).toLowerCase() : '';
-              isLocalDev = (host === 'localhost' || host === '127.0.0.1');
-            }catch(e){}
-            if(isLocalDev){
-              o.providerStreet = o.providerStreet || 'Teststraße 1';
-              o.providerZip = o.providerZip || '10115';
-              o.providerCity = o.providerCity || 'Berlin';
-              if(typeof showToast === 'function') showToast('Lokaler Testmodus: Veröffentlichung ohne Profiladresse.');
-            } else {
+          try{
+            hapticLight();
+            var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
+            if(bulkDates.length>0){
+              var useAbholnummer=!!w.data.step2PickupEnabled;
+              if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
+              closeWizard(true);
+              if(typeof showProviderWeek==='function') showProviderWeek();
+              return;
+            }
+            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+            var p = normalizeProviderProfile((provider && provider.profile) || {});
+            var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
+            var usePickup=!!w.data.step2PickupEnabled;
+            w.data.hasPickupCode=usePickup;
+            w.data.pricingChoice=usePickup?'pro':'499';
+            w.data.inseratFeeWaived=usePickup;
+            w.data.pricingOption=usePickup?'abholnummer':undefined;
+            var o=previewOfferFromWizard();
+            if(!hasAddr){
               if(typeof openAddressModal === 'function') openAddressModal();
               else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
               if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
               return;
             }
-          }
-          publishFeeUseStep3=true;
-          if(typeof showPublishFeeModal === 'function'){
-            showPublishFeeModal(o);
-          } else if(typeof showToast === 'function'){
-            showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+            publishFeeUseStep3=true;
+            if(typeof showPublishFeeModal === 'function'){
+              showPublishFeeModal(o);
+            } else if(typeof showToast === 'function'){
+              showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+            }
+          } catch(err){
+            console.error('[Step2 publish click failed]', err);
+            if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
           }
         };
         airbnbFooter.appendChild(footerBtn);
@@ -19862,6 +19857,15 @@
           var f2=document.getElementById('mastercard-footer-step2');
           if(f1){ f1.style.setProperty('display',s===1?'flex':'none','important'); }
           if(f2){ f2.style.setProperty('display',s===2?'flex':'none','important'); }
+          if(s===2){
+            var liveBtn=document.getElementById('main-publish-btn');
+            if(liveBtn){
+              liveBtn.disabled=false;
+              liveBtn.removeAttribute('disabled');
+              liveBtn.style.pointerEvents='auto';
+              liveBtn.style.opacity='1';
+            }
+          }
           var sf=box.querySelector('[data-inserat-step="3"]');
           if(sf) sf.style.setProperty('display',s===3?'flex':'none','important');
           if(scrollArea){ scrollArea.scrollTop=0; }
@@ -20030,13 +20034,14 @@
   if(typeof window !== 'undefined') window.openMastercard = openMastercard;
 
   function previewOfferFromWizard(){
-    const p = normalizeProviderProfile(provider.profile||{});
+    const providerSafe = (typeof provider === 'object' && provider) ? provider : {};
+    const p = normalizeProviderProfile(providerSafe.profile||{});
     let pickupWindow = w.data.pickupWindow || p.mealWindow || DEFAULT_MEAL_WINDOW;
     if(w.data.mealStart && w.data.mealEnd) pickupWindow = w.data.mealStart + ' – ' + w.data.mealEnd;
     return {
       id: 'preview',
       providerId: providerId(),
-      providerName: p.name || provider.email || 'Anbieter',
+      providerName: p.name || providerSafe.email || 'Anbieter',
       providerStreet: p.street||'',
       providerZip: p.zip||'',
       providerCity: p.city||'',
@@ -20296,8 +20301,21 @@
     }
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(sheet){ sheet.style.display = ''; sheet.style.visibility = ''; sheet.classList.add('active'); }
-    if(bd) bd.classList.add('active');
+    // Ensure modal is always above listing wizard/footer layers.
+    if(bd){
+      bd.style.display = 'block';
+      bd.style.visibility = 'visible';
+      bd.style.pointerEvents = 'auto';
+      bd.style.zIndex = '5100002';
+      bd.classList.add('active');
+    }
+    if(sheet){
+      sheet.style.display = 'block';
+      sheet.style.visibility = 'visible';
+      sheet.style.pointerEvents = 'auto';
+      sheet.style.zIndex = '5100003';
+      sheet.classList.add('active');
+    }
   }
   function openAddressModal(){ showAddressRequiredModal(); }
   function closePublishFeeModal(){
@@ -20306,21 +20324,47 @@
     publishFeeUseStep3 = false;
     const bd = document.getElementById('publishFeeBd');
     const sheet = document.getElementById('publishFeeSheet');
-    if(bd) bd.classList.remove('active');
-    if(sheet){ sheet.classList.remove('active'); }
+    if(bd){
+      bd.classList.remove('active');
+      bd.style.pointerEvents = '';
+      bd.style.zIndex = '';
+    }
+    if(sheet){
+      sheet.classList.remove('active');
+      sheet.style.pointerEvents = '';
+      sheet.style.zIndex = '';
+    }
   }
   function showAddressRequiredModal(){
     closePublishFeeModal();
     const bd = document.getElementById('addressRequiredBd');
     const sheet = document.getElementById('addressRequiredSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd){
+      bd.style.display = 'block';
+      bd.style.visibility = 'visible';
+      bd.style.pointerEvents = 'auto';
+      bd.style.zIndex = '5100002';
+    }
+    if(sheet){
+      sheet.style.display = 'block';
+      sheet.style.visibility = 'visible';
+      sheet.style.pointerEvents = 'auto';
+      sheet.style.zIndex = '5100003';
+    }
   }
   function closeAddressRequiredModal(){
     const bd = document.getElementById('addressRequiredBd');
     const sheet = document.getElementById('addressRequiredSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd){
+      bd.style.display = 'none';
+      bd.style.pointerEvents = '';
+      bd.style.zIndex = '';
+    }
+    if(sheet){
+      sheet.style.display = 'none';
+      sheet.style.pointerEvents = '';
+      sheet.style.zIndex = '';
+    }
   }
   if(typeof window !== 'undefined'){ window.showAddressRequiredModal = showAddressRequiredModal; window.openAddressModal = openAddressModal; window.closeAddressRequiredModal = closeAddressRequiredModal; }
   var inseratSuccessCurrentOffer = null; // für WhatsApp / QR / Social-Export
