@@ -138,5 +138,6 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **No-Glow Footer Step1:** Für `Neues Gericht` und `Edit` wird im Step‑1‑Footer Shadow/Glow/Animation per Override deaktiviert, damit beide visuell identisch clean wirken.
 - **Step1 Footer Lock:** Für `Renner`, `Neues Gericht` und `Aktive Angebote (Edit)` ist der Step‑1‑Footer jetzt mit einem finalen Lock-Override vereinheitlicht (identische Position, Padding, Button-Höhe, Radius, Typo, Farben).
 - **Pixel-Feinschliff Footer:** Zusätzlich sind Font-Stack, Letter-Spacing, Text-Ausrichtung und Disabled-State für `Speichern`/`Weiter` hart synchronisiert, damit der Footer in allen Einstiegen 1:1 gleich wirkt.
+- **Device-Fix Footer-Anker (SE/S8/S20):** Footer wird nur bei tatsächlich geöffneter Tastatur angehoben (`keyboardH > 72`); ohne Tastatur wird `bottom: 0` erzwungen. Dadurch bleibt der Footer in Step 1/2/3 dauerhaft unten anliegend und verschwindet nicht mehr außerhalb des sichtbaren Bereichs.
 - **Provider-Footer Sichtbarkeit:** Anbieter-Footer wird außerhalb von Wizard/Create-Flow/Cookbook-Zuständen erzwungen sichtbar gehalten; Auto-Hide ist aktuell neutralisiert, damit der Footer nicht unsichtbar bleibt.
 - **Kein Kunden-Footer-Blitz:** `#customerNav` ist im `provider-mode` hart ausgeblendet, damit beim Aktualisieren kein kurzes Aufblitzen der Kundennavigation sichtbar ist.

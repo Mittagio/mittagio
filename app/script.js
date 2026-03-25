@@ -19880,11 +19880,19 @@
             wiz.style.removeProperty('max-height');
           }
         }
-        /* 2. Footers über Tastatur heben */
+        /* 2. Footers nur bei echter Tastatur heben (sonst immer unten anliegend) */
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
-        [f1,f2,f3].forEach(function(f){ if(f&&f.isConnected) f.style.setProperty('bottom', keyboardH+'px', 'important'); });
+        var keyboardOpen = keyboardH > 72;
+        [f1,f2,f3].forEach(function(f){
+          if(!f || !f.isConnected) return;
+          if(keyboardOpen){
+            f.style.setProperty('bottom', keyboardH + 'px', 'important');
+          } else {
+            f.style.setProperty('bottom', '0px', 'important');
+          }
+        });
         /* 3. Scroll-Bereich: Padding für Header und Footer */
         var active = document.activeElement;
         if(keyboardH > 80 && active && active.closest && active.closest('#wizard') && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')){

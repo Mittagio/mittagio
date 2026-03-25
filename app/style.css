@@ -4052,6 +4052,13 @@
 #wizard[data-flow="listing"].inserat-step2-active #mastercard-footer-step2 {
   display: flex !important;
 }
+#wizard[data-flow="listing"]:not(.inserat-step2-active):not(.inserat-step3-active) #mastercard-footer-step1 {
+  display: flex !important;
+}
+#wizard[data-flow="listing"].inserat-step2-active #mastercard-footer-step1,
+#wizard[data-flow="listing"].inserat-step3-active #mastercard-footer-step1 {
+  display: none !important;
+}
     /* Bottom-Nav-Style: Beide Buttons gleich groß (48px), Airbnb Black [cite: 2026-02-21] */
     #wizard[data-flow="listing"] .inserat-step1-nav {
       display: flex; gap: 12px; width: 100%; min-height: 48px; align-items: stretch;
