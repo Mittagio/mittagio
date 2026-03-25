@@ -1114,10 +1114,14 @@
     .card.tgtg-flat{ box-shadow: none !important; border: none !important; }
     .card.tgtg-flat.polaroid,
     .card.tgtg-flat.playful{ border-bottom: var(--tgtg-divider) !important; }
-    /* Topbar in Kundekontext: gleicher warmer Ton wie Seite 1 */
+    /* Topbar in Kundekontext: neutral weiss (kein Braunstich) */
     .topbar.customer-context{
-      background:rgba(232,224,214,0.92);
+      background:#ffffff;
       border-bottom-color:rgba(0,0,0,0.08);
+    }
+    /* Kundenseite: Legacy-Topbar komplett ausblenden (eigener Seiten-Header bleibt sichtbar) */
+    body:not(.provider-mode) .topbar{
+      display:none !important;
     }
     /* Provider-FAB und Abholnummer-Overlay in Kundenansicht nie anzeigen (auch beim Runterscrollen) */
     body:not(.provider-mode) #fabProviderAddOffer,
@@ -5430,8 +5434,8 @@
     }
     #v-discover .discover-header-top-row.discover-header-minimal .discover-logo{ color: #0f172a; }
     #v-discover .discover-header-sticky.scrolled .discover-logo {
-      transform: translate(-50%, -50%) scale(0.94);
-      opacity: 0.95;
+      transform: translate(-50%, -50%);
+      opacity: 1;
     }
     /* Linke Seite: Standort – gleiche optische Höhe wie GPS rechts [cite: 2026-02-18] */
     #v-discover .discover-location-row-wrap{
@@ -5528,8 +5532,8 @@
     }
     /* Scroll-Fade: Standort-Text ausblenden ab 50px Scroll – mehr Platz für Filter-Pills */
     #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation{
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1;
+      pointer-events: auto;
       transition: opacity 0.25s ease;
     }
     #v-discover .discover-header-sticky:not(.scrolled) #discoverCurrentLocation{

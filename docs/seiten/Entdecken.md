@@ -43,3 +43,9 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Fuer alle Kunden-Views ausser Discover startet der Header nun ohne oberen Innenabstand.
 - Regel: `body:not(.provider-mode) .customer-view:not(#v-discover) > .cust-header-sticky { padding-top: 0; margin-top: 0; top: 0; }`
 - `position: sticky` bleibt aktiv; es wurde nur der sichtbare Top-Rand entfernt.
+
+## Update: Header Weiss + Scroll-Ruhe
+
+- Legacy-Topbar in der Kundenseite wird komplett ausgeblendet (`body:not(.provider-mode) .topbar { display:none !important; }`), damit kein brauner Reststreifen mehr oberhalb sichtbar ist.
+- `topbar.customer-context` ist zusaetzlich auf reines Weiss gesetzt (`#ffffff`) als Fallback.
+- Discover-Header bleibt beim Scrollen visuell stabil: keine Logo-Skalierung und kein Ausblenden der Standort-Zeile mehr im `scrolled`-Zustand.
