@@ -10098,6 +10098,17 @@
   function renderProviderHome(){
     if(typeof window.closeQuickPostSheet === 'function') window.closeQuickPostSheet();
     updateSessionActivity();
+    if(document.body){
+      document.body.classList.add('provider-mode');
+      document.body.classList.remove('provider-cookbook-active', 'cookbook-active', 'wizard-inserat-open', 'create-flow-open');
+    }
+    var providerNavWrapEl = document.getElementById('providerNavWrap');
+    if(providerNavWrapEl){
+      providerNavWrapEl.style.setProperty('display', 'block', 'important');
+      providerNavWrapEl.classList.remove('is-scroll-hidden');
+    }
+    var providerNavEl = document.getElementById('providerNav');
+    if(providerNavEl) providerNavEl.style.setProperty('display', 'flex', 'important');
 
     // Oben kein leerer Screen: Scroll sofort auf 0
     var homeEl = document.getElementById('v-provider-home');

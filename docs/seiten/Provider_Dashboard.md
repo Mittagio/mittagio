@@ -48,3 +48,8 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Einheitliche Basiswerte über CSS-Variablen: horizontales Padding, vertikales Padding, Button-Höhe, Radius, Button-Inset.
 - Gilt für `#mastercard-footer-step1`, `#mastercard-footer-step2`, Step-3-Footer sowie `#photo-edit-overlay .save-footer`.
 - Primär-Buttons wurden auf identische Höhe/Radius/Padding harmonisiert; Step-2-Publish-CTA nutzt volle verfügbare Breite ohne Zusatzmargen.
+
+## Footer-Robustheit (Dashboard Fallback)
+
+- Beim Rendern von `v-provider-home` wird `#providerNavWrap` defensiv wieder auf sichtbar gesetzt (inkl. Entfernen von `is-scroll-hidden`).
+- Alte Restzustände (`provider-cookbook-active`, `cookbook-active`, `wizard-inserat-open`, `create-flow-open`) werden im Dashboard-Kontext bereinigt, damit die Anbieter-Nav nicht fälschlich verborgen bleibt.
