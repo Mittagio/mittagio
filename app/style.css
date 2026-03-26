@@ -5083,7 +5083,7 @@
       position: fixed !important;
       left: auto !important;
       right: calc(16px + env(safe-area-inset-right, 0)) !important;
-      bottom: calc(130px + env(safe-area-inset-bottom, 20px)) !important;
+      bottom: calc(148px + env(safe-area-inset-bottom, 20px)) !important;
       margin-left: 0 !important;
       direction: ltr;
     }
@@ -7164,7 +7164,7 @@
     /* Abholnummern: pickups-floating-wrap = Scroll-Container (analog dashboard-floating-wrap); Header + Filter sticky darin */
     #v-provider-pickups .pickups-floating-wrap{
       flex:1; min-height:0; display:flex; flex-direction:column; gap:0;
-      overflow-y:auto !important; overflow-x:hidden !important;
+      overflow:hidden !important;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
       padding:0 env(safe-area-inset-right, 0) 0 env(safe-area-inset-left, 0) !important;
@@ -7183,7 +7183,12 @@
       background-color:#f5f5f0 !important;
       flex-shrink:0;
     }
-    #v-provider-pickups #provPickupsScroll{ flex:1; min-height:0; }
+    #v-provider-pickups #provPickupsScroll{
+      flex:1; min-height:0;
+      overflow-y:auto; overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+    }
     /* TGTG-Layout: weiße Leinwand, kein grauer Rand [cite: FAQ Anbieter] */
     #v-provider-profile{ min-height:100vh; min-height:100dvh; width:100%; box-sizing:border-box; background:#fff !important; }
     #v-provider-profile.view.active{ display:flex !important; flex-direction:column !important; }
@@ -8927,7 +8932,7 @@
       /* FAB nur Dashboard: rechts */
       #fabProviderAddOffer{
         left: auto !important;
-        bottom:calc(88px + env(safe-area-inset-bottom, 20px)) !important;
+        bottom:calc(106px + env(safe-area-inset-bottom, 20px)) !important;
         right:calc(20px + env(safe-area-inset-right, 0)) !important;
         width:50px !important; height:50px !important;
         min-width:50px; min-height:50px;
@@ -12710,6 +12715,10 @@ body.provider-mode #cookbookFooterWrap.cookbook-footer-fixed{
   padding: 12px max(16px, var(--safe-area-right)) calc(12px + var(--safe-area-bottom)) max(16px, var(--safe-area-left)) !important;
   box-sizing: border-box !important;
 }
+/* Kochbuch-CTA-Footer nur im echten Kochbuch-Kontext anzeigen */
+body.provider-mode:not(.provider-cookbook-active) #cookbookFooterWrap.cookbook-footer-fixed{
+  display: none !important;
+}
 body.provider-mode #cookbookFooterWrap .cookbook-footer-btn-inserieren{
   width: 100% !important;
   max-width: none !important;
@@ -12848,8 +12857,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   --provider-footer-bg: #ffffff;
   --provider-footer-border: #ebebeb;
   --provider-footer-pad-x: 20px;
-  --provider-footer-pad-y: 12px;
-  --provider-footer-btn-height: 52px;
+  --provider-footer-pad-y: 14px;
+  --provider-footer-btn-height: 60px;
   --provider-footer-btn-radius: 12px;
 }
 @media (prefers-color-scheme: dark){
@@ -12913,12 +12922,174 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-insera
 body.provider-mode #providerNavWrap #providerNav{
   background: transparent !important;
   border: 0 !important;
+  border-bottom: 0 !important;
+  outline: 0 !important;
   box-shadow: none !important;
   min-height: var(--provider-footer-btn-height) !important;
   padding: 0 !important;
+  align-items: center !important;
+}
+body.provider-mode #providerNav{
+  border-top: 0 !important;
 }
 body.provider-mode #providerNavWrap #providerNav .navbtn{
   min-height: var(--provider-footer-btn-height) !important;
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  position: relative !important;
+  padding: 6px 4px !important;
+  gap: 3px !important;
+  justify-content: center !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn.active{
+  color: #111111 !important;
+  font-weight: 700 !important;
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn .ico,
+body.provider-mode #providerNavWrap #providerNav .navbtn.active .ico{
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 10px !important;
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn .provider-nav-label{
+  line-height: 1.1 !important;
+}
+body.provider-mode #providerNavWrap.provider-nav-wrap-pill{
+  position: fixed !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+/* Legacy-Back-Row in Bottom-Nav nie anzeigen (verhindert "Zurück"-Rest in Abholnummern) */
+body.provider-mode #providerNavBackRow{
+  display: none !important;
+}
+
+/* Airbnb-clean Footer: identische Ruhe fuer Kunde + Anbieter */
+/* Default: Provider-Nav bleibt ausserhalb Provider-Modus verborgen */
+#providerNavWrap{
+  display: none;
+}
+body.provider-mode #providerNavWrap{
+  display: block;
+}
+/* Legacy-Back-Row bleibt generell versteckt */
+#providerNavBackRow{
+  display: none;
+}
+
+body:not(.provider-mode) #customerNav{
+  position: fixed !important;
+  background: #ffffff !important;
+  border: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+  overflow: hidden !important;
+  height: calc(64px + var(--safe-area-bottom)) !important;
+  min-height: calc(64px + var(--safe-area-bottom)) !important;
+  padding: 0 var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+}
+body:not(.provider-mode) #customerNav .navbtn{
+  min-height: 60px !important;
+  padding: 6px 4px !important;
+  gap: 3px !important;
+  color: #9ca3af !important;
+  font-weight: 600 !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+body:not(.provider-mode) #customerNav .navbtn i,
+body:not(.provider-mode) #customerNav .navbtn svg{
+  width: 22px !important;
+  height: 22px !important;
+}
+body:not(.provider-mode) #customerNav .navbtn span{
+  font-size: 11px !important;
+  font-weight: inherit !important;
+}
+body:not(.provider-mode) #customerNav .navbtn.active{
+  color: #111111 !important;
+  font-weight: 700 !important;
+}
+body:not(.provider-mode) #customerNav .navbtn i,
+body:not(.provider-mode) #customerNav .navbtn svg{
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+body:not(.provider-mode) #customerNav .navbtn .ico,
+body:not(.provider-mode) #customerNav .navbtn.active .ico{
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body:not(.provider-mode) #customerNav .navbtn .provider-nav-label{
+  line-height: 1.1 !important;
+}
+
+/* Provider Header Shrink: groß -> kompakt beim Scrollen */
+body.provider-mode #providerDashboardHeader,
+body.provider-mode #v-provider-pickups-header,
+body.provider-mode #v-provider-week-header{
+  transition: padding 0.22s ease, min-height 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+}
+body.provider-mode #providerDashboardHeader .prov-page-header-title,
+body.provider-mode #v-provider-pickups-header .prov-page-header-title,
+body.provider-mode #v-provider-week-header .prov-page-header-title,
+body.provider-mode #v-provider-week-header .header-title{
+  transition: font-size 0.2s ease, line-height 0.2s ease;
+}
+body.provider-mode #providerDashboardHeader.is-compact,
+body.provider-mode #v-provider-pickups-header.is-compact{
+  padding-top: max(8px, var(--safe-area-top)) !important;
+  padding-bottom: 8px !important;
+  min-height: 56px !important;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06) !important;
+}
+body.provider-mode #providerDashboardHeader.is-compact .prov-page-header-title,
+body.provider-mode #v-provider-pickups-header.is-compact .prov-page-header-title{
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+}
+body.provider-mode #providerDashboardHeader.is-compact + #dashboardKpisBlock.sticky-sub-bar,
+body.provider-mode #v-provider-pickups-header.is-compact + #provPickupsFilterSticky.sticky-sub-bar{
+  top: calc(52px + env(safe-area-inset-top, 0px)) !important;
+}
+body.provider-mode #v-provider-week-header.is-compact{
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px !important;
+  gap: 8px !important;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06) !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .header-title,
+body.provider-mode #v-provider-week-header.is-compact .prov-page-header-title{
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .header-week-selector{
+  gap: 8px !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .week-nav-btn{
+  min-width: 48px !important;
+  min-height: 48px !important;
+  font-size: 20px !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .week-info,
+body.provider-mode #v-provider-week-header.is-compact .wk-info{
+  padding: 6px 10px !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .kw-label{
+  font-size: 14px !important;
+}
+body.provider-mode #v-provider-week-header.is-compact .date-range{
+  font-size: 11px !important;
 }
 
 /* Wizard-Footer Buttons: gleiche Größe/Abstände */

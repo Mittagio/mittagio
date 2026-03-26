@@ -33,6 +33,51 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Touch-Ziele bleiben app-tauglich (`.navbtn` min. 60px Höhe), aktive Tabs klarer hervorgehoben.
 - Safe-Area bleibt aktiv über `var(--safe-area-bottom)`, damit der Footer auf S25 sauber sitzt.
 
+## Footer-Hotfix (Homogenität)
+
+- Die Anbieter-Bottom-Navigation bleibt strikt bei **5 Tabs** in fester Reihenfolge: `Dashboard` → `Abholnummern` → `Wochenplan` → `Kochbuch` → `Profil`.
+- Der Dashboard-Footer nutzt damit dieselbe Navigationsstruktur wie die restlichen Anbieter-Views; keine 4-Tab-Sondervariante.
+
+## Footer-Hotfix (Höhe)
+
+- Provider-Footer wurde leicht angehoben: `--provider-footer-pad-y` von `12px` auf `14px`.
+- Touch-Höhe im Footer-System auf `60px` gesetzt (`--provider-footer-btn-height`), damit die Navigation auf S25 konsistent und Daumen-sicher bleibt.
+- FAB-Offset für Dashboard wurde entsprechend mit angehoben (`#fabProviderAddOffer`), damit Plus-Button und Footer visuell sauber getrennt bleiben.
+
+## Footer-Hotfix (Zurück-Artefakt)
+
+- `#providerNavBackRow` wird im Anbieter-Modus per CSS-Guard dauerhaft verborgen (`display: none !important`).
+- Dadurch erscheint in `Abholnummern` kein abgeschnittener „Zurück“-Rest mehr über der Bottom-Navigation.
+
+## Footer-Hotfix (Kochbuch-Button bleibt stehen)
+
+- Der Footer `#cookbookFooterWrap` wird außerhalb des Kochbuch-Kontexts hart unterdrückt: `body.provider-mode:not(.provider-cookbook-active) #cookbookFooterWrap { display: none !important; }`.
+- Ergebnis: Beim Verlassen von `Kochbuch` bleibt der Button unten nicht mehr in anderen Anbieter-Views hängen.
+
+## Footer-Hotfix (Linie + Active-State)
+
+- Im Anbieter-Footer wurde ein zusätzlicher Linienrest unten entfernt (`border-bottom: 0` auf `#providerNavWrap` und `#providerNav`).
+- Active-State der Bottom-Nav wurde entschärft: `Dashboard` ist weiterhin aktiv erkennbar, aber nicht mehr überproportional stark (kein extra Icon-Block, nur subtile Farb-/Gewichts-Differenz).
+
+## Bottom-Nav Variante: Material-soft
+
+- Active-State nutzt jetzt einen dezenten Indicator als kleine Pill unter dem aktiven Tab (`.navbtn.active::after`), statt harter Flächenhervorhebung.
+- Inaktive Tabs bleiben ruhig (neutrales Grau), aktiver Tab bleibt klar erkennbar über leichte Gewichtung + soft Indicator.
+
+## Bottom-Nav Variante: Airbnb-clean
+
+- Indicator-Pill unter dem aktiven Tab wurde entfernt, um den unteren Linien-Eindruck zu vermeiden.
+- Farben auf Airbnb-artige Ruhe abgestimmt: inaktiv hellgrau, aktiv dunkel (`#111111`), ohne harte Flächenhinterlegung.
+- Vertikale Ausrichtung der Tabs gestrafft (`padding`/`gap`), damit Schrift und Icon nicht „zu weit unten“ wirken.
+- Inline-Layoutstyles an `#providerNavWrap` und `#providerNav` wurden entfernt; Footer-Geometrie kommt jetzt zentral aus `app/style.css` (einheitlich, konfliktarm).
+- Separator ist jetzt exakt Airbnb-artig: genau **eine** feine Linie oberhalb des Footers (`#providerNavWrap::before`), keine zusätzlichen Innenlinien.
+
+## Header Shrink (Provider)
+
+- `Meine Küche` nutzt jetzt einen kompakten Scroll-State: Header startet groß und wechselt beim Runterscrollen in `is-compact`; beim Hochscrollen/nahe Top expandiert er wieder.
+- Der Sticky-KPI-Bereich bleibt synchron: bei kompaktem Header wird der `top`-Offset reduziert, damit keine Lücke oder Überlappung entsteht.
+- Umsetzung läuft klassenbasiert (`.is-compact`) über zentrale Scroll-Logik in `app/script.js` (keine neuen Inline-State-Styles).
+
 ## Footer Auto-Hide bei Scroll (Anbieter)
 
 - Beim Runterscrollen in Anbieter-Listen/Views blendet sich die Bottom-Navigation temporär aus.

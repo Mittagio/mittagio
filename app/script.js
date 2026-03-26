@@ -9761,7 +9761,7 @@
     scrollActiveViewToTopAndCloseOverlays();
     var scrollEl = null;
     if(view === 'home') scrollEl = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-    else if(view === 'pickups') scrollEl = document.getElementById('pickupsFloatingWrap');
+    else if(view === 'pickups') scrollEl = document.getElementById('provPickupsScroll') || document.getElementById('pickupsFloatingWrap');
     else if(view === 'week') scrollEl = document.getElementById('kwBoardScroll');
     else if(view === 'cookbook'){
       scrollEl = document.getElementById('cookbookScrollWrap');
@@ -9834,24 +9834,73 @@
         startY = 0; pullY = 0; activeEl = null;
       }, { passive: true });
     }
+    function bindProviderHeaderShrink(viewId, scrollEl, headerEl, opts){
+      if(!scrollEl || !headerEl) return;
+      var options = opts || {};
+      var compactAt = Number(options.compactAt || 34);
+      var expandAt = Number(options.expandAt || 10);
+      var delta = Number(options.delta || 6);
+      var state = {
+        lastTop: Number(scrollEl.scrollTop || 0),
+        compact: false
+      };
+      var key = '__headerShrinkHandler_' + String(viewId || 'provider');
+      if(scrollEl[key]) scrollEl.removeEventListener('scroll', scrollEl[key]);
+      function applyCompact(nextCompact){
+        if(state.compact === nextCompact) return;
+        state.compact = nextCompact;
+        headerEl.classList.toggle('is-compact', !!nextCompact);
+      }
+      function onScroll(){
+        if(!document.body || !document.body.classList.contains('provider-mode')) return;
+        var top = Number(scrollEl.scrollTop || 0);
+        var scrollingDown = top > state.lastTop + delta;
+        var scrollingUp = top < state.lastTop - delta;
+        if(top <= expandAt){
+          applyCompact(false);
+        } else if(scrollingDown && top >= compactAt){
+          applyCompact(true);
+        } else if(scrollingUp){
+          applyCompact(false);
+        }
+        if(typeof options.onScroll === 'function') options.onScroll(top, state.compact);
+        state.lastTop = top;
+      }
+      scrollEl[key] = onScroll;
+      scrollEl.addEventListener('scroll', onScroll, { passive: true });
+      requestAnimationFrame(onScroll);
+    }
     setTimeout(function(){
       var homeWrap = document.querySelector('#v-provider-home .dashboard-floating-wrap');
-      var pickupsScroll = document.getElementById('pickupsFloatingWrap');
+      var pickupsScroll = document.getElementById('provPickupsScroll') || document.getElementById('pickupsFloatingWrap');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
+      var homeHeader = document.getElementById('providerDashboardHeader');
+      var pickupsHeader = document.getElementById('v-provider-pickups-header');
+      var weekHeader = document.getElementById('v-provider-week-header');
       attachPTR(homeWrap, function(){ if(typeof renderProviderHome==='function') renderProviderHome(); }, 'provider-home');
-      /* KPI-Block: kpis-scrolled bei Scroll für visuelle Trennung (Inset-Divider/Schatten) */
       var kpisBlock = document.getElementById('dashboardKpisBlock');
-      if(homeWrap && kpisBlock){
-        function onDashboardScroll(){ kpisBlock.classList.toggle('kpis-scrolled', homeWrap.scrollTop > 4); }
-        homeWrap.removeEventListener('scroll', onDashboardScroll);
-        homeWrap.addEventListener('scroll', onDashboardScroll, { passive: true });
-        onDashboardScroll();
-      }
+      bindProviderHeaderShrink('home', homeWrap, homeHeader, {
+        compactAt: 30,
+        expandAt: 8,
+        delta: 5,
+        onScroll: function(top){
+          if(kpisBlock) kpisBlock.classList.toggle('kpis-scrolled', top > 4);
+        }
+      });
       attachPTR(pickupsScroll, function(){ if(typeof renderProviderPickups==='function') renderProviderPickups(); }, 'provider-pickups');
+      bindProviderHeaderShrink('pickups', pickupsScroll, pickupsHeader, {
+        compactAt: 28,
+        expandAt: 8,
+        delta: 5
+      });
       attachPTR(weekScroll, function(){ if(typeof renderWeekPlanBoard==='function') renderWeekPlanBoard(); else if(typeof renderProviderWeekPreview==='function') renderProviderWeekPreview(); }, 'provider-week');
+      bindProviderHeaderShrink('week', weekScroll, weekHeader, {
+        compactAt: 26,
+        expandAt: 8,
+        delta: 5
+      });
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
-      /* Airbnb-Fest: Header bleibt permanent sticky – kein Verschwinden mehr [cite: 2026-02-21] */
     }, 300);
   })();
 
@@ -22025,7 +22074,7 @@
   var RESTORE_SCROLL_KEY = 'mittagio_restore_scroll';
   function getScrollElForView(viewId){
     if(viewId === 'v-provider-home'){ var h = document.getElementById('v-provider-home'); return h && h.querySelector('.dashboard-floating-wrap'); }
-    if(viewId === 'v-provider-pickups') return document.getElementById('pickupsFloatingWrap');
+    if(viewId === 'v-provider-pickups') return document.getElementById('provPickupsScroll') || document.getElementById('pickupsFloatingWrap');
     if(viewId === 'v-provider-week') return document.getElementById('kwBoardScroll');
     if(viewId === 'v-provider-cookbook') return document.getElementById('cookbookScrollWrap');
     if(viewId === 'v-provider-profile') return document.getElementById('providerProfileContent');

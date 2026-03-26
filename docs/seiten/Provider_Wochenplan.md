@@ -30,6 +30,12 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Alte rote Offline-/Test-Markierungen auf Slot-Karten sind entfernt; Entwurfs- und Live-Karten bleiben im ruhigen, neutralen Kartenstil.
 - Tages-Slotkarten werden als Block mit voller Containerbreite gerendert (`.kw-slot.slot-card`), damit kurze Titel (z. B. „Käsespätzle“) nicht zu schmalen Karten führen.
 
+## Header Shrink (Provider)
+
+- `Wochenplan` nutzt jetzt denselben Shrink-Flow: großer Header beim Einstieg, kompakt beim Scroll-down, expandiert bei Scroll-up.
+- Der Header wird **nicht** ausgeblendet, sondern nur verdichtet; KW-/Datumsbedienung bleibt vollständig sichtbar und klickbar.
+- Im kompakten State werden Abstände/Typografie reduziert (`week-nav-btn`, `kw-label`, `date-range`), aber Touch-Ziele bleiben daumenfreundlich.
+
 ## Phase 2 – Interaktion & Mechanik
 
 ### Drag & Drop Theken-Renner (Magnet)

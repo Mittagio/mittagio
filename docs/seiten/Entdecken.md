@@ -49,3 +49,11 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Legacy-Topbar in der Kundenseite wird komplett ausgeblendet (`body:not(.provider-mode) .topbar { display:none !important; }`), damit kein brauner Reststreifen mehr oberhalb sichtbar ist.
 - `topbar.customer-context` ist zusaetzlich auf reines Weiss gesetzt (`#ffffff`) als Fallback.
 - Discover-Header bleibt beim Scrollen visuell stabil: keine Logo-Skalierung und kein Ausblenden der Standort-Zeile mehr im `scrolled`-Zustand.
+
+## Update: Bottom-Nav Airbnb-clean (Kunde)
+
+- `#customerNav` wurde auf ruhige Airbnb-Optik vereinheitlicht: weisse Flaeche, keine harte Schatten-/Linienartefakte, konsistente Safe-Area.
+- Vertikale Ausrichtung der Tabs ist gestrafft (`height/min-height`, reduziertes `padding`/`gap`), damit Icons und Labels nicht zu weit unten sitzen.
+- Active-State ist bewusst subtil (dunkler Text/Icon + leicht hoehere Gewichtung), inaktive Tabs bleiben neutral grau.
+- Inline-Layoutstyles an `#customerNav` und den Nav-Buttons wurden entfernt; Groessen/Abstaende/Typografie laufen jetzt zentral ueber CSS.
+- Separator ist konsistent mit Anbieter: genau eine feine Linie oberhalb des Footers (`#customerNav::before`) statt mehrfacher Border-/Shadow-Linien.

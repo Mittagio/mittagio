@@ -2483,35 +2483,36 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
 
   <!-- CUSTOMER bottom nav - Mittagio-Bar (4 Buttons, eckig, 25px padding S25) -->
-  <nav class="bottom-nav bottom-nav-pure" id="customerNav" style="position:fixed; bottom:0; left:0; right:0; z-index:999; display:flex; justify-content:space-around; align-items:center; background:#fff; height:calc(70px + env(safe-area-inset-bottom, 0px)); padding-bottom:calc(25px + env(safe-area-inset-bottom, 0px)); border-radius:0;">
-    <button class="navbtn active" data-go="discover" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
-      <i data-lucide="search" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Entdecken</span>
+  <nav class="bottom-nav bottom-nav-pure" id="customerNav">
+    <button class="navbtn active" data-go="discover">
+      <i data-lucide="search"></i>
+      <span>Entdecken</span>
     </button>
-    <button class="navbtn" data-go="fav" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
-      <i data-lucide="heart" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Favoriten</span>
+    <button class="navbtn" data-go="fav">
+      <i data-lucide="heart"></i>
+      <span>Favoriten</span>
     </button>
-    <button class="navbtn" data-go="cart" id="bottomNavBasketBtn" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s; position:relative;">
-      <i data-lucide="shopping-basket" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Mittagsbox</span>
+    <button class="navbtn" data-go="cart" id="bottomNavBasketBtn">
+      <i data-lucide="shopping-basket"></i>
+      <span>Mittagsbox</span>
       <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
     </button>
-    <button class="navbtn" data-go="profile" style="background:none; border:none; padding:8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; transition:all 0.2s;">
-      <i data-lucide="user" style="width:22px;height:22px;"></i>
-      <span style="font-size:11px; font-weight:700;">Meins</span>
+    <button class="navbtn" data-go="profile">
+      <i data-lucide="user"></i>
+      <span>Meins</span>
     </button>
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
-  <div id="providerNavWrap" class="provider-nav-wrap-pill" style="display:none; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:1052; box-sizing:border-box;">
-    <div id="providerNavBackRow" style="padding:0 20px 16px; display:none;">
-      <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück" style="background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:none; color:#1a1a1a; padding:10px 24px; border-radius:999px; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.06);"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i> Zurück</button>
+  <div id="providerNavWrap" class="provider-nav-wrap-pill">
+    <div id="providerNavBackRow">
+      <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück"><i data-lucide="chevron-left"></i> Zurück</button>
     </div>
-    <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav" style="display:flex; justify-content:space-between; align-items:center;">
+    <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav">
       <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji" style="font-size:1.2em;line-height:1;">🧾</div><span class="provider-nav-label">Abholnummern</span></button>
+      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico navbtn-emoji">🧾</div><span class="provider-nav-label">Abholnummern</span></button>
       <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
+      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
       <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
     </nav>
   </div>
