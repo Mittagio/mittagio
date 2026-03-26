@@ -2205,6 +2205,35 @@
     body.provider-mode .inserat-quick-adjust-panel .extra-pill.active {
       background: #222222; color: #ffffff; border-color: #222222;
     }
+    /* Extras Micro-Polish: ruhiger, luftiger, app-like */
+    body.provider-mode #quick-adjust-sheet[data-qa-type="extras"]{
+      padding-top: 14px !important;
+      padding-right: 14px !important;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+      padding-left: 14px !important;
+    }
+    body.provider-mode #quick-adjust-sheet[data-qa-type="extras"] .sub-menu-drawer-title{
+      margin-bottom: 12px !important;
+      font-size: 21px !important;
+      letter-spacing: -0.01em;
+    }
+    body.provider-mode #quick-adjust-sheet[data-qa-type="extras"] .extra-pill{
+      min-height: 52px !important;
+      border-radius: 12px !important;
+      border: 1px solid #e5e7eb !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      box-shadow: none !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      line-height: 1.2 !important;
+      padding: 0 14px !important;
+    }
+    body.provider-mode #quick-adjust-sheet[data-qa-type="extras"] .extra-pill.active{
+      background: #f8fafc !important;
+      border-color: #10b981 !important;
+      color: #0f172a !important;
+    }
     /* Category Chips: Aktiv #222222 weiß, Inaktiv #f2f2f2 grau [cite: S25 PREMIUM V2 2026-02-23] */
     #wizard[data-flow="listing"] .category-pills-green .category-pill,
     #wizard[data-flow="listing"] .category-pill {

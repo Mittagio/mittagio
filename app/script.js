@@ -19697,6 +19697,7 @@
         if(quickAdjustCloseTimer){ clearTimeout(quickAdjustCloseTimer); quickAdjustCloseTimer = null; }
         closeAllPowerbarSheets(true, 'extras');
         setListingFootersHiddenForOverlay(true);
+        quickAdjustPanel.setAttribute('data-qa-type', String(type||''));
         quickAdjustPanel.innerHTML='';
         quickAdjustPanel.style.display='block';
         var drawerHandle=document.createElement('div');
