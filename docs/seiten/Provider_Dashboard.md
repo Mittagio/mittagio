@@ -73,3 +73,11 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Rote Swipe-/Testflächen bei aktiven Angebotskacheln sind deaktiviert (keine farbigen Box-Ränder im Normalzustand).
 - Anbieter-Header sind global vereinheitlicht (wie „Meine Küche“): identische Headerfarbe, identische Typografie (`Montserrat/Inter`, `20px`, `900`, `-0.03em`) und konsistente Top-Positionierung/Row-Ausrichtung über Dashboard, Abholnummern, Wochenplan, Kochbuch und Profil.
 - Dashboard-spezifischer Header-Override wurde auf fixe `20px` angehoben (statt responsive `clamp(...)`), damit `Meine Küche` nicht kleiner als die übrigen Anbieter-Header rendert.
+
+## Anbieter-Shell Lock (Airbnb-homogen)
+
+- Finale, priorisierte Provider-Token sorgen für einheitliche Farbe und Abstände in Light/Dark: `--provider-header-bg`, `--provider-footer-bg`, `--provider-footer-border`, `--provider-footer-pad-x/y`, `--provider-footer-btn-height`.
+- Header im Anbieterbereich ist jetzt opak und ohne Blur/Farbstich (kein „fremder“ Top-Farbton mehr), inkl. sauberem Safe-Area-Top-Padding.
+- Alle Anbieter-Footer (Bottom-Nav, Wochenplan, Kochbuch, Wizard Step1/2/3) nutzen dieselbe fixed-Container-Geometrie (`left/right/bottom: 0`, identisches Padding, identische Border).
+- Wizard-Buttons sind höhen- und radiusgleich zum restlichen Anbieter-Footer-System.
+- Darkmode ist über `prefers-color-scheme: dark` auf dieselben Token gemappt, damit der Anbieter-Chrome auf allen Geräten konsistent bleibt.

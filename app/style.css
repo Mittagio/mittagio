@@ -12837,3 +12837,96 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   background: #222222 !important;
   color: #ffffff !important;
 }
+
+/* ==========================================================================
+   PROVIDER CHROME LOCK (Airbnb-homogen, alle Geräte, Light/Dark)
+   ========================================================================== */
+:root{
+  --provider-shell-bg: #f5f5f7;
+  --provider-header-bg: #ffffff;
+  --provider-header-border: #ebebeb;
+  --provider-footer-bg: #ffffff;
+  --provider-footer-border: #ebebeb;
+  --provider-footer-pad-x: 20px;
+  --provider-footer-pad-y: 12px;
+  --provider-footer-btn-height: 52px;
+  --provider-footer-btn-radius: 12px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --provider-shell-bg: #0f1115;
+    --provider-header-bg: #111318;
+    --provider-header-border: rgba(255,255,255,0.14);
+    --provider-footer-bg: #111318;
+    --provider-footer-border: rgba(255,255,255,0.14);
+  }
+}
+
+/* Header: "eins mit dem Handy" – opak, kein Farbstich */
+body.provider-mode [id^="v-provider-"].view{
+  background: var(--provider-shell-bg) !important;
+}
+body.provider-mode [id^="v-provider-"] .prov-page-header,
+body.provider-mode [id^="v-provider-"] .prov-header,
+body.provider-mode [id^="v-provider-"] > header.prov-page-header,
+body.provider-mode [id^="v-provider-"] > header.dynamic-header,
+body.provider-mode [id^="v-provider-"] > header.system-header,
+body.provider-mode #v-provider-week #v-provider-week-header,
+body.provider-mode #v-provider-cookbook #v-provider-cookbook-header,
+body.provider-mode #v-provider-profile #v-provider-profile-header,
+body.provider-mode #providerDashboardHeader{
+  background: var(--provider-header-bg) !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid var(--provider-header-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding-top: max(12px, var(--safe-area-top)) !important;
+}
+
+/* Einheitlicher Anbieter-Footer-Container */
+body.provider-mode #providerNavWrap.provider-nav-wrap-pill,
+body.provider-mode #weekViewFooter.week-view-footer-fixed,
+body.provider-mode #cookbookFooterWrap.cookbook-footer-fixed,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background: var(--provider-footer-bg) !important;
+  border-top: 1px solid var(--provider-footer-border) !important;
+  box-shadow: none !important;
+  padding-top: var(--provider-footer-pad-y) !important;
+  padding-right: max(var(--provider-footer-pad-x), var(--safe-area-right)) !important;
+  padding-bottom: calc(var(--provider-footer-pad-y) + var(--safe-area-bottom)) !important;
+  padding-left: max(var(--provider-footer-pad-x), var(--safe-area-left)) !important;
+  box-sizing: border-box !important;
+}
+
+/* Bottom-Navigation innen ebenfalls homogen */
+body.provider-mode #providerNavWrap #providerNav{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  min-height: var(--provider-footer-btn-height) !important;
+  padding: 0 !important;
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn{
+  min-height: var(--provider-footer-btn-height) !important;
+}
+
+/* Wizard-Footer Buttons: gleiche Größe/Abstände */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 #btnSpeichernKochbuch,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 #btnNext,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main .footer-btn-primary{
+  min-height: var(--provider-footer-btn-height) !important;
+  height: var(--provider-footer-btn-height) !important;
+  border-radius: var(--provider-footer-btn-radius) !important;
+}
