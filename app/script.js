@@ -16825,6 +16825,7 @@
     localStorage.removeItem('mittagio_wizard_open');
     if(clearDraft) localStorage.removeItem('wizard_draft');
     if(typeof window !== 'undefined') window._wizardInitialDataSnapshot = null;
+    if(typeof clearListingViewportHandlers === 'function') clearListingViewportHandlers();
   }
   if(typeof window !== 'undefined') window.closeWizard = closeWizard;
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint K erreicht (Top-Level ~16336)');
@@ -16866,10 +16867,26 @@
     var entryPoint = normalizeWizardEntryPoint((w && w.ctx && w.ctx.entryPoint) || 'newListing');
     if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit(entryPoint);
     if(typeof closeWizard === 'function') closeWizard(true);
+    if(typeof clearListingViewportHandlers === 'function') clearListingViewportHandlers();
     var container = document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
     if(container) container.style.display = 'none';
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
+  function clearListingViewportHandlers(){
+    if(typeof window === 'undefined' || typeof window.visualViewport === 'undefined') return;
+    try{
+      if(window.__listingVvResizeHandler){
+        window.visualViewport.removeEventListener('resize', window.__listingVvResizeHandler);
+        window.__listingVvResizeHandler = null;
+      }
+      if(window.__listingVvScrollHandler){
+        window.visualViewport.removeEventListener('scroll', window.__listingVvScrollHandler);
+        window.__listingVvScrollHandler = null;
+      }
+    }catch(e){}
+  }
+  if(typeof window !== 'undefined') window.clearListingViewportHandlers = clearListingViewportHandlers;
+
   /** Alias für Handy-Back / X-Button: closeListingFlow = closeMastercard [cite: Universal-Linker 2026-02-26] */
   if(typeof window !== 'undefined') window.closeListingFlow = closeMastercard;
 
@@ -19914,10 +19931,13 @@
         var vvH = (window.visualViewport ? Math.round(window.visualViewport.height) : window.innerHeight);
         var winH = window.innerHeight;
         var keyboardH = Math.max(0, winH - vvH);
+        var activeEl = document.activeElement;
+        var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
+        var keyboardOpen = editableFocused && keyboardH > 110;
         /* 1. Wizard-Höhe nur bei Tastatur an vvH koppeln – weniger Sprünge bei URL-Leiste ein/aus */
         var wiz = document.getElementById('wizard');
         if(wiz && wiz.isConnected){
-          if(keyboardH > 72){
+          if(keyboardOpen){
             wiz.style.setProperty('height', vvH + 'px', 'important');
             wiz.style.setProperty('max-height', vvH + 'px', 'important');
           } else {
@@ -19925,23 +19945,16 @@
             wiz.style.removeProperty('max-height');
           }
         }
-        /* 2. Footers nur bei echter Tastatur heben (sonst immer unten anliegend) */
+        /* 2. Footer immer unten verankern (wie Photo-Editor) */
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
-        var activeEl = document.activeElement;
-        var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
-        var keyboardOpen = editableFocused && keyboardH > 72;
         [f1,f2,f3].forEach(function(f){
           if(!f || !f.isConnected) return;
-          if(keyboardOpen){
-            f.style.setProperty('bottom', keyboardH + 'px', 'important');
-          } else {
-            f.style.setProperty('bottom', '0px', 'important');
-          }
+          f.style.setProperty('bottom', '0px', 'important');
         });
         /* 3. Scroll-Bereich: Padding für Header und Footer */
-        if(keyboardH > 80 && editableFocused){
+        if(keyboardOpen){
           scrollInputAboveKeyboard(activeEl);
         }
         var sa = box.querySelector('.inserat-scroll-area');
@@ -19956,7 +19969,11 @@
         });
       };
       if(typeof window.visualViewport !== 'undefined'){
-        window.visualViewport.addEventListener('resize', vvHandler);
+        if(typeof clearListingViewportHandlers === 'function') clearListingViewportHandlers();
+        window.__listingVvResizeHandler = vvHandler;
+        window.__listingVvScrollHandler = vvHandler;
+        window.visualViewport.addEventListener('resize', window.__listingVvResizeHandler);
+        window.visualViewport.addEventListener('scroll', window.__listingVvScrollHandler);
       }
       /* Sofortige Initialisierung – Wizard-Höhe und Footer-Position direkt beim Öffnen setzen */
       setTimeout(vvHandler, 50);
