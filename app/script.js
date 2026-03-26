@@ -19466,11 +19466,14 @@
 
       function updateMastercardFeedback(){ /* Validierung ohne Rekursion – kein updatePowerBarFromBox-Aufruf */ }
       function renderPowerBarExtras(){}
+      const quickAdjustBackdrop=document.createElement('div');
+      quickAdjustBackdrop.id='quick-adjust-backdrop';
+      quickAdjustBackdrop.className='sub-menu-drawer-backdrop';
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
-      quickAdjustPanel.className='inserat-quick-adjust-panel quick-adjust-sheet';
-      /* left:0/right:0; z-index über Wizard (1000000) [cite: 2026-03-10] */
-      quickAdjustPanel.style.cssText='display:none; position:fixed; left:0; right:0; bottom:0; width:100%; z-index:1200001; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 16px calc(24px + env(safe-area-inset-bottom,0)); margin:0; box-shadow:none; border-top:1px solid #ebebeb; max-height:70vh; overflow-y:auto;';
+      quickAdjustPanel.className='sub-menu-drawer inserat-quick-adjust-panel quick-adjust-sheet';
+      /* Einheitlich wie Allergene-Drawer: gleiche Geometrie, keine abgeschnittenen Kanten */
+      quickAdjustPanel.style.cssText='display:none; z-index:1200001;';
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
@@ -19479,30 +19482,36 @@
           finishBtn.style.background='#222222';
           if(window.userHasInteracted && window.navigator.vibrate) window.navigator.vibrate([10,30,10]);
         }
-        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+        quickAdjustPanel.classList.remove('is-open');
+        quickAdjustBackdrop.classList.remove('is-open');
         requestAnimationFrame(function(){
-          quickAdjustPanel.style.transform='translateY(100%)';
           setTimeout(function(){
             quickAdjustPanel.style.display='none';
-            quickAdjustPanel.style.transform='';
-            quickAdjustPanel.style.transition='';
             quickAdjustPanel.innerHTML='';
             updatePowerBarFromData();
           }, 320);
         });
       }
-      function closeQuickAdjust(){ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20); quickAdjustPanel.style.display='none'; quickAdjustPanel.innerHTML=''; updatePowerBarFromData(); }
+      function closeQuickAdjust(){
+        if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
+        quickAdjustPanel.classList.remove('is-open');
+        quickAdjustBackdrop.classList.remove('is-open');
+        setTimeout(function(){
+          quickAdjustPanel.style.display='none';
+          quickAdjustPanel.innerHTML='';
+          updatePowerBarFromData();
+        }, 220);
+      }
       function openQuickAdjust(type){
         hapticLight();
         closeAllPowerbarSheets();
         quickAdjustPanel.innerHTML='';
-        quickAdjustPanel.style.transition='transform 0.3s cubic-bezier(0.32,0.72,0,1)';
-        quickAdjustPanel.style.transform='translateY(100%)';
         quickAdjustPanel.style.display='block';
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustPanel.style.transform='translateY(0)'; }); });
-        var headline=document.createElement('h3');
-        headline.className='quick-adjust-headline';
-        headline.style.cssText='margin:0 0 16px; font-size:18px; font-weight:800; color:#0f172a;';
+        var drawerHandle=document.createElement('div');
+        drawerHandle.className='sub-menu-drawer-handle';
+        quickAdjustPanel.appendChild(drawerHandle);
+        var headline=document.createElement('div');
+        headline.className='sub-menu-drawer-title quick-adjust-headline';
         if(type==='time'){
           headline.textContent='Abholzeit';
           quickAdjustPanel.appendChild(headline);
@@ -19553,11 +19562,12 @@
         }
         var btnFertig=document.createElement('button');
         btnFertig.type='button';
-        btnFertig.className='inserat-fertig-kachel quick-adjust-fertig';
+        btnFertig.className='sub-menu-drawer-fertig inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='width:100%; min-height:56px; margin-top:20px; padding:16px 24px; padding-bottom:calc(16px + env(safe-area-inset-bottom,0)); border:none; border-radius:0; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer; position:sticky; bottom:0; z-index:6010;';
+        btnFertig.style.cssText='position:sticky; bottom:0; z-index:6010; margin-top:12px;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustBackdrop.classList.add('is-open'); quickAdjustPanel.classList.add('is-open'); }); });
       }
 
       const updateProfit = function(val){
@@ -19580,6 +19590,8 @@
       priceSection.style.marginTop='0'; /* Normaler Flow, kein auto mehr */
       contentSheet.appendChild(priceSection);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
+      quickAdjustBackdrop.onclick=closeQuickAdjust;
+      document.body.appendChild(quickAdjustBackdrop);
       document.body.appendChild(quickAdjustPanel); /* Fix: position:fixed relativ zum Viewport, nicht zum transformierten wizard-box */
       inputDish.addEventListener('keydown', function(){
         if(!priceSection || priceSection.classList.contains('harmonic-bounce')) return;
