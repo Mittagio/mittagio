@@ -126,3 +126,24 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Alle Anbieter-Footer (Bottom-Nav, Wochenplan, Kochbuch, Wizard Step1/2/3) nutzen dieselbe fixed-Container-Geometrie (`left/right/bottom: 0`, identisches Padding, identische Border).
 - Wizard-Buttons sind höhen- und radiusgleich zum restlichen Anbieter-Footer-System.
 - Darkmode ist über `prefers-color-scheme: dark` auf dieselben Token gemappt, damit der Anbieter-Chrome auf allen Geräten konsistent bleibt.
+
+## Footer-Konsistenz Final (26.03.2026)
+
+- Konflikt behoben: Der Mobile-Override (`<=390px`) hat Step1/Step2 auf `46px` reduziert und damit eine sichtbare Abweichung erzeugt.
+- Der Override nutzt jetzt durchgehend die globalen Listing-Tokens (`--listing-footer-btn-height`, `--listing-footer-shell-min-height`) statt Sonderwerte.
+- `#photo-edit-overlay .save-photo-btn` ist im selben Mobile-Block eingebunden, damit Step1, Step2 und Foto-CTA auf kleinen Geräten identisch bleiben.
+- Zusätzlich wurde ein finaler Prioritäts-Lock am Ende von `app/style.css` ergänzt, der Höhe, Padding, Radius und Typografie für alle drei CTA-Typen vereinheitlicht.
+
+## Footer-Debug & Runtime-Lock (26.03.2026)
+
+- Live-Debug aktiv: `window.debugFooterButtonMetrics()` zeigt für Step1/Step2/Foto-CTA die berechneten Werte (u. a. Höhe und Schrift) als Toast + `console.table`.
+- Befund: `main-publish-btn` lief trotz CSS-Lock in einzelnen Zuständen mit größerer Höhe.
+- Fix: Beim Erzeugen in `buildListingStep()` wurde ein JS-Runtime-Lock ergänzt (Step1-Buttons + `main-publish-btn`) mit identischen Kernwerten (`52px` Höhe, `15px/800`, `12px` Radius, `0 16px` Padding, `inline-flex`-Zentrierung, `white-space: nowrap`).
+- Ziel: Selbst bei konkurrierenden CSS-Regeln bleibt die finale Geometrie in allen Wizard-Footern identisch.
+- Nachschärfung: Step2 wählt im Debug explizit den sichtbaren Publish-Button; zusätzlich werden alte `#main-publish-btn`-Duplikate vor dem Rendern entfernt, damit keine Legacy-Instanz gemessen oder angezeigt wird.
+- Finaler Step2-Angleich: Der Publish-CTA nutzt eine eigene Klasse (`.inserat-footer-btn--499` / `photo-save-clone-btn`) statt `.btn-primary-black`, damit keine Legacy-Button-Regeln mehr eingreifen.
+- Ergebnisziel nach Spec: Step2-Footer orientiert sich 1:1 am „Foto speichern“-Footer (52px CTA-Höhe, unten bündig, identischer Radius/Typografie).
+- Layout-Fix für „unten anliegend“: Step1- und Step2-Footer werden im Listing-Flow direkt an `document.body` angehängt (wie der fixe Header), nicht im Wizard-Container. Dadurch greifen keine Container-Clips durch `overflow:hidden`; der Footer sitzt stabil am unteren Viewport-Rand.
+- Nachfix Sichtbarkeit/Leak: Step1-Footer-Z-Index wurde auf den Step2-Layer angehoben, damit er im Wizard nicht hinter dem Panel verschwindet. Zusätzlich entfernt `closeWizard()`/`closeMastercard()` nun die Body-Footer (`#mastercard-footer-step1`, `#mastercard-footer-step2`, `#main-publish-btn`) hart, damit im Dashboard kein CTA-Rest stehen bleibt.
+- CTA-Typografie/Schreibweise finalisiert: Footer-Buttons bleiben im gleichen Schriftbild wie `Speichern`/`Weiter` (15px/800, kein Caps-Transform). Step2-Text läuft über ein zentrales Label-Helper-Pattern mit normaler Schreibweise; Auto-Debug-Toast ist standardmäßig deaktiviert (`window.__footerDebugAuto = false`).
+- Foto-Editor Overlay-Fix: Beim Öffnen des Foto-Editors werden Listing-Footer (Step1/Step2/Step3) temporär ausgeblendet und beim Schließen abhängig vom aktuellen Wizard-Step wieder eingeblendet. Zusätzlich wurde der Overlay-Layer über den Footer-Layer gesetzt, damit der CTA `Foto speichern` immer sichtbar bleibt.

@@ -11663,12 +11663,13 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   #wizard[data-flow="listing"] #mastercard-footer-step2 {
     padding-left: 12px !important;
     padding-right: 12px !important;
-    min-height: calc(64px + env(safe-area-inset-bottom, 20px)) !important;
+    min-height: var(--listing-footer-shell-min-height) !important;
   }
   #wizard[data-flow="listing"] #mastercard-footer-step1 .btn-primary-black,
-  #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black {
-    min-height: 46px !important;
-    height: 46px !important;
+  #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+  #photo-edit-overlay .save-photo-btn {
+    min-height: var(--listing-footer-btn-height) !important;
+    height: var(--listing-footer-btn-height) !important;
     font-size: 15px !important;
     padding: 0 16px !important;
   }
@@ -12743,11 +12744,12 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-act
 
 /* FOOTER KONSISTENZ FINAL (Bild-2-Basis: "Foto speichern") */
 :root{
-  --listing-footer-pad-x: 20px;
+  --listing-footer-pad-x: 24px;
   --listing-footer-pad-y: 12px;
-  --listing-footer-btn-height: 56px;
-  --listing-footer-btn-radius: 14px;
-  --listing-footer-btn-pad-x: 20px;
+  --listing-footer-btn-height: 52px;
+  --listing-footer-btn-radius: 12px;
+  --listing-footer-btn-pad-x: 16px;
+  --listing-footer-shell-min-height: calc(var(--listing-footer-btn-height) + (var(--listing-footer-pad-y) * 2) + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px)));
 }
 #wizard[data-flow="listing"] #mastercard-footer-step1,
 #wizard[data-flow="listing"] #mastercard-footer-step2,
@@ -12758,6 +12760,12 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-act
   padding-bottom: calc(var(--listing-footer-pad-y) + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px))) !important;
   padding-left: max(var(--listing-footer-pad-x), var(--safe-area-left, 0px)) !important;
   box-sizing: border-box !important;
+  min-height: var(--listing-footer-shell-min-height) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+#wizard[data-flow="listing"] #mastercard-footer-step1{
+  align-items: stretch !important;
 }
 #wizard[data-flow="listing"] #mastercard-footer-step1 .btn-primary-black,
 #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
@@ -12816,7 +12824,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   width: 100% !important;
   align-items: stretch !important;
   justify-content: space-between !important;
-  gap: 12px !important;
+  gap: 8px !important;
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -12856,9 +12864,9 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   --provider-header-border: #ebebeb;
   --provider-footer-bg: #ffffff;
   --provider-footer-border: #ebebeb;
-  --provider-footer-pad-x: 20px;
-  --provider-footer-pad-y: 14px;
-  --provider-footer-btn-height: 60px;
+  --provider-footer-pad-x: 24px;
+  --provider-footer-pad-y: 12px;
+  --provider-footer-btn-height: 52px;
   --provider-footer-btn-radius: 12px;
 }
 @media (prefers-color-scheme: dark){
@@ -13100,4 +13108,94 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-insera
   min-height: var(--provider-footer-btn-height) !important;
   height: var(--provider-footer-btn-height) !important;
   border-radius: var(--provider-footer-btn-radius) !important;
+}
+/* Finaler Gleichlauf: Step1/Step2/Foto-Speichern identisch in Höhe und Vertikalzentrierung */
+#wizard[data-flow="listing"] #mastercard-footer-step1 #btnSpeichernKochbuch,
+#wizard[data-flow="listing"] #mastercard-footer-step1 #btnNext,
+#wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+#wizard[data-flow="listing"] #main-publish-btn,
+#photo-edit-overlay .save-photo-btn{
+  min-height: var(--listing-footer-btn-height) !important;
+  height: var(--listing-footer-btn-height) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 var(--listing-footer-btn-pad-x) !important;
+  box-sizing: border-box !important;
+  border-radius: var(--listing-footer-btn-radius) !important;
+  line-height: 1.1 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-style: normal !important;
+  white-space: nowrap !important;
+  font-family: "Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* FINAL LOCK 2026-03-26: Step1/Step2/Foto-CTA immer identisch */
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step1 #btnSpeichernKochbuch,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step1 #btnNext,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+body.provider-mode #wizard[data-flow="listing"] #main-publish-btn,
+body.provider-mode #photo-edit-overlay .save-photo-btn{
+  min-height: 52px !important;
+  height: 52px !important;
+  padding: 0 16px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  line-height: 1.1 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-style: normal !important;
+  white-space: nowrap !important;
+  font-family: "Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* Step2 soll exakt wie "Foto speichern" aussehen (ohne btn-primary-black-Altregeln) */
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step2{
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  padding-top: 8px !important;
+  padding-right: max(var(--listing-footer-pad-x), var(--safe-area-right, 0px)) !important;
+  padding-bottom: calc(var(--listing-footer-pad-y) + var(--safe-area-bottom, env(safe-area-inset-bottom, 0px))) !important;
+  padding-left: max(var(--listing-footer-pad-x), var(--safe-area-left, 0px)) !important;
+  box-sizing: border-box !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step2 #main-publish-btn,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step2 .inserat-footer-btn--499{
+  min-height: 52px !important;
+  height: 52px !important;
+  max-height: 52px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  line-height: 1.1 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+/* FINAL LAYER FIX: Step1/Step2 nie hinter Wizard-Panel */
+body.provider-mode #mastercard-footer-step1,
+body.provider-mode #mastercard-footer-step2{
+  z-index: 4100000 !important;
 }

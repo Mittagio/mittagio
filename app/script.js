@@ -6677,6 +6677,81 @@
       toast.style.opacity = '0';
     }, 3000);
   }
+  function readFooterBtnMetrics(el){
+    if(!el) return null;
+    var cs = window.getComputedStyle(el);
+    return {
+      id: el.id || '(ohne-id)',
+      text: (el.textContent || '').trim(),
+      h: cs.height,
+      minH: cs.minHeight,
+      fs: cs.fontSize,
+      fw: cs.fontWeight,
+      lh: cs.lineHeight,
+      tt: cs.textTransform
+    };
+  }
+  function lockFooterButtonVisuals(el){
+    if(!el || !el.style) return;
+    try{
+      el.style.setProperty('min-height', '52px', 'important');
+      el.style.setProperty('height', '52px', 'important');
+      el.style.setProperty('padding', '0 16px', 'important');
+      el.style.setProperty('border-radius', '12px', 'important');
+      el.style.setProperty('display', 'inline-flex', 'important');
+      el.style.setProperty('align-items', 'center', 'important');
+      el.style.setProperty('justify-content', 'center', 'important');
+      el.style.setProperty('box-sizing', 'border-box', 'important');
+      el.style.setProperty('font-size', '15px', 'important');
+      el.style.setProperty('font-weight', '800', 'important');
+      el.style.setProperty('line-height', '1.1', 'important');
+      el.style.setProperty('letter-spacing', '0', 'important');
+      el.style.setProperty('text-transform', 'none', 'important');
+      el.style.setProperty('white-space', 'nowrap', 'important');
+      el.style.setProperty('font-family', '"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif', 'important');
+    }catch(_e){}
+  }
+  function pickVisibleElement(nodes){
+    if(!nodes || !nodes.length) return null;
+    for(var i=0;i<nodes.length;i++){
+      var n = nodes[i];
+      if(n && n.isConnected && n.offsetParent !== null) return n;
+    }
+    return nodes[0] || null;
+  }
+  window.__footerDebugAuto = false;
+  window.debugFooterButtonMetrics = function(source){
+    try{
+      var rows = [];
+      var step1Save = document.getElementById('btnSpeichernKochbuch');
+      var step1Next = document.getElementById('btnNext');
+      var step2Candidates = Array.prototype.slice.call(document.querySelectorAll('#main-publish-btn, #mastercard-footer-step2 .inserat-footer-btn--499, #mastercard-footer-step2 .btn-primary-black'));
+      var step2Main = pickVisibleElement(step2Candidates);
+      var photoSave = document.querySelector('#photo-edit-overlay .save-photo-btn');
+      lockFooterButtonVisuals(step1Save);
+      lockFooterButtonVisuals(step1Next);
+      lockFooterButtonVisuals(step2Main);
+      lockFooterButtonVisuals(photoSave);
+      [step1Save, step1Next, step2Main, photoSave].forEach(function(btn){
+        var m = readFooterBtnMetrics(btn);
+        if(m) rows.push(m);
+      });
+      if(rows.length){
+        try{ console.table(rows); }catch(_e){}
+        var compact = rows.map(function(r){ return r.id + ':' + r.h + '/' + r.fs; }).join(' | ');
+        if(typeof showToast === 'function'){
+          showToast('Footer-Debug' + (source ? ' [' + source + ']' : '') + ' -> ' + compact + ' | step2-candidates:' + step2Candidates.length);
+        }
+      }else if(typeof showToast === 'function'){
+        showToast('Footer-Debug: Keine Zielbuttons gefunden');
+      }
+      return rows;
+    }catch(err){
+      console.error('[footer-debug]', err);
+      if(typeof showToast === 'function') showToast('Footer-Debug fehlgeschlagen');
+      return [];
+    }
+  };
   /** Smart-Save-Blase: Plopp & Schwebe beim Drop [cite: 2026-02-18, 2026-02-26] */
   window.spawnSmartBubble = function(x, y){
     var bubble = document.createElement('div');
@@ -16867,6 +16942,9 @@
     var qaPanel = document.getElementById('quick-adjust-sheet'); if(qaPanel && qaPanel.parentNode) qaPanel.remove();
     var photoOvPanel = document.getElementById('photo-edit-overlay'); if(photoOvPanel && photoOvPanel.parentNode) photoOvPanel.remove();
     var stickyHdr = document.getElementById('app-sticky-header') || document.getElementById('inserat-fixed-header'); if(stickyHdr && stickyHdr.parentNode) stickyHdr.remove();
+    var f1Body = document.getElementById('mastercard-footer-step1'); if(f1Body && f1Body.parentNode) f1Body.remove();
+    var f2Body = document.getElementById('mastercard-footer-step2'); if(f2Body && f2Body.parentNode) f2Body.remove();
+    var publishBtn = document.getElementById('main-publish-btn'); if(publishBtn && publishBtn.parentNode) publishBtn.parentNode.removeChild(publishBtn);
     updateSystemTheme(false);
     var pn = document.getElementById('providerNavWrap');
     if(pn && document.body.classList.contains('provider-mode')) pn.style.removeProperty('display');
@@ -16912,6 +16990,9 @@
     var wizard = document.getElementById('wizard');
     if(wizard){ wizard.classList.remove('active','inserat-step2-active','inserat-step3-active'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
+    var f1Body = document.getElementById('mastercard-footer-step1'); if(f1Body && f1Body.parentNode) f1Body.remove();
+    var f2Body = document.getElementById('mastercard-footer-step2'); if(f2Body && f2Body.parentNode) f2Body.remove();
+    var publishBtn = document.getElementById('main-publish-btn'); if(publishBtn && publishBtn.parentNode) publishBtn.parentNode.removeChild(publishBtn);
     /* Ziel-View anzeigen (Dashboard/Kochbuch/Wochenplan), dann Wizard-Cleanup */
     var entryPoint = normalizeWizardEntryPoint((w && w.ctx && w.ctx.entryPoint) || 'newListing');
     if(typeof navigateAfterWizardExit === 'function') navigateAfterWizardExit(entryPoint);
@@ -17994,6 +18075,9 @@
         popoverBackdrop.onclick = function(){ closeInfoPopover(); };
         var popoverCloseBtn = infoPopover.querySelector('.step2-popover-close');
         if(popoverCloseBtn) popoverCloseBtn.onclick = function(){ closeInfoPopover(); };
+        function getStep2PublishLabel(isPickupEnabled){
+          return isPickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
+        }
         function updateTileUI(){
           var bestBadge = tilePickup.querySelector('.step2-badge-best');
           tileStandard.classList.toggle('active', !pickupEnabled);
@@ -18011,7 +18095,8 @@
             btn.style.pointerEvents = 'auto';
             btn.style.opacity = '1';
             btn.style.background = '#111111';
-            btn.textContent = pickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
+            lockFooterButtonVisuals(btn);
+            btn.textContent = getStep2PublishLabel(pickupEnabled);
             btn.classList.remove('btn-pulse');
           }
         }
@@ -18338,20 +18423,53 @@
       var MAX_EDITOR_SCALE=4;
       var isEditorPanning=false;
       function clampEditorScale(v){ return Math.max(MIN_EDITOR_SCALE, Math.min(MAX_EDITOR_SCALE, v)); }
+      function setListingFootersHiddenForPhotoEditor(hidden){
+        var f1 = document.getElementById('mastercard-footer-step1');
+        var f2 = document.getElementById('mastercard-footer-step2');
+        var f3 = document.querySelector('#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main');
+        var arr = [f1, f2, f3];
+        arr.forEach(function(el){
+          if(!el) return;
+          if(hidden){
+            if(!el.hasAttribute('data-photo-prev-display')){
+              var prev = (el.style && el.style.display) ? el.style.display : '';
+              el.setAttribute('data-photo-prev-display', prev);
+            }
+            el.style.setProperty('display', 'none', 'important');
+          }
+        });
+        if(!hidden){
+          var wizardEl = document.getElementById('wizard');
+          var step = 1;
+          if(wizardEl){
+            if(wizardEl.classList.contains('inserat-step3-active')) step = 3;
+            else if(wizardEl.classList.contains('inserat-step2-active')) step = 2;
+          }
+          if(f1) f1.style.setProperty('display', step===1 ? 'flex' : 'none', 'important');
+          if(f2) f2.style.setProperty('display', step===2 ? 'flex' : 'none', 'important');
+          if(f3) f3.style.setProperty('display', step===3 ? 'flex' : 'none', 'important');
+          arr.forEach(function(el){
+            if(!el) return;
+            el.removeAttribute('data-photo-prev-display');
+          });
+        }
+      }
       function closePhotoEditOverlay(){
         var ov=document.getElementById('photo-edit-overlay');
         if(!ov) return;
         ov.classList.remove('is-open');
         ov.classList.add('is-closing');
+        setListingFootersHiddenForPhotoEditor(false);
         setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },220);
       }
       function openPhotoEditOverlay(){
         if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
+        setListingFootersHiddenForPhotoEditor(true);
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
         ov.className='is-hidden';
-        ov.style.cssText='position:fixed; inset:0; z-index:1100005;';
+        ov.style.cssText='position:fixed; inset:0; z-index:5100005;';
         var hero=document.createElement('div');
         hero.className='photo-editor-hero';
         var btnCloseHero=document.createElement('button');
@@ -18412,11 +18530,14 @@
         var saveBtn=document.createElement('button');
         saveBtn.type='button';
         saveBtn.className='save-photo-btn';
-        saveBtn.textContent='FOTO SPEICHERN';
+        saveBtn.textContent='Foto speichern';
         saveFooter.appendChild(saveBtn);
         controlsSheet.appendChild(metaHead);
         controlsSheet.appendChild(saveFooter);
         ov.appendChild(controlsSheet);
+        if(window.__footerDebugAuto && typeof window.debugFooterButtonMetrics === 'function'){
+          requestAnimationFrame(function(){ window.debugFooterButtonMetrics('foto-overlay-open'); });
+        }
         function getViewportSize(){
           return {
             width: Math.max(1, viewport.clientWidth || 1),
@@ -18723,7 +18844,7 @@
           saveBtn.classList.remove('is-loading');
           saveBtn.classList.remove('is-saved');
           saveBtn.disabled=false;
-          saveBtn.textContent='FOTO SPEICHERN';
+          saveBtn.textContent='Foto speichern';
         }
         function setEditorSavedState(){
           if(!saveBtn) return;
@@ -19667,7 +19788,7 @@
         var price=Number(w.data.price)||0;
         if(name.length<2) stepName.classList.add('inserat-validation-error');
         if(price<=0) priceSection.classList.add('inserat-validation-error');
-        var targetBtn=btn||document.getElementById('btnNext')||document.querySelector('#mastercard-footer-step2 .btn-primary-black');
+        var targetBtn=btn||document.getElementById('btnNext')||document.querySelector('#main-publish-btn, #mastercard-footer-step2 .inserat-footer-btn--499, #mastercard-footer-step2 .btn-primary-black');
         if(targetBtn){
           targetBtn.classList.remove('btn-shake');
           targetBtn.offsetHeight;
@@ -19791,18 +19912,20 @@
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
       /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:10000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+      actionSection.style.setProperty('z-index', '4100000', 'important');
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
-      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; border:none; cursor:pointer; box-sizing:border-box; align-self:stretch;';
+      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
         linkSpeichern.id='btnSpeichernKochbuch';
         linkSpeichern.className='btn-primary-black footer-main-button inserat-step1-save-btn';
         linkSpeichern.style.cssText=step1PrimaryBtnStyle;
+        lockFooterButtonVisuals(linkSpeichern);
         linkSpeichern.textContent='Speichern';
         linkSpeichern.disabled=!primaryValid;
         if(primaryValid) linkSpeichern.classList.add('is-ready'); else linkSpeichern.classList.remove('is-ready');
@@ -19827,6 +19950,7 @@
       btnWeiter.className='btn-primary-black footer-main-button';
       /* Weiter + Speichern: gleiche Breite (flex 1 1 0) [cite: UX 2026-03-23] */
       btnWeiter.style.cssText=step1PrimaryBtnStyle;
+      lockFooterButtonVisuals(btnWeiter);
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
       btnWeiter.style.opacity='';
@@ -19840,24 +19964,28 @@
         box.appendChild(slider);
         /* Footer panel-intern: sticky im Kartenrahmen statt viewport-fixed */
         var _wizardEl = document.getElementById('wizard');
-        box.appendChild(actionSection);
+        document.body.appendChild(actionSection);
         /* Fixed Header an body – viewport-sticky wie Meine Küche (nicht in transform-Kontext) */
         document.body.appendChild(fixedHeader);
+        var oldPublishBtns = document.querySelectorAll('#main-publish-btn');
+        oldPublishBtns.forEach(function(oldBtn){ if(oldBtn && oldBtn.parentNode) oldBtn.parentNode.removeChild(oldBtn); });
         var airbnbFooter=document.createElement('div');
         airbnbFooter.id='mastercard-footer-step2';
         airbnbFooter.className='app-footer-main inserat-step2-nav';
         airbnbFooter.style.cssText='display:'+(inseratStep===2?'flex':'none')+'; flex-direction:row; align-items:center; justify-content:center; gap:0; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; box-shadow:none; padding:12px 20px calc(10px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+        airbnbFooter.style.setProperty('z-index', '4100000', 'important');
         airbnbFooter.style.pointerEvents='auto';
         var footerBtn=document.createElement('button');
         footerBtn.type='button';
         footerBtn.id='main-publish-btn';
-        footerBtn.className='btn-primary-black inserat-footer-btn--499';
-        footerBtn.style.cssText='width:100%; min-height:52px; padding:0 24px; border:none; border-radius:8px; color:#ffffff; font-size:16px; font-weight:800; letter-spacing:0.5px; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation;';
+        footerBtn.className='inserat-footer-btn--499 photo-save-clone-btn';
+        footerBtn.style.cssText='width:100%; min-height:52px; height:52px; max-height:52px; padding:0 16px; border:none; border-radius:12px; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden;';
+        lockFooterButtonVisuals(footerBtn);
         footerBtn.disabled=false;
         footerBtn.removeAttribute('disabled');
         footerBtn.style.pointerEvents='auto';
         footerBtn.style.opacity='1';
-        footerBtn.textContent='Jetzt für 4,99 € inserieren';
+        footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
           try{
@@ -19898,7 +20026,7 @@
         };
         airbnbFooter.appendChild(footerBtn);
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
-        box.appendChild(airbnbFooter);
+        document.body.appendChild(airbnbFooter);
         function applyListingViewportOffsets(){
           try{
             var headerH = (fixedHeader && fixedHeader.isConnected) ? (fixedHeader.offsetHeight || 60) : 60;
@@ -19942,6 +20070,7 @@
               liveBtn.removeAttribute('disabled');
               liveBtn.style.pointerEvents='auto';
               liveBtn.style.opacity='1';
+              lockFooterButtonVisuals(liveBtn);
             }
           }
           var sf=box.querySelector('[data-inserat-step="3"]');
@@ -19950,6 +20079,9 @@
           if(typeof showStep==='function') showStep(s);
           updateHeaderTitleByStep(s);
           requestAnimationFrame(applyListingViewportOffsets);
+          if(window.__footerDebugAuto && typeof window.debugFooterButtonMetrics === 'function'){
+            requestAnimationFrame(function(){ window.debugFooterButtonMetrics('wizard-step-' + s); });
+          }
         };
         slider.addEventListener('transitionend', updateFooterVisibility);
         requestAnimationFrame(function(){ updateFooterVisibility(); requestAnimationFrame(applyListingViewportOffsets); });
