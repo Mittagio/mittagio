@@ -2172,9 +2172,23 @@
     /* Fertig-Button: pixelgenau über Footer, 0px margin/radius unten, safe-area [cite: 2026-02-23] */
     body.provider-mode .quick-adjust-fertig,
     body.provider-mode .inserat-fertig-kachel.quick-adjust-fertig {
-      width: 100%; min-height: 56px; margin: 20px 0 0; padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0));
-      border: none; border-radius: 0; background: #222222 !important; color: #ffffff !important;
-      font-size: 16px; font-weight: 800; cursor: pointer;
+      width: 100%;
+      min-height: 52px;
+      height: 52px;
+      margin: 12px 0 0;
+      padding: 0 16px;
+      border: none;
+      border-radius: 12px;
+      background: #222222 !important;
+      color: #ffffff !important;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      cursor: pointer;
       transition: transform 0.1s ease;
     }
     body.provider-mode .quick-adjust-fertig:active,
@@ -10145,9 +10159,12 @@
 /* Fertig-Button: pixelgenau über Footer, 0px margin/radius unten [cite: 2026-02-23] */
 #wizard[data-flow="listing"] .quick-adjust-sheet .inserat-fertig-kachel,
 #wizard[data-flow="listing"] .quick-adjust-sheet .quick-adjust-fertig {
+  margin-top: 12px !important;
   margin-bottom: 0 !important;
-  border-radius: 0 !important;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0)) !important;
+  border-radius: 12px !important;
+  min-height: 52px !important;
+  height: 52px !important;
+  padding: 0 16px !important;
 }
 /* Validation Error: sanfter roter Schimmer [cite: S25 PREMIUM 2026-02-23] */
 #wizard[data-flow="listing"] .inserat-validation-error {

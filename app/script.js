@@ -18422,23 +18422,28 @@
       var MIN_EDITOR_SCALE=1;
       var MAX_EDITOR_SCALE=4;
       var isEditorPanning=false;
+      var listingFooterOverlayLocks = 0;
       function clampEditorScale(v){ return Math.max(MIN_EDITOR_SCALE, Math.min(MAX_EDITOR_SCALE, v)); }
-      function setListingFootersHiddenForPhotoEditor(hidden){
+      function setListingFootersHiddenForOverlay(hidden){
         var f1 = document.getElementById('mastercard-footer-step1');
         var f2 = document.getElementById('mastercard-footer-step2');
         var f3 = document.querySelector('#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main');
         var arr = [f1, f2, f3];
-        arr.forEach(function(el){
-          if(!el) return;
-          if(hidden){
+        if(hidden){
+          listingFooterOverlayLocks += 1;
+        } else {
+          listingFooterOverlayLocks = Math.max(0, listingFooterOverlayLocks - 1);
+        }
+        if(listingFooterOverlayLocks > 0){
+          arr.forEach(function(el){
+            if(!el) return;
             if(!el.hasAttribute('data-photo-prev-display')){
               var prev = (el.style && el.style.display) ? el.style.display : '';
               el.setAttribute('data-photo-prev-display', prev);
             }
             el.style.setProperty('display', 'none', 'important');
-          }
-        });
-        if(!hidden){
+          });
+        } else {
           var wizardEl = document.getElementById('wizard');
           var step = 1;
           if(wizardEl){
@@ -18459,13 +18464,13 @@
         if(!ov) return;
         ov.classList.remove('is-open');
         ov.classList.add('is-closing');
-        setListingFootersHiddenForPhotoEditor(false);
+        setListingFootersHiddenForOverlay(false);
         setTimeout(function(){ if(ov&&ov.parentNode) ov.remove(); },220);
       }
       function openPhotoEditOverlay(){
         if(!w.data.photoData){ openPhotoSourcePicker(); return; }
         var oldOv=document.getElementById('photo-edit-overlay'); if(oldOv&&oldOv.parentNode) oldOv.remove();
-        setListingFootersHiddenForPhotoEditor(true);
+        setListingFootersHiddenForOverlay(true);
         var ov=document.createElement('div');
         ov.id='photo-edit-overlay';
         ov.className='is-hidden';
@@ -19297,25 +19302,28 @@
       /* ===== BOTTOM SHEETS: Vor Ort, Mehrweg, Abholzeit ===== [cite: 2026-03-10] */
       var sharedBackdrop=document.createElement('div');
       sharedBackdrop.className='inserat-bottom-sheet-backdrop';
-      sharedBackdrop.style.cssText='position:fixed; inset:0; z-index:1100000; background:rgba(0,0,0,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity 0.3s ease;';
+      sharedBackdrop.style.cssText='position:fixed; inset:0; z-index:5100000; background:rgba(0,0,0,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity 0.3s ease;';
       document.body.appendChild(sharedBackdrop);
 
       /* Inline-Style-basiert: unabhängig von body.provider-mode CSS-Selektor [cite: 2026-03-10] */
-      function closeAllPowerbarSheets(){
+      function closeAllPowerbarSheets(keepFootersHidden, source){
         [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
         sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
-        if(typeof closeAllergenDrawer==='function') closeAllergenDrawer();
-        if(typeof closeQuickAdjust==='function') closeQuickAdjust();
+        if(source !== 'allergene' && typeof closeAllergenDrawer==='function') closeAllergenDrawer(!!keepFootersHidden);
+        if(source !== 'extras' && typeof closeQuickAdjust==='function') closeQuickAdjust(!!keepFootersHidden);
+        if(!keepFootersHidden) setListingFootersHiddenForOverlay(false);
       }
       function openSheet(sheetEl){
         hapticLight();
-        closeAllPowerbarSheets();
+        closeAllPowerbarSheets(true);
+        setListingFootersHiddenForOverlay(true);
         sharedBackdrop.style.opacity='1'; sharedBackdrop.style.pointerEvents='auto';
         sheetEl.style.transform='translateY(0)';
       }
       function closeSheet(sheetEl){
         sheetEl.style.transform='translateY(100%)';
         sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        setListingFootersHiddenForOverlay(false);
         setTimeout(function(){ updatePowerBarFromBox(); }, 350);
       }
 
@@ -19325,7 +19333,7 @@
         s.className='inserat-bottom-sheet';
         s.setAttribute('role','dialog');
         s.setAttribute('aria-label',ariaLabel);
-        s.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:1200000; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px)); max-height:70vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); border-top:1px solid #ebebeb;';
+        s.style.cssText='position:fixed; left:0; right:0; bottom:0; z-index:5100001; background:#ffffff; border-radius:24px 24px 0 0; padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px)); max-height:70vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.32,0.72,0,1); border-top:1px solid #ebebeb;';
         var handle=document.createElement('div');
         handle.style.cssText='width:44px; height:5px; background:#ebebeb; border-radius:3px; margin:0 auto 16px;';
         s.appendChild(handle);
@@ -19375,7 +19383,7 @@
         var btn=document.createElement('button');
         btn.type='button';
         btn.className='inserat-sheet-done';
-        btn.style.cssText='width:100%; min-height:56px; padding:16px 24px; margin-top:20px; border-radius:8px; border:none; background:#222222; color:#ffffff; font-size:16px; font-weight:800; cursor:pointer;';
+        btn.style.cssText='width:100%; min-height:52px; height:52px; padding:0 16px; margin-top:12px; border-radius:12px; border:none; background:#222222; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; box-sizing:border-box; display:flex; align-items:center; justify-content:center; cursor:pointer;';
         btn.textContent='Fertig';
         btn.onclick=function(){ hapticLight(); closeSheet(sheetEl); };
         return btn;
@@ -19395,6 +19403,7 @@
       sharedBackdrop.addEventListener('click', function(){
         [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
         sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        setListingFootersHiddenForOverlay(false);
         setTimeout(function(){ updatePowerBarFromBox(); }, 350);
       });
 
@@ -19490,12 +19499,14 @@
       /* Allergen-Drawer erstellen */
       var allergenDrawerBackdrop=document.createElement('div');
       allergenDrawerBackdrop.className='sub-menu-drawer-backdrop';
+      allergenDrawerBackdrop.style.cssText='z-index:5100000;';
       var allergenDrawer=document.createElement('div');
       allergenDrawer.className='sub-menu-drawer';
       allergenDrawer.setAttribute('role','dialog');
       allergenDrawer.setAttribute('aria-label','Allergene auswählen');
+      allergenDrawer.style.cssText='z-index:5100001; max-height:72vh; padding:16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); display:flex; flex-direction:column;';
       var drawerHandle=document.createElement('div'); drawerHandle.className='sub-menu-drawer-handle';
-      var drawerTitle=document.createElement('div'); drawerTitle.className='sub-menu-drawer-title'; drawerTitle.textContent='Allergene';
+      var drawerTitle=document.createElement('div'); drawerTitle.className='sub-menu-drawer-title'; drawerTitle.textContent='🌿 Allergene';
       var allergenGridEl=document.createElement('div'); allergenGridEl.className='sub-menu-allergen-grid';
       var allergenCustomChipsWrap=document.createElement('div');
       allergenCustomChipsWrap.className='sub-menu-allergen-custom-wrap';
@@ -19608,6 +19619,7 @@
       btnDrawerFertig.type='button';
       btnDrawerFertig.className='sub-menu-drawer-fertig';
       btnDrawerFertig.textContent='Fertig';
+      btnDrawerFertig.style.cssText='position:sticky; bottom:0; z-index:3; margin-top:auto; width:100%; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; background:#222222; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; box-sizing:border-box; display:flex; align-items:center; justify-content:center;';
       allergenDrawer.appendChild(drawerHandle);
       allergenDrawer.appendChild(drawerTitle);
       allergenDrawer.appendChild(allergenGridEl);
@@ -19617,8 +19629,8 @@
       renderAllergenGrid();
       document.body.appendChild(allergenDrawerBackdrop);
       document.body.appendChild(allergenDrawer);
-      function openAllergenDrawer(){ hapticLight(); closeAllPowerbarSheets(); renderAllergenGrid(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
-      function closeAllergenDrawer(){ allergenDrawer.classList.remove('is-open'); allergenDrawerBackdrop.classList.remove('is-open'); updatePowerBarFromBox(); }
+      function openAllergenDrawer(){ hapticLight(); closeAllPowerbarSheets(true, 'allergene'); setListingFootersHiddenForOverlay(true); renderAllergenGrid(); allergenDrawerBackdrop.classList.add('is-open'); allergenDrawer.classList.add('is-open'); }
+      function closeAllergenDrawer(skipFooterRestore){ allergenDrawer.classList.remove('is-open'); allergenDrawerBackdrop.classList.remove('is-open'); if(!skipFooterRestore) setListingFootersHiddenForOverlay(false); updatePowerBarFromBox(); }
       tileAllergen.onclick=function(){ openAllergenDrawer(); };
       allergenDrawerBackdrop.onclick=closeAllergenDrawer;
       btnDrawerFertig.onclick=function(){ hapticLight(); closeAllergenDrawer(); };
@@ -19639,13 +19651,16 @@
       const quickAdjustBackdrop=document.createElement('div');
       quickAdjustBackdrop.id='quick-adjust-backdrop';
       quickAdjustBackdrop.className='sub-menu-drawer-backdrop';
+      quickAdjustBackdrop.style.cssText='z-index:5100000;';
       const quickAdjustPanel=document.createElement('div');
       quickAdjustPanel.id='quick-adjust-sheet';
       quickAdjustPanel.className='sub-menu-drawer inserat-quick-adjust-panel quick-adjust-sheet';
       /* Einheitlich wie Allergene-Drawer: gleiche Geometrie, keine abgeschnittenen Kanten */
-      quickAdjustPanel.style.cssText='display:none; z-index:1200001;';
+      quickAdjustPanel.style.cssText='display:none; z-index:5100001; position:fixed; left:0; right:0; bottom:0; background:#ffffff; border-radius:24px 24px 0 0; padding:16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); max-height:70vh; overflow-y:auto; box-sizing:border-box;';
+      var quickAdjustCloseTimer = null;
       function updatePowerBarFromData(){ if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }
       function closeQuickAdjustWithFeedback(type){
+        if(quickAdjustCloseTimer){ clearTimeout(quickAdjustCloseTimer); quickAdjustCloseTimer = null; }
         var finishBtn=quickAdjustPanel.querySelector('.quick-adjust-fertig');
         if(finishBtn){
           finishBtn.textContent='✓ Gespeichert';
@@ -19654,27 +19669,34 @@
         }
         quickAdjustPanel.classList.remove('is-open');
         quickAdjustBackdrop.classList.remove('is-open');
+        setListingFootersHiddenForOverlay(false);
         requestAnimationFrame(function(){
-          setTimeout(function(){
+          quickAdjustCloseTimer = setTimeout(function(){
             quickAdjustPanel.style.display='none';
             quickAdjustPanel.innerHTML='';
             updatePowerBarFromData();
+            quickAdjustCloseTimer = null;
           }, 320);
         });
       }
-      function closeQuickAdjust(){
+      function closeQuickAdjust(skipFooterRestore){
+        if(quickAdjustCloseTimer){ clearTimeout(quickAdjustCloseTimer); quickAdjustCloseTimer = null; }
         if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(20);
         quickAdjustPanel.classList.remove('is-open');
         quickAdjustBackdrop.classList.remove('is-open');
-        setTimeout(function(){
+        if(!skipFooterRestore) setListingFootersHiddenForOverlay(false);
+        quickAdjustCloseTimer = setTimeout(function(){
           quickAdjustPanel.style.display='none';
           quickAdjustPanel.innerHTML='';
           updatePowerBarFromData();
+          quickAdjustCloseTimer = null;
         }, 220);
       }
       function openQuickAdjust(type){
         hapticLight();
-        closeAllPowerbarSheets();
+        if(quickAdjustCloseTimer){ clearTimeout(quickAdjustCloseTimer); quickAdjustCloseTimer = null; }
+        closeAllPowerbarSheets(true, 'extras');
+        setListingFootersHiddenForOverlay(true);
         quickAdjustPanel.innerHTML='';
         quickAdjustPanel.style.display='block';
         var drawerHandle=document.createElement('div');
@@ -19695,7 +19717,7 @@
           row.appendChild(inpStart); row.appendChild(document.createTextNode(' bis ')); row.appendChild(inpEnd);
           quickAdjustPanel.appendChild(row);
         } else if(type==='allergens'){
-          headline.textContent='Allergene';
+          headline.textContent='🌿 Allergene';
           quickAdjustPanel.appendChild(headline);
           var wrap=document.createElement('div'); wrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px;';
           var list=(typeof ALLERGENS_14!=='undefined'?ALLERGENS_14:[]).slice();
@@ -19714,19 +19736,31 @@
           disclaimer.textContent='Hinweis: Kennzeichnung erfolgt eigenverantwortlich durch den Anbieter. Keine Gewährleistung durch die Plattform.';
           quickAdjustPanel.appendChild(disclaimer);
         } else if(type==='extras'){
-          headline.textContent='Extras';
+          headline.textContent='➕ Extras';
           quickAdjustPanel.appendChild(headline);
           var defaultExtras=(profile.defaultExtras&&profile.defaultExtras.length)?profile.defaultExtras.slice():[{name:'Beilagensalat',price:2.5},{name:'Mayo',price:0.5},{name:'Ketchup',price:0.5},{name:'Soße',price:1},{name:'Brot',price:1.5}];
           if(!Array.isArray(w.data.extras)) w.data.extras=[];
-          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+          var extrasListWrap=document.createElement('div'); extrasListWrap.style.cssText='display:flex; flex-direction:column; gap:10px; align-items:stretch;';
           defaultExtras.forEach(function(opt){
-            var ex=w.data.extras.find(function(e){ return e.name===opt.name; }); var active=!!ex&&Number(ex.price||0)>0; if(!ex) ex={name:opt.name,price:0};
-            var pillWrap=document.createElement('div'); pillWrap.style.cssText='display:flex; align-items:center; gap:6px;';
-            var btn=document.createElement('button'); btn.type='button'; btn.className='extra-pill'+(active?' active':''); btn.style.cssText='cursor:pointer;'; btn.textContent='➕ '+opt.name;
-            btn.onclick=function(){ hapticLight(); var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; }); if(idx>=0){ w.data.extras.splice(idx,1); } else{ w.data.extras.push({name:opt.name,price:opt.price}); } saveDraft(); var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; })&&Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0; btn.className='extra-pill'+(hasEx?' active':''); if(hasEx&&!pillWrap.querySelector('input')){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; var next=w.data.extras.find(function(e){ return e.name===opt.name; }); inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number((next&&next.price)||0).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ var e=w.data.extras.find(function(x){ return x.name===opt.name; }); inp.oninput=function(){ if(e) e.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; pillWrap.appendChild(inpWrap); } } else if(!hasEx){ var o=pillWrap.querySelector('span'); if(o) o.remove(); } if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
-            pillWrap.appendChild(btn);
-            if(active){ var inpWrap=document.createElement('span'); inpWrap.style.cssText='display:inline-flex; align-items:center; background:rgba(255,255,255,0.6); border-radius:999px; padding:4px 8px;'; inpWrap.innerHTML='<span style="font-size:10px; font-weight:800; color:#10b981; margin-right:4px;">+</span><input type="text" inputmode="decimal" style="width:36px; background:transparent; border:none; padding:0; font-size:12px; font-weight:800; color:#10b981; outline:none;" value="'+Number(ex.price).toFixed(2).replace(".",",")+'"><span style="font-size:10px; font-weight:800; color:#10b981; margin-left:2px;">€</span>'; var inp=inpWrap.querySelector('input'); if(inp){ inp.oninput=function(){ ex.price=parseFloat((inp.value||"0").replace(",","."))||0; saveDraft(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); }; inp.onclick=function(ev){ ev.stopPropagation(); }; } pillWrap.appendChild(inpWrap); }
-            extrasListWrap.appendChild(pillWrap);
+            var ex=w.data.extras.find(function(e){ return e.name===opt.name; });
+            var active=!!ex&&Number(ex.price||0)>0;
+            var btn=document.createElement('button');
+            btn.type='button';
+            btn.className='extra-pill'+(active?' active':'');
+            btn.style.cssText='cursor:pointer; width:100%; min-height:52px; padding:0 14px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:space-between; border-radius:12px;';
+            var priceText=(Number(opt.price)||0)>0?((Number(opt.price)).toFixed(2).replace('.',',')+' €'):'0,00 €';
+            btn.innerHTML='<span style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:16px;">➕</span><span>'+esc(opt.name)+'</span></span><span style="font-size:12px; font-weight:800; opacity:0.9;">'+priceText+'</span>';
+            btn.onclick=function(){
+              hapticLight();
+              var idx=w.data.extras.findIndex(function(e){ return e.name===opt.name; });
+              if(idx>=0){ w.data.extras.splice(idx,1); }
+              else { w.data.extras.push({name:opt.name,price:opt.price}); }
+              saveDraft();
+              var hasEx=!!w.data.extras.find(function(e){ return e.name===opt.name; }) && Number((w.data.extras.find(function(e){ return e.name===opt.name; })||{}).price||0)>0;
+              btn.className='extra-pill'+(hasEx?' active':'');
+              if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox();
+            };
+            extrasListWrap.appendChild(btn);
           });
           quickAdjustPanel.appendChild(extrasListWrap);
         }
@@ -19734,7 +19768,6 @@
         btnFertig.type='button';
         btnFertig.className='sub-menu-drawer-fertig inserat-fertig-kachel quick-adjust-fertig';
         btnFertig.textContent='Fertig';
-        btnFertig.style.cssText='position:sticky; bottom:0; z-index:6010; margin-top:12px;';
         btnFertig.onclick=function(){ hapticLight(); closeQuickAdjustWithFeedback(type); };
         quickAdjustPanel.appendChild(btnFertig);
         requestAnimationFrame(function(){ requestAnimationFrame(function(){ quickAdjustBackdrop.classList.add('is-open'); quickAdjustPanel.classList.add('is-open'); }); });
