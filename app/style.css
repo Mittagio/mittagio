@@ -13377,3 +13377,66 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #main-publis
   -webkit-backdrop-filter: none !important;
   opacity: 1 !important;
 }
+
+/* FINAL MOBILE LOCK 2026-03-27b
+   - Step-1 Scroll immer aktiv
+   - Header kompakter
+   - Keine Glas/Glow-Reste
+   - Footer sauber zentriert */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .sheet-body.wizard-sheet-body {
+  pointer-events: auto !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .wizard-scroll,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .wizard-scroll #wContent,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-edit,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+  min-height: 0 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scroll-area {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  pointer-events: auto !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .liquid-master-panel.s25-floating-panel,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .listing-glass-panel,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-universal-mask {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #app-sticky-header {
+  min-height: calc(50px + env(safe-area-inset-top, 0px)) !important;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+  padding-bottom: 2px !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #app-sticky-header .header-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper.inserat-price-ebay,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-edit .inserat-cockpit-price,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-edit #gericht-preis {
+  background: #ffffff !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main.inserat-step1-nav {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+}

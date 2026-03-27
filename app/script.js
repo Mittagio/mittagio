@@ -19311,7 +19311,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain; touch-action:pan-y;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; max-height:none; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain; touch-action:pan-y; pointer-events:auto;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100%; max-width:100%; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -19329,7 +19329,7 @@
       /* Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:50px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:44px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
@@ -20138,15 +20138,15 @@
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        var compact = Math.min(1, st / 90);
+        var compact = Math.min(1, st / 80);
         if(ht){
           ht.style.setProperty('opacity', '1');
-          ht.style.setProperty('transform', 'scale(' + (1 - 0.12 * compact).toFixed(3) + ')');
+          ht.style.setProperty('transform', 'scale(' + (1 - 0.14 * compact).toFixed(3) + ')');
         }
         if(h){
           h.classList.toggle('header-collapsed', st > 24);
-          h.style.setProperty('min-height', (50 - (6 * compact)).toFixed(1) + 'px');
-          h.style.setProperty('padding-bottom', (Math.max(0, 3 - (3 * compact))).toFixed(1) + 'px');
+          h.style.setProperty('min-height', (44 - (6 * compact)).toFixed(1) + 'px');
+          h.style.setProperty('padding-bottom', (Math.max(0, 2 - (2 * compact))).toFixed(1) + 'px');
           h.style.setProperty('border-bottom-color', 'transparent');
         }
         /* Inhalts-Titel (groß) blendet aus, wenn er sich dem Header nähert (150–250px) */
@@ -20207,6 +20207,13 @@
           if(typeof triggerValidationError==='function') triggerValidationError(btnWeiter);
           return;
         }
+        /* Fokuszustand aus Step 1 vor Übergang hart aufräumen:
+           verhindert, dass Step 2 mit aktivem Preis-Input/Keyboard mittig "hängen" bleibt. */
+        try{
+          if(priceSection) priceSection.classList.remove('hero-morph-active');
+          if(inputPrice && document.activeElement === inputPrice) inputPrice.blur();
+          if(typeof dismissKeyboard === 'function') dismissKeyboard();
+        }catch(_e){}
         hapticLight();
         w.inseratStep=2;
         if(slider) slider.setAttribute('data-inserat-step','2');
@@ -20216,6 +20223,17 @@
         var wizardEl=document.getElementById('wizard');
         if(wizardEl){ wizardEl.classList.add('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); }
         updateHeaderTitleByStep(2);
+        setTimeout(function(){
+          try{
+            var step2El = document.getElementById('mastercard-step-2');
+            if(step2El){
+              step2El.style.setProperty('overflow-y', 'auto', 'important');
+              step2El.scrollTop = 0;
+            }
+            if(typeof vvHandler === 'function') vvHandler();
+            if(typeof updateFooterVisibility === 'function') updateFooterVisibility();
+          }catch(_e){}
+        }, 60);
       }
 
       /* 3-Schritt Mastercard: Footer außerhalb des Sliders – Viewport-treu [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
@@ -20228,7 +20246,7 @@
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
       var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
@@ -20454,6 +20472,9 @@
         var footerH=Math.max((f1&&window.getComputedStyle(f1).display!=='none'&&f1.offsetHeight)||0,(f2&&window.getComputedStyle(f2).display!=='none'&&f2.offsetHeight)||0,(f3&&window.getComputedStyle(f3).display!=='none'&&f3.offsetHeight)||0,92);
         var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
         if(sa){
+          sa.style.setProperty('overflow-y', 'auto', 'important');
+          sa.style.setProperty('overflow-x', 'hidden', 'important');
+          sa.style.setProperty('pointer-events', 'auto', 'important');
           sa.style.setProperty('padding-top', headerH+'px', 'important');
           sa.style.setProperty('padding-bottom', (footerH+12)+'px', 'important');
         }
