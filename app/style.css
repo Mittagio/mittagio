@@ -10112,13 +10112,13 @@
   letter-spacing: 0.01em;
 }
 #wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper.inserat-price-ebay{
-  background: #fffdf9 !important;
-  border: 1px solid #e9e2d7 !important;
-  box-shadow: 0 2px 8px rgba(74, 59, 43, 0.08) !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper.inserat-price-ebay:focus-within{
-  border-color: #c9a26a !important;
-  box-shadow: 0 0 0 3px rgba(201, 162, 106, 0.2) !important;
+  border-color: #9ca3af !important;
+  box-shadow: none !important;
 }
 #wizard[data-flow="listing"] #mastercard-step-edit #gericht-preis{
   color: #1f2937 !important;
@@ -11276,11 +11276,11 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   top: 0;
   left: 0;
   width: 100%;
-  min-height: calc(70px + env(safe-area-inset-top, 0px));
-  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+  min-height: calc(56px + env(safe-area-inset-top, 0px));
+  padding-top: calc(env(safe-area-inset-top, 0px) + 6px);
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
   background: #ffffff;
   z-index: 1000002;
   border-bottom: 1px solid transparent;
@@ -11298,7 +11298,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
   z-index: 0;
   opacity: 0;
   transition: opacity 0.25s ease-out;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #222222;
 }
@@ -11308,7 +11308,7 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 }
 #app-sticky-header.header-collapsed,
 #inserat-fixed-header.header-collapsed {
-  border-bottom-color: #ebebeb;
+  border-bottom-color: transparent;
 }
 #app-sticky-header .close-wizard-x,
 #app-sticky-header .btn-close-master,
@@ -12052,6 +12052,18 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-scr
   right: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
+}
+
+/* InseratCard Mobile Cleanup: keine Trübung/kein Glow in Step 1 */
+#wizard[data-flow="listing"] #mastercard-step-edit,
+#wizard[data-flow="listing"] #mastercard-step-edit .inserat-cockpit-price,
+#wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper,
+#wizard[data-flow="listing"] #mastercard-step-edit #gericht-preis {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
 }
 
 /* Global Alignment & Cleanup: einheitliche Zeilen in Mastercard */

@@ -18689,6 +18689,21 @@
           });
         }
       }
+      function forceListingFooterForCurrentStep(){
+        var wizardEl = document.getElementById('wizard');
+        if(!wizardEl || !wizardEl.isConnected) return;
+        if(listingFooterOverlayLocks > 0) return;
+        if(document.querySelector('#photo-edit-overlay.is-open, .inserat-allergen-drawer.is-open, .inserat-quick-adjust-sheet.is-open')) return;
+        var step = 1;
+        if(wizardEl.classList.contains('inserat-step3-active')) step = 3;
+        else if(wizardEl.classList.contains('inserat-step2-active')) step = 2;
+        var f1 = document.getElementById('mastercard-footer-step1');
+        var f2 = document.getElementById('mastercard-footer-step2');
+        var f3 = document.querySelector('#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main');
+        if(f1) f1.style.setProperty('display', step===1 ? 'flex' : 'none', 'important');
+        if(f2) f2.style.setProperty('display', step===2 ? 'flex' : 'none', 'important');
+        if(f3) f3.style.setProperty('display', step===3 ? 'flex' : 'none', 'important');
+      }
       function closePhotoEditOverlay(){
         var ov=document.getElementById('photo-edit-overlay');
         if(!ov) return;
@@ -19314,7 +19329,7 @@
       /* Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:60px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:50px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
@@ -20043,9 +20058,32 @@
         if(priceSection) priceSection.classList.add('hero-morph-active');
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
       });
-      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(priceSection) priceSection.classList.remove('hero-morph-active'); };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
-      inputPrice.onfocus=function(){ hapticLight(); };
+      inputPrice.onfocus=function(){
+        hapticLight();
+        if(priceSection) priceSection.classList.add('hero-morph-active');
+        setTimeout(function(){
+          try{ scrollInputAboveKeyboard(inputPrice); }catch(_e){}
+          if(typeof vvHandler === 'function') vvHandler();
+          forceListingFooterForCurrentStep();
+        }, 80);
+      };
+      inputPrice.onblur=function(){
+        if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',',');
+        dismissKeyboard();
+        hapticLight();
+        if(priceSection) priceSection.classList.remove('hero-morph-active');
+        setTimeout(function(){
+          if(typeof vvHandler === 'function') vvHandler();
+          forceListingFooterForCurrentStep();
+        }, 60);
+      };
+      inputPrice.addEventListener('keydown', function(e){
+        if(e && e.key === 'Enter'){
+          e.preventDefault();
+          inputPrice.blur();
+        }
+      });
       function checkMastercardValidation(){
         if (typeof updateWizardFooter === 'function') updateWizardFooter();
       }
@@ -20100,15 +20138,15 @@
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        var compact = Math.min(1, st / 120);
+        var compact = Math.min(1, st / 90);
         if(ht){
           ht.style.setProperty('opacity', '1');
-          ht.style.setProperty('transform', 'scale(' + (1 - 0.08 * compact).toFixed(3) + ')');
+          ht.style.setProperty('transform', 'scale(' + (1 - 0.12 * compact).toFixed(3) + ')');
         }
         if(h){
           h.classList.toggle('header-collapsed', st > 24);
-          h.style.setProperty('min-height', (60 - (8 * compact)).toFixed(1) + 'px');
-          h.style.setProperty('padding-bottom', (Math.max(0, 6 - (4 * compact))).toFixed(1) + 'px');
+          h.style.setProperty('min-height', (50 - (6 * compact)).toFixed(1) + 'px');
+          h.style.setProperty('padding-bottom', (Math.max(0, 3 - (3 * compact))).toFixed(1) + 'px');
           h.style.setProperty('border-bottom-color', 'transparent');
         }
         /* Inhalts-Titel (groß) blendet aus, wenn er sich dem Header nähert (150–250px) */
@@ -20400,18 +20438,7 @@
         var activeEl = document.activeElement;
         var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
         var keyboardOpen = editableFocused && keyboardH > 110;
-        /* 1. Wizard-Höhe nur bei Tastatur an vvH koppeln – weniger Sprünge bei URL-Leiste ein/aus */
-        var wiz = document.getElementById('wizard');
-        if(wiz && wiz.isConnected){
-          if(keyboardOpen){
-            wiz.style.setProperty('height', vvH + 'px', 'important');
-            wiz.style.setProperty('max-height', vvH + 'px', 'important');
-          } else {
-            wiz.style.removeProperty('height');
-            wiz.style.removeProperty('max-height');
-          }
-        }
-        /* 2. Footer immer unten verankern (wie Photo-Editor) */
+        /* 1. Footer immer unten verankern (wie Photo-Editor) */
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
@@ -20419,7 +20446,7 @@
           if(!f || !f.isConnected) return;
           f.style.setProperty('bottom', '0px', 'important');
         });
-        /* 3. Scroll-Bereich: Padding für Header und Footer */
+        /* 2. Scroll-Bereich: Padding für Header und Footer */
         if(keyboardOpen){
           scrollInputAboveKeyboard(activeEl);
         }
@@ -20430,6 +20457,7 @@
           sa.style.setProperty('padding-top', headerH+'px', 'important');
           sa.style.setProperty('padding-bottom', (footerH+12)+'px', 'important');
         }
+        forceListingFooterForCurrentStep();
         box.style.setProperty('--listing-header-offset', headerH+'px');
         box.style.setProperty('--listing-footer-offset', (footerH+12)+'px');
         });
