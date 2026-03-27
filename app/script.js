@@ -19380,8 +19380,10 @@
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Zutaten oder Besonderheiten...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px; max-height:96px; overflow-y:auto;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
+      descriptionTextarea.onfocus=function(){ setTimeout(function(){ try{ scrollInputAboveKeyboard(descriptionTextarea); }catch(_e){} }, 120); };
+      descriptionTextarea.onblur=function(){ dismissKeyboard(); };
       descWrap.appendChild(descriptionTextarea);
       /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
 
@@ -20094,14 +20096,20 @@
       }
       step1Container.appendChild(scrollArea);
       scrollArea.addEventListener('scroll', function(){
-        /* Airbnb Collapsing Header: Titel-Opazität 0–150px: 0, 150–200px: linear 0→1 */
+        /* Airbnb Collapsing Header: Header bleibt sticky, schrumpft beim Scrollen */
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        if(ht) ht.style.setProperty('opacity', '1');
+        var compact = Math.min(1, st / 120);
+        if(ht){
+          ht.style.setProperty('opacity', '1');
+          ht.style.setProperty('transform', 'scale(' + (1 - 0.08 * compact).toFixed(3) + ')');
+        }
         if(h){
-          h.classList.toggle('header-collapsed', st > 180);
-          h.style.borderBottomColor = st > 180 ? '#ebebeb' : 'transparent';
+          h.classList.toggle('header-collapsed', st > 24);
+          h.style.setProperty('min-height', (60 - (8 * compact)).toFixed(1) + 'px');
+          h.style.setProperty('padding-bottom', (Math.max(0, 6 - (4 * compact))).toFixed(1) + 'px');
+          h.style.setProperty('border-bottom-color', 'transparent');
         }
         /* Inhalts-Titel (groß) blendet aus, wenn er sich dem Header nähert (150–250px) */
         var sn = box.querySelector('#step-name');

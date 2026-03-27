@@ -13324,3 +13324,44 @@ body.provider-mode #wizard[data-flow="listing"] #inserat-verdienst-vorschau,
 body.provider-mode #wizard[data-flow="listing"] .price-section #inserat-verdienst-vorschau{
   display: none !important;
 }
+
+/* InseratCard Mobile Hotfix 2026-03-27
+   - Scroll bleibt stabil auch nach Texteingabe
+   - Header bleibt sticky und ohne Trennstrich oben
+   - Footer-Buttons sauber zentriert, ohne Trüb-/Glow-Eindruck */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"].sheet--kitchen .wizard-scroll #wContent {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #app-sticky-header {
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #app-sticky-header .header-title {
+  transform-origin: center center;
+  transition: transform 0.18s ease !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 {
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav {
+  align-items: center !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 .btn-primary-black,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2 .btn-primary-black,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #main-publish-btn {
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+}
