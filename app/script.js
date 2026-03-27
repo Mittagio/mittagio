@@ -5,7 +5,7 @@
     try{ window.provider = saved ? JSON.parse(saved) : { loggedIn: true, id: 'p1', profile: { name: 'Gastro-Betrieb' } }; } catch(x){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Gastro-Betrieb' } }; }
     window.provider.loggedIn = true;
     if(document.documentElement){ document.documentElement.style.visibility = 'visible'; }
-    if(document.body){ document.body.style.visibility = 'visible'; document.body.style.opacity = '1'; }
+    if(document.body){ document.body.style.visibility = 'visible'; document.body.style.setProperty('opacity', '1'); }
   })();
 
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
@@ -49,7 +49,10 @@
     if (typeof window === 'undefined') return;
     window.DEMO_MODE = !window.DEMO_MODE;
     var badge = document.getElementById('demoBadge');
-    if (badge) badge.style.display = window.DEMO_MODE ? 'block' : 'none';
+    if (badge) {
+      if (window.DEMO_MODE) show(badge);
+      else hide(badge);
+    }
     if (typeof showToast === 'function') showToast('Demo-Modus: ' + (window.DEMO_MODE ? 'An' : 'Aus'));
   }
   if (typeof window !== 'undefined') {
@@ -57,7 +60,8 @@
     (function initDemoBadge(){
       var b = document.getElementById('demoBadge');
       if (b) {
-        b.style.display = window.DEMO_MODE ? 'block' : 'none';
+        if (window.DEMO_MODE) show(b);
+        else hide(b);
         b.title = 'Demo-Modus (Klick zum Umschalten)';
         b.style.pointerEvents = 'auto';
         b.onclick = function(){ toggleDemoMode(); };
@@ -111,9 +115,10 @@
     } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } }; window.provider.loggedIn = true; }
   }
   /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
-  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
-  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
-  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
+  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex','is-visible-inline-flex'); el.setAttribute('aria-hidden','true'); } }
+  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible','is-visible-inline-flex'); } else if(mode==='inline-flex'){ el.classList.add('is-visible-inline-flex'); el.classList.remove('is-visible','is-visible-flex'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex','is-visible-inline-flex'); } } }
+  function setVisible(el, mode){ show(el, mode); }
+  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; window.setVisible = setVisible; }
 
   /* openWizard-Stub entfernt – echte Funktion übernimmt (weiter unten, ~L16294) */
 
@@ -362,8 +367,8 @@
     ctaBtn.className = 'btn btn-mittagsbox-cta';
     ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
     ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
-    ctaBtn.onmouseover = () => { ctaBtn.style.transform = 'scale(1.02)'; ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
-    ctaBtn.onmouseout = () => { ctaBtn.style.transform = 'scale(1)'; ctaBtn.style.boxShadow = 'none'; };
+    ctaBtn.onmouseover = () => { ctaBtn.style.setProperty('transform', 'scale(1.02)'); ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
+    ctaBtn.onmouseout = () => { ctaBtn.style.setProperty('transform', 'scale(1)'); ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -1535,23 +1540,23 @@
     var contentEl = document.getElementById('providerProfileContent');
     var heroEl = document.getElementById('providerProfileHero');
     var subs = ['providerProfileSubSettings','providerProfileSubBusiness','providerProfileSubService','providerProfileSubPayment','providerProfileSubFaq','providerProfileSubGeld'];
-    if(mainContent) mainContent.style.display = subId ? 'none' : 'flex';
-    if(mainWrap) mainWrap.style.display = subId ? 'none' : 'block';
-    if(header) header.style.display = subId ? 'none' : 'block';
-    if(heroEl) heroEl.style.display = subId ? 'none' : 'flex';
+    if(mainContent){ if(subId) hide(mainContent); else show(mainContent, 'flex'); }
+    if(mainWrap){ if(subId) hide(mainWrap); else show(mainWrap); }
+    if(header){ if(subId) hide(header); else show(header); }
+    if(heroEl){ if(subId) hide(heroEl); else show(heroEl, 'flex'); }
     var targetId = subId ? 'providerProfileSub' + (subId === 'settings' ? 'Settings' : subId.charAt(0).toUpperCase() + subId.slice(1)) : '';
     if(!subId){
-      var visibleSub = contentEl ? contentEl.querySelector('.provider-profile-sub[style*="flex"]') : null;
+      var visibleSub = contentEl ? contentEl.querySelector('.provider-profile-sub:not(.is-hidden)') : null;
       if(visibleSub && visibleSub.id){
         visibleSub.style.transition = 'transform 0.28s cubic-bezier(0.32,0.72,0,1)';
-        visibleSub.style.transform = 'translateX(100%)';
+        visibleSub.style.setProperty('transform', 'translateX(100%)');
         setTimeout(function(){
-          subs.forEach(function(id){ var el = document.getElementById(id); if(el) el.style.display = 'none'; });
-          if(mainContent) mainContent.style.display = 'flex';
-          if(mainWrap) mainWrap.style.display = 'block';
-          if(header) header.style.display = 'block';
-          if(heroEl) heroEl.style.display = 'flex';
-          visibleSub.style.transform = ''; visibleSub.style.transition = '';
+          subs.forEach(function(id){ var el = document.getElementById(id); if(el) hide(el); });
+          if(mainContent) show(mainContent, 'flex');
+          if(mainWrap) show(mainWrap);
+          if(header) show(header);
+          if(heroEl) show(heroEl, 'flex');
+          visibleSub.style.removeProperty('transform'); visibleSub.style.transition = '';
           if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }, 280);
         return;
@@ -1559,7 +1564,10 @@
     }
     subs.forEach(function(id){
       var el = document.getElementById(id);
-      if(el){ if(subId && id === targetId){ el.style.display = 'flex'; el.style.transform = ''; } else el.style.display = 'none'; }
+      if(el){
+        if(subId && id === targetId){ show(el, 'flex'); el.style.removeProperty('transform'); }
+        else hide(el);
+      }
     });
     var card = document.getElementById('providerBusinessDataCardWrap');
     var slot = document.getElementById('providerBusinessDataCardSlot');
@@ -1588,7 +1596,7 @@
     function setGeldPeriod(label, period){
       window.geldExportPeriod = period;
       if(pdfLabel) pdfLabel.textContent = 'Auszug: ' + label;
-      if(pdfWrap) pdfWrap.style.display = 'block';
+      if(pdfWrap) show(pdfWrap);
       if(quickGestern) quickGestern.classList.toggle('active', period && period.type === 'yesterday');
       if(quickMonat) quickMonat.classList.toggle('active', period && period.type === 'currentMonth');
       document.querySelectorAll('.geld-pill').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-month') === String(period && period.month) && p.getAttribute('data-year') === String(period && period.year)); });
@@ -1613,7 +1621,7 @@
         wrap.appendChild(btn);
       }
     }
-    if(pdfWrap) pdfWrap.style.display = 'none';
+    if(pdfWrap) hide(pdfWrap);
     if(quickGestern) quickGestern.onclick = function(){ if(typeof haptic === 'function') haptic(6); var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); var d = yesterday; var l = (d.getDate() < 10 ? '0' : '') + d.getDate() + '.' + ((d.getMonth()+1) < 10 ? '0' : '') + (d.getMonth()+1) + '.' + d.getFullYear(); setGeldPeriod('Gestern (' + l + ')', { type: 'yesterday', date: l, label: l }); };
     if(quickMonat) quickMonat.onclick = function(){ if(typeof haptic === 'function') haptic(6); var n = new Date(); var l = monate[n.getMonth()] + ' ' + n.getFullYear(); setGeldPeriod(l, { type: 'currentMonth', month: n.getMonth() + 1, year: n.getFullYear(), label: l }); };
     if(pdfBtn) pdfBtn.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); if(typeof showToast === 'function') showToast('PDF wird vorbereitet'); };
@@ -1754,7 +1762,7 @@
     // Normale Kacheln rendern
     grid.innerHTML='';
     empty.textContent = q ? 'Keine Angebote für diesen Standort.' : 'Noch keine Angebote. Demo: Als Anbieter ein Inserat erstellen.';
-    empty.style.display = list.length ? 'none' : 'block';
+    if(list.length) hide(empty); else show(empty);
 
     list.slice(0,6).forEach(o=> grid.appendChild(offerCard(o, {context:'start'})));
   }
@@ -1844,18 +1852,18 @@
         e.preventDefault();
         e.stopPropagation();
         triggerHapticFeedback([10]);
-        const isExpanded = discoverLocationExpanded.style.display === 'block';
+        const isExpanded = window.getComputedStyle(discoverLocationExpanded).display !== 'none';
         if(!isExpanded){
           const rect = btnDiscoverLocationText.getBoundingClientRect();
           discoverLocationExpanded.style.top = (rect.bottom + 6) + 'px';
           discoverLocationExpanded.style.left = Math.max(16, rect.left) + 'px';
           discoverLocationExpanded.style.right = 'auto';
-          discoverLocationExpanded.style.display = 'block';
+          show(discoverLocationExpanded);
           discoverLocationInput.value = (locationQuery && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
           if(typeof lucide !== 'undefined') lucide.createIcons();
           setTimeout(() => discoverLocationInput.focus(), 100);
         } else {
-          discoverLocationExpanded.style.display = 'none';
+          hide(discoverLocationExpanded);
           discoverLocationInput.value = '';
           if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
         }
@@ -1903,7 +1911,7 @@
             selectLocation(query);
           }
         } else if(e.key === 'Escape'){
-          discoverLocationExpanded.style.display = 'none';
+          hide(discoverLocationExpanded);
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
         }
@@ -1913,7 +1921,7 @@
       const discoverLocationClose = document.getElementById('discoverLocationClose');
       if(discoverLocationClose){
         discoverLocationClose.onclick = () => {
-          discoverLocationExpanded.style.display = 'none';
+          hide(discoverLocationExpanded);
           discoverLocationInput.value = '';
           discoverLocationSuggestions.innerHTML = '';
         };
@@ -1923,7 +1931,7 @@
       function requestUserLocation(){
         if(!navigator.geolocation){
           if(typeof showToast === 'function') showToast('GPS nicht verfügbar', 2000);
-          if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'block';
+          if(discoverLocationExpanded) show(discoverLocationExpanded);
           if(discoverLocationInput) discoverLocationInput.focus();
           return;
         }
@@ -1935,7 +1943,7 @@
             userLng = position.coords.longitude;
             locationQuery = 'Aktueller Standort';
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = '📍 Aktueller Standort';
-            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+            if(discoverLocationExpanded) hide(discoverLocationExpanded);
             if(typeof showToast === 'function') showToast('Standort aktualisiert', 1500);
             renderDiscover();
           },
@@ -1944,7 +1952,7 @@
             userLat = SCHORNDORF_LAT;
             userLng = SCHORNDORF_LNG;
             if(discoverCurrentLocation) discoverCurrentLocation.textContent = DEFAULT_LOCATION_FALLBACK;
-            if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+            if(discoverLocationExpanded) hide(discoverLocationExpanded);
             renderDiscover();
           },
           { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
@@ -1977,7 +1985,7 @@
       if(swipeLocationCity) swipeLocationCity.textContent = loc;
       if(discoverLocationInput) discoverLocationInput.value = '';
       if(discoverLocationSuggestions) discoverLocationSuggestions.innerHTML = '';
-      if(discoverLocationExpanded) discoverLocationExpanded.style.display = 'none';
+      if(discoverLocationExpanded) hide(discoverLocationExpanded);
       locationExpanded = false;
       triggerHapticFeedback([10]);
       renderDiscover();
@@ -1988,7 +1996,7 @@
       const exp = document.getElementById('discoverLocationExpanded');
       const inp = document.getElementById('discoverLocationInput');
       if(exp && inp){
-        exp.style.display = 'block';
+        show(exp);
         inp.value = (locationQuery && locationQuery !== DEFAULT_LOCATION_FALLBACK && locationQuery !== 'Aktueller Standort') ? locationQuery : '';
         inp.placeholder = 'PLZ oder Ort eingeben...';
         setTimeout(function(){ inp.focus(); }, 120);
@@ -2009,13 +2017,13 @@
         triggerHapticFeedback([10]);
         
         if(!searchExpanded){
-          discoverSearchExpanded.style.display = 'block';
+          show(discoverSearchExpanded);
           setTimeout(() => {
             discoverSearchInput.focus();
           }, 100);
           searchExpanded = true;
         } else {
-          discoverSearchExpanded.style.display = 'none';
+          hide(discoverSearchExpanded);
           discoverSearchInput.value = '';
           searchExpanded = false;
           renderDiscover();
@@ -2039,7 +2047,7 @@
       // ESC zum Schließen
       discoverSearchInput.onkeydown = (e)=>{
         if(e.key === 'Escape'){
-          discoverSearchExpanded.style.display = 'none';
+          hide(discoverSearchExpanded);
           discoverSearchInput.value = '';
           searchExpanded = false;
           locationQuery = '';
@@ -2054,13 +2062,18 @@
     const radiusDropdown = document.getElementById('discoverRadiusDropdown');
     if(radiusLabel) radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
     if(radiusBtn && radiusDropdown){
-      radiusBtn.onclick = function(e){ e.stopPropagation(); radiusDropdown.style.display = radiusDropdown.style.display === 'block' ? 'none' : 'block'; };
+      radiusBtn.onclick = function(e){
+        e.stopPropagation();
+        var isOpen = window.getComputedStyle(radiusDropdown).display !== 'none';
+        if(isOpen) hide(radiusDropdown);
+        else show(radiusDropdown);
+      };
       radiusDropdown.querySelectorAll('.discover-radius-opt').forEach(function(btn){
         btn.onclick = function(){
           discoverRadiusM = parseInt(btn.getAttribute('data-radius'),10);
           save('mittagio_discover_radius', discoverRadiusM);
           radiusLabel.textContent = discoverRadiusM >= 1000 ? (discoverRadiusM/1000) + ' km' : discoverRadiusM + 'm';
-          radiusDropdown.style.display = 'none';
+          hide(radiusDropdown);
           if(typeof lucide !== 'undefined') lucide.createIcons();
           renderDiscover();
         };
@@ -2068,8 +2081,8 @@
       if(!radiusDropdown._closedBound){
         radiusDropdown._closedBound = true;
         document.addEventListener('click', function(e){
-          if(radiusDropdown.style.display === 'block' && !radiusBtn.contains(e.target) && !radiusDropdown.contains(e.target)){
-            radiusDropdown.style.display = 'none';
+          if(window.getComputedStyle(radiusDropdown).display !== 'none' && !radiusBtn.contains(e.target) && !radiusDropdown.contains(e.target)){
+            hide(radiusDropdown);
           }
         });
       }
@@ -2183,7 +2196,7 @@
       // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
       setTimeout(() => {
       offersEl.innerHTML = '';
-      if(emptyEl) emptyEl.style.display = 'none';
+      if(emptyEl) hide(emptyEl);
 
       if(list.length === 0){
         // Modern Craft Empty State: Emoji, Serif-Headline, Text, Radius-Button [cite: 2026-01-29, 2026-02-18]
@@ -2293,23 +2306,26 @@
     const switchLabel = document.getElementById('discoverViewSwitchLabel');
     
     if(discoverViewMode === 'map'){
-      if(listEl) listEl.style.display = 'none';
-      if(emptyEl) emptyEl.style.display = 'none';
-      if(mapWrap) { mapWrap.style.display = 'block'; renderDiscoverMap(); }
-      if(swipeEl) swipeEl.style.display = 'none';
+      if(listEl) hide(listEl);
+      if(emptyEl) hide(emptyEl);
+      if(mapWrap) { show(mapWrap); renderDiscoverMap(); }
+      if(swipeEl) hide(swipeEl);
       if(switchIcon) switchIcon.textContent = '☰';
       if(switchLabel) switchLabel.textContent = 'Liste';
       var routeEl = document.getElementById('discoverPinDrawerRoute');
-      if(routeEl) routeEl.style.display = (routeEl.getAttribute('href') && routeEl.getAttribute('href') !== '#') ? 'inline-flex' : 'none';
+      if(routeEl){
+        if(routeEl.getAttribute('href') && routeEl.getAttribute('href') !== '#') setVisible(routeEl, 'inline-flex');
+        else hide(routeEl);
+      }
     } else {
-      if(listEl) listEl.style.display = 'flex';
-      if(mapWrap) mapWrap.style.display = 'none';
-      if(swipeEl) swipeEl.style.display = 'none';
-      if(emptyEl) emptyEl.style.display = 'none';
+      if(listEl) show(listEl, 'flex');
+      if(mapWrap) hide(mapWrap);
+      if(swipeEl) hide(swipeEl);
+      if(emptyEl) hide(emptyEl);
       if(switchIcon) switchIcon.textContent = '🗺️';
       if(switchLabel) switchLabel.textContent = 'Karte';
       var routeEl = document.getElementById('discoverPinDrawerRoute');
-      if(routeEl) routeEl.style.display = 'none';
+      if(routeEl) hide(routeEl);
       if(typeof renderDiscover === 'function') renderDiscover();
     }
     
@@ -2353,7 +2369,7 @@
     var mapEl = document.getElementById('discoverMapLeaflet');
     if(!mapEl) return;
     if(list.length === 0){
-      mapEl.style.display = 'none';
+      hide(mapEl);
       var empty = mapEl.parentNode.querySelector('.discover-map-empty');
       if(empty) empty.remove();
       var emptyDiv = document.createElement('div');
@@ -2364,7 +2380,7 @@
       if(discoverLeafletMap){ discoverLeafletMarkers.forEach(function(m){ discoverLeafletMap.removeLayer(m); }); discoverLeafletMarkers = []; }
       return;
     }
-    mapEl.style.display = 'block';
+    show(mapEl);
     var empty = mapEl.parentNode.querySelector('.discover-map-empty');
     if(empty) empty.remove();
     if(typeof L === 'undefined'){
@@ -2379,7 +2395,8 @@
         if(btn){
           var c = discoverLeafletMap.getCenter();
           var d = Math.abs(c.lat - SCHORNDORF_CENTER[0]) + Math.abs(c.lng - SCHORNDORF_CENTER[1]);
-          btn.style.display = d > 0.005 ? 'block' : 'none';
+          if(d > 0.005) show(btn);
+          else hide(btn);
         }
       });
     }
@@ -2427,7 +2444,8 @@
     var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
     if(routeEl){
       routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
-      routeEl.style.display = (discoverViewMode === 'map' && addr) ? 'inline-flex' : 'none';
+      if(discoverViewMode === 'map' && addr) setVisible(routeEl, 'inline-flex');
+      else hide(routeEl);
     }
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
@@ -2471,7 +2489,7 @@
   var discoverMapBtnHierSuchen = document.getElementById('discoverMapBtnHierSuchen');
   if(discoverMapBtnHierSuchen){
     discoverMapBtnHierSuchen.onclick = function(){
-      this.style.display = 'none';
+      hide(this);
       if(discoverLeafletMap){ discoverLeafletMap.setView(SCHORNDORF_CENTER, discoverLeafletMap.getZoom()); renderDiscoverMap(); }
     };
   }
@@ -2503,8 +2521,8 @@
     }).join('') + '</div>';
     document.body.appendChild(backdrop);
     document.body.appendChild(sheet);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.style.opacity = '1'; sheet.style.transform = 'translateY(0)'; }); });
-    function close(){ backdrop.style.opacity = '0'; sheet.style.transform = 'translateY(120%)'; setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 300); }
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ backdrop.style.setProperty('opacity', '1'); sheet.style.setProperty('transform', 'translateY(0)'); }); });
+    function close(){ backdrop.style.setProperty('opacity', '0'); sheet.style.setProperty('transform', 'translateY(120%)'); setTimeout(function(){ backdrop.remove(); sheet.remove(); }, 300); }
     backdrop.onclick = close;
     sheet.querySelectorAll('.discover-date-opt').forEach(function(btn){
       btn.onclick = function(){ activeDay = btn.getAttribute('data-day'); renderDiscoverDays(); renderDiscover(); close(); };
@@ -2598,15 +2616,15 @@
     }
     
     if(swipeCards.length === 0){
-      if(swipeEmpty) swipeEmpty.style.display = 'block';
+      if(swipeEmpty) show(swipeEmpty);
       const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
       return;
     }
     
-    if(swipeEmpty) swipeEmpty.style.display = 'none';
+    if(swipeEmpty) hide(swipeEmpty);
     const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-    if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+    if(swipeEndOfStack) hide(swipeEndOfStack);
     
     // Erstelle nur die ersten 3 Karten (Performance)
     const cardsToShow = Math.min(3, swipeCards.length);
@@ -2635,8 +2653,8 @@
     const randomRotation = (Math.random() * 4 - 2); // -2 bis +2 Grad
     const scale = 1 - index * 0.04;
     const translateY = index * 12;
-    card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${index > 0 ? randomRotation : 0}deg)`;
-    card.style.opacity = index === 0 ? 1 : 0.92;
+    card.style.setProperty('transform', `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${index > 0 ? randomRotation : 0}deg)`);
+    card.style.setProperty('opacity', String(index === 0 ? 1 : 0.92));
     
     // Float/Waber-Animation nur für die aktive (oberste) Karte
     if(index === 0){
@@ -2843,8 +2861,8 @@
         if(!swipeStack) return;
         const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
           if(!c || !c.style) return false;
-          const opacity = c.style.opacity;
-          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+          const opacity = window.getComputedStyle(c).opacity;
+          return opacity !== '0' && opacity !== '0px' && opacity !== 0 && window.getComputedStyle(c).display !== 'none';
         });
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(currentCard && currentCard.dataset){
@@ -2885,7 +2903,7 @@
       btnReject.onclick = () => {
         const swipeStack = document.getElementById('swipeStack');
         if(!swipeStack) return;
-        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => c.style.opacity !== '0');
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => window.getComputedStyle(c).opacity !== '0');
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
@@ -2910,7 +2928,7 @@
       btnLike.onclick = () => {
         const swipeStack = document.getElementById('swipeStack');
         if(!swipeStack) return;
-        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => c.style.opacity !== '0');
+        const allCards = Array.from(swipeStack.querySelectorAll('.swipe-card:not(.fly-out-left):not(.fly-out-right)')).filter(c => window.getComputedStyle(c).opacity !== '0');
         const currentCard = allCards.length > 0 ? allCards[0] : null;
         if(!currentCard || !currentCard.dataset) return;
         const offerId = currentCard.dataset.offerId;
@@ -3071,8 +3089,8 @@
       swipeFiltersSelected = true;
       const intro = document.getElementById('swipeFilterIntro');
       const area = document.getElementById('swipeStackArea');
-      if(intro) intro.style.display = 'none';
-      if(area) area.style.display = 'flex';
+      if(intro) hide(intro);
+      if(area) show(area, 'flex');
       renderSwipeCards();
       showToast('Karten geladen – viel Spaß beim Swipen!', 1500);
     } else {
@@ -3137,8 +3155,8 @@
     setTimeout(() => {
       flyImg.style.left = favRect.left + (favRect.width / 2) - 50 + 'px';
       flyImg.style.top = favRect.top + (favRect.height / 2) - 50 + 'px';
-      flyImg.style.transform = 'scale(0.2) rotate(360deg)';
-      flyImg.style.opacity = '0';
+      flyImg.style.setProperty('transform', 'scale(0.2) rotate(360deg)');
+      flyImg.style.setProperty('opacity', '0');
     }, 50);
     
     // Heart-Reaction: Bounce + Glow
@@ -3313,11 +3331,11 @@
     
     // Speicher-Bereinigung: Entferne alle entfernten Karten aus dem DOM
     allCards.forEach(card => {
-      if(!card || !card.parentNode || !card.style || card.style.opacity === '0'){
+      if(!card || !card.parentNode || !card.style || window.getComputedStyle(card).opacity === '0'){
         // Karte wurde bereits entfernt oder ist unsichtbar - entferne sie komplett
         if(card && card.parentNode && card.style){
           // CRITICAL FIX: Setze display:none BEVOR entfernt wird, um Events zu blockieren
-          card.style.display = 'none';
+          hide(card);
           // Cleanup: Entferne alle Event-Listener durch Klonen und Ersetzen
           const newCard = card.cloneNode(true);
           card.parentNode.replaceChild(newCard, card);
@@ -3331,9 +3349,9 @@
     let cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
       if(!c || !c.parentNode || !c.style) return false; // Element existiert nicht mehr
       // CRITICAL FIX: Filtere auch display:none Karten aus
-      if(c.style.display === 'none') return false;
+      if(window.getComputedStyle(c).display === 'none') return false;
       // Filtere Karten mit opacity 0 oder swipe-Klassen
-      const opacity = c.style.opacity;
+      const opacity = window.getComputedStyle(c).opacity;
       if(opacity === '0' || opacity === '0px') return false;
       if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
       return true;
@@ -3370,8 +3388,8 @@
     // CRITICAL FIX: Aktualisiere cards-Array nach dem Laden neuer Karten
     cards = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
       if(!c || !c.parentNode || !c.style) return false;
-      if(c.style.display === 'none') return false;
-      const opacity = c.style.opacity;
+      if(window.getComputedStyle(c).display === 'none') return false;
+      const opacity = window.getComputedStyle(c).opacity;
       if(opacity === '0' || opacity === '0px') return false;
       if(c.classList.contains('swipe-left') || c.classList.contains('swipe-right')) return false;
       return true;
@@ -3388,27 +3406,27 @@
       card.style.zIndex = String(100 - i);
       const scale = 1 - i * 0.05;
       const translateY = i * 10;
-      card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
-      card.style.opacity = i === 0 ? '1' : '0.95';
+      card.style.setProperty('transform', `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`);
+      card.style.setProperty('opacity', i === 0 ? '1' : '0.95');
       
       // CRITICAL: Die oberste Karte (i === 0) muss interaktiv sein und Event-Listener erhalten
       if(i === 0){
         card.style.pointerEvents = 'auto';
         card.style.cursor = 'grab';
-        card.style.display = 'block';
+        card.style.removeProperty('display');
         card.style.willChange = 'transform';
         card.classList.remove('swipe-left', 'swipe-right', 'swiping', 'fly-out-left', 'fly-out-right');
         card.classList.add('active-float'); // Tinder Float/Waber Animation
-        card.style.opacity = '1';
+        card.style.setProperty('opacity', '1');
         card.style.visibility = 'visible';
         // Tinder: Random Rotation für Stack-Effekt entfernen bei aktiver Karte
-        card.style.transform = `translate(-50%, -50%) scale(1)`;
+        card.style.setProperty('transform', `translate(-50%, -50%) scale(1)`);
       } else {
         card.style.pointerEvents = 'none';
         card.classList.remove('active-float');
         // Tinder: Random Rotation beibehalten für Stack-Effekt
         const randomRotation = (Math.random() * 4 - 2);
-        card.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${randomRotation}deg)`;
+        card.style.setProperty('transform', `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale}) rotate(${randomRotation}deg)`);
       }
     });
     
@@ -3421,16 +3439,16 @@
     // CRITICAL FIX: Prüfe sowohl ob keine Karten mehr sichtbar sind UND ob alle Karten durchgesehen wurden
     const allCardsVisible = Array.from(swipeStack.querySelectorAll('.swipe-card')).filter(c => {
       if(!c || !c.style) return false;
-      const opacity = c.style.opacity;
-      return opacity !== '0' && opacity !== '0px' && opacity !== 0 && c.style.display !== 'none';
+      const opacity = window.getComputedStyle(c).opacity;
+      return opacity !== '0' && opacity !== '0px' && opacity !== 0 && window.getComputedStyle(c).display !== 'none';
     }).length;
     
     if(allCardsVisible === 0 && currentSwipeIndex >= swipeCards.length){
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'block';
-      if(swipeEmpty) swipeEmpty.style.display = 'none';
+      if(swipeEndOfStack) show(swipeEndOfStack);
+      if(swipeEmpty) hide(swipeEmpty);
     } else {
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
-      if(swipeEmpty) swipeEmpty.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
+      if(swipeEmpty) hide(swipeEmpty);
     }
     
     // Debug-Overlay aktualisieren
@@ -3456,7 +3474,7 @@
       // Zusätzlicher Cleanup: Entferne Karten die nicht mehr sichtbar sind
       const allCards = swipeStack.querySelectorAll('.swipe-card');
       allCards.forEach(card => {
-        if(card && (card.style.opacity === '0' || !card.parentNode || card.offsetParent === null)){
+        if(card && (window.getComputedStyle(card).opacity === '0' || !card.parentNode || card.offsetParent === null)){
           if(card.parentNode) card.remove();
         }
       });
@@ -3535,7 +3553,7 @@
     function showFabInDiscover(){
       const currentView = document.querySelector('.view.active');
       if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
+        show(fabModeToggle, 'flex');
         // Zeige Hint nach kurzer Verzögerung
         setTimeout(() => {
           if(fabHint) fabHint.classList.add('show');
@@ -3546,7 +3564,7 @@
           save('fabHintShown', true);
         }, 2500);
       } else {
-        fabModeToggle.style.display = 'none';
+        hide(fabModeToggle);
       }
     }
     
@@ -3566,9 +3584,9 @@
     function showFabInDiscover(){
       const currentView = document.querySelector('.view.active');
       if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
+        show(fabModeToggle, 'flex');
       } else {
-        fabModeToggle.style.display = 'none';
+        hide(fabModeToggle);
       }
     }
     showFabInDiscover();
@@ -3589,7 +3607,7 @@
     if(fabModeToggle){
       const currentView = document.querySelector('.view.active');
       if(currentView && currentView.id === 'v-discover'){
-        fabModeToggle.style.display = 'flex';
+        show(fabModeToggle, 'flex');
       }
     }
   }, 200);
@@ -3657,11 +3675,11 @@
     if(interactive){
       card.onclick = () => openOffer(data.id);
       card.onmouseover = () => {
-        card.style.transform = 'scale(1.02)';
+        card.style.setProperty('transform', 'scale(1.02)');
         card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
       };
       card.onmouseout = () => {
-        card.style.transform = 'scale(1)';
+        card.style.setProperty('transform', 'scale(1)');
         card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
       };
     }
@@ -3719,18 +3737,18 @@
       e.stopPropagation();
       triggerHapticFeedback([10]);
       // Kachel ausblenden (Ausschlussverfahren)
-      card.style.opacity = '0';
-      card.style.transform = 'scale(0.9)';
+      card.style.setProperty('opacity', '0');
+      card.style.setProperty('transform', 'scale(0.9)');
       setTimeout(() => {
         if(card.parentNode) card.parentNode.removeChild(card);
       }, 200);
       showToast('Gericht ausgeschlossen');
     };
     dismissBtn.onmouseover = () => {
-      dismissBtn.style.transform = 'scale(1.1)';
+      dismissBtn.style.setProperty('transform', 'scale(1.1)');
     };
     dismissBtn.onmouseout = () => {
-      dismissBtn.style.transform = 'scale(1)';
+      dismissBtn.style.setProperty('transform', 'scale(1)');
     };
     imgContainer.appendChild(dismissBtn);
     
@@ -4055,8 +4073,8 @@
     if(isPolaroid){
       const providerEl = document.createElement('p');
       providerEl.style.cssText = 'margin:8px 0 0; padding:0 16px; text-align:center; font-size:13px; font-weight:600; color:#666; cursor:pointer; transition:opacity 0.2s ease;';
-      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
-      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+      providerEl.onmouseover = () => { providerEl.style.setProperty('opacity', '0.7'); };
+      providerEl.onmouseout = () => { providerEl.style.setProperty('opacity', '1'); };
       providerEl.innerHTML = `<i data-lucide="store" style="width:14px;height:14px; margin-right:4px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
@@ -4111,8 +4129,8 @@
       providerEl.style.textDecoration = 'underline';
       providerEl.style.textDecorationColor = 'rgba(0,0,0,0.2)';
       providerEl.style.transition = 'opacity 0.2s ease';
-      providerEl.onmouseover = () => { providerEl.style.opacity = '0.7'; };
-      providerEl.onmouseout = () => { providerEl.style.opacity = '1'; };
+      providerEl.onmouseover = () => { providerEl.style.setProperty('opacity', '0.7'); };
+      providerEl.onmouseout = () => { providerEl.style.setProperty('opacity', '1'); };
       providerEl.innerHTML = `<i data-lucide="store" style="width:16px;height:16px;"></i> <span>${esc(data.providerName || 'Anbieter')}</span>`;
       providerEl.onclick = (e) => {
         e.stopPropagation();
@@ -4182,17 +4200,17 @@
         orderBtn.type = 'button';
         orderBtn.style.cssText = 'width:calc(100% - 32px); margin:12px 16px; min-height:48px; background:#FFCC00; color:#1a1a1a; font-weight:900; font-size:16px; border:none; border-radius:12px; box-shadow:0 4px 12px rgba(255,204,0,0.3); display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;';
         orderBtn.onmouseover = () => {
-          orderBtn.style.transform = 'translateY(-2px)';
+          orderBtn.style.setProperty('transform', 'translateY(-2px)');
           orderBtn.style.boxShadow = '0 6px 16px rgba(255,204,0,0.4)';
         };
         orderBtn.onmouseout = () => {
-          orderBtn.style.transform = 'translateY(0)';
+          orderBtn.style.setProperty('transform', 'translateY(0)');
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
         orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
-          orderBtn.style.opacity = '0.5';
+          orderBtn.style.setProperty('opacity', '0.5');
           orderBtn.style.cursor = 'not-allowed';
         }
         orderBtn.onclick = (e) => {
@@ -4383,8 +4401,8 @@
       e.preventDefault();
       triggerHapticFeedback([15]);
       card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-      card.style.opacity = '0';
-      card.style.transform = 'scale(0.95)';
+      card.style.setProperty('opacity', '0');
+      card.style.setProperty('transform', 'scale(0.95)');
       setTimeout(() => {
         toggleDishFav(data.id);
         renderFavorites();
@@ -4460,7 +4478,7 @@
     
     // Verstecke Day-Switcher falls noch vorhanden
     const daySwitcher = document.getElementById('favDaySwitcher');
-    if(daySwitcher) daySwitcher.style.display = 'none';
+    if(daySwitcher) hide(daySwitcher);
 
     const candidates = offers
       .filter(o => o.active !== false && providerFavs.has(o.providerId) && o.day === activeFavDay)
@@ -4486,7 +4504,8 @@
     const hasAnyFavorites = providerList.length > 0 || dishList.length > 0;
     
     if(favEmptyState){
-      favEmptyState.style.display = hasAnyFavorites ? 'none' : 'flex';
+      if(hasAnyFavorites) hide(favEmptyState);
+      else show(favEmptyState, 'flex');
       // Stelle sicher, dass Flex-Layout aktiv ist
       if(!hasAnyFavorites){
         favEmptyState.style.flexDirection = 'column';
@@ -4495,7 +4514,8 @@
       }
     }
     if(favContent){
-      favContent.style.display = hasAnyFavorites ? 'block' : 'none';
+      if(hasAnyFavorites) show(favContent);
+      else hide(favContent);
     }
     
     // Provider Section - "Deine Lieblings-Anbieter heute"
@@ -4505,15 +4525,20 @@
     
     // Zeige Sektion nur wenn es Anbieter-Favoriten gibt
     if(sectionProvidersWrapper){
-      sectionProvidersWrapper.style.display = providerFavs.size > 0 ? 'block' : 'none';
+      if(providerFavs.size > 0) show(sectionProvidersWrapper);
+      else hide(sectionProvidersWrapper);
     }
     if(favProviderSeparator){
-      favProviderSeparator.style.display = (providerFavs.size > 0 && dishList.length > 0) ? 'block' : 'none';
+      if(providerFavs.size > 0 && dishList.length > 0) show(favProviderSeparator);
+      else hide(favProviderSeparator);
     }
     
     const sectionProviders = document.getElementById('sectionProviders');
-    if(sectionProviders) sectionProviders.style.display = providerList.length > 0 ? 'block' : 'none';
-    provEmpty.style.display = providerList.length ? 'none' : 'block';
+    if(sectionProviders){
+      if(providerList.length > 0) show(sectionProviders);
+      else hide(sectionProviders);
+    }
+    if(providerList.length) hide(provEmpty); else show(provEmpty);
     
     // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
     const allFavoritedProviders = Array.from(providerFavs);
@@ -4565,9 +4590,9 @@
         let total = 0;
         dishList.forEach(o => { total += Number(normalizeOffer(o).price) || 0; });
         favSummaryValue.textContent = (typeof euro === 'function' ? euro(total) : (total.toFixed(2) + ' €'));
-        favSummaryBar.style.display = 'flex';
+        show(favSummaryBar, 'flex');
       } else {
-        favSummaryBar.style.display = 'none';
+        hide(favSummaryBar);
       }
     }
     // Header: Standort links (wie Discovery)
@@ -4580,8 +4605,11 @@
     // Dish Section: alle Gericht-Favoriten (95% Karten, Slim-Pills, Aktionen)
     dishGrid.innerHTML='';
     const sectionDishesWrapper = document.getElementById('sectionDishesWrapper');
-    if(sectionDishesWrapper) sectionDishesWrapper.style.display = dishList.length > 0 ? 'block' : 'none';
-    dishEmpty.style.display = dishList.length ? 'none' : 'block';
+    if(sectionDishesWrapper){
+      if(dishList.length > 0) show(sectionDishesWrapper);
+      else hide(sectionDishesWrapper);
+    }
+    if(dishList.length) hide(dishEmpty); else show(dishEmpty);
     const topFour = dishList;
     topFour.forEach(o=>{
       if(o?.id){
@@ -4599,7 +4627,7 @@
     // ELSE IF Abholnummer 🧾 vorhanden: Variante 1 (Fokus Zeitersparnis / Skip-the-line)
     // ELSE (Keine Abholnummer): Variante 3 (Fokus Gericht & Treffen – „Lockerer Lunch“)
     const favShareWrap = document.getElementById('favShareWrap');
-    if(favShareWrap) favShareWrap.style.display = 'none';
+    if(favShareWrap) hide(favShareWrap);
     const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
     const firstDish = topFour.length > 0 ? normalizeOffer(topFour[0]) : null;
     const firstProviderName = (providerList.length > 0 && !firstDish) ? (normalizeOffer(providerList[0]).providerName || 'Mittagio') : null;
@@ -4649,7 +4677,8 @@
     };
     const btnFavShareHeader = document.getElementById('btnFavShareHeader');
     if(btnFavShareHeader){
-      btnFavShareHeader.style.display = (topFour.length > 0 || providerList.length > 0) ? 'flex' : 'none';
+      if(topFour.length > 0 || providerList.length > 0) show(btnFavShareHeader, 'flex');
+      else hide(btnFavShareHeader);
       btnFavShareHeader.onclick = function(e){ e.preventDefault(); e.stopPropagation(); shareFavAction(); };
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
@@ -4658,7 +4687,10 @@
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');
     const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(o.id) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
-    if(favPullHint) favPullHint.style.display = hasUpcoming ? 'block' : 'none';
+    if(favPullHint){
+      if(hasUpcoming) show(favPullHint);
+      else hide(favPullHint);
+    }
     
     // Icons aktualisieren
     if(typeof lucide !== 'undefined'){
@@ -4803,10 +4835,10 @@
       // Zeige Vorschau wenn Nutzer unter Anbieter-Favoriten scrollt oder hochzieht
       if(!previewShown && (scrollTop > favContentBottom - window.innerHeight * 0.8 || scrollTop < lastScrollTop)){
         previewShown = true;
-        upcomingPreview.style.display = 'block';
+        show(upcomingPreview);
         // Fade-in Animation
         setTimeout(() => {
-          upcomingPreview.style.opacity = '1';
+          upcomingPreview.style.setProperty('opacity', '1');
         }, 50);
       }
       
@@ -4830,9 +4862,9 @@
       // Wenn Nutzer nach oben zieht (pull up)
       if(touchY > touchStartY + 50 && !previewShown){
         previewShown = true;
-        upcomingPreview.style.display = 'block';
+        show(upcomingPreview);
         setTimeout(() => {
-          upcomingPreview.style.opacity = '1';
+          upcomingPreview.style.setProperty('opacity', '1');
         }, 50);
       }
     }, {passive: true});
@@ -4996,8 +5028,8 @@
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         fly.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease';
-        fly.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(0.12)';
-        fly.style.opacity = '0.85';
+        fly.style.setProperty('transform', 'translate(' + tx + 'px, ' + ty + 'px) scale(0.12)');
+        fly.style.setProperty('opacity', '0.85');
         setTimeout(function(){
           fly.remove();
           onComplete();
@@ -5011,7 +5043,7 @@
     const card = document.createElement('div');
     card.className = 'cust-card';
     card.style.cssText = 'flex-direction:row; padding:12px; align-items:center; gap:16px; margin-bottom:12px;';
-    if(!hasOfferToday) card.style.opacity = '0.6';
+    if(!hasOfferToday) card.style.setProperty('opacity', '0.6');
     
     const logo = document.createElement('div');
     logo.style.cssText = 'width:56px; height:56px; border-radius:16px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0;';
@@ -5089,8 +5121,8 @@
       });
     }
     if(!orders.length){
-      if(emptyEl) emptyEl.style.display='flex';
-      box.style.display='none';
+      if(emptyEl) show(emptyEl, 'flex');
+      hide(box);
       box.innerHTML='';
       return;
     }
@@ -5126,8 +5158,8 @@
       return (b.createdAt||0) - (a.createdAt||0);
     });
     if(!list.length){
-      if(emptyEl) emptyEl.style.display='none';
-      box.style.display='block';
+      if(emptyEl) hide(emptyEl);
+      show(box);
       box.innerHTML='';
       box.textContent = 'Keine passenden Bestellungen.';
       box.className = 'hint';
@@ -5135,8 +5167,8 @@
       box.style.textAlign = 'center';
       return;
     }
-    if(emptyEl) emptyEl.style.display='none';
-    box.style.display='block';
+    if(emptyEl) hide(emptyEl);
+    show(box);
     box.className = '';
     box.style.padding = '';
     box.style.textAlign = '';
@@ -5219,13 +5251,13 @@
     const isPaidOrPickedUp = order.status === 'PAID' || order.status === 'PICKED_UP' || order.status === 'abgeholt';
     if(block){
       if(isPaidOrPickedUp && (order.pickupCode || order.code)){
-        block.style.display = 'block';
+        show(block);
         if(codeEl) codeEl.textContent = order.pickupCode || order.code || '–';
         if(btnShowCode){
           btnShowCode.onclick = function(){ closeOrderDetailSheet(); openCodeSheetWithOrder(order); };
         }
       } else {
-        block.style.display = 'none';
+        hide(block);
       }
     }
     document.getElementById('orderDetailBd').classList.add('active');
@@ -5276,9 +5308,9 @@
     // Foto-Handling
     if(sImg){
       sImg.src = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
-      sImg.style.display = 'block';
-      sImg.onerror = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'flex'; sImg.style.display = 'none'; };
-      sImg.onload = () => { if(sImgPlaceholder) sImgPlaceholder.style.display = 'none'; };
+      show(sImg);
+      sImg.onerror = () => { if(sImgPlaceholder) show(sImgPlaceholder, 'flex'); hide(sImg); };
+      sImg.onload = () => { if(sImgPlaceholder) hide(sImgPlaceholder); };
     }
     
     if(sDish) sDish.textContent = o.dish || '';
@@ -5350,7 +5382,7 @@
     // Logistik: 🚶 und 🚗 als zwei elegante klickbare Cards (Routenplanung)
     if(sDistanceInfo){
       if(o.distanceKm != null){
-        sDistanceInfo.style.display = 'grid';
+        setVisible(sDistanceInfo, 'grid');
         const walk = Math.round(o.distanceKm * 12);
         const car = Math.round(o.distanceKm * 1.5);
         const pid = (o.providerId || '').replace(/'/g, "\\'");
@@ -5359,7 +5391,7 @@
           <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚗 ${car < 1 ? '< 1' : car} Min.</button>
         `;
       } else {
-        sDistanceInfo.style.display = 'none';
+        hide(sDistanceInfo);
       }
     }
 
@@ -5405,7 +5437,7 @@
         const day = o.day ? new Date(o.day) : new Date();
         const dateStr = fmtDateWithTime(day, o.pickupWindow);
         const timeEl = document.createElement('div');
-        timeEl.style.display = 'flex';
+        setVisible(timeEl, 'flex');
         timeEl.style.alignItems = 'center';
         timeEl.style.gap = '6px';
         timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
@@ -5434,7 +5466,7 @@
       var customAllergenArr = Array.isArray(o.allergensCustom) ? o.allergensCustom.map(function(x){ return String(x||'').trim(); }).filter(Boolean) : [];
       var hasCustomAllerg = customAllergenArr.length > 0;
       if(o.allergens && o.allergens.length || hasCustomAllerg){
-        aw.style.display = 'flex';
+        show(aw, 'flex');
         const r = (o.allergens && o.allergens.length) ? o.allergens.map(a => String(a||'').trim()) : [];
         const codes = [];
         r.forEach(v => {
@@ -5475,7 +5507,7 @@
           sAllergens.innerHTML = (list || '') + (customList || '');
         }
       } else {
-        aw.style.display = 'flex';
+        show(aw, 'flex');
         if(sAllergensCodes) sAllergensCodes.textContent = '–';
         if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '<span class="allergen-pill" style="opacity:0.7;">–</span>';
       }
@@ -5484,25 +5516,26 @@
     // Extras
     if(ew){
       if(o.extras && o.extras.length){
-        ew.style.display='block';
+        show(ew);
         const sx = document.getElementById('sExtras');
         if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
-      } else ew.style.display='none';
+      } else hide(ew);
     }
 
     // Reuse
     if(rw){
       if(o.reuse && o.reuse.enabled){
-        rw.style.display='block';
+        show(rw);
         const sr = document.getElementById('sReuse');
         if(sr) sr.textContent = `Pfand ${euro(o.reuse.deposit)}`;
-      } else rw.style.display='none';
+      } else hide(rw);
     }
 
     // Eco-Badge
     if(ecoBadgeEl){
       const hasReuseSupport = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
-      ecoBadgeEl.style.display = hasReuseSupport ? 'block' : 'none';
+      if(hasReuseSupport) show(ecoBadgeEl);
+      else hide(ecoBadgeEl);
       if(hasReuseSupport){
         ecoBadgeEl.innerHTML = `<div style="padding:8px 12px; background:rgba(39,174,96,0.1); border-radius:8px; font-size:13px; font-weight:700; color:#27AE60; display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(39,174,96,0.2);"><img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon"> <span>Mehrweg möglich</span></div>`;
       }
@@ -5524,7 +5557,7 @@
         btnCTA.onclick = null;
       } else if(orderingEnabled){
         primaryCTAText.textContent = 'In meine Box legen';
-        if(sInfoHint) sInfoHint.style.display = 'none';
+        if(sInfoHint) hide(sInfoHint);
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
           btnCTA.classList.add('loading');
@@ -5568,7 +5601,7 @@
         primaryCTAText.textContent = 'In meine Box legen';
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
-          sInfoHint.style.display = 'block';
+          show(sInfoHint);
         }
         btnCTA.onclick = () => {
           const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
@@ -5656,13 +5689,13 @@
     // Route Button
     if(btnOpenRoute){
       if(!o.hasPickupCode){
-        btnOpenRoute.style.display = 'block';
+        show(btnOpenRoute);
         btnOpenRoute.onclick = () => {
           const routeMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
           window.open(routeMaps, '_blank');
         };
       } else {
-        btnOpenRoute.style.display = 'none';
+        hide(btnOpenRoute);
       }
     }
 
@@ -5756,7 +5789,7 @@
     // Fast weg Badge (wenn ausverkauft oder fast ausverkauft)
     if(fastWegEl){
       // No-Limits: Keine "Fast weg" Logik mehr - Status wird über active gesteuert
-      fastWegEl.style.display = 'none';
+      hide(fastWegEl);
     }
     
     // Konfetti-Animation
@@ -5905,7 +5938,7 @@
       return;
     }
     // Provider Login Modal schließen
-    if(document.getElementById('providerLoginSheet') && document.getElementById('providerLoginSheet').style.display !== 'none'){
+    if(document.getElementById('providerLoginSheet') && window.getComputedStyle(document.getElementById('providerLoginSheet')).display !== 'none'){
       closeProviderLoginModal();
       e.preventDefault();
       pushViewState(null, location.pathname);
@@ -6106,16 +6139,16 @@
     _saveScopeCallbacks = opts;
     var bd = document.getElementById('saveScopeBackdrop');
     var sheet = document.getElementById('saveScopeSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'block';
+    if(bd) show(bd);
+    if(sheet) show(sheet);
     try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeSaveScopeDialog(){
     _saveScopeCallbacks = null;
     var bd = document.getElementById('saveScopeBackdrop');
     var sheet = document.getElementById('saveScopeSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) hide(bd);
+    if(sheet) hide(sheet);
   }
   (function(){
     var bd = document.getElementById('saveScopeBackdrop');
@@ -6135,16 +6168,16 @@
     _wizardExitSaveCallbacks = { onSave: onSave, onDiscard: onDiscard };
     var bd = document.getElementById('wizardExitSaveBd');
     var sheet = document.getElementById('wizardExitSaveSheet');
-    if(bd) bd.style.display = 'block';
-    if(sheet) sheet.style.display = 'flex';
+    if(bd) show(bd);
+    if(sheet) show(sheet, 'flex');
     try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); if(typeof hapticLight === 'function') hapticLight(); } catch(e){}
   }
   function closeWizardExitSavePrompt(){
     _wizardExitSaveCallbacks = null;
     var bd = document.getElementById('wizardExitSaveBd');
     var sheet = document.getElementById('wizardExitSaveSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) hide(bd);
+    if(sheet) hide(sheet);
   }
   (function(){
     var bd = document.getElementById('wizardExitSaveBd');
@@ -6383,7 +6416,10 @@
     });
     var topGerichte = mine.slice(0, 4);
     grid.innerHTML = '';
-    if(emptyEl) emptyEl.style.display = topGerichte.length ? 'none' : 'block';
+    if(emptyEl){
+      if(topGerichte.length) hide(emptyEl);
+      else show(emptyEl);
+    }
     topGerichte.forEach(function(c){
       var tile = document.createElement('div');
       tile.className = 'renner-speed-tile';
@@ -6433,11 +6469,11 @@
     var weekWrap = document.getElementById('createFlowWeekContent');
     var ep = (typeof createFlowOriginView !== 'undefined') ? createFlowOriginView : 'dashboard';
     if(ep === 'week'){
-      if(dashWrap) dashWrap.style.display = 'none';
-      if(weekWrap) weekWrap.style.display = 'flex';
+      if(dashWrap) hide(dashWrap);
+      if(weekWrap) show(weekWrap, 'flex');
     } else {
-      if(dashWrap) dashWrap.style.display = 'flex';
-      if(weekWrap) weekWrap.style.display = 'none';
+      if(dashWrap) show(dashWrap, 'flex');
+      if(weekWrap) hide(weekWrap);
       if(typeof populateCreateFlowRenner === 'function') populateCreateFlowRenner();
     }
     document.getElementById('createFlowBd').classList.add('active');
@@ -6672,9 +6708,9 @@
     toast.style.zIndex = '1200005';
     toast.style.bottom = 'calc(90px + env(safe-area-inset-bottom, 0px))';
     toast.textContent = message;
-    toast.style.opacity = '1';
+    toast.style.setProperty('opacity', '1');
     setTimeout(() => {
-      toast.style.opacity = '0';
+      toast.style.setProperty('opacity', '0');
     }, 3000);
   }
   function readFooterBtnMetrics(el){
@@ -6808,17 +6844,17 @@
         if(newQty !== undefined && newQty >= 0) o.quantity = newQty;
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
       }
-      bd.style.display = 'none';
-      bd.style.opacity = '0';
-      sheet.style.transform = 'translateY(100%)';
+      hide(bd);
+      bd.style.setProperty('opacity', '0');
+      sheet.style.setProperty('transform', 'translateY(100%)');
       if(typeof showToast === 'function') showToast('Gespeichert');
       if(typeof renderProviderHome === 'function') renderProviderHome();
     };
-    function close(){ bd.style.opacity = '0'; sheet.style.transform = 'translateY(100%)'; setTimeout(function(){ bd.style.display = 'none'; }, 300); }
+    function close(){ bd.style.setProperty('opacity', '0'); sheet.style.setProperty('transform', 'translateY(100%)'); setTimeout(function(){ hide(bd); }, 300); }
     bd.onclick = function(ev){ if(ev.target === bd) close(); };
-    bd.style.display = 'block';
+    show(bd);
     requestAnimationFrame(function(){
-      sheet.style.transform = 'translateY(0)';
+      sheet.style.setProperty('transform', 'translateY(0)');
       if(priceInp){ priceInp.focus(); priceInp.select && priceInp.select(); }
     });
   }
@@ -6885,17 +6921,17 @@
         o.lastPortions = !!(lastPortionsCb && lastPortionsCb.checked);
         if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.offers, offers);
       }
-      bd.style.display = 'none';
-      bd.style.opacity = '0';
-      sheet.style.transform = 'translateY(100%)';
+      hide(bd);
+      bd.style.setProperty('opacity', '0');
+      sheet.style.setProperty('transform', 'translateY(100%)');
       if(typeof showToast === 'function') showToast('Power-Sales angewendet');
       if(typeof renderProviderHome === 'function') renderProviderHome();
     };
     lastPortionsCb.onchange = function(){ lastPortions = lastPortionsCb.checked; };
-    function close(){ bd.style.opacity = '0'; sheet.style.transform = 'translateY(100%)'; setTimeout(function(){ bd.style.display = 'none'; }, 300); }
+    function close(){ bd.style.setProperty('opacity', '0'); sheet.style.setProperty('transform', 'translateY(100%)'); setTimeout(function(){ hide(bd); }, 300); }
     bd.onclick = function(ev){ if(ev.target === bd) close(); };
-    bd.style.display = 'block';
-    requestAnimationFrame(function(){ bd.style.opacity = '1'; sheet.style.transform = 'translateY(0)'; });
+    show(bd);
+    requestAnimationFrame(function(){ bd.style.setProperty('opacity', '1'); sheet.style.setProperty('transform', 'translateY(0)'); });
   }
   if(typeof window !== 'undefined') window.openPowerSalesOverlay = openPowerSalesOverlay;
 
@@ -6912,8 +6948,8 @@
       document.body.appendChild(el);
     }
     el.textContent = message || 'Etwas ist schiefgelaufen.';
-    el.style.opacity = '1';
-    setTimeout(function(){ el.style.opacity = '0'; }, 3500);
+    el.style.setProperty('opacity', '1');
+    setTimeout(function(){ el.style.setProperty('opacity', '0'); }, 3500);
   }
 
   async function copyShareLink(){
@@ -7305,8 +7341,8 @@
     });
     
     if(activeOrders.length > 0){
-      activeWrap.style.display = 'block';
-      if(mainCard) mainCard.style.display = 'none';
+      show(activeWrap);
+      if(mainCard) hide(mainCard);
       const abholDisplay = document.getElementById('cartActiveAbholnummerDisplay');
       const listEl = document.getElementById('cartActiveSessionList');
       const firstCode = activeOrders[0].pickupCode || activeOrders[0].abholnummer || activeOrders[0].code || '–';
@@ -7353,8 +7389,8 @@
       return;
     }
     
-    if(activeWrap) activeWrap.style.display = 'none';
-    if(mainCard) mainCard.style.display = 'block';
+    if(activeWrap) hide(activeWrap);
+    if(mainCard) show(mainCard);
     
     if(!cart || !cart.items.length){
       box.innerHTML = `
@@ -7369,23 +7405,23 @@
           </button>
         </div>
       `;
-      if(btn) btn.style.display='none';
+      if(btn) hide(btn);
       const cartVerzehrart = document.getElementById('cartVerzehrart');
-      if(cartVerzehrart) cartVerzehrart.style.display = 'none';
+      if(cartVerzehrart) hide(cartVerzehrart);
       updateHeaderBasket();
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
 
     if(btn){
-      btn.style.display = 'flex';
+      show(btn, 'flex');
       btn.onclick = () => {
         if(!cart.pickupTime){ showToast('Bitte wähle eine Abholzeit'); return; }
         showCheckout();
       };
     }
     const cartVerzehrart = document.getElementById('cartVerzehrart');
-    if(cartVerzehrart) cartVerzehrart.style.display = 'block';
+    if(cartVerzehrart) show(cartVerzehrart);
 
     let total=0;
     const TIME_SLOTS = getTimeSlots();
@@ -7526,7 +7562,7 @@
           
           // Custom Input ausblenden
           const customInputWrapper = document.getElementById('customTimeInputWrapper');
-          if(customInputWrapper) customInputWrapper.style.display = 'none';
+          if(customInputWrapper) hide(customInputWrapper);
           const customInput = document.getElementById('checkoutPickupTimeCustom');
           if(customInput) customInput.value = '';
           
@@ -7552,8 +7588,9 @@
     const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
     if(btnOtherTime && customTimeInputWrapper && customTimeInput){
       btnOtherTime.onclick = () => {
-        const isVisible = customTimeInputWrapper.style.display !== 'none';
-        customTimeInputWrapper.style.display = isVisible ? 'none' : 'block';
+        const isVisible = window.getComputedStyle(customTimeInputWrapper).display !== 'none';
+        if(isVisible) hide(customTimeInputWrapper);
+        else show(customTimeInputWrapper);
         if(!isVisible){
           customTimeInput.focus();
           // Alle Slots deselektieren
@@ -7612,7 +7649,10 @@
     });
     const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
     const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
-    if(btnVorOrt) btnVorOrt.style.display = anyDineIn ? '' : 'none';
+    if(btnVorOrt){
+      if(anyDineIn) show(btnVorOrt);
+      else hide(btnVorOrt);
+    }
     if(!anyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
       cart.verzehrmodus = 'mitnehmen';
       save(LS.cart, cart);
@@ -7684,7 +7724,10 @@
     const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
     const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
     const isMitnehmen = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
-    if(verpackungWrap) verpackungWrap.style.display = isMitnehmen ? 'block' : 'none';
+    if(verpackungWrap){
+      if(isMitnehmen) show(verpackungWrap);
+      else hide(verpackungWrap);
+    }
     
     const verpackung = cart.verpackung || 'mehrweg';
     const setVerpackungActive = (btn, active) => {
@@ -7763,11 +7806,11 @@
     const btnGooglePay = document.getElementById('btnGooglePay');
     if(btnApplePay){
       // Prüfe ob Apple Pay verfügbar ist (in Production: window.ApplePaySession?.canMakePayments())
-      btnApplePay.style.display = 'none'; // MVP: Ausgeblendet, in Production aktivieren
+      hide(btnApplePay); // MVP: Ausgeblendet, in Production aktivieren
     }
     if(btnGooglePay){
       // Prüfe ob Google Pay verfügbar ist
-      btnGooglePay.style.display = 'none'; // MVP: Ausgeblendet, in Production aktivieren
+      hide(btnGooglePay); // MVP: Ausgeblendet, in Production aktivieren
     }
     
     // Standard Payment Button Handler
@@ -8241,9 +8284,9 @@
     const thumbWrap = document.getElementById('orderSuccessThumbWrap');
     
     if(orders.length > 1){
-      if(singleBlock) singleBlock.style.display = 'none';
+      if(singleBlock) hide(singleBlock);
       if(multiBlock){
-        multiBlock.style.display = 'block';
+        show(multiBlock);
         multiBlock.innerHTML = orders.map(function(o){
           const c = o.pickupCode || o.abholnummer || o.code || '–';
           const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -8251,8 +8294,8 @@
         }).join('');
       }
     } else {
-      if(singleBlock) singleBlock.style.display = 'block';
-      if(multiBlock) multiBlock.style.display = 'none';
+      if(singleBlock) show(singleBlock);
+      if(multiBlock) hide(multiBlock);
       if(abholnummerEl) abholnummerEl.textContent = (codeStr.indexOf('#') === 0 ? '' : '#') + codeStr;
     }
     if(zeitEl) zeitEl.innerHTML = '<span style="font-size:18px;">🕒</span> Abholbereit um ' + zeitDisplay;
@@ -8262,15 +8305,15 @@
     }
     if(verpackungWrap){
       if(isMitnehmen && verpackung){
-        verpackungWrap.style.display = 'flex';
+        show(verpackungWrap, 'flex');
         verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span style="font-size:18px;">🔄</span> Eigener Behälter' : '<span style="font-size:18px;">🔄</span> Mehrweg-System';
-      } else verpackungWrap.style.display = 'none';
+      } else hide(verpackungWrap);
     }
     if(thumbEl && thumbWrap){
       var offer = offers && offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
       var imgUrl = (offer && normalizeOffer(offer).imageUrl) || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=70';
       thumbEl.src = imgUrl;
-      thumbEl.onerror = function(){ thumbEl.style.display = 'none'; };
+      thumbEl.onerror = function(){ hide(thumbEl); };
     }
     if(btnDone) btnDone.onclick = function(){ showDiscover(); };
     if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -8430,9 +8473,12 @@
 
   function updateProfileView(){
     var pwaTipEl = document.getElementById('profilePwaTip');
-    if(pwaTipEl) pwaTipEl.style.display = (localStorage.getItem('mittagio_pwa_tip_dismissed') === 'true') ? 'none' : 'block';
+    if(pwaTipEl){
+      if(localStorage.getItem('mittagio_pwa_tip_dismissed') === 'true') hide(pwaTipEl);
+      else show(pwaTipEl);
+    }
     var btnDismissPwa = document.getElementById('btnDismissPwaTip');
-    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ try { localStorage.setItem('mittagio_pwa_tip_dismissed', 'true'); } catch(e) {} var el = document.getElementById('profilePwaTip'); if(el) el.style.display = 'none'; }; }
+    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ try { localStorage.setItem('mittagio_pwa_tip_dismissed', 'true'); } catch(e) {} var el = document.getElementById('profilePwaTip'); if(el) hide(el); }; }
     const isLoggedIn = customer.loggedIn;
     const firstName = customer.name ? customer.name.split(' ')[0] : '';
     const fullName = customer.name || 'Gast';
@@ -8482,8 +8528,8 @@
     const noAbholnummerHint = document.getElementById('profileNoAbholnummerHint');
     if(abholnummerSection && abholnummerList){
       if(activeAbholnummern.length > 0){
-        abholnummerSection.style.display = 'block';
-        if(noAbholnummerHint) noAbholnummerHint.style.display = 'none';
+        show(abholnummerSection);
+        if(noAbholnummerHint) hide(noAbholnummerHint);
         abholnummerList.innerHTML = activeAbholnummern.map(order => {
           const code = order.pickupCode || '–';
           return `
@@ -8498,10 +8544,10 @@
           `;
         }).join('');
       } else {
-        abholnummerSection.style.display = 'none';
-        if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
+        hide(abholnummerSection);
+        if(noAbholnummerHint) show(noAbholnummerHint);
       }
-    } else if(noAbholnummerHint) noAbholnummerHint.style.display = 'block';
+    } else if(noAbholnummerHint) show(noAbholnummerHint);
 
     // Historie (letzte 2)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
@@ -8586,7 +8632,7 @@
     ];
     const faqHtml = faqs.map(f => `
       <div style="border-radius:14px; border:1px solid #f1f3f5; overflow:hidden;">
-        <button onclick="const a = this.nextElementSibling; a.style.display = a.style.display === 'none' ? 'block' : 'none';" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
+        <button onclick="toggleFaqAnswer(this);" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
           <i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>
           <span style="flex:1; font-size:14px; font-weight:700; color:#1a1a1a;">${f.q}</span>
           <i data-lucide="chevron-down" style="width:16px;height:16px;color:#cbd5e1;"></i>
@@ -8601,18 +8647,28 @@
 
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
+  function toggleFaqAnswer(btn){
+    if(!btn) return;
+    var answer = btn.nextElementSibling;
+    if(!answer) return;
+    var isHidden = window.getComputedStyle(answer).display === 'none';
+    if(isHidden) show(answer);
+    else hide(answer);
+  }
+  if(typeof window !== 'undefined') window.toggleFaqAnswer = toggleFaqAnswer;
 
   // Toggle Profile Section
   function toggleProfileSection(id, btn){
     const el = document.getElementById(id);
     if(!el) return;
-    const isHidden = el.style.display === 'none';
-    el.style.display = isHidden ? 'block' : 'none';
+    const isHidden = window.getComputedStyle(el).display === 'none';
+    if(isHidden) show(el);
+    else hide(el);
     
     // Chevron drehen
     if(btn){
       const chevron = btn.querySelector('.chevron');
-      if(chevron) chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      if(chevron) chevron.style.setProperty('transform', isHidden ? 'rotate(180deg)' : 'rotate(0deg)');
     }
   }
 
@@ -8621,24 +8677,25 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     const scrollEl = document.getElementById('profileSettingsSheetScroll');
-    if(bd){ bd.style.display = 'block'; bd.style.opacity = '1'; }
-    if(sheet) sheet.style.display = 'block';
+    if(bd){ show(bd); bd.style.setProperty('opacity', '1'); }
+    if(sheet) show(sheet);
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   function closeProfileSettingsSheet(){
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
-    if(bd){ bd.style.display = 'none'; bd.style.opacity = '0'; }
-    if(sheet){ sheet.style.display = 'none'; }
+    if(bd){ hide(bd); bd.style.setProperty('opacity', '0'); }
+    if(sheet){ hide(sheet); }
   }
   function toggleProfileSettingsSection(sectionId){
     const el = document.getElementById(sectionId);
     if(!el) return;
-    const isHidden = el.style.display === 'none';
-    el.style.display = isHidden ? 'block' : 'none';
+    const isHidden = window.getComputedStyle(el).display === 'none';
+    if(isHidden) show(el);
+    else hide(el);
     const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + sectionId + '"]');
-    chevrons.forEach(c => { c.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; });
+    chevrons.forEach(c => { c.style.setProperty('transform', isHidden ? 'rotate(180deg)' : 'rotate(0deg)'); });
     var scrollEl = document.getElementById('profileSettingsSheetScroll');
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -8646,15 +8703,15 @@
   function openProfilePwaTipSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd){ bd.style.display = 'block'; bd.classList.add('active'); }
-    if(sheet){ sheet.style.display = 'block'; sheet.classList.add('active'); }
+    if(bd){ show(bd); bd.classList.add('active'); }
+    if(sheet){ show(sheet); sheet.classList.add('active'); }
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   function closePwaStartScreenSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
-    if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); }
-    if(sheet){ sheet.style.display = 'none'; sheet.classList.remove('active'); }
+    if(bd){ hide(bd); bd.classList.remove('active'); }
+    if(sheet){ hide(sheet); sheet.classList.remove('active'); }
   }
   if(typeof window !== 'undefined'){ window.openProfilePwaTipSheet = openProfilePwaTipSheet; window.closePwaStartScreenSheet = closePwaStartScreenSheet; }
   var pwaDeferredPrompt = null;
@@ -8734,16 +8791,16 @@
   function showProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd){ providerLoginBd.style.display = 'block'; providerLoginBd.classList.add('active'); }
-    if(providerLoginSheet){ providerLoginSheet.style.display = 'block'; providerLoginSheet.classList.add('active'); }
+    if(providerLoginBd){ show(providerLoginBd); providerLoginBd.classList.add('active'); }
+    if(providerLoginSheet){ show(providerLoginSheet); providerLoginSheet.classList.add('active'); }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
   function closeProviderLoginModal(){
     const providerLoginBd = document.getElementById('providerLoginBd');
     const providerLoginSheet = document.getElementById('providerLoginSheet');
-    if(providerLoginBd){ providerLoginBd.style.display = 'none'; providerLoginBd.classList.remove('active'); }
-    if(providerLoginSheet){ providerLoginSheet.style.display = 'none'; providerLoginSheet.classList.remove('active'); }
+    if(providerLoginBd){ hide(providerLoginBd); providerLoginBd.classList.remove('active'); }
+    if(providerLoginSheet){ hide(providerLoginSheet); providerLoginSheet.classList.remove('active'); }
     // Felder leeren
     const emailField = document.getElementById('providerLoginEmail');
     const passField = document.getElementById('providerLoginPass');
@@ -9221,19 +9278,19 @@
     // Grüner Flash-Effekt
     demoCode.style.background = '#4caf50';
     demoCode.style.color = '#fff';
-    demoCode.style.transform = 'scale(0.95)';
+    demoCode.style.setProperty('transform', 'scale(0.95)');
     demoCode.style.borderColor = '#4caf50';
     
     // Nach 200ms zurück
     setTimeout(() => {
       demoCode.style.background = '#fff';
       demoCode.style.color = '#2D3436';
-      demoCode.style.transform = 'scale(1)';
+      demoCode.style.setProperty('transform', 'scale(1)');
       demoCode.style.borderColor = '#FFD700';
     }, 200);
     
     // Nachricht anzeigen
-    message.style.display = 'block';
+    show(message);
     
     // Haptic Feedback
     if (window.userHasInteracted && 'vibrate' in navigator){
@@ -9649,13 +9706,13 @@
           popup.innerHTML = text + (arrow.outerHTML || '<div style="position:absolute; top:100%; left:50%; transform:translateX(-50%); width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:6px solid #1e1e1e;"></div>');
         }
       }
-      popup.style.opacity = '1';
+      popup.style.setProperty('opacity', '1');
     }
   }
   function hideTilePopup(element){
     const popup = element.querySelector('.tile-popup');
     if(popup){
-      popup.style.opacity = '0';
+      popup.style.setProperty('opacity', '0');
     }
   }
   
@@ -9821,9 +9878,9 @@
     if(typeof closeCookbookLiveSheet === 'function') closeCookbookLiveSheet();
     if(typeof closeCookbookWeekSheet === 'function') closeCookbookWeekSheet();
     var discoverLoc = document.getElementById('discoverLocationExpanded');
-    if(discoverLoc && discoverLoc.style.display !== 'none') discoverLoc.style.display = 'none';
+    if(discoverLoc && window.getComputedStyle(discoverLoc).display !== 'none') hide(discoverLoc);
     var discoverRadius = document.getElementById('discoverRadiusDropdown');
-    if(discoverRadius && discoverRadius.style.display !== 'none') discoverRadius.style.display = 'none';
+    if(discoverRadius && window.getComputedStyle(discoverRadius).display !== 'none') hide(discoverRadius);
   }
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
@@ -10284,9 +10341,9 @@
       const demandSection = document.getElementById('providerCustomerDemand');
       if(demandSection){
         if(requestCount > 0){
-          demandSection.style.display = 'block';
+          show(demandSection);
         } else {
-          demandSection.style.display = 'none';
+          hide(demandSection);
         }
       }
     }
@@ -10317,8 +10374,8 @@
 
       if(heroStateStart && heroStateActive){
         if(isHeroActive){
-          heroStateStart.style.display = 'none';
-          heroStateActive.style.display = 'block';
+          hide(heroStateStart);
+          show(heroStateActive);
           
           if(heroRevenue) heroRevenue.textContent = tagesumsatzEuro.replace('.', ',') + ' €';
           if(heroOrders) heroOrders.textContent = todayOrders.length;
@@ -10329,8 +10386,8 @@
           else if(heroRevenue) heroRevenue.style.color = '#1a1a1a';
           
         } else {
-          heroStateStart.style.display = 'block';
-          heroStateActive.style.display = 'none';
+          show(heroStateStart);
+          hide(heroStateActive);
         }
       }
       
@@ -10350,7 +10407,8 @@
         var lunchDays = Array.isArray(provider.profile && provider.profile.lunchWeekdays) ? provider.profile.lunchWeekdays : [1, 2, 3, 4, 5];
         var isLunchDay = lunchDays.indexOf(wd) !== -1;
         var inLastCallWindow = isLunchDay && currentMin >= mealEndMin - 60 && currentMin < mealEndMin;
-        lastCallBanner.style.display = inLastCallWindow ? 'block' : 'none';
+        if(inLastCallWindow) show(lastCallBanner);
+        else hide(lastCallBanner);
       }
 
       // 3. Push Pickup (Anzeigen wenn Inserat da, aber kein Abholnummer)
@@ -10359,7 +10417,7 @@
         // Wir zeigen die Push-Karte NICHT mehr an, da der User meinte "Bottom ist immer noch nicht immer da"
         // und das Layout "heller" und "appliker" sein soll.
         // Die Abholnummer-Logik ist jetzt im Inserats-Flow integriert.
-        providerPushPickup.style.display = 'none';
+        hide(providerPushPickup);
       }
 
       // Alte Elemente ausblenden/aufräumen (falls noch Refs im Code)
@@ -10428,19 +10486,25 @@
       const dashUmsatzHint = document.getElementById('dashboardUmsatzHint');
       if(dashTagesessen) dashTagesessen.textContent = mineToday.length;
       if(dashAbholungen) dashAbholungen.textContent = todayPickups;
-      if(dashAbholungenHint){ dashAbholungenHint.style.display = todayPickups === 0 ? 'block' : 'none'; }
+      if(dashAbholungenHint){
+        if(todayPickups === 0) show(dashAbholungenHint);
+        else hide(dashAbholungenHint);
+      }
       if(dashKochbuch) dashKochbuch.textContent = cookbookCount;
       const bruttoEuro = (tagesumsatzCents / 100).toFixed(2);
       if(dashUmsatz){ dashUmsatz.textContent = bruttoEuro.replace('.', ',') + ' €'; dashUmsatz.style.color = hasRevenue ? '#2ecc71' : '#1a1a1a'; dashUmsatz.style.fontWeight = '900'; }
-      if(dashUmsatzHint){ dashUmsatzHint.style.display = !hasRevenue ? 'block' : 'none'; }
+      if(dashUmsatzHint){
+        if(!hasRevenue) show(dashUmsatzHint);
+        else hide(dashUmsatzHint);
+      }
 
       // KPI: Alle drei Labels immer anzeigen
       const kpiLabelTagesessen = document.getElementById('kpiLabelTagesessen');
       const kpiLabelAbholungen = document.getElementById('kpiLabelAbholungen');
       const kpiLabelUmsatz = document.getElementById('kpiLabelUmsatz');
-      if(kpiLabelTagesessen) kpiLabelTagesessen.style.display = '';
-      if(kpiLabelAbholungen) kpiLabelAbholungen.style.display = '';
-      if(kpiLabelUmsatz) kpiLabelUmsatz.style.display = '';
+      if(kpiLabelTagesessen) kpiLabelTagesessen.style.removeProperty('display');
+      if(kpiLabelAbholungen) kpiLabelAbholungen.style.removeProperty('display');
+      if(kpiLabelUmsatz) kpiLabelUmsatz.style.removeProperty('display');
 
       // KPI Click-Handler
       const kpiTagesessen = document.getElementById('kpiTagesessen');
@@ -10462,13 +10526,17 @@
       const providerActiveListings = document.getElementById('providerActiveListings');
       const providerActiveListingsSection = document.getElementById('providerActiveListingsSection');
       const providerActiveListingsEmptyCard = document.getElementById('providerActiveListingsEmptyCard');
-      if(providerActiveListingsSection) providerActiveListingsSection.style.display = 'block';
-      if(providerActiveListingsEmptyCard) providerActiveListingsEmptyCard.style.display = mineToday.length === 0 ? 'block' : 'none';
+      if(providerActiveListingsSection) show(providerActiveListingsSection);
+      if(providerActiveListingsEmptyCard){
+        if(mineToday.length === 0) show(providerActiveListingsEmptyCard);
+        else hide(providerActiveListingsEmptyCard);
+      }
       var btnShareToday = document.getElementById('btnProviderShareToday');
       if(btnShareToday) btnShareToday.onclick = function(){ if(typeof shareTodayOffers === 'function') shareTodayOffers(); };
       if(providerActiveListings){
         providerActiveListings.innerHTML = '';
-        providerActiveListings.style.display = mineToday.length > 0 ? 'flex' : 'none';
+        if(mineToday.length > 0) show(providerActiveListings, 'flex');
+        else hide(providerActiveListings);
         providerActiveListings.className = 'provider-active-listings-pure';
         var p = (provider && provider.profile) ? provider.profile : {};
         var defaultDineIn = p.dineInPossibleDefault !== false;
@@ -10583,7 +10651,7 @@
             if(Math.abs(dx) < Math.abs(dy)) return;
             var clamp = 120;
             dx = Math.max(-clamp, Math.min(clamp, dx));
-            swipeLayerEl.style.transform = 'translateX(' + dx + 'px)';
+            swipeLayerEl.style.setProperty('transform', 'translateX(' + dx + 'px)');
             ev.preventDefault();
           }, { passive: false });
           providerActiveListings.addEventListener('touchend', function(ev){
@@ -10591,7 +10659,7 @@
             var dx = ev.changedTouches[0].clientX - swipeStartX;
             var dy = ev.changedTouches[0].clientY - swipeStartY;
             var id = swipeCard.getAttribute('data-offer-id');
-            swipeLayerEl.style.transform = '';
+            swipeLayerEl.style.removeProperty('transform');
             swipeCard = null;
             swipeWrapEl = null;
             swipeLayerEl = null;
@@ -10771,7 +10839,7 @@
       const showAll = providerActiveOffers.dataset.showAll === 'true';
       const activeList = showAll ? mineActive : mineActive.slice(0, 3);
       if(activeList.length > 0){
-        providerActiveOffers.style.display = 'block';
+        show(providerActiveOffers);
         providerActiveOffersList.innerHTML = activeList.map(o => {
           // Status-Badge: "LIVE · Online bezahlt" oder "LIVE · Vor Ort"
           let statusBadge = '';
@@ -10831,18 +10899,18 @@
         const btnProviderShowAllOffers = document.getElementById('btnProviderShowAllOffers');
         if(btnProviderShowAllOffers){
           if(mineActive.length > 3){
-            btnProviderShowAllOffers.style.display = 'inline-block';
+            setVisible(btnProviderShowAllOffers, 'inline-block');
             btnProviderShowAllOffers.onclick = (e) => {
               e.preventDefault();
               providerActiveOffers.dataset.showAll = 'true';
               renderProviderHome();
             };
           } else {
-            btnProviderShowAllOffers.style.display = 'none';
+            hide(btnProviderShowAllOffers);
           }
         }
       } else {
-        providerActiveOffers.style.display = 'none';
+        hide(providerActiveOffers);
       }
     }
     
@@ -10962,7 +11030,8 @@
     const providerEmptyDashboard = document.getElementById('providerEmptyDashboard');
     if(providerEmptyDashboard){
       const hasAnyData = mineActive.length > 0 || cookbook.length > 0;
-      providerEmptyDashboard.style.display = hasAnyData ? 'none' : 'block';
+      if(hasAnyData) hide(providerEmptyDashboard);
+      else show(providerEmptyDashboard);
       providerEmptyDashboard.className = 'empty-state-container provider-empty-state';
       if(!hasAnyData){
         providerEmptyDashboard.innerHTML = `
@@ -11014,8 +11083,8 @@
         dayWrap.parentNode.insertBefore(draftEl, dayWrap);
       }
       draftEl.textContent = draftCount + ' Entwurf' + (draftCount !== 1 ? 'e' : '') + ' in den nächsten 4 Wochen';
-      draftEl.style.display = '';
-    } else if(draftEl){ draftEl.style.display = 'none'; }
+      draftEl.style.removeProperty('display');
+    } else if(draftEl){ hide(draftEl); }
     const today = new Date();
     let selectedDay = providerWeekDay || isoDate(today);
     
@@ -11349,7 +11418,7 @@
     week[dayTo].push(entry);
     save(LS.week, week);
     var boardWrap = document.getElementById('kwBoardWrap');
-    if (boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    if (boardWrap && window.getComputedStyle(boardWrap).display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
     renderWeekPlan();
     renderProviderWeekPreview();
     if (typeof toast === 'function') toast('Gericht verschoben');
@@ -11872,14 +11941,14 @@
       };
       list.appendChild(btn);
     });
-    overlay.style.display = 'block';
-    sheet.style.display = 'flex';
+    show(overlay);
+    show(sheet, 'flex');
   }
   function closeAddDishToDaySheet(){
     var overlay = document.getElementById('addDishToDayBd');
     var sheet = document.getElementById('addDishToDaySheet');
-    if (overlay) overlay.style.display = 'none';
-    if (sheet) sheet.style.display = 'none';
+    if (overlay) hide(overlay);
+    if (sheet) hide(sheet);
   }
   /** Rolling Counter: Pro-Ziffer-Animation, Haptik-Sync [cite: 2026-02-23] */
   function initKwRollingCounter(){
@@ -11908,8 +11977,8 @@
     var tens = Math.floor(v / 10);
     var ones = v % 10;
     var cellH = 22;
-    tensEl.style.transform = 'translateY(-' + (tens * cellH) + 'px)';
-    onesEl.style.transform = 'translateY(-' + (ones * cellH) + 'px)';
+    tensEl.style.setProperty('transform', 'translateY(-' + (tens * cellH) + 'px)');
+    onesEl.style.setProperty('transform', 'translateY(-' + (ones * cellH) + 'px)');
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
@@ -12002,20 +12071,20 @@
       grid.innerHTML += '<div class="review-card"><img src="' + escFn(img) + '" alt=""><div class="info"><h3>' + escFn(name) + '</h3><div class="pillars">🍴 🔄 ' + (useAbholnummer ? '🧾' : '') + '</div></div></div>';
     });
     if(useAbholnummer){
-      if(rowStd) rowStd.style.display = 'none';
-      if(rowSmart) rowSmart.style.display = 'flex';
-      if(feeNote) feeNote.style.display = 'block';
+      if(rowStd) hide(rowStd);
+      if(rowSmart) show(rowSmart, 'flex');
+      if(feeNote) show(feeNote);
       if(totalEl) totalEl.textContent = '0,00 €';
       if(btnEl){ btnEl.textContent = 'Kostenlos aktivieren'; btnEl.style.background = '#10b981'; }
     } else {
-      if(rowStd) rowStd.style.display = 'flex';
-      if(rowSmart) rowSmart.style.display = 'none';
-      if(feeNote) feeNote.style.display = 'none';
+      if(rowStd) show(rowStd, 'flex');
+      if(rowSmart) hide(rowSmart);
+      if(feeNote) hide(feeNote);
       if(totalEl) totalEl.textContent = '4,99 €';
       if(btnEl){ btnEl.textContent = 'Jetzt für 4,99 € aktivieren'; btnEl.style.background = '#222222'; }
     }
-    view.style.display = 'block';
-    setTimeout(function(){ view.style.transform = 'translateX(0)'; }, 10);
+    show(view);
+    setTimeout(function(){ view.style.setProperty('transform', 'translateX(0)'); }, 10);
     document.body.classList.add('insert-review-active');
     try{ history.pushState({view: 'insert-review'}, ''); }catch(e){}
   };
@@ -12025,9 +12094,9 @@
     var view = document.getElementById('v-insert-review');
     if(!view) return;
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); }catch(e){}
-    view.style.transform = 'translateX(100%)';
+    view.style.setProperty('transform', 'translateX(100%)');
     setTimeout(function(){
-      view.style.display = 'none';
+      hide(view);
       document.body.classList.remove('insert-review-active');
       if(!skipHistoryBack){ try{ history.back(); }catch(e){} }
     }, 300);
@@ -12035,7 +12104,7 @@
 
   window.processFinalActivation = function(){
     var rowSmart = document.getElementById('row-smart');
-    var useAbhol = rowSmart && rowSmart.style.display === 'flex';
+    var useAbhol = rowSmart && window.getComputedStyle(rowSmart).display === 'flex';
     if(typeof saveTransaction === 'function'){
       var txId = 'TX-' + (typeof cryptoId === 'function' ? cryptoId().slice(0, 8) : Date.now().toString(36).toUpperCase());
       var tx = {
@@ -12146,10 +12215,10 @@
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     document.body.classList.remove('provider-week-active');
     el.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
-    el.style.transform = 'translateX(100%)';
+    el.style.setProperty('transform', 'translateX(100%)');
     setTimeout(function(){
       el.style.transition = '';
-      el.style.transform = '';
+      el.style.removeProperty('transform');
       el.classList.remove('active');
       el.style.setProperty('display', 'none', 'important');
       var section = (targetSection != null && targetSection !== '') ? targetSection : 'dashboard';
@@ -12164,12 +12233,12 @@
     if (!cbView) { if (typeof showProviderHome === 'function') showProviderHome(); return; }
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     cbView.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
-    cbView.style.transform = 'translateX(100%)';
+    cbView.style.setProperty('transform', 'translateX(100%)');
     setTimeout(function(){
       document.body.classList.remove('provider-cookbook-active', 'cookbook-active');
       if (typeof showProviderHome === 'function') showProviderHome();
       cbView.style.transition = '';
-      cbView.style.transform = '';
+      cbView.style.removeProperty('transform');
     }, 300);
   }
   if (typeof window !== 'undefined') window.closeCookbookWithNativeAnim = closeCookbookWithNativeAnim;
@@ -12181,7 +12250,7 @@
     offers = load(LS.offers, []);
     provider = load(LS.provider, provider);
     var wrap = document.getElementById('kwBoardWrap');
-    if (wrap) wrap.style.display = 'flex';
+    if (wrap) show(wrap, 'flex');
     setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
     var grid = document.getElementById('kwGrid');
     if (!grid) return;
@@ -12719,7 +12788,7 @@
         e.preventDefault();
         swipeLastDx = dx;
         var clamp = Math.max(-120, Math.min(120, dx));
-        swipeInner.style.transform = 'translateX(' + clamp + 'px)';
+        swipeInner.style.setProperty('transform', 'translateX(' + clamp + 'px)');
       }, { passive: false });
       scrollEl.addEventListener('touchend', function(e){
         var dx = swipeLastDx;
@@ -12738,7 +12807,7 @@
             if (typeof showProviderWeek === 'function') showProviderWeek(null, weekPlanKWIndex);
           }
         }
-        swipeInner.style.transform = '';
+        swipeInner.style.removeProperty('transform');
         swipeStartX = 0;
       }, { passive: true });
     }
@@ -12748,7 +12817,7 @@
     updateSessionActivity();
     var boardWrap = document.getElementById('kwBoardWrap');
     /* KW-Board: Einziges Layout [cite: 2026-03-02 – weekDays/weekList entfernt] */
-    if (boardWrap) boardWrap.style.display = 'flex';
+    if (boardWrap) show(boardWrap, 'flex');
     setTimeout(function(){ if (typeof initWeekPlanInteractions === 'function') initWeekPlanInteractions(); }, 100);
     if (boardWrap && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
     if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
@@ -12881,7 +12950,7 @@
       var x = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) || 0;
       currentX = x - startX;
       currentX = Math.max(-100, Math.min(100, currentX));
-      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+      cardEl.style.setProperty('transform', 'translateX(' + currentX + 'px)');
     }
     function onEnd(e){
       if(currentX < -SWIPE_THRESHOLD){
@@ -12889,29 +12958,29 @@
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-left');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        cardEl.style.transform = 'translateX(-120%)';
+        cardEl.style.setProperty('transform', 'translateX(-120%)');
         swipeEl.style.transition = 'opacity 0.25s ease';
-        swipeEl.style.opacity = '0';
+        swipeEl.style.setProperty('opacity', '0');
         setTimeout(function(){ deletePlannedEntryWithUndo(date, index); }, 320);
       } else if(currentX > SWIPE_THRESHOLD){
         if(e && e.cancelable) e.preventDefault();
         weekJustSwiped = true; setTimeout(function(){ weekJustSwiped = false; }, 500);
         swipeEl.classList.add('week-meal-card-exit', 'week-meal-card-exit-right');
         cardEl.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        cardEl.style.transform = 'translateX(120%)';
+        cardEl.style.setProperty('transform', 'translateX(120%)');
         swipeEl.style.transition = 'opacity 0.25s ease';
-        swipeEl.style.opacity = '0';
+        swipeEl.style.setProperty('opacity', '0');
         setTimeout(function(){ copyWeekEntryToNextDay(date, index); }, 320);
       } else {
         cardEl.style.transition = 'transform 0.2s ease-out';
-        cardEl.style.transform = 'translateX(0)';
+        cardEl.style.setProperty('transform', 'translateX(0)');
       }
     }
     function onMouseMove(e){
       if(!mouseActive) return;
       currentX = e.clientX - startX;
       currentX = Math.max(-100, Math.min(100, currentX));
-      cardEl.style.transform = 'translateX(' + currentX + 'px)';
+      cardEl.style.setProperty('transform', 'translateX(' + currentX + 'px)');
     }
     function onMouseUp(){
       if(!mouseActive) return;
@@ -12972,7 +13041,7 @@
     save(LS.week, week);
     if(opts && opts.silent) return;
     var boardWrap = document.getElementById('kwBoardWrap');
-    if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
+    if(boardWrap && window.getComputedStyle(boardWrap).display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
     if(typeof toast === 'function') toast((c.dish || 'Gericht') + ' hinzugefügt');
   }
@@ -12992,7 +13061,7 @@
     arr[index] = entry;
     save(LS.week, week);
     var boardWrap = document.getElementById('kwBoardWrap');
-    if(boardWrap && boardWrap.style.display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
+    if(boardWrap && window.getComputedStyle(boardWrap).display !== 'none'){ if(typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); } else { renderWeekPlan(); }
     renderProviderWeekPreview();
     toast((c.dish || 'Gericht') + ' ersetzt');
   }
@@ -13146,13 +13215,13 @@
     if(!list || !titleEl) return;
     weekMultiSelectCookbookId = null;
     weekMultiSelectDays = {};
-    if(document.getElementById('weekAddSheetSearch')) document.getElementById('weekAddSheetSearch').style.display = 'block';
+    if(document.getElementById('weekAddSheetSearch')) show(document.getElementById('weekAddSheetSearch'));
     titleEl.textContent = 'Gericht auf mehrere Tage setzen';
     hintEl.textContent = '1. Gericht wählen';
     var pid = providerId();
     var mine = (cookbook||[]).filter(function(c){ return c.providerId === pid; });
     list.innerHTML = '';
-    list.style.display = 'grid';
+    setVisible(list, 'grid');
     list.style.gridTemplateColumns = 'repeat(2, 1fr)';
     mine.forEach(function(c){
       var card = document.createElement('div');
@@ -13202,7 +13271,7 @@
           keys.forEach(function(k){ addCookbookEntryToWeek(k, weekMultiSelectCookbookId); });
           closeWeekAddSheet();
           var boardWrap = document.getElementById('kwBoardWrap');
-          if(boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderWeekPlan === 'function') renderWeekPlan();
+          if(boardWrap && window.getComputedStyle(boardWrap).display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard(); else if(typeof renderWeekPlan === 'function') renderWeekPlan();
           if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
           if(typeof showToast === 'function') showToast('Gericht auf ' + keys.length + ' Tage gesetzt');
         };
@@ -13274,19 +13343,19 @@
     }
     if(chooserEl && listWrapEl){
       if(isReplace){
-        chooserEl.style.display = 'none';
-        listWrapEl.style.display = '';
+        hide(chooserEl);
+        listWrapEl.style.removeProperty('display');
         fillList('');
       } else {
-        chooserEl.style.display = '';
-        listWrapEl.style.display = 'none';
+        chooserEl.style.removeProperty('display');
+        hide(listWrapEl);
         var btnFromCookbook = document.getElementById('btnWeekAddFromCookbook');
         var btnNewDish = document.getElementById('btnWeekAddNewDish');
         if(btnFromCookbook){
           btnFromCookbook.onclick = function(){
             if(typeof haptic === 'function') haptic(6);
-            chooserEl.style.display = 'none';
-            listWrapEl.style.display = '';
+            hide(chooserEl);
+            listWrapEl.style.removeProperty('display');
             fillList('');
           };
         }
@@ -13307,7 +13376,7 @@
     var btnSingleActivate = document.getElementById('btnWeekAddSingleActivate');
     if(singleActivateWrap && btnSingleActivate){
       if(isReplace){
-        singleActivateWrap.style.display = 'block';
+        show(singleActivateWrap);
         btnSingleActivate.onclick = function(){
           if(typeof haptic === 'function') haptic(6);
           if(typeof publishSingleWeekEntry === 'function') publishSingleWeekEntry(dayKey, replaceIndex);
@@ -13317,19 +13386,19 @@
           if(typeof showToast === 'function') showToast('Gericht aktiviert');
         };
       } else {
-        singleActivateWrap.style.display = 'none';
+        hide(singleActivateWrap);
       }
     }
     var btnClose = document.querySelector('#weekAddSheet .btn.secondary[onclick="closeWeekAddSheet()"]');
-    if(btnClose) btnClose.style.display = '';
-    bd.style.display = 'block';
-    sheet.style.display = '';
+    if(btnClose) btnClose.style.removeProperty('display');
+    show(bd);
+    sheet.style.removeProperty('display');
     sheet.classList.add('active');
   }
   function closeWeekAddSheet(){
     var bd = document.getElementById('weekAddSheetBd');
     var sheet = document.getElementById('weekAddSheet');
-    if(bd) bd.style.display = 'none';
+    if(bd) hide(bd);
     if(sheet) sheet.classList.remove('active');
   }
 
@@ -13357,14 +13426,14 @@
     startEl.value = defStart;
     endEl.value = defEnd;
     if(typeof haptic === 'function') haptic(6);
-    bd.style.display = 'block';
-    sheet.style.display = '';
+    show(bd);
+    sheet.style.removeProperty('display');
     sheet.classList.add('active');
   }
   function closeWeekTimeOverlay(){
     var bd = document.getElementById('weekTimeOverlayBd');
     var sheet = document.getElementById('weekTimeOverlay');
-    if(bd) bd.style.display = 'none';
+    if(bd) hide(bd);
     if(sheet) sheet.classList.remove('active');
     weekTimeOverlayDay = null;
     weekTimeOverlayIndex = null;
@@ -13422,7 +13491,7 @@
       sheet.style.cssText = 'position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:20px 20px 0 0; box-shadow:0 -4px 20px rgba(0,0,0,0.15); z-index:9999; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); display:none;';
       sheet.innerHTML = '<div style="font-weight:800; font-size:16px; margin-bottom:16px;">An welchen Tag kopieren?</div><div id="copyDayList"></div><button type="button" class="btn secondary" style="margin-top:16px; width:100%; min-height:48px;" id="copyDayCancel">Abbrechen</button>';
       document.body.appendChild(sheet);
-      document.getElementById('copyDayCancel').onclick = function(){ sheet.style.display = 'none'; };
+      document.getElementById('copyDayCancel').onclick = function(){ hide(sheet); };
     }
     var list = document.getElementById('copyDayList');
     list.innerHTML = '';
@@ -13440,14 +13509,14 @@
         if(entry.timeStart != null || entry.timeEnd != null){ newEntry.timeStart = entry.timeStart; newEntry.timeEnd = entry.timeEnd; }
         week[key].push(newEntry);
         save(LS.week, week);
-        sheet.style.display = 'none';
+        hide(sheet);
         renderWeekPlan();
         if(typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
         if(typeof showToast === 'function') showToast('Gericht für ' + label + ' übernommen'); else if(typeof toast === 'function') toast('Gericht für ' + label + ' übernommen');
       };
       list.appendChild(btn);
     });
-    sheet.style.display = 'block';
+    show(sheet);
   }
 
   function openMoveWeekEntrySheet(dayKey, entryIndex){
@@ -13501,12 +13570,12 @@
     save(LS.week, week);
     renderWeekPlan();
     var boardWrap = document.getElementById('kwBoardWrap');
-    if(boardWrap && boardWrap.style.display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
+    if(boardWrap && window.getComputedStyle(boardWrap).display !== 'none' && typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
     renderProviderWeekPreview();
     if(weekUndoTimer) clearTimeout(weekUndoTimer);
     weekUndoPending = { date: date, index: index, entry: entry };
     var snack = document.getElementById('weekUndoSnackbar');
-    if(snack){ snack.style.display = 'flex'; snack.classList.add('active'); }
+    if(snack){ show(snack, 'flex'); snack.classList.add('active'); }
     var lbl = document.getElementById('weekUndoLabel');
     if(lbl) lbl.textContent = 'Gericht entfernt';
     var undoBtn = document.getElementById('weekUndoBtn');
@@ -13530,7 +13599,7 @@
     weekUndoPending = null;
     if(weekUndoTimer){ clearTimeout(weekUndoTimer); weekUndoTimer = null; }
     var snack = document.getElementById('weekUndoSnackbar');
-    if(snack){ snack.classList.remove('active'); snack.style.display = 'none'; }
+    if(snack){ snack.classList.remove('active'); hide(snack); }
   }
 
   function moveWeekEntry(dayKey, fromIndex, toIndex){
@@ -13723,7 +13792,7 @@
     if(typeof hideWeekUndoSnackbar === 'function') hideWeekUndoSnackbar();
     document.querySelectorAll('.kw-move-overlay').forEach(function(o){ o.remove(); });
     var wu = document.getElementById('weekUndoSnackbar');
-    if(wu){ wu.classList.remove('active'); wu.style.display = 'none'; }
+    if(wu){ wu.classList.remove('active'); hide(wu); }
     const subheader = document.getElementById('provPickupsSubheader');
     const filterEl = document.getElementById('provPickupFilter');
     const empty = document.getElementById('provPickupsEmpty');
@@ -13762,17 +13831,17 @@
 
     // Empty States
     if(!allPickups.length){
-      empty.style.display='block';
+      show(empty);
       empty.innerHTML = `
         <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Noch keine Nummern</div>
         <div style="font-size:14px; line-height:1.4; color:var(--muted);">Heute noch keine Abholnummern.</div>
       `;
-      listEl.style.display='none';
+      hide(listEl);
       return;
     }
     
     if(!filteredPickups.length){
-      empty.style.display='block';
+      show(empty);
       if(pickupFilter === 'offen'){
         empty.innerHTML = `
           <div style="font-weight:600; font-size:16px; margin-bottom:8px;">Alles erledigt</div>
@@ -13784,12 +13853,12 @@
           <div style="font-size:14px; line-height:1.4; color:var(--muted);">Noch keine als abgeholt markiert.</div>
         `;
       }
-      listEl.style.display='none';
+      hide(listEl);
       return;
     }
     
-    empty.style.display='none';
-    listEl.style.display='none'; // Grid hat Priorität
+    hide(empty);
+    hide(listEl); // Grid hat Priorität
 
     // Sort pickups: Zuerst nach Abholzeit (früheste zuerst), dann nach Code-Reihenfolge
     const list = [...filteredPickups];
@@ -13825,7 +13894,8 @@
     // Render Grid (Theken-Grid) - Große Kacheln
     const gridEl = document.getElementById('provPickupsGrid');
     if(gridEl){
-      gridEl.style.display = filteredPickups.length > 0 ? 'grid' : 'none';
+      if(filteredPickups.length > 0) setVisible(gridEl, 'grid');
+      else hide(gridEl);
       gridEl.innerHTML = '';
       
       list.forEach(p=>{
@@ -13869,7 +13939,9 @@
     
     // Render list (falls Grid nicht verfügbar)
     listEl.innerHTML='';
-    listEl.style.display = gridEl ? 'none' : (filteredPickups.length > 0 ? 'block' : 'none');
+    if(gridEl) hide(listEl);
+    else if(filteredPickups.length > 0) show(listEl);
+    else hide(listEl);
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
       const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
@@ -13949,16 +14021,16 @@
     const nettoStr = netto.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
     const overlay = document.getElementById('pickupSuccessOverlay');
     const nettoEl = document.getElementById('pickupSuccessNetto');
-    if(overlay){ overlay.style.display = 'flex'; }
+    if(overlay){ show(overlay, 'flex'); }
     if(nettoEl){ nettoEl.textContent = 'Netto-Verdienst: ' + nettoStr; }
     setTimeout(() => {
-      if(overlay) overlay.style.display = 'none';
+      if(overlay) hide(overlay);
       const allPickups = buildPickupList();
       const openPickups = allPickups.filter(p => p.status === 'OPEN');
       const nextEl = document.getElementById('pickupNextStepOverlay');
       const titleEl = document.getElementById('pickupNextStepTitle');
       const listEl = document.getElementById('pickupNextStepList');
-      if(nextEl) nextEl.style.display = 'flex';
+      if(nextEl) show(nextEl, 'flex');
       if(titleEl) titleEl.textContent = openPickups.length ? '🎉 Noch ' + openPickups.length + ' Essen offen!' : '🎉 Alles erledigt!';
       if(listEl){
         const next3 = openPickups.slice(0, 3);
@@ -13969,13 +14041,13 @@
         listEl.querySelectorAll('button[data-order-id]').forEach(btn => {
           btn.onclick = () => {
             const id = btn.getAttribute('data-order-id');
-            document.getElementById('pickupNextStepOverlay').style.display = 'none';
+            hide(document.getElementById('pickupNextStepOverlay'));
             if(id) openPickupDetailSheet(id);
           };
         });
       }
       const btnClose = document.getElementById('btnPickupNextStepClose');
-      if(btnClose) btnClose.onclick = () => { document.getElementById('pickupNextStepOverlay').style.display = 'none'; renderProviderPickups(); };
+      if(btnClose) btnClose.onclick = () => { hide(document.getElementById('pickupNextStepOverlay')); renderProviderPickups(); };
     }, 2200);
   }
   
@@ -14044,8 +14116,8 @@
       var sub = document.getElementById('providerProfileSubService');
       if(sub && sub.classList.contains('as-regeln-overlay')){
         var bd = document.getElementById('accountRegelnOverlayBd');
-        if(bd) bd.style.display = 'none';
-        sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none';
+        if(bd) hide(bd);
+        sub.classList.remove('as-regeln-overlay', 'active'); hide(sub);
       } else if(typeof showProviderProfileSub === 'function') showProviderProfileSub('settings');
     };
     var backFaq = document.getElementById('providerProfileBackFaq');
@@ -14056,7 +14128,7 @@
     if(backGeld) backGeld.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderProfileSub === 'function') showProviderProfileSub(null); };
     var btnImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
-    if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
+    if(btnImpressum && impressumContent) btnImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(window.getComputedStyle(impressumContent).display === 'none') show(impressumContent); else hide(impressumContent); };
     var btnBillingArchive = document.getElementById('btnBillingArchive');
     if(btnBillingArchive) btnBillingArchive.onclick = function(){ if(!checkSessionValidity()) return; showView(views.providerBilling); renderBilling(); };
     var btnSettingsBillingArchive = document.getElementById('btnSettingsBillingArchive');
@@ -14082,8 +14154,11 @@
         var textEl = document.getElementById('providerSupportSolutionText');
         var solutionWrap = document.getElementById('providerSupportSolution');
         if(textEl) textEl.textContent = supportSolutions[issue] || '';
-        if(solutionWrap){ solutionWrap.style.display = 'block'; solutionWrap.setAttribute('data-subject', subject); }
-        if(abholungenBtn) abholungenBtn.style.display = issue === 'abholnummer' ? 'block' : 'none';
+        if(solutionWrap){ show(solutionWrap); solutionWrap.setAttribute('data-subject', subject); }
+        if(abholungenBtn){
+          if(issue === 'abholnummer') show(abholungenBtn);
+          else hide(abholungenBtn);
+        }
       };
     });
     if(abholungenBtn) abholungenBtn.onclick = function(){
@@ -14164,7 +14239,7 @@
     });
     var btnProviderImpressum = document.getElementById('btnProviderImpressum');
     var impressumContent = document.getElementById('providerImpressumContent');
-    if(btnProviderImpressum && impressumContent) btnProviderImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); impressumContent.style.display = impressumContent.style.display === 'none' ? 'block' : 'none'; };
+    if(btnProviderImpressum && impressumContent) btnProviderImpressum.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(window.getComputedStyle(impressumContent).display === 'none') show(impressumContent); else hide(impressumContent); };
 
     // Identity: Name + Ort (TGTG dezent, ohne Logo-Box)
     var settingsName = document.getElementById('providerSettingsName');
@@ -14273,8 +14348,8 @@
       if(typeof haptic === 'function') haptic(6);
       var bd = document.getElementById('accountRegelnOverlayBd');
       var sub = document.getElementById('providerProfileSubService');
-      if(bd) bd.style.display = 'block';
-      if(sub){ sub.style.display = 'flex'; sub.classList.add('as-regeln-overlay', 'active'); }
+      if(bd) show(bd);
+      if(sub){ show(sub, 'flex'); sub.classList.add('as-regeln-overlay', 'active'); }
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     };
     var btnAccountMeinSupport = document.getElementById('btnAccountMeinSupport');
@@ -14316,13 +14391,13 @@
       };
     });
     var regelnBd = document.getElementById('accountRegelnOverlayBd');
-    if(regelnBd) regelnBd.onclick = function(){ if(typeof haptic === 'function') haptic(6); var sub = document.getElementById('providerProfileSubService'); if(sub){ sub.classList.remove('as-regeln-overlay', 'active'); sub.style.display = 'none'; } regelnBd.style.display = 'none'; };
+    if(regelnBd) regelnBd.onclick = function(){ if(typeof haptic === 'function') haptic(6); var sub = document.getElementById('providerProfileSubService'); if(sub){ sub.classList.remove('as-regeln-overlay', 'active'); hide(sub); } hide(regelnBd); };
     var geldBd = document.getElementById('accountGeldOverlayBd');
     var geldSheet = document.getElementById('accountGeldOverlay');
     var geldClose = document.getElementById('accountGeldClose');
     function closeAccountGeldOverlay(){
-      if(geldBd){ geldBd.style.display = 'none'; geldBd.setAttribute('aria-hidden','true'); }
-      if(geldSheet){ geldSheet.classList.remove('active'); geldSheet.style.display = 'none'; geldSheet.setAttribute('aria-hidden','true'); }
+      if(geldBd){ hide(geldBd); geldBd.setAttribute('aria-hidden','true'); }
+      if(geldSheet){ geldSheet.classList.remove('active'); hide(geldSheet); geldSheet.setAttribute('aria-hidden','true'); }
     }
     /* Profil-Sicherheitsreset: Overlay darf nie "hängen bleiben" und Main-UI blockieren */
     closeAccountGeldOverlay();
@@ -14337,8 +14412,8 @@
     if(btnAccountAbrechnung) btnAccountAbrechnung.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof showProviderBilling === 'function') showProviderBilling(); };
     var supportBackdrop = document.getElementById('accountSupportModalBackdrop');
     var supportModal = document.getElementById('accountSupportModal');
-    function openSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'block'; if(supportModal) supportModal.style.display = 'block'; }
-    function closeSupportModal(){ if(supportBackdrop) supportBackdrop.style.display = 'none'; if(supportModal) supportModal.style.display = 'none'; }
+    function openSupportModal(){ if(supportBackdrop) show(supportBackdrop); if(supportModal) show(supportModal); }
+    function closeSupportModal(){ if(supportBackdrop) hide(supportBackdrop); if(supportModal) hide(supportModal); }
     if(btnAccountMeinSupport) btnAccountMeinSupport.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
       var wa = 'https://wa.me/49XXXXXXXXX?text=' + encodeURIComponent('Hallo Mittagio Support!');
@@ -14568,8 +14643,9 @@
     var timeWheelWrap = document.getElementById('providerSettingsTimeWheelWrap');
     if(timeTrigger && timeWheelWrap) timeTrigger.onclick = function(){
       if(typeof haptic === 'function') haptic(6);
-      var isHidden = timeWheelWrap.style.display === 'none' || !timeWheelWrap.style.display;
-      timeWheelWrap.style.display = isHidden ? 'block' : 'none';
+      var isHidden = window.getComputedStyle(timeWheelWrap).display === 'none';
+      if(isHidden) show(timeWheelWrap);
+      else hide(timeWheelWrap);
       if(isHidden){ var first = document.getElementById('providerSettingsMealStart'); if(first) first.focus(); }
     };
     
@@ -14953,11 +15029,11 @@
     
     if(todayListEl){
       if(myTodayOrders.length === 0){
-        todayListEl.style.display = 'none';
-        if(todayEmptyEl) todayEmptyEl.style.display = 'block';
+        hide(todayListEl);
+        if(todayEmptyEl) show(todayEmptyEl);
       } else {
-        todayListEl.style.display = 'flex';
-        if(todayEmptyEl) todayEmptyEl.style.display = 'none';
+        show(todayListEl, 'flex');
+        if(todayEmptyEl) hide(todayEmptyEl);
         todayListEl.innerHTML = myTodayOrders.map(o => `
           <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.04);">
             <div>
@@ -14975,8 +15051,12 @@
     var myTxs = txs.filter(function(t){ return t.vendor_id === pid; });
     myTxs.sort(function(a,b){ return (new Date(b.timestamp)) - (new Date(a.timestamp)); });
 
-    if(emptyEl){ emptyEl.style.display = myTxs.length ? 'none' : 'block'; }
-    listEl.style.display = myTxs.length ? 'flex' : 'none';
+    if(emptyEl){
+      if(myTxs.length) hide(emptyEl);
+      else show(emptyEl);
+    }
+    if(myTxs.length) show(listEl, 'flex');
+    else hide(listEl);
 
     listEl.innerHTML = myTxs.map(function(t){
       var datum = t.timestamp ? new Date(t.timestamp).toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' }) : '–';
@@ -15233,8 +15313,8 @@
         providerTab.style.fontWeight = '600';
         providerTab.style.color = '#666';
       }
-      if(customerContent) customerContent.style.display = 'block';
-      if(providerContent) providerContent.style.display = 'none';
+      if(customerContent) show(customerContent);
+      if(providerContent) hide(providerContent);
     } else {
       if(providerTab){
         providerTab.style.background = '#fff';
@@ -15248,8 +15328,8 @@
         customerTab.style.fontWeight = '600';
         customerTab.style.color = '#666';
       }
-      if(providerContent) providerContent.style.display = 'block';
-      if(customerContent) customerContent.style.display = 'none';
+      if(providerContent) show(providerContent);
+      if(customerContent) hide(customerContent);
     }
   }
   
@@ -15295,13 +15375,13 @@
   if(btnCookbookAddSticky) btnCookbookAddSticky.onclick=()=> openDishFlow(null, 'cookbook');
 
   const btnOpenWeekPlan = document.getElementById('btnOpenWeekPlan');
-  if(btnOpenWeekPlan) btnOpenWeekPlan.style.display = 'none';
+  if(btnOpenWeekPlan) hide(btnOpenWeekPlan);
   const btnPickupsFaq = document.getElementById('btnPickupsFaq');
   if(btnPickupsFaq){
     btnPickupsFaq.onclick=()=>{
       showProviderProfile();
       const box = document.getElementById('provFaqBox');
-      if(box) box.style.display = 'block';
+      if(box) show(box);
     };
   }
 
@@ -15393,17 +15473,17 @@
     var template = document.getElementById('shareTemplate916');
     var htmlToImageLib = typeof htmlToImage !== 'undefined' ? htmlToImage : (typeof window !== 'undefined' && window.htmlToImage) ? window.htmlToImage : null;
     if(!template || !htmlToImageLib || typeof htmlToImageLib.toBlob !== 'function'){
-      if(overlay) overlay.style.display = 'none';
+      if(overlay) hide(overlay);
       if(typeof shareWeekPlan === 'function') shareWeekPlan();
       return;
     }
-    if(overlay){ overlay.style.display = 'flex'; overlay.style.visibility = 'visible'; }
+    if(overlay){ show(overlay, 'flex'); overlay.style.visibility = 'visible'; }
     var addressStr = typeof buildAddress === 'function' ? buildAddress(profile) : [profile.street, profile.zip, profile.city].filter(Boolean).join(', ');
     template.innerHTML = buildShareTemplate916Content(profile, providerName, (profile.logoData||'').trim() || (provider.logoData||''), weekOffers, kwLabel, addressStr);
     template.style.left = '0';
     template.style.top = '0';
     var done = function(){
-      if(overlay){ overlay.style.display = 'none'; overlay.style.visibility = ''; }
+      if(overlay){ hide(overlay); overlay.style.visibility = ''; }
       template.style.left = '-9999px';
     };
     var run = function(){
@@ -15487,8 +15567,8 @@
     var backEl = document.getElementById('planPublicBack');
     if(!el || !list) return;
     document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.setProperty('display', 'none', 'important'); });
-    document.getElementById('customerNav') && (document.getElementById('customerNav').style.display = 'none');
-    document.getElementById('providerNavWrap') && (document.getElementById('providerNavWrap').style.display = 'none');
+    document.getElementById('customerNav') && hide(document.getElementById('customerNav'));
+    document.getElementById('providerNavWrap') && hide(document.getElementById('providerNavWrap'));
     document.body.classList.remove('provider-mode');
     var raw = null;
     try { raw = localStorage.getItem(PUBLIC_PLAN_KEY + providerId); } catch(e) {}
@@ -15504,18 +15584,18 @@
       data.offers.forEach(function(o){
         var img = o.imageUrl || data.firstDishImage || '';
         var threePillars = '<div class="plan-public-pillars" style="display:flex; justify-content:center; gap:16px; padding:8px 0 12px; border-bottom:1px solid rgba(0,0,0,0.06); font-size:14px;"><span title="Vor Ort möglich">🍴</span><span title="Abholnummer aktiv">🧾</span><span title="Mehrweg verfügbar">🔄</span></div>';
-        html += '<div class="plan-public-card" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.04);"><div style="height:140px; background:#f1f3f5;"><img src="' + (img || '').replace(/"/g,'&quot;') + '" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display=\'none\'"></div>' + threePillars + '<div style="padding:14px 18px;"><div style="font-size:18px; font-weight:900; color:#1a1a1a;">' + (o.dish || 'Gericht').replace(/</g,'&lt;') + '</div><div style="font-size:14px; color:#64748b; margin-top:4px;">' + (o.day || '') + '</div><div style="font-size:16px; font-weight:800; color:#1a1a1a; margin-top:8px;">' + euro(o.price) + '</div></div></div>';
+        html += '<div class="plan-public-card" style="background:#fff; border-radius:20px; overflow:hidden; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 2px 12px rgba(0,0,0,0.04);"><div style="height:140px; background:#f1f3f5;"><img src="' + (img || '').replace(/"/g,'&quot;') + '" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="this.classList.add(\'is-hidden\')"></div>' + threePillars + '<div style="padding:14px 18px;"><div style="font-size:18px; font-weight:900; color:#1a1a1a;">' + (o.dish || 'Gericht').replace(/</g,'&lt;') + '</div><div style="font-size:14px; color:#64748b; margin-top:4px;">' + (o.day || '') + '</div><div style="font-size:16px; font-weight:800; color:#1a1a1a; margin-top:8px;">' + euro(o.price) + '</div></div></div>';
       });
       list.innerHTML = html;
     }
     if(backEl) backEl.onclick = function(e){ e.preventDefault(); location.hash = ''; if(typeof setMode === 'function') setMode('customer'); if(typeof showDiscover === 'function') showDiscover(); };
-    el.style.display = 'block';
+    show(el);
     el.classList.add('active');
   }
 
   function hidePlanPublicView(){
     var el = document.getElementById('v-plan-public');
-    if(el){ el.style.display = 'none'; el.classList.remove('active'); }
+    if(el){ hide(el); el.classList.remove('active'); }
   }
 
   // WhatsApp-Share-Vorschau: Message für Heute oder Woche generieren (mit *fett* für WhatsApp)
@@ -15570,13 +15650,13 @@
     var textEl = document.getElementById('sharePreviewText');
     if(!bd || !textEl) return;
     textEl.textContent = message;
-    bd.style.display = 'flex';
+    show(bd, 'flex');
     bd.style.alignItems = 'center';
     bd.style.justifyContent = 'center';
   }
   function closeSharePreviewModal(){
     var bd = document.getElementById('sharePreviewBd');
-    if(bd) bd.style.display = 'none';
+    if(bd) hide(bd);
     _sharePreviewCurrentMessage = '';
   }
   function sharePreviewSendWhatsApp(){
@@ -15863,7 +15943,7 @@
     if(!layer || !container) return;
     if(typeof loadMasterDishes !== 'function') return;
     container.innerHTML = '<p style="text-align:center; color:#64748b; padding:24px;">Lade …</p>';
-    layer.style.display = 'block';
+    show(layer);
     if(btnClose && !btnClose._mittagioBound){ btnClose._mittagioBound = true; btnClose.onclick = function(){ if(typeof window.closeSchatzkammer === 'function') window.closeSchatzkammer(); }; }
     loadMasterDishes(function(arr){
       var list = Array.isArray(arr) ? arr : [];
@@ -15898,7 +15978,7 @@
       '<button type="button" class="mittagio-dual-btn mittagio-dual-btn-inserieren">⚡ Jetzt direkt inserieren</button>';
     var btnCopy = sheet.querySelector('.mittagio-dual-btn-copy');
     var btnInserieren = sheet.querySelector('.mittagio-dual-btn-inserieren');
-    function closeSheet(){ bd.style.display = 'none'; sheet.style.display = 'none'; }
+    function closeSheet(){ hide(bd); hide(sheet); }
     function doCopy(andThen){
       var cb = (typeof window !== 'undefined' && window.cookbook) ? window.cookbook : (typeof load === 'function' && typeof LS !== 'undefined' ? load(LS.cookbook, []) : []);
       var dishName = (m.name || 'Gericht').trim().toLowerCase();
@@ -15929,21 +16009,21 @@
         });
       };
     }
-    bd.style.display = 'block';
-    sheet.style.display = 'flex';
+    show(bd);
+    show(sheet, 'flex');
   }
 
   function closeMittagioDualActionCard(){
     var bd = document.getElementById('mittagioDualActionBd');
     var sheet = document.getElementById('mittagioDualActionSheet');
-    if(bd) bd.style.display = 'none';
-    if(sheet) sheet.style.display = 'none';
+    if(bd) hide(bd);
+    if(sheet) hide(sheet);
   }
 
   function closeCookbookMittagio(){
     if(typeof closeMittagioDualActionCard === 'function') closeMittagioDualActionCard();
     var layer = document.getElementById('cookbookMittagioLayer');
-    if(layer) layer.style.display = 'none';
+    if(layer) hide(layer);
   }
 
   /** Preis-Modal für Ingest: einmalig Standardpreis abfragen (z. B. 8,90 €) */
@@ -15966,8 +16046,8 @@
     sheet.innerHTML = '<h3 style="margin:0 0 8px; font-size:18px; font-weight:800; color:#1a1a1a;">Standardpreis für Import</h3><p style="margin:0 0 16px; font-size:14px; color:#64748b;">Alle importierten Gerichte erhalten diesen Preis (€).</p><input type="number" step="0.01" min="0" id="cookbookIngestPriceInput" value="8.90" placeholder="8,90" style="width:100%; padding:14px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:16px; box-sizing:border-box;" inputmode="decimal" /><button type="button" id="cookbookIngestPriceBtn" style="width:100%; min-height:48px; border-radius:12px; border:none; background:#222; color:#fff; font-size:15px; font-weight:800; cursor:pointer;">Import starten</button>';
     var inp = document.getElementById('cookbookIngestPriceInput');
     function closeModal(){
-      bd.style.display = 'none';
-      sheet.style.display = 'none';
+      hide(bd);
+      hide(sheet);
     }
     document.getElementById('cookbookIngestPriceBtn').onclick = function(){
       var val = inp && inp.value ? parseFloat(String(inp.value).replace(',', '.')) : 8.9;
@@ -15976,8 +16056,8 @@
       if(typeof callback === 'function') callback(price);
     };
     bd.onclick = function(ev){ if(ev.target === bd) closeModal(); };
-    bd.style.display = 'block';
-    sheet.style.display = 'block';
+    show(bd);
+    show(sheet);
     if(inp){ inp.focus(); inp.select && inp.select(); }
   }
 
@@ -15995,9 +16075,9 @@
       document.body.appendChild(overlay);
     }
     overlay.innerHTML = '<div class="cookbook-ingest-flash"></div><div class="cookbook-ingest-bg"></div><div class="cookbook-ingest-counter">0</div><div class="cookbook-ingest-progress-wrap"><div class="cookbook-ingest-progress-bar"></div></div>';
-    overlay.style.display = 'block';
+    show(overlay);
     overlay.style.pointerEvents = 'auto';
-    overlay.style.opacity = '1';
+    overlay.style.setProperty('opacity', '1');
     var counterEl = overlay.querySelector('.cookbook-ingest-counter');
     var progressBar = overlay.querySelector('.cookbook-ingest-progress-bar');
     var flashEl = overlay.querySelector('.cookbook-ingest-flash');
@@ -16012,12 +16092,12 @@
       if(current >= total){
         if(counterEl) counterEl.classList.add('cookbook-ingest-pop');
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(50); } catch(e){}
-        if(flashEl){ flashEl.style.opacity = '1'; }
+        if(flashEl){ flashEl.style.setProperty('opacity', '1'); }
         setTimeout(function(){
-          overlay.style.opacity = '0';
+          overlay.style.setProperty('opacity', '0');
           overlay.style.pointerEvents = 'none';
           setTimeout(function(){
-            overlay.style.display = 'none';
+            hide(overlay);
             var pid = typeof providerId === 'function' ? providerId() : '';
             var newEntries = masterList.map(function(m, idx){
               var cat = (m.category || 'Fleisch').trim();
@@ -16079,9 +16159,9 @@
         var emptyFallback = document.getElementById('cookbookEmpty');
         var magFallback = document.getElementById('cookbookMagazine');
         var boxFallback = document.getElementById('cookbookList');
-        if(emptyFallback){ emptyFallback.style.display = 'flex'; emptyFallback.classList.add('mt-state-empty'); }
-        if(magFallback) magFallback.style.display = 'none';
-        if(boxFallback) boxFallback.style.display = 'none';
+        if(emptyFallback){ show(emptyFallback, 'flex'); emptyFallback.classList.add('mt-state-empty'); }
+        if(magFallback) hide(magFallback);
+        if(boxFallback) hide(boxFallback);
         var btnImportFb = document.getElementById('btnCookbookEmptyImport');
         var btnEmptyFb = document.getElementById('btnCookbookEmptyAdd');
         if(btnImportFb && !btnImportFb._bound){ btnImportFb._bound = true; btnImportFb.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof showCookbookIngestPriceModal === 'function') showCookbookIngestPriceModal(function(price){ if(typeof loadMasterDishes === 'function') loadMasterDishes(function(list){ if(list.length === 0){ if(typeof showToast === 'function') showToast('Keine Gerichte geladen'); return; } if(typeof runCookbookIngest === 'function') runCookbookIngest(list, price); }); }); }; };
@@ -16097,8 +16177,14 @@
       var btnSearch = document.getElementById('cookbookBtnSearch');
       var btnSort = document.getElementById('cookbookBtnSort');
       var sortDropdown = document.getElementById('cookbookSortDropdown');
-      if(titleWrap) titleWrap.style.display = cookbookIsSearching ? 'none' : 'flex';
-      if(searchWrap) searchWrap.style.display = cookbookIsSearching ? 'flex' : 'none';
+      if(titleWrap){
+        if(cookbookIsSearching) hide(titleWrap);
+        else show(titleWrap, 'flex');
+      }
+      if(searchWrap){
+        if(cookbookIsSearching) show(searchWrap, 'flex');
+        else hide(searchWrap);
+      }
       if(searchInput) searchInput.value = cookbookSearchTerm;
       if(btnSort){
         btnSort.style.background = cookbookShowSortMenu ? '#007AFF' : '#F5F5F7';
@@ -16106,7 +16192,8 @@
         btnSort.onclick = function(e){ e.stopPropagation(); if(typeof haptic==='function') haptic(6); cookbookShowSortMenu = !cookbookShowSortMenu; renderCookbook(); if(cookbookShowSortMenu) setTimeout(function(){ document.addEventListener('click', function closeSort(){ cookbookShowSortMenu = false; document.removeEventListener('click', closeSort); renderCookbook(); }); }, 0); };
       }
       if(sortDropdown){
-        sortDropdown.style.display = cookbookShowSortMenu ? 'block' : 'none';
+        if(cookbookShowSortMenu) show(sortDropdown);
+        else hide(sortDropdown);
         var opts = [{ id: 'date', label: 'Neueste zuerst' }, { id: 'quantity', label: 'Meistverkauft' }, { id: 'price', label: 'Höchster Preis' }, { id: 'name', label: 'Alphabetisch' }];
         sortDropdown.innerHTML = opts.map(function(opt){
           var active = cookbookSortBy === opt.id;
@@ -16138,7 +16225,8 @@
     if(updated) save(LS.cookbook, cookbook);
 
     if(pillsWrap){
-      pillsWrap.style.display = cookbookIsSearching ? 'none' : 'flex';
+      if(cookbookIsSearching) hide(pillsWrap);
+      else show(pillsWrap, 'flex');
       pillsWrap.innerHTML='';
       (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Veggie']).forEach(function(cat){
         var b = document.createElement('button');
@@ -16186,13 +16274,13 @@
 
     if(!list.length){
       var ingestOverlayEmpty = document.getElementById('cookbookIngestOverlay');
-      if(ingestOverlayEmpty) ingestOverlayEmpty.style.display = 'none';
+      if(ingestOverlayEmpty) hide(ingestOverlayEmpty);
       var footerWrapEmpty = document.getElementById('cookbookFooterWrap');
-      if(footerWrapEmpty) footerWrapEmpty.style.display = 'none';
+      if(footerWrapEmpty) hide(footerWrapEmpty);
       if(mine.length === 0){
-        if(emptyEl){ emptyEl.style.display = 'flex'; emptyEl.classList.add('mt-state-empty'); }
-        if(magazineEl){ magazineEl.style.display = 'none'; }
-        if(box){ box.style.display = 'none'; }
+        if(emptyEl){ show(emptyEl, 'flex'); emptyEl.classList.add('mt-state-empty'); }
+        if(magazineEl){ hide(magazineEl); }
+        if(box){ hide(box); }
         var btnImport = document.getElementById('btnCookbookEmptyImport');
         if(btnImport){
           btnImport.onclick = function(e){
@@ -16210,20 +16298,20 @@
           btnEmpty.onclick = function(e){ e.preventDefault(); e.stopPropagation(); if(typeof openDishFlow === 'function') openDishFlow(null, 'cookbook'); };
         }
       } else {
-        if(emptyEl) emptyEl.style.display = 'none';
+        if(emptyEl) hide(emptyEl);
         if(magazineEl){
-          magazineEl.style.display = 'flex';
+          show(magazineEl, 'flex');
           magazineEl.innerHTML = '<div class="hint" style="text-align:center; padding:48px 24px; color:#86868B; font-size:15px;">In dieser Kategorie sind noch keine Gerichte.</div>';
         }
-        if(box) box.style.display = 'none';
+        if(box) hide(box);
         selectedCookbookId = null;
       }
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
 
-    if(emptyEl) emptyEl.style.display = 'none';
-    if(box) box.style.display = 'none';
+    if(emptyEl) hide(emptyEl);
+    if(box) hide(box);
 
     function isCookbookViewActive(){
       var cbView = document.getElementById('v-provider-cookbook');
@@ -16234,19 +16322,19 @@
       var footerWrap = document.getElementById('cookbookFooterWrap');
       var btn = document.getElementById('cookbookFooterBtnInserieren');
       if(!footerWrap || !btn || !magazineEl) return;
-      if(!isCookbookViewActive()){ footerWrap.style.display = 'none'; return; }
+      if(!isCookbookViewActive()){ hide(footerWrap); return; }
       var cards = magazineEl.querySelectorAll('.cookbook-magazine-card');
-      if(!cards.length){ footerWrap.style.display = 'none'; return; }
+      if(!cards.length){ hide(footerWrap); return; }
       var card = selectedCookbookId ? magazineEl.querySelector('.cookbook-magazine-card[data-cookbook-entry-id="' + selectedCookbookId + '"]') : null;
       if(!card) card = cards[Math.min(cookbookMagazineIndex, cards.length - 1)];
-      if(!card){ footerWrap.style.display = 'none'; return; }
+      if(!card){ hide(footerWrap); return; }
       var idx = Array.prototype.indexOf.call(cards, card);
       if(idx >= 0) cookbookMagazineIndex = idx;
       var priceInput = card ? card.querySelector('.cookbook-card-price-input') : null;
       var rawVal = priceInput ? priceInput.value.trim() : '';
       var priceVal = rawVal !== '' ? parseFloat(rawVal) : NaN;
       var hasValidPrice = !Number.isNaN(priceVal) && priceVal > 0;
-      footerWrap.style.display = 'block';
+      show(footerWrap);
       cards.forEach(function(c){ var inp = c.querySelector('.cookbook-card-price-input'); if(inp) inp.classList.remove('cookbook-price-highlight'); });
       if(!hasValidPrice){
         btn.disabled = true;
@@ -16262,7 +16350,7 @@
     }
 
     if(magazineEl){
-      magazineEl.style.display = 'flex';
+      show(magazineEl, 'flex');
       magazineEl.classList.remove('cookbook-price-focus');
       var formatDayLabel = function(iso){
         if(!iso) return 'Neu';
@@ -16308,7 +16396,7 @@
       magazineEl.innerHTML = cardsHtml;
       magazineEl.style.position = 'relative';
       var ingestOverlay = document.getElementById('cookbookIngestOverlay');
-      if(ingestOverlay){ ingestOverlay.style.display = 'none'; ingestOverlay.style.pointerEvents = 'none'; }
+      if(ingestOverlay){ hide(ingestOverlay); ingestOverlay.style.pointerEvents = 'none'; }
 
       list.forEach(function(entry, i){
         var card = magazineEl.children[i];
@@ -16413,10 +16501,13 @@
       }
 
       requestAnimationFrame(function(){ updateCookbookFooterButton(); });
-      if(footerWrap) footerWrap.style.display = isCookbookViewActive() ? 'block' : 'none';
+      if(footerWrap){
+        if(isCookbookViewActive()) show(footerWrap);
+        else hide(footerWrap);
+      }
     } else {
       var footerWrap = document.getElementById('cookbookFooterWrap');
-      if(footerWrap) footerWrap.style.display = 'none';
+      if(footerWrap) hide(footerWrap);
     }
 
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -16463,12 +16554,12 @@
       }
     }
     if(btn){ btn.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(typeof publishCookbookEntry === 'function') publishCookbookEntry(selectedCookbookId, cookbookLiveSheetChosenDate); closeCookbookLiveSheet(); clearCookbookSelection(); if(typeof renderCookbook === 'function') renderCookbook(); }; }
-    bd.style.display = 'block';
+    show(bd);
     bd.classList.add('active');
     sheet.classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
-  function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd){ bd.style.display = 'none'; bd.classList.remove('active'); } if(sheet) sheet.classList.remove('active'); }
+  function closeCookbookLiveSheet(){ var bd = document.getElementById('cookbookLiveSheetBd'); var sheet = document.getElementById('cookbookLiveSheet'); if(bd){ hide(bd); bd.classList.remove('active'); } if(sheet) sheet.classList.remove('active'); }
   function showCookbookVictoryOverlay(dayLabel, thenCallback){
     try { if(typeof haptic === 'function') haptic([12, 55, 12]); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([12, 55, 12]); } catch(e){}
     var overlay = document.createElement('div');
@@ -16508,7 +16599,7 @@
       })(key, label);
       daysWrap.appendChild(btnDay);
     }
-    bd.style.display = 'block';
+    show(bd);
     bd.classList.add('cookbook-week-bd-visible');
     sheet.classList.add('active', 'cookbook-week-visible');
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
@@ -16516,7 +16607,7 @@
   function closeCookbookWeekSheet(){
     var bd = document.getElementById('cookbookWeekSheetBd');
     var sheet = document.getElementById('cookbookWeekSheet');
-    if(bd){ bd.style.display = 'none'; bd.classList.remove('cookbook-week-bd-visible'); }
+    if(bd){ hide(bd); bd.classList.remove('cookbook-week-bd-visible'); }
     if(sheet) sheet.classList.remove('active', 'cookbook-week-visible');
   }
 
@@ -17024,7 +17115,7 @@
     document.body.style.overflow = 'auto';
     document.body.style.overscrollBehavior = 'auto';
     var cookbookFooter = document.getElementById('cookbookFooterWrap');
-    if(cookbookFooter) cookbookFooter.style.display = 'none';
+    if(cookbookFooter) hide(cookbookFooter);
     /* Radikaler Cleanup: alle Wizard-Sheets und Backdrops restlos vernichten [cite: 2026-03-10] */
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     document.querySelectorAll('.sub-menu-drawer, .sub-menu-drawer-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
@@ -17074,7 +17165,7 @@
     document.body.style.overscrollBehavior = 'auto';
     document.body.classList.remove('vendor-area', 'wizard-inserat-open');
     var cookbookFooter = document.getElementById('cookbookFooterWrap');
-    if(cookbookFooter) cookbookFooter.style.display = 'none';
+    if(cookbookFooter) hide(cookbookFooter);
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');
@@ -17089,7 +17180,7 @@
     if(typeof closeWizard === 'function') closeWizard(true);
     if(typeof clearListingViewportHandlers === 'function') clearListingViewportHandlers();
     var container = document.getElementById('mastercard-container') || document.querySelector('#wizard .mastercard-container, #wizard .liquid-master-panel');
-    if(container) container.style.display = 'none';
+    if(container) hide(container);
   }
   if(typeof window !== 'undefined') window.closeMastercard = closeMastercard;
   function clearListingViewportHandlers(){
@@ -17591,7 +17682,7 @@
   function setWizardNext(text, icon = 'chevron-right'){
     if(!wNextBtn) return;
     wNextBtn.innerHTML = `<span>${text}</span>` + (icon ? `<i data-lucide="${icon}" style="width:18px;height:18px;stroke-width:3;"></i>` : '');
-    wNextBtn.style.display = 'flex';
+    setVisible(wNextBtn, 'flex');
     wNextBtn.style.alignItems = 'center';
     wNextBtn.style.justifyContent = 'center';
     wNextBtn.style.gap = '8px';
@@ -17617,10 +17708,10 @@
     const wQ = document.getElementById('wQ');
     const wHelp = document.getElementById('wHelp');
     const hideTop = (w.kind === 'listing' && w.step === 0);
-    if(dotsEl) dotsEl.style.display = hideTop ? 'none' : '';
-    if(wTop) wTop.style.display = hideTop ? 'none' : '';
-    if(wQ) wQ.style.display = hideTop ? 'none' : '';
-    if(wHelp) wHelp.style.display = hideTop ? 'none' : '';
+    if(dotsEl){ if(hideTop) hide(dotsEl); else dotsEl.style.removeProperty('display'); }
+    if(wTop){ if(hideTop) hide(wTop); else wTop.style.removeProperty('display'); }
+    if(wQ){ if(hideTop) hide(wQ); else wQ.style.removeProperty('display'); }
+    if(wHelp){ if(hideTop) hide(wHelp); else wHelp.style.removeProperty('display'); }
     if(dotsEl && !hideTop){
       const m = String(stepText).match(/Schritt\s*(\d+)\s*von\s*(\d+)|(\d+)\/(\d+)/);
       const step = m ? parseInt(m[1] || m[3], 10) : 1;
@@ -17644,8 +17735,8 @@
     c.innerHTML='';
     c.appendChild(node);
     /* Kein opacity:0-Start – verhindert schwarzen Screen durch Backdrop-Durchscheinen [cite: Schwarzer Screen Fix 2026-03-02] */
-    c.style.opacity='1';
-    c.style.transform='translateY(0)';
+    c.style.setProperty('opacity', '1');
+    c.style.setProperty('transform', 'translateY(0)');
     c.style.transition='';
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(c.isConnected){ c.style.transition='opacity 0.2s ease, transform 0.2s ease'; } }); });
   }
@@ -18174,7 +18265,10 @@
           tilePickup.classList.toggle('active', pickupEnabled);
           tileStandard.classList.toggle('is-active', !pickupEnabled);
           tilePickup.classList.toggle('is-active', pickupEnabled);
-          if(bestBadge) bestBadge.style.display = pickupEnabled ? 'inline-flex' : 'none';
+          if(bestBadge){
+            if(pickupEnabled) setVisible(bestBadge, 'inline-flex');
+            else hide(bestBadge);
+          }
           tileStandard.setAttribute('aria-pressed', (!pickupEnabled) ? 'true' : 'false');
           tilePickup.setAttribute('aria-pressed', pickupEnabled ? 'true' : 'false');
           var btn = document.getElementById('main-publish-btn') || footerBtnStep2;
@@ -18183,7 +18277,7 @@
             btn.removeAttribute('disabled');
             btn.setAttribute('aria-disabled', 'false');
             btn.style.pointerEvents = 'auto';
-            btn.style.opacity = '1';
+            btn.style.setProperty('opacity', '1');
             btn.style.background = '#111111';
             lockFooterButtonVisuals(btn);
             btn.textContent = getStep2PublishLabel(pickupEnabled);
@@ -18348,11 +18442,11 @@
       imgEl.id='mainImagePreview'; imgEl.className='ebay-preview-img'; imgEl.alt=''; imgEl.src=imgSrc||''; imgEl.style.cssText='position:absolute; inset:0; width:100%; height:100%; object-fit:cover;';
       applyMainImageObjectPosition();
       imgEl.style.filter=getPhotoFilterCss(w.data.photoFilterPreset||'none');
-      if(!w.data.photoData) imgEl.style.display='none';
+      if(!w.data.photoData) hide(imgEl);
       var cameraInput=document.createElement('input');
-      cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); cameraInput.style.display='none';
+      cameraInput.type='file'; cameraInput.id='cameraInput'; cameraInput.accept='image/*'; cameraInput.setAttribute('capture','environment'); hide(cameraInput);
       var galleryInput=document.createElement('input');
-      galleryInput.type='file'; galleryInput.id='galleryInput'; galleryInput.accept='image/*'; galleryInput.style.display='none';
+      galleryInput.type='file'; galleryInput.id='galleryInput'; galleryInput.accept='image/*'; hide(galleryInput);
       var overlay=document.createElement('div'); overlay.className='ebay-photo-overlay';
       overlay.style.cssText='position:absolute;inset:0;cursor:pointer;';
       overlay.style.setProperty('pointer-events', w.data.photoData?'none':'auto', 'important');
@@ -18436,7 +18530,53 @@
         openPhotoEditOverlay();
       };
       /* Lightbox: Klick auf Bild öffnet Großansicht, schließt per Klick auf Bild oder Hintergrund [cite: FINALIZE SHEET 2026-02-23] */
-      function openPhotoLightbox(src){ if(!src) return; hapticLight(); var lb=document.getElementById('photo-lightbox'); if(!lb){ lb=document.createElement('div'); lb.id='photo-lightbox'; lb.className='photo-lightbox-overlay'; lb.style.cssText='position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;'; var img=document.createElement('img'); img.className='photo-lightbox-img'; img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);'; var closeBtn=document.createElement('button'); closeBtn.type='button'; closeBtn.className='photo-lightbox-close'; closeBtn.setAttribute('aria-label','Schließen'); closeBtn.innerHTML='&#10005;'; closeBtn.style.cssText='position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;'; function closeLb(){ lb.style.opacity='0'; lb.querySelector('.photo-lightbox-img').style.transform='scale(0.85)'; setTimeout(function(){ lb.style.display='none'; lb.classList.remove('photo-lightbox-open'); }, 280); } closeBtn.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.onclick=function(e){ if(e.target===lb) closeLb(); }; img.onclick=function(e){ e.stopPropagation(); closeLb(); }; lb.appendChild(img); lb.appendChild(closeBtn); document.body.appendChild(lb); } var lbImg=lb.querySelector('.photo-lightbox-img'); lbImg.src=src; lb.style.display='flex'; lb.style.opacity='0'; requestAnimationFrame(function(){ requestAnimationFrame(function(){ lb.style.opacity='1'; lb.classList.add('photo-lightbox-open'); lb.querySelector('.photo-lightbox-img').style.transform='scale(1)'; }); }); }
+      function openPhotoLightbox(src){
+        if(!src) return;
+        hapticLight();
+        var lb = document.getElementById('photo-lightbox');
+        if(!lb){
+          lb = document.createElement('div');
+          lb.id = 'photo-lightbox';
+          lb.className = 'photo-lightbox-overlay';
+          lb.style.cssText = 'position:fixed;inset:0;background:#000;z-index:20000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.28s ease;';
+          var img = document.createElement('img');
+          img.className = 'photo-lightbox-img';
+          img.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);';
+          var closeBtn = document.createElement('button');
+          closeBtn.type = 'button';
+          closeBtn.className = 'photo-lightbox-close';
+          closeBtn.setAttribute('aria-label', 'Schließen');
+          closeBtn.innerHTML = '&#10005;';
+          closeBtn.style.cssText = 'position:absolute;top:16px;right:16px;width:48px;height:48px;background:rgba(255,255,255,0.2);border:none;border-radius:50%;color:#fff;font-size:28px;cursor:pointer;z-index:1;display:flex;align-items:center;justify-content:center;';
+          function closeLb(){
+            lb.style.setProperty('opacity', '0');
+            var lbImage = lb.querySelector('.photo-lightbox-img');
+            if(lbImage) lbImage.style.setProperty('transform', 'scale(0.85)');
+            setTimeout(function(){
+              hide(lb);
+              lb.classList.remove('photo-lightbox-open');
+            }, 280);
+          }
+          closeBtn.onclick = function(e){ e.stopPropagation(); closeLb(); };
+          lb.onclick = function(e){ if(e.target === lb) closeLb(); };
+          img.onclick = function(e){ e.stopPropagation(); closeLb(); };
+          lb.appendChild(img);
+          lb.appendChild(closeBtn);
+          document.body.appendChild(lb);
+        }
+        var lbImg = lb.querySelector('.photo-lightbox-img');
+        if(lbImg) lbImg.src = src;
+        show(lb, 'flex');
+        lb.style.setProperty('opacity', '0');
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            lb.style.setProperty('opacity', '1');
+            lb.classList.add('photo-lightbox-open');
+            var lbImage = lb.querySelector('.photo-lightbox-img');
+            if(lbImage) lbImage.style.setProperty('transform', 'scale(1)');
+          });
+        });
+      }
       /* Trigger NUR auf Bild, nicht auf X oder Kamera [cite: FINALIZE SHEET 2026-02-23] */
       /* Gesamtes Foto klickbar → Edit-Overlay öffnen [cite: EBAY-AIRBNB 2026-03-11] */
       photoContainer.onclick=function(ev){
@@ -18449,13 +18589,13 @@
         if(!f) return;
         if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
         var objectUrl=URL.createObjectURL(f);
-        if(imgEl){ imgEl.src=objectUrl; imgEl.style.display='block'; setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
+        if(imgEl){ imgEl.src=objectUrl; show(imgEl); setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
         var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
         photoTile.classList.remove('is-empty-photo');
         photoTile.style.border='none';
         w.data.photoData=objectUrl; w.data.photoDataIsStandard=false; saveDraft();
         overlay.style.pointerEvents='none'; overlay.style.cursor='default';
-        if(editPencilBtn) editPencilBtn.style.display='flex';
+        if(editPencilBtn) setVisible(editPencilBtn, 'flex');
         closePhotoEditOverlay();
         if(typeof checkMastercardValidation==='function') checkMastercardValidation();
         setTimeout(function(){ openPhotoEditOverlay(); }, 30);
@@ -18492,7 +18632,7 @@
         var sugWrap=document.createElement('div');
         sugWrap.className='inserat-photo-suggestions-wrap';
         sugWrap.style.cssText='position:absolute;bottom:12px;left:0;right:0;display:flex;gap:12px;justify-content:center;align-items:center;pointer-events:auto;';
-        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); setPhotoObjectPanX(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; imgEl.style.display='block'; applyMainImageObjectPosition(); } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('is-empty-photo'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) sugWrap.style.display='none'; if(editPencilBtn) editPencilBtn.style.display='flex'; if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
+        urls.forEach(function(u,i){ var im=document.createElement('img'); im.className='photo-suggestion'; im.src=u; im.alt=''; im.dataset.suggestionIndex=i; im.style.cssText='width:48px;height:48px;object-fit:cover;border-radius:10px;cursor:pointer;pointer-events:auto;'; im.onclick=(function(idx){ return function(e){ e.stopPropagation(); if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]); w.data.photoData=getListingSuggestionUrls()[idx]; w.data.photoDataIsStandard=true; setPhotoObjectPosition(50); setPhotoObjectPanX(50); saveDraft(); if(imgEl){ imgEl.src=w.data.photoData; show(imgEl); applyMainImageObjectPosition(); } var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove(); photoTile.classList.remove('is-empty-photo'); photoTile.style.border='none'; overlay.style.pointerEvents='none'; if(sugWrap) hide(sugWrap); if(editPencilBtn) setVisible(editPencilBtn, 'flex'); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); }; })(i); sugWrap.appendChild(im); });
         sugWrap.style.pointerEvents='auto';
         overlay.appendChild(sugWrap);
       }
@@ -18528,7 +18668,7 @@
           arr.forEach(function(el){
             if(!el) return;
             if(!el.hasAttribute('data-photo-prev-display')){
-              var prev = (el.style && el.style.display) ? el.style.display : '';
+              var prev = window.getComputedStyle(el).display;
               el.setAttribute('data-photo-prev-display', prev);
             }
             el.style.setProperty('display', 'none', 'important');
@@ -18673,7 +18813,7 @@
         }
         function applyEditorTransform(){
           clampPanByScale();
-          oImg.style.transform='translate3d('+editorPanX+'px, '+editorPanY+'px, 0) scale('+editorScale+')';
+          oImg.style.setProperty('transform', 'translate3d('+editorPanX+'px, '+editorPanY+'px, 0) scale('+editorScale+')');
         }
         function toViewportPoint(clientX, clientY){
           var rect=viewport.getBoundingClientRect();
@@ -19397,8 +19537,8 @@
 
       /* Inline-Style-basiert: unabhängig von body.provider-mode CSS-Selektor [cite: 2026-03-10] */
       function closeAllPowerbarSheets(keepFootersHidden, source){
-        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
-        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.setProperty('transform', 'translateY(100%)'); });
+        sharedBackdrop.style.setProperty('opacity', '0'); sharedBackdrop.style.pointerEvents='none';
         if(source !== 'allergene' && typeof closeAllergenDrawer==='function') closeAllergenDrawer(!!keepFootersHidden);
         if(source !== 'extras' && typeof closeQuickAdjust==='function') closeQuickAdjust(!!keepFootersHidden);
         if(!keepFootersHidden) setListingFootersHiddenForOverlay(false);
@@ -19407,12 +19547,12 @@
         hapticLight();
         closeAllPowerbarSheets(true);
         setListingFootersHiddenForOverlay(true);
-        sharedBackdrop.style.opacity='1'; sharedBackdrop.style.pointerEvents='auto';
-        sheetEl.style.transform='translateY(0)';
+        sharedBackdrop.style.setProperty('opacity', '1'); sharedBackdrop.style.pointerEvents='auto';
+        sheetEl.style.setProperty('transform', 'translateY(0)');
       }
       function closeSheet(sheetEl){
-        sheetEl.style.transform='translateY(100%)';
-        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        sheetEl.style.setProperty('transform', 'translateY(100%)');
+        sharedBackdrop.style.setProperty('opacity', '0'); sharedBackdrop.style.pointerEvents='none';
         setListingFootersHiddenForOverlay(false);
         setTimeout(function(){ updatePowerBarFromBox(); }, 350);
       }
@@ -19491,8 +19631,8 @@
       dineInSheet.appendChild(makeFertigBtn(dineInSheet));
       tileDineIn.onclick=function(){ openSheet(dineInSheet); };
       sharedBackdrop.addEventListener('click', function(){
-        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.transform='translateY(100%)'; });
-        sharedBackdrop.style.opacity='0'; sharedBackdrop.style.pointerEvents='none';
+        [dineInSheet,mehrwegSheet,timeSheet,abholnummerSheet].forEach(function(s){ if(s) s.style.setProperty('transform', 'translateY(100%)'); });
+        sharedBackdrop.style.setProperty('opacity', '0'); sharedBackdrop.style.pointerEvents='none';
         setListingFootersHiddenForOverlay(false);
         setTimeout(function(){ updatePowerBarFromBox(); }, 350);
       });
@@ -19762,7 +19902,7 @@
         setListingFootersHiddenForOverlay(false);
         requestAnimationFrame(function(){
           quickAdjustCloseTimer = setTimeout(function(){
-            quickAdjustPanel.style.display='none';
+            hide(quickAdjustPanel);
             quickAdjustPanel.innerHTML='';
             updatePowerBarFromData();
             quickAdjustCloseTimer = null;
@@ -19776,7 +19916,7 @@
         quickAdjustBackdrop.classList.remove('is-open');
         if(!skipFooterRestore) setListingFootersHiddenForOverlay(false);
         quickAdjustCloseTimer = setTimeout(function(){
-          quickAdjustPanel.style.display='none';
+          hide(quickAdjustPanel);
           quickAdjustPanel.innerHTML='';
           updatePowerBarFromData();
           quickAdjustCloseTimer = null;
@@ -19789,7 +19929,7 @@
         setListingFootersHiddenForOverlay(true);
         quickAdjustPanel.setAttribute('data-qa-type', String(type||''));
         quickAdjustPanel.innerHTML='';
-        quickAdjustPanel.style.display='block';
+        show(quickAdjustPanel);
         var drawerHandle=document.createElement('div');
         drawerHandle.className='sub-menu-drawer-handle';
         quickAdjustPanel.appendChild(drawerHandle);
@@ -19872,7 +20012,8 @@
         if(verdienstEl){
           var verdienst = Math.max(0, (price - 0.89) * 30);
           verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
-          verdienstEl.style.display = price > 0 ? 'block' : 'none';
+          if(price > 0) show(verdienstEl);
+          else hide(verdienstEl);
         }
       };
       /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Preis */
@@ -19946,7 +20087,7 @@
           label.textContent=(item.dish||item.name||'Gericht').substring(0,12);
           wrap.appendChild(thumb);
           wrap.appendChild(label);
-          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); w.data.photoObjectPanX=(typeof item.objectPanX==='number')?Math.max(0,Math.min(100,item.objectPanX)):50; saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; img.style.display=w.data.photoData?'block':'none'; if(typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition(); } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;'; div.innerHTML='<span class="inserat-photo-empty-minimal-icon" aria-hidden="true">📸</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('is-empty-photo',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
+          wrap.onclick=function(e){ e.preventDefault(); e.stopPropagation(); hapticLight(); if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); w.data.dish=item.dish||item.name||''; w.data.price=item.price||0; w.data.photoData=item.image||item.imageUrl||''; w.data.photoObjectPosition=typeof item.objectPosition==='number'?item.objectPosition:(typeof item.objectPosition==='string'?parseFloat(item.objectPosition)||50:50); w.data.photoObjectPanX=(typeof item.objectPanX==='number')?Math.max(0,Math.min(100,item.objectPanX)):50; saveDraft(); var inp=box.querySelector('#gericht-name'); var priceInp=box.querySelector('#gericht-preis'); var img=box.querySelector('#mainImagePreview'); if(inp) inp.value=w.data.dish||''; if(priceInp) priceInp.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):''); if(img){ img.src=w.data.photoData||img.src; if(w.data.photoData) show(img); else hide(img); if(typeof applyMainImageObjectPosition==='function') applyMainImageObjectPosition(); } var plc=box.querySelector('.inserat-photo-placeholder-center'); if(plc){ if(w.data.photoData) plc.remove(); } else if(!w.data.photoData){ var ph=box.querySelector('.inserat-photo-tile'); if(ph){ var div=document.createElement('div'); div.className='inserat-photo-placeholder-center'; div.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;'; div.innerHTML='<span class="inserat-photo-empty-minimal-icon" aria-hidden="true">📸</span>'; ph.appendChild(div); } } var pt=box.querySelector('.inserat-photo-tile'); if(pt){ pt.classList.toggle('is-empty-photo',!w.data.photoData); } var ov=box.querySelector('.ebay-photo-overlay'); if(ov) ov.style.pointerEvents=w.data.photoData?'none':'auto'; if(typeof adjustTitleFontSize==='function') adjustTitleFontSize(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(typeof updateProfit==='function') updateProfit(String(w.data.price||0)); };
           cookbookQuickSelect.appendChild(wrap);
         });
         step1Container.appendChild(cookbookQuickSelect);
@@ -19957,7 +20098,7 @@
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        if(ht) ht.style.opacity = '1';
+        if(ht) ht.style.setProperty('opacity', '1');
         if(h){
           h.classList.toggle('header-collapsed', st > 180);
           h.style.borderBottomColor = st > 180 ? '#ebebeb' : 'transparent';
@@ -19966,7 +20107,7 @@
         var sn = box.querySelector('#step-name');
         if(sn){
           var op2 = st <= 150 ? 1 : st >= 250 ? 0 : 1 - (st - 150) / 100;
-          sn.style.opacity = String(Math.max(0, op2));
+          sn.style.setProperty('opacity', String(Math.max(0, op2)));
         }
       }, { passive: true });
 
@@ -19985,12 +20126,12 @@
           if (valid) {
             primaryBtn.classList.add('is-ready');
             primaryBtn.disabled = false;
-            primaryBtn.style.opacity = '';
+            primaryBtn.style.removeProperty('opacity');
             primaryBtn.style.pointerEvents = 'auto';
           } else {
             primaryBtn.classList.remove('is-ready');
             primaryBtn.disabled = true;
-            primaryBtn.style.opacity = '';
+            primaryBtn.style.removeProperty('opacity');
             primaryBtn.style.pointerEvents = 'none';
           }
         }
@@ -20077,7 +20218,7 @@
       lockFooterButtonVisuals(btnWeiter);
       btnWeiter.textContent='Weiter';
       btnWeiter.disabled=true;
-      btnWeiter.style.opacity='';
+      btnWeiter.style.removeProperty('opacity');
       btnWeiter.style.pointerEvents='none';
       btnWeiter.onclick=function(){ switchToStep2(); };
       step1NavRow.appendChild(btnWeiter);
@@ -20108,7 +20249,7 @@
         footerBtn.disabled=false;
         footerBtn.removeAttribute('disabled');
         footerBtn.style.pointerEvents='auto';
-        footerBtn.style.opacity='1';
+        footerBtn.style.setProperty('opacity', '1');
         footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
         footerBtn.onclick=function(){
@@ -20155,7 +20296,7 @@
           try{
             var headerH = (fixedHeader && fixedHeader.isConnected) ? (fixedHeader.offsetHeight || 60) : 60;
             var candidates = [actionSection, airbnbFooter, step3Footer].filter(function(el){
-              return !!(el && el.isConnected && el.style.display !== 'none' && el.offsetParent !== null);
+              return !!(el && el.isConnected && window.getComputedStyle(el).display !== 'none' && el.offsetParent !== null);
             });
             var footerH = 0;
             candidates.forEach(function(el){ footerH = Math.max(footerH, el.offsetHeight || 0); });
@@ -20193,7 +20334,7 @@
               liveBtn.disabled=false;
               liveBtn.removeAttribute('disabled');
               liveBtn.style.pointerEvents='auto';
-              liveBtn.style.opacity='1';
+              liveBtn.style.setProperty('opacity', '1');
               lockFooterButtonVisuals(liveBtn);
             }
           }
@@ -20275,7 +20416,7 @@
           scrollInputAboveKeyboard(activeEl);
         }
         var sa = box.querySelector('.inserat-scroll-area');
-        var footerH=Math.max((f1&&f1.style.display!=='none'&&f1.offsetHeight)||0,(f2&&f2.style.display!=='none'&&f2.offsetHeight)||0,(f3&&f3.style.display!=='none'&&f3.offsetHeight)||0,92);
+        var footerH=Math.max((f1&&window.getComputedStyle(f1).display!=='none'&&f1.offsetHeight)||0,(f2&&window.getComputedStyle(f2).display!=='none'&&f2.offsetHeight)||0,(f3&&window.getComputedStyle(f3).display!=='none'&&f3.offsetHeight)||0,92);
         var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
         if(sa){
           sa.style.setProperty('padding-top', headerH+'px', 'important');
@@ -20598,12 +20739,12 @@
       if (titleEl) titleEl.textContent = 'Woche aktivieren';
       if (amountEl) amountEl.textContent = (typeof euro === 'function' ? euro(offer.totalFee) : (Number(offer.totalFee).toFixed(2).replace('.', ',') + ' €'));
       if (hintEl) hintEl.textContent = (offer.dishCount || 0) + ' Inserate × 4,99 €' + (offer.abholCount ? ' + ' + offer.abholCount + ' Abholnummer × 0,89 €' : '');
-      if (umsatzWrap) umsatzWrap.style.display = 'block';
+      if (umsatzWrap) show(umsatzWrap);
       if (umsatzEl) umsatzEl.textContent = (typeof euro === 'function' ? euro(offer.umsatzVorschau || 0) : (Number(offer.umsatzVorschau || 0).toFixed(2).replace('.', ',') + ' €'));
       if (btnConfirm) btnConfirm.textContent = 'Jetzt Woche aktivieren für ' + (typeof euro === 'function' ? euro(offer.totalFee) : (Number(offer.totalFee).toFixed(2).replace('.', ',') + ' €'));
     } else {
       if (titleEl) titleEl.textContent = 'Fast geschafft! 🚀';
-      if (umsatzWrap) umsatzWrap.style.display = 'none';
+      if (umsatzWrap) hide(umsatzWrap);
       if (amountEl){
         if(offer && (offer.inseratFeeWaived || offer.pricingOption === 'abholnummer')){
           amountEl.textContent = '0,00 €';
@@ -20626,10 +20767,10 @@
     var syncCheck = document.getElementById('publishFeeSyncToCookbook');
     if(syncWrap && syncCheck){
       if(offer && !offer.weeklyMode && offer.cookbookId){
-        syncWrap.style.display = 'block';
+        show(syncWrap);
         syncCheck.checked = true;
       } else {
-        syncWrap.style.display = 'none';
+        hide(syncWrap);
       }
       syncCheck.onchange = function(){ try { if(typeof hapticLight === 'function') hapticLight(); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
     }
@@ -20637,14 +20778,14 @@
     const sheet = document.getElementById('publishFeeSheet');
     // Ensure modal is always above listing wizard/footer layers.
     if(bd){
-      bd.style.display = 'block';
+      show(bd);
       bd.style.visibility = 'visible';
       bd.style.pointerEvents = 'auto';
       bd.style.zIndex = '5100002';
       bd.classList.add('active');
     }
     if(sheet){
-      sheet.style.display = 'block';
+      show(sheet);
       sheet.style.visibility = 'visible';
       sheet.style.pointerEvents = 'auto';
       sheet.style.zIndex = '5100003';
@@ -20674,13 +20815,13 @@
     const bd = document.getElementById('addressRequiredBd');
     const sheet = document.getElementById('addressRequiredSheet');
     if(bd){
-      bd.style.display = 'block';
+      show(bd);
       bd.style.visibility = 'visible';
       bd.style.pointerEvents = 'auto';
       bd.style.zIndex = '5100002';
     }
     if(sheet){
-      sheet.style.display = 'block';
+      show(sheet);
       sheet.style.visibility = 'visible';
       sheet.style.pointerEvents = 'auto';
       sheet.style.zIndex = '5100003';
@@ -20690,12 +20831,12 @@
     const bd = document.getElementById('addressRequiredBd');
     const sheet = document.getElementById('addressRequiredSheet');
     if(bd){
-      bd.style.display = 'none';
+      hide(bd);
       bd.style.pointerEvents = '';
       bd.style.zIndex = '';
     }
     if(sheet){
-      sheet.style.display = 'none';
+      hide(sheet);
       sheet.style.pointerEvents = '';
       sheet.style.zIndex = '';
     }
@@ -20750,7 +20891,10 @@
     if(imgEl) imgEl.src = d.imageUrl || d.photoData || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=400&q=60';
     if(titleEl) titleEl.textContent = d.dish || d.title || 'Gericht';
     if(priceEl) priceEl.textContent = (typeof euro === 'function' ? euro(d.price) : (Number(d.price || 0).toFixed(2).replace('.', ',') + ' €'));
-    if(abholBox) abholBox.style.display = (d.hasPickupCode ? 'block' : 'none');
+    if(abholBox){
+      if(d.hasPickupCode) show(abholBox);
+      else hide(abholBox);
+    }
     if(abholId){
       var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
       var todayOrders = (typeof loadOrders === 'function' ? loadOrders() : []).filter(function(o){
@@ -21037,7 +21181,10 @@
 
     // Hero nur bei Abholnummer; kein Gerichtsfoto hier (nur 1x Bild = in der Live-Preview)
     const heroBlock = document.getElementById('inseratSuccessHero');
-    if(heroBlock) heroBlock.style.display = d.hasPickupCode ? '' : 'none';
+    if(heroBlock){
+      if(d.hasPickupCode) heroBlock.style.removeProperty('display');
+      else hide(heroBlock);
+    }
     const heroImg = document.getElementById('inseratSuccessHeroImg');
     if(heroImg && d.hasPickupCode){
       heroImg.src = 'assets/success-hero-abholnummer.png';
@@ -21113,7 +21260,10 @@
     const dishLetter = dishIdx >= 0 ? String.fromCharCode(65 + Math.min(dishIdx, 4)) : 'A';
     const codeDisplay = dishLetter + '-' + String(runningNumber).padStart(2, '0');
     if(nextCodeEl) nextCodeEl.textContent = codeDisplay;
-    if(abholSection) abholSection.style.display = (d.hasPickupCode ? 'block' : 'none');
+    if(abholSection){
+      if(d.hasPickupCode) show(abholSection);
+      else hide(abholSection);
+    }
     
     var offerLink = buildOfferShareUrl(publishedOffer);
     var whatsAppText = buildWhatsAppShareText(publishedOffer);
@@ -21198,8 +21348,8 @@
       : 'Viel Erfolg beim Verkauf.';
     var bd = document.getElementById('weekActivationSuccessBd');
     var sheet = document.getElementById('weekActivationSuccessSheet');
-    if (bd) { bd.classList.add('active'); bd.style.display = ''; }
-    if (sheet) { sheet.classList.add('active'); sheet.style.display = 'flex'; }
+    if (bd) { bd.classList.add('active'); bd.style.removeProperty('display'); }
+    if (sheet) { sheet.classList.add('active'); show(sheet, 'flex'); }
     var btnShare = document.getElementById('weekActivationSuccessBtnShare');
     var btnBack = document.getElementById('weekActivationSuccessBtnBack');
     if (btnShare && !btnShare._weekSuccessBound) {
@@ -21242,8 +21392,8 @@
   function closeWeekActivationSuccessSheet(){
     var bd = document.getElementById('weekActivationSuccessBd');
     var sheet = document.getElementById('weekActivationSuccessSheet');
-    if (bd) { bd.classList.remove('active'); bd.style.display = 'none'; }
-    if (sheet) { sheet.classList.remove('active'); sheet.style.display = 'none'; }
+    if (bd) { bd.classList.remove('active'); hide(bd); }
+    if (sheet) { sheet.classList.remove('active'); hide(sheet); }
     if (typeof showProviderHome === 'function') showProviderHome();
   }
 
@@ -21440,16 +21590,16 @@
   function openInfoLegendSheet(){
     if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
-    if(bd){ bd.style.pointerEvents='auto'; bd.style.opacity='1'; bd.classList.add('active'); }
-    if(sheet){ sheet.style.transform='translateY(0)'; sheet.classList.add('active'); }
+    if(bd){ bd.style.pointerEvents='auto'; bd.style.setProperty('opacity', '1'); bd.classList.add('active'); }
+    if(sheet){ sheet.style.setProperty('transform', 'translateY(0)'); sheet.classList.add('active'); }
     var list=sheet&&sheet.querySelector('.info-legend-list'); if(list&&w&&w.data){ list.querySelectorAll('.info-legend-item').forEach(function(li){ li.classList.remove('active'); var key=li.getAttribute('data-legend'); if(key==='vorort'&&w.data.dineInPossible) li.classList.add('active'); if(key==='mehrweg'&&w.data.reuse&&w.data.reuse.enabled) li.classList.add('active'); if(key==='zeit'&&(w.data.pickupWindow&&String(w.data.pickupWindow).trim())) li.classList.add('active'); if(key==='allergene'&&((w.data.allergens&&w.data.allergens.length)||(w.data.allergensCustom&&w.data.allergensCustom.length))) li.classList.add('active'); if(key==='extras'&&(w.data.extras&&w.data.extras.length)) li.classList.add('active'); if(key==='abholnummer'&&w.data.hasPickupCode) li.classList.add('active'); }); }
     var btn=document.getElementById('infoLegendVerstandenBtn'); if(btn&&!btn._bound){ btn._bound=true; btn.onclick=function(){ closeInfoLegendSheet(); }; }
   }
   function closeInfoLegendSheet(){
     if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     var bd=document.getElementById('infoLegendBackdrop'); var sheet=document.getElementById('info-legend-sheet');
-    if(bd){ bd.style.pointerEvents='none'; bd.style.opacity='0'; bd.classList.remove('active'); }
-    if(sheet){ sheet.style.transform='translateY(100%)'; sheet.classList.remove('active'); }
+    if(bd){ bd.style.pointerEvents='none'; bd.style.setProperty('opacity', '0'); bd.classList.remove('active'); }
+    if(sheet){ sheet.style.setProperty('transform', 'translateY(100%)'); sheet.classList.remove('active'); }
   }
   if(typeof window !== 'undefined'){ window.openPricingFairnessOverlay = openPricingFairnessOverlay; window.closePricingFairnessOverlay = closePricingFairnessOverlay; window.openInfoLegendSheet = openInfoLegendSheet; window.closeInfoLegendSheet = closeInfoLegendSheet; }
 
@@ -21823,7 +21973,7 @@
         cancelBtn.onclick = ()=>{ editor.remove(); resolve(null); };
         
         const btnRow = document.createElement('div');
-        btnRow.style.display = 'flex';
+        setVisible(btnRow, 'flex');
         btnRow.style.gap = '8px';
         btnRow.appendChild(acceptBtn);
         btnRow.appendChild(cancelBtn);
@@ -21851,7 +22001,7 @@
       // Abholnummer-Ansicht explizit verstecken
       const pickupCodeView = document.getElementById('v-pickup-code');
       if(pickupCodeView){
-        pickupCodeView.style.display = 'none';
+        hide(pickupCodeView);
         pickupCodeView.classList.remove('active');
       }
       showOrders(); // Zurück zu Abholnummern
@@ -21892,7 +22042,7 @@
       const textarea = document.createElement('textarea');
       textarea.value = code;
       textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
+      textarea.style.setProperty('opacity', '0');
       document.body.appendChild(textarea);
       textarea.select();
       try{
@@ -21950,7 +22100,7 @@
       
       // End-of-Stack Karte ausblenden
       const swipeEndOfStack = document.getElementById('swipeEndOfStack');
-      if(swipeEndOfStack) swipeEndOfStack.style.display = 'none';
+      if(swipeEndOfStack) hide(swipeEndOfStack);
       
       showToast('Von vorne gestartet', 1500);
     };
@@ -22185,7 +22335,7 @@
     
     // Formular zurücksetzen
     const form = document.getElementById('supportContactForm');
-    if(form) form.style.display = 'none';
+    if(form) hide(form);
     const message = document.getElementById('supportContactMessage');
     if(message) message.value = '';
     
@@ -22235,7 +22385,7 @@
     
     // Formular anzeigen
     const form = document.getElementById('supportContactForm');
-    if(form) form.style.display = 'block';
+    if(form) show(form);
     
     // Textarea fokussieren
     const message = document.getElementById('supportContactMessage');
@@ -22569,10 +22719,10 @@
           statusEl.textContent = '⚠️ Keine Internetverbindung – Offline-Modus aktiv';
           document.body.appendChild(statusEl);
         } else {
-          statusEl.style.display = 'block';
+          show(statusEl);
         }
       } else {
-        if(statusEl) statusEl.style.display = 'none';
+        if(statusEl) hide(statusEl);
       }
     }
     
@@ -22620,7 +22770,7 @@
       if(homeView){
         homeView.classList.remove('is-hidden');
         homeView.classList.add('active');
-        homeView.style.display = 'block';
+        show(homeView);
       }
       if(typeof renderProviderHome === 'function') renderProviderHome();
       if(typeof showProviderHome === 'function') showProviderHome();

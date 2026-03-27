@@ -160,3 +160,9 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Bereinigt werden u. a. Klassen wie `wizard-inserat-open`, `create-flow-open`, `provider-cookbook-active`, `cookbook-from-dashboard` sowie aktive Backdrops (`#wbd`, `#createFlowBd`, `#createFlowSheet`).
 - Zusätzlich werden übrig gebliebene Wizard-/Drawer-Elemente im `body` entfernt (Step-Footer, Quick-Adjust, Bottom-Sheets, Sub-Drawer), damit keine dunklen Layer oder Ghost-UI in andere Provider-Views durchschlagen.
 - Provider-Bottom-Nav wird nach Cleanup hart sichtbar gesetzt (`display/visibility/opacity`) und `is-scroll-hidden` entfernt.
+
+## Launch-Hardening (UI-State) – Paket 1
+
+- Erste UI-State-Migration für Navigation abgeschlossen: `app/js/ui-navigation.js` und `app/js/app-logic.js` wurden von `style.display` auf `show/hide` bzw. `getComputedStyle` umgestellt.
+- Ziel des Pakets: Guard-Treffer in den zentralen Navigationsteilen reduzieren, ohne View-Logik zu verändern.
+- Ergebnis: Die gemeldeten `style.display`-Treffer aus den beiden Dateien sind entfernt; verbleibende Treffer liegen aktuell überwiegend in `app/script.js`.

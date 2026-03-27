@@ -114,6 +114,8 @@
   function updateHeaderBasket(){
     var badge = document.getElementById('bottomNavBasketBadge');
     if(!badge) return;
+    var show = window.show;
+    var hide = window.hide;
     var raw = load(LS.cart, []);
     var c = (raw != null && raw !== undefined) ? raw : [];
     var itemCount = (c && c.items && Array.isArray(c.items))
@@ -121,9 +123,9 @@
       : (Array.isArray(c) ? c.length : 0);
     if(itemCount > 0){
       badge.textContent = itemCount > 99 ? '99+' : itemCount;
-      badge.style.display = 'flex';
+      show(badge, 'flex');
     } else {
-      badge.style.display = 'none';
+      hide(badge);
     }
     if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
