@@ -13478,3 +13478,24 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-insera
   align-items: center !important;
   justify-content: center !important;
 }
+
+/* STEP-SPLIT LOCK 2026-03-27e
+   - Step 1: scrollt
+   - Step 2: kein internes Scrollen */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-steps-slider,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-steps-track,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-pane,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step2-pane {
+  min-height: 0 !important;
+  height: 100% !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-pane .inserat-scroll-area {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step2-pane,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-2 {
+  overflow: hidden !important;
+}

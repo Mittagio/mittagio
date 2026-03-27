@@ -18170,7 +18170,7 @@
         var step2Wrap=document.createElement('div');
         step2Wrap.id='mastercard-step-2';
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(132px + env(safe-area-inset-bottom, 20px));';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; height:100%; flex:1; background:#ffffff; overflow:hidden; padding-bottom:calc(92px + env(safe-area-inset-bottom, 20px));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
@@ -20060,8 +20060,7 @@
       inputPrice.onfocus=function(){
         hapticLight();
         setTimeout(function(){
-          try{ scrollInputAboveKeyboard(inputPrice); }catch(_e){}
-          if(typeof vvHandler === 'function') vvHandler();
+          try{ inputPrice.scrollIntoView({ behavior: 'auto', block: 'nearest' }); }catch(_e){}
           forceListingFooterForCurrentStep();
         }, 80);
       };
@@ -20226,7 +20225,7 @@
             if(document.body) document.body.scrollTop = 0;
             var step2El = document.getElementById('mastercard-step-2');
             if(step2El){
-              step2El.style.setProperty('overflow-y', 'auto', 'important');
+              step2El.style.setProperty('overflow', 'hidden', 'important');
               step2El.style.setProperty('min-height', '0', 'important');
               step2El.style.setProperty('height', '100%', 'important');
               step2El.scrollTop = 0;
@@ -20466,7 +20465,7 @@
           f.style.setProperty('bottom', '0px', 'important');
         });
         /* 2. Scroll-Bereich: Padding für Header und Footer */
-        if(keyboardOpen){
+        if(keyboardOpen && activeEl && activeEl.id !== 'gericht-preis'){
           scrollInputAboveKeyboard(activeEl);
         }
         var sa = box.querySelector('.inserat-scroll-area');
