@@ -10015,12 +10015,73 @@
   })();
 
   if(typeof console !== 'undefined' && console.log) console.log('[DIAG] Checkpoint B erreicht (Zeile ~9750)');
+  function resetProviderUiState(reason){
+    try{
+      if(!document || !document.body) return;
+      var body = document.body;
+      body.classList.remove(
+        'wizard-inserat-open',
+        'create-flow-open',
+        'provider-cookbook-active',
+        'cookbook-active',
+        'cookbook-from-dashboard',
+        'vendor-area',
+        'provider-week-active'
+      );
+      body.style.removeProperty('overflow');
+      body.style.removeProperty('overscroll-behavior');
+
+      var wizard = document.getElementById('wizard');
+      if(wizard){
+        wizard.classList.remove('active', 'inserat-step2-active', 'inserat-step3-active');
+        wizard.removeAttribute('data-flow');
+        wizard.style.removeProperty('display');
+        wizard.style.removeProperty('visibility');
+        wizard.style.removeProperty('opacity');
+        wizard.style.removeProperty('position');
+        wizard.style.removeProperty('inset');
+        wizard.style.removeProperty('z-index');
+      }
+      var wbd = document.getElementById('wbd');
+      if(wbd) wbd.classList.remove('active');
+      var createFlowBd = document.getElementById('createFlowBd');
+      if(createFlowBd) createFlowBd.classList.remove('active');
+      var createFlowSheet = document.getElementById('createFlowSheet');
+      if(createFlowSheet) createFlowSheet.classList.remove('active');
+
+      var navWrap = document.getElementById('providerNavWrap');
+      var navInner = document.getElementById('providerNav');
+      if(navWrap){
+        navWrap.classList.remove('is-scroll-hidden');
+        navWrap.style.setProperty('display', 'block', 'important');
+        navWrap.style.setProperty('visibility', 'visible', 'important');
+        navWrap.style.setProperty('opacity', '1', 'important');
+      }
+      if(navInner){
+        navInner.style.setProperty('display', 'flex', 'important');
+        navInner.style.setProperty('visibility', 'visible', 'important');
+        navInner.style.setProperty('opacity', '1', 'important');
+      }
+
+      ['mastercard-footer-step1','mastercard-footer-step2','main-publish-btn','quick-adjust-sheet','photo-edit-overlay','app-sticky-header','inserat-fixed-header'].forEach(function(id){
+        var el = document.getElementById(id);
+        if(el && el.parentNode) el.parentNode.removeChild(el);
+      });
+      document.querySelectorAll('.modal-backdrop, .sub-menu-drawer, .sub-menu-drawer-backdrop, .inserat-bottom-sheet, .inserat-bottom-sheet-backdrop').forEach(function(el){
+        if(el && el.parentNode) el.parentNode.removeChild(el);
+      });
+    }catch(err){
+      if(typeof console !== 'undefined' && console.warn) console.warn('resetProviderUiState failed', reason, err);
+    }
+  }
+
   // Provider nav handlers – Kalender-Icon (Wochenplan) triggert showProviderWeek [cite: 2026-02-18]
   var providerNavEl = document.getElementById('providerNav');
   if(providerNavEl) providerNavEl.addEventListener('click',function(e){
     var b = e.target.closest('button');
     if(!b) return;
     var go = b.dataset.pgo;
+    resetProviderUiState('provider-nav-' + String(go || 'unknown'));
     if(go==='provider-home'){
       if(typeof showProviderHome==='function') showProviderHome();
       else if(typeof showView==='function'){ showView('v-provider-home'); if(typeof renderProviderHome==='function') renderProviderHome(); }
@@ -10172,6 +10233,7 @@
   
   function renderProviderHome(){
     if(typeof window.closeQuickPostSheet === 'function') window.closeQuickPostSheet();
+    resetProviderUiState('render-provider-home');
     updateSessionActivity();
     if(document.body){
       document.body.classList.add('provider-mode');

@@ -59,6 +59,12 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Im Anbieter-Footer wurde ein zusätzlicher Linienrest unten entfernt (`border-bottom: 0` auf `#providerNavWrap` und `#providerNav`).
 - Active-State der Bottom-Nav wurde entschärft: `Dashboard` ist weiterhin aktiv erkennbar, aber nicht mehr überproportional stark (kein extra Icon-Block, nur subtile Farb-/Gewichts-Differenz).
 
+## Footer-Feinschliff (Abholnummer + Active Glow)
+
+- Der Tab `Abholnummern` nutzt jetzt denselben SVG-Icon-Pfad wie die anderen Provider-Tabs (`data-icon="receipt"` statt Emoji), damit die Icon-Linie homogen ist.
+- Der aktive Tab im Provider-Footer ist visuell klarer: stärkere Typo (`900`), goldener Icon-Background mit leichtem Glow/Inner-Ring und dezenter Icon-Leuchtspur.
+- Inaktive Tabs bleiben bewusst ruhiger (`opacity` leicht reduziert), damit der aktive Zustand schneller erkennbar ist.
+
 ## Bottom-Nav Variante: Material-soft
 
 - Active-State nutzt jetzt einen dezenten Indicator als kleine Pill unter dem aktiven Tab (`.navbtn.active::after`), statt harter Flächenhervorhebung.
@@ -147,3 +153,10 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Nachfix Sichtbarkeit/Leak: Step1-Footer-Z-Index wurde auf den Step2-Layer angehoben, damit er im Wizard nicht hinter dem Panel verschwindet. Zusätzlich entfernt `closeWizard()`/`closeMastercard()` nun die Body-Footer (`#mastercard-footer-step1`, `#mastercard-footer-step2`, `#main-publish-btn`) hart, damit im Dashboard kein CTA-Rest stehen bleibt.
 - CTA-Typografie/Schreibweise finalisiert: Footer-Buttons bleiben im gleichen Schriftbild wie `Speichern`/`Weiter` (15px/800, kein Caps-Transform). Step2-Text läuft über ein zentrales Label-Helper-Pattern mit normaler Schreibweise; Auto-Debug-Toast ist standardmäßig deaktiviert (`window.__footerDebugAuto = false`).
 - Foto-Editor Overlay-Fix: Beim Öffnen des Foto-Editors werden Listing-Footer (Step1/Step2/Step3) temporär ausgeblendet und beim Schließen abhängig vom aktuellen Wizard-Step wieder eingeblendet. Zusätzlich wurde der Overlay-Layer über den Footer-Layer gesetzt, damit der CTA `Foto speichern` immer sichtbar bleibt.
+
+## Mobile-State-Hotfix (Provider, 27.03.2026)
+
+- Defensiver UI-Reset beim Anbieter-Navigationsklick (`Dashboard`, `Abholnummern`, `Wochenplan`, `Kochbuch`, `Profil`) entfernt hängengebliebene Overlay-/Wizard-Zustände.
+- Bereinigt werden u. a. Klassen wie `wizard-inserat-open`, `create-flow-open`, `provider-cookbook-active`, `cookbook-from-dashboard` sowie aktive Backdrops (`#wbd`, `#createFlowBd`, `#createFlowSheet`).
+- Zusätzlich werden übrig gebliebene Wizard-/Drawer-Elemente im `body` entfernt (Step-Footer, Quick-Adjust, Bottom-Sheets, Sub-Drawer), damit keine dunklen Layer oder Ghost-UI in andere Provider-Views durchschlagen.
+- Provider-Bottom-Nav wird nach Cleanup hart sichtbar gesetzt (`display/visibility/opacity`) und `is-scroll-hidden` entfernt.

@@ -12663,23 +12663,32 @@ body.provider-mode #providerNavWrap #providerNav .navbtn{
   min-height: 60px !important;
   border-top: none !important;
   color: #222222 !important;
+  transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease !important;
 }
 body.provider-mode #providerNavWrap #providerNav .navbtn:not(.active){
-  opacity: 0.62 !important;
+  opacity: 0.56 !important;
 }
 body.provider-mode #providerNavWrap #providerNav .navbtn.active{
   opacity: 1 !important;
-  color: #111111 !important;
-  font-weight: 800 !important;
+  color: #0b0f19 !important;
+  font-weight: 900 !important;
 }
 body.provider-mode #providerNavWrap #providerNav .navbtn .ico svg{
   color: currentColor !important;
   stroke: currentColor !important;
 }
 body.provider-mode #providerNavWrap #providerNav .navbtn.active .ico{
-  background: #f7f7f7 !important;
+  background: linear-gradient(180deg, rgba(255,215,0,0.34) 0%, rgba(255,215,0,0.2) 100%) !important;
   border-radius: 12px !important;
-  box-shadow: none !important;
+  box-shadow: 0 2px 12px rgba(255,215,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.6) !important;
+  transform: translateY(-1px) !important;
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn.active .provider-nav-label{
+  color: #0b0f19 !important;
+  text-shadow: 0 0 10px rgba(255,215,0,0.22);
+}
+body.provider-mode #providerNavWrap #providerNav .navbtn.active .ico svg{
+  filter: drop-shadow(0 0 7px rgba(255,215,0,0.55));
 }
 body.provider-mode.footer-autohide #providerNavWrap.provider-nav-wrap-pill.is-scroll-hidden{
   transform: translateY(0) !important;
@@ -13247,4 +13256,71 @@ body.provider-mode #wizard[data-flow="listing"] #mastercard-footer-step2 .insera
 body.provider-mode #mastercard-footer-step1,
 body.provider-mode #mastercard-footer-step2{
   z-index: 4100000 !important;
+}
+
+/* NO-EFFECTS LOCK 2026-03-27: InseratCard Step 1 komplett clean (kein Glow/Blur/Pop) */
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-tile,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .service-tile,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .power-item,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-pill-emo,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper.inserat-price-ebay,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-price-pill-wrap,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-confirm-pill{
+  box-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit *{
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-tile:active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .service-tile:active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .power-item:active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .power-item.active .inserat-pill-emo{
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-tile .tile-label,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .service-tile .tile-label{
+  color: #0f172a !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-tile.active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-service-tile.is-active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .service-tile.active,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .service-tile.is-active{
+  background: #ffffff !important;
+  border: 1px solid #111827 !important;
+  color: #111827 !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit #gericht-preis,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-price-pill-input,
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .input-giant-price{
+  color: #111827 !important;
+  font-weight: 900 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .inserat-price-pill-input::placeholder{
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #mastercard-step-edit .price-input-wrapper.inserat-price-ebay{
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+body.provider-mode #wizard[data-flow="listing"] #inserat-verdienst-vorschau,
+body.provider-mode #wizard[data-flow="listing"] .price-section #inserat-verdienst-vorschau{
+  display: none !important;
 }
