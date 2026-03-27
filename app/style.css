@@ -13440,3 +13440,41 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-insera
   justify-content: center !important;
   gap: 12px !important;
 }
+
+/* FINAL MOBILE STABILITY LOCK 2026-03-27d
+   - nur .inserat-scroll-area scrollt
+   - Header-Shrink kann wieder greifen
+   - kein Hero-Morph-Layoutsprung
+   - Footer strikt mittig */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .wizard-scroll,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .wizard-scroll #wContent {
+  overflow: hidden !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step2-pane,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-2 {
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .price-section.hero-morph-active,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-wrap {
+  flex-wrap: nowrap !important;
+  width: auto !important;
+  max-width: none !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .price-section.hero-morph-active .inserat-price-pill-input.inserat-price-fintech {
+  width: 100px !important;
+  font-size: 26px !important;
+  text-align: left !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main.inserat-step1-nav {
+  align-items: center !important;
+  justify-content: center !important;
+}

@@ -20051,17 +20051,14 @@
         setTimeout(function(){ if(priceSection) priceSection.classList.remove('harmonic-bounce'); }, 420);
       });
       stepPriceWrap.addEventListener('click', function(e){
-        if(priceSection && priceSection.classList.contains('hero-morph-active')) return;
         if(e.target===inputPrice || inputPrice.contains(e.target)) return;
         e.preventDefault();
         hapticLight();
-        if(priceSection) priceSection.classList.add('hero-morph-active');
-        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
+        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 80);
       });
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){
         hapticLight();
-        if(priceSection) priceSection.classList.add('hero-morph-active');
         setTimeout(function(){
           try{ scrollInputAboveKeyboard(inputPrice); }catch(_e){}
           if(typeof vvHandler === 'function') vvHandler();
@@ -20072,7 +20069,6 @@
         if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',',');
         dismissKeyboard();
         hapticLight();
-        if(priceSection) priceSection.classList.remove('hero-morph-active');
         setTimeout(function(){
           if(typeof vvHandler === 'function') vvHandler();
           forceListingFooterForCurrentStep();
@@ -20225,9 +20221,14 @@
         updateHeaderTitleByStep(2);
         setTimeout(function(){
           try{
+            window.scrollTo(0, 0);
+            if(document.documentElement) document.documentElement.scrollTop = 0;
+            if(document.body) document.body.scrollTop = 0;
             var step2El = document.getElementById('mastercard-step-2');
             if(step2El){
               step2El.style.setProperty('overflow-y', 'auto', 'important');
+              step2El.style.setProperty('min-height', '0', 'important');
+              step2El.style.setProperty('height', '100%', 'important');
               step2El.scrollTop = 0;
             }
             if(typeof vvHandler === 'function') vvHandler();
