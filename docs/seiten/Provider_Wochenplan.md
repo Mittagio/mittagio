@@ -29,6 +29,7 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Wochenplan-Karten im Tagesbereich sind auf eine einheitliche feste Höhe gesetzt, damit alle Slots homogen wirken (kein visuelles Springen bei unterschiedlichen Titellängen).
 - Alte rote Offline-/Test-Markierungen auf Slot-Karten sind entfernt; Entwurfs- und Live-Karten bleiben im ruhigen, neutralen Kartenstil.
 - Tages-Slotkarten werden als Block mit voller Containerbreite gerendert (`.kw-slot.slot-card`), damit kurze Titel (z. B. „Käsespätzle“) nicht zu schmalen Karten führen.
+- Seitlicher Stabilitäts-Lock: Slot-Karten verrutschen beim normalen Vertikal-Scrollen nicht mehr links/rechts; Swipe öffnet nur noch bei klar dominanter, bewusster Horizontal-Geste (höherer Schwellenwert + Horizontal-vor-Vertikal-Filter).
 
 ## Header Shrink (Provider)
 

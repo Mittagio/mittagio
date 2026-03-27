@@ -11306,14 +11306,23 @@
     if(!element || element._stableSwipeBound) return;
     element._stableSwipeBound = true;
     var startX = 0;
+    var startY = 0;
+    var SWIPE_REVEAL_THRESHOLD = 90;
+    var SWIPE_DOMINANCE_FACTOR = 1.35;
     var card = element.querySelector('.week-card-foreground');
     if(!card) return;
     element.addEventListener('touchstart', function(e){
       startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
     }, { passive: true });
     element.addEventListener('touchend', function(e){
       var diffX = startX - e.changedTouches[0].clientX;
-      if (diffX > 50) {
+      var diffY = startY - e.changedTouches[0].clientY;
+      var absX = Math.abs(diffX);
+      var absY = Math.abs(diffY);
+      var horizontalEnough = absX >= SWIPE_REVEAL_THRESHOLD;
+      var horizontalDominant = absX > (absY * SWIPE_DOMINANCE_FACTOR);
+      if (diffX > 0 && horizontalEnough && horizontalDominant) {
         var grid = element.closest('#kwGrid');
         if (grid) closeWeekSwipeCards(grid, element);
         card.classList.add('is-swiped');
@@ -11328,13 +11337,14 @@
   if (typeof window !== 'undefined') window.handleSwipe = handleSwipe;
   function attachKWBoardSlotGestures(grid){
     if (!grid) return;
-    var SWIPE_REVEAL_THRESHOLD = 50;
+    var SWIPE_REVEAL_THRESHOLD = 90;
+    var SWIPE_DOMINANCE_FACTOR = 1.35;
     var LONG_PRESS_MS = 500;
     var slots = grid.querySelectorAll('.kw-slot[data-slot]');
     slots.forEach(function(slotEl){
       var dayKey = slotEl.getAttribute('data-day');
       var slotIdx = parseInt(slotEl.getAttribute('data-slot'), 10) || 0;
-      var startX = 0, endX = 0, longPressTimer = null;
+      var startX = 0, endX = 0, startY = 0, endY = 0, longPressTimer = null;
       var contentEl = slotEl.querySelector('.week-card-foreground');
       if(!contentEl) return;
       if (typeof handleSwipe === 'function') handleSwipe(slotEl);
@@ -11345,7 +11355,12 @@
       }
       function handleSwipeEnd(){
         var diffX = startX - endX;
-        if (diffX > SWIPE_REVEAL_THRESHOLD) {
+        var diffY = startY - endY;
+        var absX = Math.abs(diffX);
+        var absY = Math.abs(diffY);
+        var horizontalEnough = absX >= SWIPE_REVEAL_THRESHOLD;
+        var horizontalDominant = absX > (absY * SWIPE_DOMINANCE_FACTOR);
+        if (diffX > 0 && horizontalEnough && horizontalDominant) {
           closeWeekSwipeCards(grid, slotEl);
           slotEl.classList.add('swipe-open');
           contentEl.classList.add('is-swiped');
@@ -11358,7 +11373,9 @@
         if (slotEl.classList.contains('swipe-open')) { closeSwipe(); return; }
         closeWeekSwipeCards(grid, slotEl);
         startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
         endX = startX;
+        endY = startY;
         clearLongPress();
         longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
       }, { passive: true });
@@ -11370,12 +11387,23 @@
         if (slotEl.classList.contains('swipe-open')) { closeSwipe(); return; }
         closeWeekSwipeCards(grid, slotEl);
         startX = e.clientX;
+        startY = e.clientY;
         endX = startX;
+        endY = startY;
         clearLongPress();
         longPressTimer = setTimeout(function(){ longPressTimer = null; if (typeof haptic === 'function') haptic(6); openKWBoardMoveSheet(dayKey, slotIdx); }, LONG_PRESS_MS);
       });
-      slotEl.addEventListener('mousemove', function(e){ if (e.buttons === 1) endX = e.clientX; });
-      slotEl.addEventListener('touchmove', function(e){ endX = e.touches[0].clientX; if (Math.abs(startX - endX) > 20) clearLongPress(); }, { passive: true });
+      slotEl.addEventListener('mousemove', function(e){
+        if (e.buttons === 1) {
+          endX = e.clientX;
+          endY = e.clientY;
+        }
+      });
+      slotEl.addEventListener('touchmove', function(e){
+        endX = e.touches[0].clientX;
+        endY = e.touches[0].clientY;
+        if (Math.abs(startX - endX) > 20 && Math.abs(startX - endX) > Math.abs(startY - endY)) clearLongPress();
+      }, { passive: true });
       slotEl.addEventListener('mouseup', function(){ clearLongPress(); handleSwipeEnd(); });
       slotEl.addEventListener('mouseleave', function(){ clearLongPress(); if (!slotEl.classList.contains('swipe-open')) closeSwipe(); });
     });

@@ -8412,6 +8412,9 @@
         padding:10px 12px;
         box-sizing:border-box;
       }
+      #v-provider-week .kw-slot{
+        touch-action: pan-y;
+      }
       #v-provider-week .kw-slot .slot-card-img-wrap{
         width:100%;
         min-width:clamp(64px, 20vw, 84px);
