@@ -20247,6 +20247,8 @@
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
       step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      step1NavRow.style.setProperty('align-items', 'center', 'important');
+      step1NavRow.style.setProperty('justify-content', 'center', 'important');
       var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
@@ -20456,6 +20458,12 @@
         var activeEl = document.activeElement;
         var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
         var keyboardOpen = editableFocused && keyboardH > 110;
+        var wizardEl = document.getElementById('wizard');
+        var currentStep = 1;
+        if(wizardEl){
+          if(wizardEl.classList.contains('inserat-step3-active')) currentStep = 3;
+          else if(wizardEl.classList.contains('inserat-step2-active')) currentStep = 2;
+        }
         /* 1. Footer immer unten verankern (wie Photo-Editor) */
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
@@ -20471,12 +20479,32 @@
         var sa = box.querySelector('.inserat-scroll-area');
         var footerH=Math.max((f1&&window.getComputedStyle(f1).display!=='none'&&f1.offsetHeight)||0,(f2&&window.getComputedStyle(f2).display!=='none'&&f2.offsetHeight)||0,(f3&&window.getComputedStyle(f3).display!=='none'&&f3.offsetHeight)||0,92);
         var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
+        var viewportH = keyboardOpen ? vvH : window.innerHeight;
+        var availableH = Math.max(220, viewportH - headerH - footerH - 12);
         if(sa){
           sa.style.setProperty('overflow-y', 'auto', 'important');
           sa.style.setProperty('overflow-x', 'hidden', 'important');
           sa.style.setProperty('pointer-events', 'auto', 'important');
           sa.style.setProperty('padding-top', headerH+'px', 'important');
           sa.style.setProperty('padding-bottom', (footerH+12)+'px', 'important');
+          if(currentStep === 1){
+            sa.style.setProperty('height', availableH+'px', 'important');
+            sa.style.setProperty('max-height', availableH+'px', 'important');
+          } else {
+            sa.style.removeProperty('height');
+            sa.style.removeProperty('max-height');
+          }
+        }
+        var step2El = document.getElementById('mastercard-step-2');
+        if(step2El){
+          if(currentStep === 2){
+            step2El.style.setProperty('overflow', 'hidden', 'important');
+            step2El.style.setProperty('height', availableH+'px', 'important');
+            step2El.style.setProperty('max-height', availableH+'px', 'important');
+          } else {
+            step2El.style.removeProperty('height');
+            step2El.style.removeProperty('max-height');
+          }
         }
         forceListingFooterForCurrentStep();
         box.style.setProperty('--listing-header-offset', headerH+'px');

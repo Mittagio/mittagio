@@ -13499,3 +13499,9 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-
 body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-2 {
   overflow: hidden !important;
 }
+body.provider-mode.wizard-inserat-open {
+  overflow: hidden !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] {
+  overflow: hidden !important;
+}
