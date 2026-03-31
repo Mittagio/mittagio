@@ -13517,3 +13517,85 @@ body.provider-mode #v-provider-week #v-provider-week-header {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* InseratCard Fit-Lock 2026-03-31
+   Kompakter Footer + klarer Preisblock für One-Screen-Darstellung. */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main{
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step1 .inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-footer-step2.inserat-step1-nav,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main.inserat-step1-nav{
+  gap: 10px !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-primary-black,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step1-nav .btn-secondary-link,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #main-publish-btn{
+  min-height: 48px !important;
+  height: 48px !important;
+  border-radius: 10px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-edit .inserat-cockpit-price{
+  margin-top: 6px !important;
+}
+
+/* STEP2 ONE-SCREEN LOCK 2026-03-31
+   Step 2 bleibt fix (kein Scroll), Inhalte kompakt auf einem Screen. */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] .inserat-step2-pane,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-2,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .final-review-step2{
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp{
+  margin: 8px 14px 0 !important;
+  min-height: 88px !important;
+  padding: 12px 10px 10px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-review-stamp #money-dish-img{
+  width: 62px !important;
+  height: 62px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-options-label{
+  margin: 8px 14px 0 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-floating-tiles{
+  gap: 8px !important;
+  padding: 8px 14px 0 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .service-tile-card{
+  min-height: 92px !important;
+  margin: 4px 0 !important;
+  padding: 10px 44px 10px 10px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-tile.has-recommendation{
+  min-height: 128px !important;
+  padding: 12px 46px 12px 12px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-head{
+  font-size: 14px !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-choice-sub{
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+}
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #mastercard-step-money .step2-feature-pills{
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+/* Header Top-Line Kill: kein Strich oberhalb des Headers in Step 1/2 */
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #app-sticky-header,
+body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #inserat-fixed-header{
+  border-top: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

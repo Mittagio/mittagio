@@ -5947,20 +5947,27 @@
     // Inserat Step 2 → Step 1 (Hardware Back / Swipe) [cite: MASTER-CARD FIX 2026-02-23]
     var wizardEl = document.getElementById('wizard');
     if(wizardEl && wizardEl.classList.contains('active') && wizardEl.getAttribute('data-flow')==='listing'){
-      var box = document.querySelector('#wizard .liquid-master-panel');
       var slider = document.querySelector('#wizard .inserat-steps-slider');
-      if(box && slider && slider.getAttribute('data-inserat-step')==='2'){
+      var isStep2 = !!(
+        wizardEl.classList.contains('inserat-step2-active') ||
+        (slider && slider.getAttribute('data-inserat-step') === '2') ||
+        (typeof w !== 'undefined' && Number(w.inseratStep) === 2)
+      );
+      if(isStep2){
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; }
-        slider.setAttribute('data-inserat-step','1');
+        if(slider) slider.setAttribute('data-inserat-step','1');
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         if(f1) f1.style.setProperty('display','flex','important');
         if(f2) f2.style.setProperty('display','none','important');
-        var sf = box.querySelector('[data-inserat-step="3"]');
+        var box = document.querySelector('#wizard .liquid-master-panel');
+        var sf = box ? box.querySelector('[data-inserat-step="3"]') : null;
         if(sf) sf.style.setProperty('display','none','important');
         wizardEl.classList.remove('inserat-step2-active');
         wizardEl.classList.remove('inserat-step3-active');
+        var step2El = document.getElementById('mastercard-step-2');
+        if(step2El) step2El.scrollTop = 0;
         e.preventDefault();
         return;
       }
@@ -19418,11 +19425,11 @@
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:0; width:100%; padding:0 16px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:6px 0 0; width:100%; padding:0 16px;';
       var priceLabelSmall=document.createElement('label');
       priceLabelSmall.htmlFor='gericht-preis';
-      priceLabelSmall.textContent='Dein Preis';
-      priceLabelSmall.style.cssText='font-size:12px; font-weight:500; color:#888; margin:0;';
+      priceLabelSmall.textContent='';
+      priceLabelSmall.style.cssText='display:none;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper inserat-price-ebay';
       priceInputWrapper.style.cssText='display:flex; align-items:center; gap:6px; background:#f7f7f7; border:none; border-radius:12px; padding:12px 16px; width:fit-content;';
@@ -19447,6 +19454,11 @@
       priceInputWrapper.appendChild(stepPriceWrap);
       priceSection.appendChild(priceLabelSmall);
       priceSection.appendChild(priceInputWrapper);
+      var priceSubHint=document.createElement('div');
+      priceSubHint.className='inserat-price-subhint';
+      priceSubHint.textContent='Preis pro Gericht';
+      priceSubHint.style.cssText='font-size:12px; line-height:1.2; color:#94a3b8; font-weight:600; margin:2px 0 0; text-align:center;';
+      priceSection.appendChild(priceSubHint);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
       verdienstWrap.className = 'inserat-verdienst-vorschau';
@@ -20251,15 +20263,15 @@
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
       /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px; box-sizing:border-box;';
       actionSection.style.setProperty('z-index', '4100000', 'important');
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:10px; margin:0; border-radius:0; background:#ffffff; padding:0;';
       step1NavRow.style.setProperty('align-items', 'center', 'important');
       step1NavRow.style.setProperty('justify-content', 'center', 'important');
-      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
+      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:48px; height:48px; padding:0 14px; border:none; border-radius:10px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -20320,7 +20332,7 @@
         footerBtn.type='button';
         footerBtn.id='main-publish-btn';
         footerBtn.className='inserat-footer-btn--499 photo-save-clone-btn';
-        footerBtn.style.cssText='width:100%; min-height:52px; height:52px; max-height:52px; padding:0 16px; border:none; border-radius:12px; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden;';
+        footerBtn.style.cssText='width:100%; min-height:48px; height:48px; max-height:48px; padding:0 14px; border:none; border-radius:10px; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden;';
         lockFooterButtonVisuals(footerBtn);
         footerBtn.disabled=false;
         footerBtn.removeAttribute('disabled');
