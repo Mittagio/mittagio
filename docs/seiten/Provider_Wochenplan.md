@@ -31,6 +31,8 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Tages-Slotkarten werden als Block mit voller Containerbreite gerendert (`.kw-slot.slot-card`), damit kurze Titel (z. B. „Käsespätzle“) nicht zu schmalen Karten führen.
 - Seitlicher Stabilitäts-Lock: Slot-Karten verrutschen beim normalen Vertikal-Scrollen nicht mehr links/rechts; Swipe öffnet nur noch bei klar dominanter, bewusster Horizontal-Geste (höherer Schwellenwert + Horizontal-vor-Vertikal-Filter).
 - S25/PWA Header-Hintergrund-Fix: Für `v-provider-week` wird der Headerhintergrund auf ein solides Weiß gelockt (kein translucenter Blur), damit auf Samsung/PWA kein schwarzer Header-Hintergrund mehr auftritt.
+- Mobile-Browser-Stabilizer (kein PWA): Für `display-mode: browser` wurden harte `100dvh`-Locks im Provider-Bereich entschärft (`100svh/auto`) und Footer/Chrome (`providerNav`, Week-/Cookbook-Footer) auf volle Breite mit Safe-Area-Inset und weißem Background vereinheitlicht, damit Dashboard + Wochenplan im Browser gleich ruhig wie in der installierten App wirken.
+- Browser-Navigation Feintuning (Provider): Das aktive Tab in der Bottom-Navigation ist im mobilen Browser nun klarer erkennbar (höhere aktive Kontrastierung + dezente Goldfläche am Icon), während inaktive Tabs bewusst zurückgenommen bleiben.
 
 ## Header Shrink (Provider)
 

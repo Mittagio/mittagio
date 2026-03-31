@@ -567,8 +567,8 @@
 
   var GOOGLE_PLACES_API_KEY = '';  // Optional: Für Adress-Autocomplete bei Betriebsdaten eintragen
   const CATEGORIES = ['🥩 Fleisch','🥦 Veggie','🌿 Vegan'];
-  /** Kochbuch: Fleisch, Veggie, Vegan [CLEAN CODE 2026-02-23] */
-  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Eintopf','Snack','Veggie'];
+  /** Kochbuch-Pills synchron zu Step 1 */
+  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Veggie','Vegan'];
   const CAT_MAP = {
     '🥩 Fleisch':'Fleisch','🥦 Veggie':'Veggie','🌿 Vegan':'Vegan',
     'Vegan':'Vegan',
@@ -622,7 +622,7 @@
   let providerWeekDay = isoDate(new Date());
   let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
-  let cookbookCategory = 'Alle'; // Konzept: Alle | Fleisch | Eintopf | Snack | Veggie (docs/KOCHBUCH_KONZEPT.md)
+  let cookbookCategory = 'Alle'; // Alle | Fleisch | Veggie | Vegan
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
   let selectedCookbookId = null; // wird auf aktuelle Magazin-Karte gesetzt (für BEARBEITEN/WOCHENPLAN/AUSWÄHLEN)
   let cookbookSortBy = 'date'; // 'date' | 'quantity' | 'price' | 'name'
@@ -16150,8 +16150,8 @@
             var pid = typeof providerId === 'function' ? providerId() : '';
             var newEntries = masterList.map(function(m, idx){
               var cat = (m.category || 'Fleisch').trim();
-              if(cat === 'Vegan' || cat === 'Vegetarisch') cat = 'Veggie';
-              if(cat !== 'Fleisch' && cat !== 'Eintopf' && cat !== 'Snack' && cat !== 'Veggie') cat = 'Fleisch';
+              if(cat === 'Vegetarisch') cat = 'Veggie';
+              if(cat !== 'Fleisch' && cat !== 'Veggie' && cat !== 'Vegan') cat = 'Fleisch';
               return {
                 id: typeof cryptoId === 'function' ? cryptoId() : ('ingest_' + Date.now() + '_' + idx),
                 providerId: pid,
@@ -16277,7 +16277,7 @@
       if(cookbookIsSearching) hide(pillsWrap);
       else show(pillsWrap, 'flex');
       pillsWrap.innerHTML='';
-      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Veggie']).forEach(function(cat){
+      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Veggie','Vegan']).forEach(function(cat){
         var b = document.createElement('button');
         b.type='button';
         b.className='cookbook-cat-pill' + (cookbookCategory===cat?' on':'');
@@ -16295,6 +16295,7 @@
       filtered = mine.filter(function(x){
         var c = (x.category||'').trim();
         if(cookbookCategory==='Fleisch') return c==='Mit Fleisch'||c==='Fleisch';
+        if(cookbookCategory==='Veggie') return c==='Veggie'||c==='Vegetarisch';
         return c===cookbookCategory;
       });
     }
@@ -16415,11 +16416,15 @@
         var lastUsedLabel = !entry.lastUsed ? 'Neu' : formatDayLabel(entry.lastUsed);
         var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
         var qtyStr = orderCount > 0 ? orderCount + ' Portionen' : '–';
+        var showQty = orderCount > 0;
         var priceVal = entry.price != null && entry.price !== '' ? Number(entry.price) : '';
         var lastPriceVal = entry.lastPrice != null && entry.lastPrice !== '' ? Number(entry.lastPrice) : null;
         var showHistory = lastPriceVal != null && (priceVal === '' || Math.abs(Number(priceVal) - lastPriceVal) > 0.001);
         var priceDisplay = priceVal === '' ? '' : (typeof priceVal === 'number' ? (priceVal % 1 === 0 ? String(priceVal) : priceVal.toFixed(2)) : String(priceVal));
         var historyHtml = showHistory ? '<div class="price-history" data-last-price="'+esc(String(lastPriceVal))+'" role="button" tabindex="0">Zuletzt: '+(typeof euro === 'function' ? euro(lastPriceVal) : lastPriceVal.toFixed(2) + ' €')+'</div>' : '';
+        var qtyHtml = showQty
+          ? '<div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Menge</span><span style="font-size:16px; font-weight:700; color:#1D1D1F;">'+esc(qtyStr)+'</span></div>'
+          : '';
         var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;" class="cookbook-magazine-img" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
         return '<div class="cookbook-magazine-card dish-card tgtg-flat" role="article" data-cookbook-entry-id="'+esc(entry.id||'')+'" data-cookbook-index="'+entryIdx+'" style="display:flex; flex-direction:column; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
           '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
@@ -16428,10 +16433,9 @@
           '<p style="margin:0 0 2px; font-size:10px; font-weight:800; color:#1D1D1F; text-transform:uppercase;">Zuletzt live</p>'+
           '<p style="margin:0; font-size:13px; font-weight:700; color:#1D1D1F;">'+esc(lastUsedLabel)+'</p></div></div>'+
           '<div style="padding:16px 16px 18px; display:flex; flex-direction:column; gap:14px; background:#fff;">'+
-          '<div><h2 style="margin:0 0 6px; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2>'+
-          '<p style="margin:0; font-size:13px; font-weight:500; color:#94a3b8;">'+esc(qtyStr)+' · Zuletzt live: '+esc(lastUsedLabel)+'</p></div>'+
+          '<div><h2 style="margin:0; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2></div>'+
           '<div style="display:flex; justify-content:flex-start; align-items:flex-start;">'+
-          '<div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Menge</span><span style="font-size:16px; font-weight:700; color:#1D1D1F;">'+esc(qtyStr)+'</span></div>'+
+          qtyHtml+
           '<div class="cookbook-price-cell">'+
           '<span class="cookbook-price-row">'+
           '<input type="number" step="0.01" min="0" inputmode="decimal" class="cookbook-card-price-input" data-cookbook-entry-id="'+esc(entry.id||'')+'" value="'+esc(priceDisplay)+'" placeholder="0" />'+

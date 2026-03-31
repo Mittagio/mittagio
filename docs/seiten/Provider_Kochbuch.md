@@ -49,3 +49,22 @@ Anbieter verwaltet Gerichte. Kategorie-Pills, Karten, Bar: Bearbeiten | Wochenpl
 - **Kein Schwarz in Dark-Mode:** Provider-Header/-Footer bleiben auch bei `prefers-color-scheme: dark` hell (weißer Hintergrund, helle Border-Töne), damit Kochbuch und Wochenplan auf Samsung/PWA nicht schwarz erscheinen.
 - **Hardware-Back bleibt in der App:** Für Provider-Views wird ein interner History-Guard gesetzt. Bei Android-Hardware-Back wird zuerst in-app navigiert (letzte Seite bzw. Dashboard), statt die App sofort zu verlassen.
 - **Unified Back Trigger:** UI-Zurück (Hard-Back-Button im Header) nutzt jetzt denselben History-Back-Pfad wie Android (`handleAppBack` → `history.back()`), damit Apple/Samsung im Verhalten synchron bleiben.
+
+## Update: Umbenennung Schatzkammer
+
+- Die Bezeichnung **„Profi-Schatzkammer“** wurde in **„Ideenküche“** umbenannt.
+- Neue Subline in der Magazin-Ansicht: **„200 Gerichte zum Durchstöbern & direkt übernehmen“**.
+- Der Trigger im Kochbuch-Header nutzt entsprechend das neue Label (`aria-label: Mittagio – Ideenküche`).
+- Das Header-Icon des `Ideenküche`-Triggers wurde von **📖** auf **✨** umgestellt.
+
+## Update: Kochbuch-Pills + Footer entfernt
+
+- Die Kategorien oben im Kochbuch sind jetzt auf **`Fleisch` · `Veggie` · `Vegan`** vereinheitlicht (analog Step 1), inklusive passender Filterlogik.
+- Der feste Footer-CTA **„Dieses Gericht jetzt inserieren“** im Bereich *Mein Kochbuch* wurde entfernt.
+- Der Scrollbereich im Kochbuch nutzt entsprechend weniger unteren Abstand, damit kein unnötiger Leerraum bleibt.
+
+## Update: Karteninfos ohne Dopplung
+
+- Auf den Kochbuch-Karten bleibt **„Zuletzt live“** ausschließlich als Badge auf dem Bild sichtbar.
+- Die doppelte Meta-Zeile unter dem Titel (z. B. `1 Portionen · Zuletzt live: ...`) wurde entfernt.
+- Unterhalb des Bildes bleiben nur die Kerninfos: **Titel + Preis**, und **Menge** nur dann, wenn tatsächlich Bestellungen vorhanden sind.
