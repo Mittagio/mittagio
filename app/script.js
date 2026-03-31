@@ -12576,24 +12576,12 @@
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    /* Magic-Sheet: Lotto, Saison-Sets, Lücken füllen [cite: 2026-02-23] */
+    /* Magic-Sheet: kompakt im Wochenplan-Header */
     var magicList = document.getElementById('weekMagicSheetList');
     var magicSheet = document.getElementById('weekMagicSheet');
     var magicBd = document.getElementById('weekMagicSheetBd');
     if (magicList && magicSheet) {
       magicList.innerHTML = '';
-      /* Neues Gericht: Abholnummer (0,89 €) priorisieren – Monetarisierung [cite: 2026-01-26, 2026-03-02] */
-      var btnNew = document.createElement('button');
-      btnNew.type = 'button';
-      btnNew.className = 'week-magic-sheet-btn';
-      btnNew.innerHTML = '<span class="week-magic-sheet-emo">🍽️</span><span>Neues Gericht (mit Abholnummer 0,89 €)</span>';
-      btnNew.onclick = function(){
-        if (typeof haptic === 'function') haptic(6);
-        closeWeekMagicSheet();
-        var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
-        if (typeof startListingFlow === 'function') startListingFlow({ date: todayKey, entryPoint: 'week', preferAbholnummer: true });
-      };
-      magicList.appendChild(btnNew);
       function runLottoFill(){
         closeWeekMagicSheet();
         var grid = document.getElementById('kwGrid');
@@ -12620,54 +12608,47 @@
         }
         flyNext();
       }
-      var btnLotto = document.createElement('button');
-      btnLotto.type = 'button';
-      btnLotto.className = 'week-magic-sheet-btn';
-      btnLotto.innerHTML = '<span class="week-magic-sheet-emo">🎲</span><span>Lotto-Modus: Leere Slots mit Renner füllen</span>';
-      btnLotto.onclick = function(){ if (typeof haptic === 'function') haptic(6); runLottoFill(); };
-      magicList.appendChild(btnLotto);
-      Object.keys(SAISON_LABELS || {}).forEach(function(k){
+      function createMagicOption(emoji, title, desc, onClick){
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'week-magic-sheet-btn';
-        btn.innerHTML = '<span class="week-magic-sheet-emo">🌦️</span><span>' + (SAISON_LABELS[k] || k) + '</span>';
-        btn.onclick = (function(sk){
-          return function(){
-            if (typeof haptic === 'function') haptic(6);
-            closeWeekMagicSheet();
-            var n = applySaisonSystemSet(sk);
-            if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-            if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-            if (typeof showToast === 'function') showToast(n > 0 ? n + ' Gerichte eingetragen' : 'Keine leeren Tage');
-          };
-        })(k);
+        btn.innerHTML =
+          '<span class="week-magic-sheet-emo">' + emoji + '</span>' +
+          '<span class="week-magic-sheet-copy">' +
+            '<span class="week-magic-sheet-copy-title">' + title + '</span>' +
+            '<span class="week-magic-sheet-copy-desc">' + desc + '</span>' +
+          '</span>';
+        btn.onclick = function(){
+          if (typeof haptic === 'function') haptic(6);
+          closeWeekMagicSheet();
+          if (typeof onClick === 'function') onClick();
+        };
         magicList.appendChild(btn);
+      }
+      createMagicOption('✨', 'Ideen', 'Passende Gerichte entdecken', function(){
+        if (typeof openWeekMagicThree === 'function') openWeekMagicThree();
+        else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
       });
-      var btnGap = document.createElement('button');
-      btnGap.type = 'button';
-      btnGap.className = 'week-magic-sheet-btn';
-      btnGap.innerHTML = '<span class="week-magic-sheet-emo">🔍</span><span>Lücken füllen: Nur leere Tage ergänzen</span>';
-      btnGap.onclick = function(){
-        if (typeof haptic === 'function') haptic(6);
-        closeWeekMagicSheet();
-        var n = fillGapsOnly();
+      createMagicOption('🍂', 'Saison', 'Gerichte nach Saison anzeigen', function(){
+        var season = typeof getSeasonForWeek === 'function' ? getSeasonForWeek(weekPlanKWIndex) : null;
+        var seasonKey = season && season.id ? season.id : null;
+        if (!seasonKey || typeof applySaisonSystemSet !== 'function') {
+          if (typeof showToast === 'function') showToast('Keine Saisonlogik verfügbar');
+          return;
+        }
+        var n = applySaisonSystemSet(seasonKey);
         if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
         if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-        if (typeof showToast === 'function') showToast(n > 0 ? n + ' Tage ergänzt' : 'Keine Lücken');
-      };
-      magicList.appendChild(btnGap);
-      var btnFind = document.createElement('button');
-      btnFind.type = 'button';
-      btnFind.className = 'week-magic-sheet-btn';
-      btnFind.innerHTML = '<span class="week-magic-sheet-emo">📍</span><span>Lücke finden (zum nächsten freien Slot springen)</span>';
-      btnFind.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
-      magicList.appendChild(btnFind);
-      var btnFill = document.createElement('button');
-      btnFill.type = 'button';
-      btnFill.className = 'week-magic-sheet-btn';
-      btnFill.innerHTML = '<span class="week-magic-sheet-emo">📂</span><span>Woche aus eigener Vorlage füllen</span>';
-      btnFill.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
-      magicList.appendChild(btnFill);
+        if (typeof showToast === 'function') showToast(n > 0 ? n + ' Gerichte eingetragen' : 'Keine leeren Tage');
+      });
+      createMagicOption('🎲', 'Überrasch mich', 'Zufällige Gerichte auswählen', function(){
+        runLottoFill();
+      });
+      if (typeof openWeekMagicThree === 'function') {
+        createMagicOption('🤖', 'KI-Vorschläge', 'Gerichte für deine Woche generieren', function(){
+          openWeekMagicThree();
+        });
+      }
     }
   }
   /** Magic-Sheet-Inhalt bei Öffnen nachladen, falls leer [cite: Plan Wochenplan 2026-02-25] */
@@ -12697,14 +12678,6 @@
     var sheet = document.getElementById('weekMagicSheet');
     if (bd){ hide(bd); bd.classList.remove('active'); }
     if (sheet){ hide(sheet); sheet.classList.remove('active'); }
-  }
-  /** FAB beim Öffnen des Wochenplans: Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
-  function ensureWeekMagicFabBound(){
-    var fab = document.getElementById('weekMagicFab');
-    if (fab && !fab._magicBound) {
-      fab._magicBound = true;
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
-    }
   }
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
   function ensureWeekHeaderKWTriggerBound(){
@@ -12754,7 +12727,7 @@
   }
   if (typeof window !== 'undefined') window.triggerWeekSharing = triggerWeekSharing;
 
-  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
+  /** Wochenplan: KW-Trigger + Header-Actions fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
   function initWeekPlanInteractions(){
     var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
     if (kwEl && !kwEl._kwBound) {
@@ -12778,11 +12751,11 @@
         }
       };
     }
-    var fab = document.getElementById('weekMagicFab');
-    if (fab) {
-      fab.onclick = function(){
-        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
-        if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+    var magicHeaderBtn = document.getElementById('btnWeekMagicHeader');
+    if (magicHeaderBtn) {
+      magicHeaderBtn.onclick = function(e){
+        e.stopPropagation();
+        if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
       };
     }
     var kebabBtn = document.getElementById('btnWeekKebab');

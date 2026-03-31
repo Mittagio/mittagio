@@ -34,6 +34,19 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Mobile-Browser-Stabilizer (kein PWA): Für `display-mode: browser` wurden harte `100dvh`-Locks im Provider-Bereich entschärft (`100svh/auto`) und Footer/Chrome (`providerNav`, Week-/Cookbook-Footer) auf volle Breite mit Safe-Area-Inset und weißem Background vereinheitlicht, damit Dashboard + Wochenplan im Browser gleich ruhig wie in der installierten App wirken.
 - Browser-Navigation Feintuning (Provider): Das aktive Tab in der Bottom-Navigation ist im mobilen Browser nun klarer erkennbar (höhere aktive Kontrastierung + dezente Goldfläche am Icon), während inaktive Tabs bewusst zurückgenommen bleiben.
 
+## Update: Magic in den Header verlegt
+
+- Der bisherige `weekMagicFab` (Floating Button unten rechts) wurde vollständig entfernt (Markup, FAB-Styles, FAB-Klick-Bindings).
+- Stattdessen gibt es im Wochenplan-Header ein dezentes Sparkles-Icon `btnWeekMagicHeader` neben dem Kebab-Menü, im gleichen Button-Stil und gleicher Größe.
+- Klick auf `✨` öffnet das bestehende `weekMagicSheet` (kein neuer Flow).
+- Sheet-Titel: **„Ideen für deine Woche“**.
+- Sheet-Optionen sind auf klare Einträge reduziert:
+  - `✨ Ideen` – Passende Gerichte entdecken
+  - `🍂 Saison` – Gerichte nach Saison anzeigen
+  - `🎲 Überrasch mich` – Zufällige Gerichte auswählen
+  - optional `🤖 KI-Vorschläge`, wenn verfügbar
+- Nach Auswahl bleibt der Nutzer im Wochenplan-Kontext; Footer und „Woche jetzt inserieren“-Flow bleiben unverändert.
+
 ## Header Shrink (Provider)
 
 - `Wochenplan` nutzt jetzt denselben Shrink-Flow: großer Header beim Einstieg, kompakt beim Scroll-down, expandiert bei Scroll-up.
