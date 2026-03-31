@@ -9929,7 +9929,7 @@
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
-    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-03-02]
+    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger') || e.target.closest('.week-magic-header-trigger')) return; // KW + Header-Actions Priorität
     var view = trig.getAttribute('data-reset-view');
     if(!view) return;
     e.preventDefault();
@@ -12755,6 +12755,8 @@
     if (magicHeaderBtn) {
       magicHeaderBtn.onclick = function(e){
         e.stopPropagation();
+        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
+        if (typeof haptic === 'function') haptic(6);
         if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
       };
     }

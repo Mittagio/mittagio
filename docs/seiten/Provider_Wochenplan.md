@@ -47,6 +47,17 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
   - optional `🤖 KI-Vorschläge`, wenn verfügbar
 - Nach Auswahl bleibt der Nutzer im Wochenplan-Kontext; Footer und „Woche jetzt inserieren“-Flow bleiben unverändert.
 
+## Update: Wochenplan Bottom-Stack
+
+- Im Wochenplan bleibt die Provider-Bottom-Navigation wieder sichtbar (`providerNavWrap` wird im `provider-week-active` State explizit sichtbar gehalten).
+- Der Wochenplan-Footer (`weekViewFooter`) sitzt nun bewusst **oberhalb** der Bottom-Navigation (`bottom`-Offset), damit der CTA „Woche jetzt inserieren“ höher liegt und nicht mit der Nav kollidiert.
+
+## Update: Header-Shrink komplett + Sparkles-Trigger
+
+- Der Wochenplan-Header schrumpft im `is-compact`-State jetzt vollständig (nicht nur `KW`-Text): Gap in der Main-Row/Actions wird reduziert, Header-Action-Buttons werden auf kompakte Größe gesetzt.
+- Der Sparkles-Trigger im Header nutzt ein direkt sichtbares `✨`-Icon (`week-magic-header-icon`) und bleibt im gleichen Header-Button-Stil.
+- Klick auf `✨` ist explizit gebunden (inkl. Haptik), öffnet zuverlässig das bestehende Magic-Sheet und bleibt im Wochenplan-Kontext.
+
 ## Header Shrink (Provider)
 
 - `Wochenplan` nutzt jetzt denselben Shrink-Flow: großer Header beim Einstieg, kompakt beim Scroll-down, expandiert bei Scroll-up.

@@ -22,7 +22,7 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 
 ## Update: Airbnb-Footer, Header-Cleaning & Kachel-Korrektur
 
-- **Airbnb-Footer:** Kunden-Bottom-Nav (`#customerNav`) ist `fixed`, reinweiss, `border-top: 1px solid #ebebeb`, `height: calc(65px + env(safe-area-inset-bottom))`, `z-index: 2000`.
+- **Airbnb-Footer:** Kunden-Bottom-Nav (`#customerNav`) ist `fixed`, reinweiss, ohne Trennlinie oben, `height: calc(65px + env(safe-area-inset-bottom))`, `z-index: 2000`.
 - **Header-Cleaning:** `discover-header-sticky` auf `position: sticky`, `background: #ffffff`, `margin/padding: 0`, `z-index: 1500`. `#v-discover` Hintergrund auf `#fcfcfc`.
 - **Kachel-Korrektur:** `discover-offers-list` als `flex-direction: column`, `gap: 40px`, `padding-bottom: 100px` (Footer-Platz). `.dish-card` und `.tgtg-list-item` auf `position: relative`, `max-width: 320px`, zentriert - kein Stapeln mehr.
 
@@ -56,4 +56,4 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Vertikale Ausrichtung der Tabs ist gestrafft (`height/min-height`, reduziertes `padding`/`gap`), damit Icons und Labels nicht zu weit unten sitzen.
 - Active-State ist bewusst subtil (dunkler Text/Icon + leicht hoehere Gewichtung), inaktive Tabs bleiben neutral grau.
 - Inline-Layoutstyles an `#customerNav` und den Nav-Buttons wurden entfernt; Groessen/Abstaende/Typografie laufen jetzt zentral ueber CSS.
-- Separator ist konsistent mit Anbieter: genau eine feine Linie oberhalb des Footers (`#customerNav::before`) statt mehrfacher Border-/Shadow-Linien.
+- Kein Separator oberhalb der Kunden-Nav: die Leiste bleibt bewusst clean ohne graue Trennlinie.
