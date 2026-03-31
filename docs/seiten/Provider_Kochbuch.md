@@ -48,3 +48,4 @@ Anbieter verwaltet Gerichte. Kategorie-Pills, Karten, Bar: Bearbeiten | Wochenpl
 
 - **Kein Schwarz in Dark-Mode:** Provider-Header/-Footer bleiben auch bei `prefers-color-scheme: dark` hell (weißer Hintergrund, helle Border-Töne), damit Kochbuch und Wochenplan auf Samsung/PWA nicht schwarz erscheinen.
 - **Hardware-Back bleibt in der App:** Für Provider-Views wird ein interner History-Guard gesetzt. Bei Android-Hardware-Back wird zuerst in-app navigiert (letzte Seite bzw. Dashboard), statt die App sofort zu verlassen.
+- **Unified Back Trigger:** UI-Zurück (Hard-Back-Button im Header) nutzt jetzt denselben History-Back-Pfad wie Android (`handleAppBack` → `history.back()`), damit Apple/Samsung im Verhalten synchron bleiben.

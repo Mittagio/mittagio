@@ -5895,6 +5895,33 @@
     };
   }
 
+  // App-Back-Orchestrator: UI-Back + Android-Back laufen über denselben History-Pfad.
+  function handleAppBack(source){
+    try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(_e){}
+    var hasState = false;
+    try { hasState = !!(typeof history !== 'undefined' && history.state); } catch(_e){ hasState = false; }
+    if(hasState && typeof history !== 'undefined'){
+      history.back();
+      return true;
+    }
+    var wiz = document.getElementById('wizard');
+    if(wiz && wiz.classList.contains('active')){
+      if(typeof closeMastercard === 'function') closeMastercard();
+      else if(typeof closeWizard === 'function') closeWizard();
+      return true;
+    }
+    if(mode === 'provider' && typeof showProviderHome === 'function'){
+      showProviderHome();
+      return true;
+    }
+    if(typeof showDiscover === 'function'){
+      showDiscover();
+      return true;
+    }
+    return false;
+  }
+  if(typeof window !== 'undefined') window.handleAppBack = handleAppBack;
+
   // Android Hardware-Back: Kontextbasierte Zurück-Navigation [cite: History-Context 2026-02-26]
   window.addEventListener('popstate', function(e){
     // AGB Onboarding Modal schließen
@@ -10178,7 +10205,12 @@
     else { if(typeof openDishFlow === 'function') openDishFlow(); }
   }, true);
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
-  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else showProviderHome(); };
+  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){
+    if(typeof window.handleAppBack === 'function' && window.handleAppBack('ui-hard-back')) return;
+    if(typeof handleBack==='function') handleBack();
+    else if(typeof showSection==='function') showSection('dashboard');
+    else showProviderHome();
+  };
 
   // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
   document.addEventListener('click', function(e){
