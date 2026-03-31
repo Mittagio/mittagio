@@ -43,3 +43,8 @@ Anbieter verwaltet Gerichte. Kategorie-Pills, Karten, Bar: Bearbeiten | Wochenpl
 - **Kein Save-Popup beim X:** Wenn die InseratCard aus dem Kochbuch- oder Wochenplan-Kontext geöffnet wurde, schließt `X` die Karte jetzt direkt mit der Pop-Away-Animation.
 - **Rücksprung bleibt gleich:** Nach dem Schließen bleibt der Nutzer im jeweiligen Kontext (`entryPoint: cookbook` bzw. `entryPoint: weeklyPlan`).
 - **Scope:** Der Bypass gilt für Kochbuch + Wochenplan; andere EntryPoints behalten ihren bisherigen Dirty-Check/Save-Dialog.
+
+## Update: S25/PWA Chrome-Fix (Header/Footer + Zurücktaste)
+
+- **Kein Schwarz in Dark-Mode:** Provider-Header/-Footer bleiben auch bei `prefers-color-scheme: dark` hell (weißer Hintergrund, helle Border-Töne), damit Kochbuch und Wochenplan auf Samsung/PWA nicht schwarz erscheinen.
+- **Hardware-Back bleibt in der App:** Für Provider-Views wird ein interner History-Guard gesetzt. Bei Android-Hardware-Back wird zuerst in-app navigiert (letzte Seite bzw. Dashboard), statt die App sofort zu verlassen.

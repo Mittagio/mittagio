@@ -6035,6 +6035,16 @@
     // Provider Views
     if(mode === 'provider'){
       const providerView = currentView ? currentView.id : '';
+      /* PWA/Hardware-Back Guard:
+         Wenn kein interner State mehr vorhanden ist, bleibe in der App
+         und gehe auf Dashboard statt App-Exit. */
+      if((!e.state || !e.state.__inAppProviderGuard) && providerView){
+        if(typeof showProviderHome === 'function') showProviderHome();
+        try{
+          history.pushState({ __inAppProviderGuard: 'v-provider-home' }, '', location.pathname + (location.search || ''));
+        }catch(_e){}
+        return;
+      }
       if(providerView === 'v-provider-profile'){
         showProviderHome();
         e.preventDefault();
@@ -22776,6 +22786,14 @@
     const originalShowView = showView;
     showView = function(id){
       originalShowView(id);
+      try{
+        if(typeof id === 'string' && id.indexOf('v-provider-') === 0){
+          var state = history && history.state ? history.state : null;
+          if(!state || state.__inAppProviderGuard !== id){
+            history.pushState({ __inAppProviderGuard: id }, '', location.pathname + (location.search || ''));
+          }
+        }
+      }catch(_e){}
       setTimeout(()=> initIcons(), 50);
     };
   }

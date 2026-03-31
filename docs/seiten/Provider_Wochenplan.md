@@ -30,6 +30,7 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Alte rote Offline-/Test-Markierungen auf Slot-Karten sind entfernt; Entwurfs- und Live-Karten bleiben im ruhigen, neutralen Kartenstil.
 - Tages-Slotkarten werden als Block mit voller Containerbreite gerendert (`.kw-slot.slot-card`), damit kurze Titel (z. B. „Käsespätzle“) nicht zu schmalen Karten führen.
 - Seitlicher Stabilitäts-Lock: Slot-Karten verrutschen beim normalen Vertikal-Scrollen nicht mehr links/rechts; Swipe öffnet nur noch bei klar dominanter, bewusster Horizontal-Geste (höherer Schwellenwert + Horizontal-vor-Vertikal-Filter).
+- S25/PWA Header-Hintergrund-Fix: Für `v-provider-week` wird der Headerhintergrund auf ein solides Weiß gelockt (kein translucenter Blur), damit auf Samsung/PWA kein schwarzer Header-Hintergrund mehr auftritt.
 
 ## Header Shrink (Provider)
 
