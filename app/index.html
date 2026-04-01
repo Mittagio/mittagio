@@ -338,6 +338,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p id="adminProviderBaseSource" class="admin-provider-base-source">Quelle: wird geladen ...</p>
           <div class="admin-provider-base-actions">
             <button type="button" id="adminBtnProviderBaseRefresh" class="admin-provider-base-refresh-btn">Anbieterbasis neu laden</button>
+            <button type="button" id="adminBtnMassTestRun" class="admin-provider-base-refresh-btn">Batch-Testlauf starten</button>
             <button type="button" id="adminBtnProviderBaseAdd" class="admin-provider-base-secondary-btn">Neuer Anbieter</button>
             <button type="button" id="adminBtnProviderBaseCsvExport" class="admin-provider-base-secondary-btn">Anbieter-CSV exportieren</button>
             <button type="button" id="adminBtnProviderOpenCsvExport" class="admin-provider-base-secondary-btn">Nur offene Freischaltungen exportieren</button>
@@ -3204,7 +3205,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div id="providerLoginPrecheckHint" class="provider-login-precheck-hint">
         Nur vorangelegte Anbieter sind freigeschaltet. Falls dein Login noch nicht aktiv ist, kontaktiere den Admin.
       </div>
-      <input class="field" id="providerLoginPass" type="password" placeholder="Passwort" autocomplete="current-password" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <input class="field" id="providerLoginPass" type="password" placeholder="Passwort (Test: admin)" autocomplete="current-password" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
       <button class="btn-primary" type="button" id="btnProviderLoginModal" style="width:100%; min-height:52px; font-size:16px; font-weight:700; margin-top:8px; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none;">
         <i data-lucide="log-in" style="width:20px;height:20px;"></i>
         <span>Einloggen</span>
@@ -3215,7 +3216,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </div>
     <details class="hint" style="margin-top:20px; padding:12px; background:rgba(0,0,0,0.04); border-radius:12px; font-size:12px; color:#64748b;">
       <summary style="cursor:pointer; font-weight:600;">Hilfe? Demo-Zugang</summary>
-      <p style="margin:8px 0 0; line-height:1.5;">Beliebige E-Mail/Passwort → Einloggen. Demo: <strong>demo@mittagio.de</strong></p>
+      <p style="margin:8px 0 0; line-height:1.5;">Freigeschaltete Anbieter: E-Mail aus Anbieterbasis + Passwort <strong>admin</strong>. Demo: <strong>demo@mittagio.de</strong></p>
     </details>
   </div>
 </div>

@@ -28,15 +28,18 @@ Admin-Dashboard: KPIs, Inserats-Feed, Buchhaltung, CSV-Export und Pflege-Entry f
 - **Versionierung:** `REAL_PROVIDER_DIRECTORY_VERSION` steuert, wann ein Refresh der Basis erzwungen wird.
 - **Keine Testadressen:** Beim Live-Refresh wird die lokale Liste auf den CSV-Bestand zurückgesetzt (statt zu mergen). Testeinträge werden dadurch entfernt; bestehende Login-E-Mails passender Live-Anbieter bleiben erhalten.
 - **Admin-Hook:** In `v-admin` zeigt die Karte die Anzahl, Vorschau und bietet „Anbieterbasis neu laden“ (`window.refreshProviderDirectory()`).
+- **Test-Login-Mails:** Falls `LoginEmail` in der CSV fehlt, wird pro Anbieter automatisch eine eindeutige Test-Mail erzeugt (`name.ort@mittagio-test.de`).
 
 ## Test-Seed: 3 Gerichte × 7 Tage
 
 - **Ziel:** Für Last-/UI-Tests werden für jeden Anbieter aus der Live-Basis automatisch Tagesgerichte erzeugt.
 - **Umfang:** `3` aktive Gerichte pro Anbieter und Tag für die nächsten `7` Tage (bei 200 Anbietern = `4.200` Inserate).
 - **Datenpfad:** Einmaliger, versionierter Seed in `app/script.js` (`MASS_PROVIDER_WEEK_SEED_VERSION`), gespeichert in `LS.offers` und `LS.week`.
-- **Kundenseiten-Sichtbarkeit:** Für den Testseed werden Standortfelder auf `73614 Schorndorf` und `distanceKm: 0.7` normalisiert, damit die Discover-Defaultfilter (Ort/Radius/Zeit) Ergebnisse zeigen.
+- **Reale Adressen:** Der Seed nutzt die echten `PLZ/Ort/Straße` aus der Anbieterbasis und erzeugt Marker-Koordinaten pro Stadt für Karten-/Radius-Tests.
+- **Testkunden:** Beim Seed werden zusätzlich mehrere Testkundenprofile pro Stadt erzeugt (`LS.massTestCustomers`), z. B. `kunde.stuttgart@mittagio-test.de`.
 - **Duplikatschutz:** Alte Seed-Einträge mit derselben Source werden vor Neuaufbau entfernt; normale manuelle Daten bleiben erhalten.
 - **Manueller Trigger:** `window.seedAllProvidersTestWeek()` erzwingt den Seed erneut für Testzwecke.
+- **Aktivierung Testkunde:** `window.activateMassTestCustomer(<id>)` setzt Standort/Radius auf das gewählte Testprofil.
 
 ## Anbieter-CRUD im Admin
 
@@ -80,3 +83,4 @@ Admin-Dashboard: KPIs, Inserats-Feed, Buchhaltung, CSV-Export und Pflege-Entry f
 - **Adress-Führung:** Nach Login wird das Profil mit dem vorangelegten Anbieter-Eintrag verknüpft (`linkedProviderDirectoryId`).
 - **Login-Precheck:** Im Anbieter-Login wird sofort angezeigt, ob die eingegebene E-Mail freigeschaltet ist.
 - **Login-Button-Lock:** `Einloggen` bleibt deaktiviert, bis die E-Mail in der Anbieterbasis freigeschaltet ist.
+- **Testpasswort:** Für freigeschaltete Testanbieter gilt Passwort `admin` (Demo-Account bleibt separat).

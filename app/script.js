@@ -102,17 +102,45 @@
     weekVeggieReminder: 'mittagio_week_veggie_reminder_v1',
     providerDirectory: 'mittagio_provider_directory_v1',
     providerDirectoryVersion: 'mittagio_provider_directory_version_v1',
-    massProviderWeekSeedVersion: 'mittagio_mass_provider_week_seed_version_v1'
+    massProviderWeekSeedVersion: 'mittagio_mass_provider_week_seed_version_v1',
+    massTestCustomers: 'mittagio_mass_test_customers_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
   const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
-  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v2';
+  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v3-real-addresses';
   const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
   function normalizeEmailAddress(value){
     return String(value || '').trim().toLowerCase();
+  }
+
+  function slugifyEmailPart(value){
+    var base = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return base || 'anbieter';
+  }
+
+  function isGeneratedProviderTestEmail(email){
+    var norm = normalizeEmailAddress(email);
+    return /@mittagio-test\.de$/.test(norm);
+  }
+
+  function generateProviderTestEmail(name, city, usedLocalParts){
+    var localBase = slugifyEmailPart(name) + '.' + slugifyEmailPart(city || 'stadt');
+    var localPart = localBase;
+    var n = 2;
+    while(usedLocalParts.has(localPart)){
+      localPart = localBase + '-' + n;
+      n += 1;
+    }
+    usedLocalParts.add(localPart);
+    return localPart + '@mittagio-test.de';
   }
 
   function parseProviderDirectoryCsv(csv){
@@ -120,6 +148,7 @@
     if(!lines.length) return [];
     var out = [];
     var seen = new Set();
+    var usedEmailLocalParts = new Set();
     for(var i = 0; i < lines.length; i++){
       var line = lines[i];
       if(!line) continue;
@@ -138,6 +167,11 @@
       var key = [name, street, zip, city].join('|').toLowerCase();
       if(seen.has(key)) continue;
       seen.add(key);
+      if(loginEmail){
+        usedEmailLocalParts.add(loginEmail.split('@')[0] || '');
+      } else {
+        loginEmail = generateProviderTestEmail(name, city, usedEmailLocalParts);
+      }
       out.push({
         id: 'dir_' + cryptoId(),
         name: name,
@@ -207,6 +241,70 @@
     return 'prov_dir_' + h.toString(16);
   }
 
+  const TEST_CITY_COORDS = {
+    stuttgart: { lat: 48.7784, lng: 9.1800 },
+    ludwigsburg: { lat: 48.8973, lng: 9.1916 },
+    'bietigheim-bissingen': { lat: 48.9528, lng: 9.1297 },
+    schorndorf: { lat: 48.8014, lng: 9.5282 },
+    waiblingen: { lat: 48.8324, lng: 9.3164 },
+    esslingen: { lat: 48.7396, lng: 9.3047 },
+    fellbach: { lat: 48.8091, lng: 9.2748 },
+    korntal: { lat: 48.8266, lng: 9.1163 },
+    leonberg: { lat: 48.8015, lng: 9.0158 },
+    boeblingen: { lat: 48.6840, lng: 9.0113 }
+  };
+
+  function cityCenter(city){
+    var key = slugifyEmailPart(city || '');
+    return TEST_CITY_COORDS[key] || TEST_CITY_COORDS.stuttgart;
+  }
+
+  function haversineKm(aLat, aLng, bLat, bLng){
+    var toRad = Math.PI / 180;
+    var dLat = (bLat - aLat) * toRad;
+    var dLng = (bLng - aLng) * toRad;
+    var lat1 = aLat * toRad;
+    var lat2 = bLat * toRad;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+
+  function buildMassTestCustomers(providerRows){
+    var rows = Array.isArray(providerRows) ? providerRows.filter(Boolean) : [];
+    var cityMap = new Map();
+    rows.forEach(function(row){
+      var city = String((row && row.city) || '').trim();
+      if(!city) return;
+      var key = city.toLowerCase();
+      if(cityMap.has(key)) return;
+      cityMap.set(key, {
+        id: 'cust_test_' + slugifyEmailPart(city),
+        name: 'Testkunde ' + city,
+        email: 'kunde.' + slugifyEmailPart(city) + '@mittagio-test.de',
+        city: city,
+        locationLabel: city,
+        lat: cityCenter(city).lat,
+        lng: cityCenter(city).lng,
+        discoverRadiusM: 3000
+      });
+    });
+    var list = Array.from(cityMap.values());
+    if(!list.length){
+      list.push({
+        id: 'cust_test_stuttgart',
+        name: 'Testkunde Stuttgart',
+        email: 'kunde.stuttgart@mittagio-test.de',
+        city: 'Stuttgart',
+        locationLabel: 'Stuttgart',
+        lat: TEST_CITY_COORDS.stuttgart.lat,
+        lng: TEST_CITY_COORDS.stuttgart.lng,
+        discoverRadiusM: 3000
+      });
+    }
+    return list.slice(0, 12);
+  }
+
   function seedMassProviderWeekTestData(providerRows){
     var rows = Array.isArray(providerRows) ? providerRows.filter(Boolean) : [];
     if(!rows.length) return { providers: 0, offers: 0, days: 0 };
@@ -248,15 +346,16 @@
 
     var createdAtBase = Date.now();
     var generatedOffers = [];
+    var testCustomers = buildMassTestCustomers(rows);
+    var distanceAnchor = testCustomers[0] || { lat: TEST_CITY_COORDS.stuttgart.lat, lng: TEST_CITY_COORDS.stuttgart.lng };
     rows.forEach(function(entry, providerIdx){
       var providerName = String((entry && entry.name) || 'Anbieter').trim() || 'Anbieter';
       var providerStreet = String((entry && entry.street) || '').trim();
-      /* Kundenseite filtert standardmäßig auf Schorndorf + engen Radius.
-         Test-Seed wird deshalb explizit auf Schorndorf normalisiert. */
-      var providerZip = '73614';
-      var providerCity = 'Schorndorf';
+      var providerZip = String((entry && entry.zip) || '').trim();
+      var providerCity = String((entry && entry.city) || '').trim() || 'Stuttgart';
       var providerAddress = buildAddress({ street: providerStreet, zip: providerZip, city: providerCity });
       var providerPid = normalizeEmailAddress(entry && entry.loginEmail) || stableProviderIdFromDirectoryEntry(entry);
+      var center = cityCenter(providerCity);
       dayKeys.forEach(function(dayKey, dayIdx){
         for(var mealIdx = 0; mealIdx < 3; mealIdx++){
           var tpl = mealTemplates[(providerIdx * 3 + dayIdx + mealIdx) % mealTemplates.length];
@@ -276,7 +375,9 @@
             price: price,
             pickupWindow: '11:30 – 14:00',
             day: dayKey,
-            distanceKm: 0.7,
+            distanceKm: Number(haversineKm(distanceAnchor.lat, distanceAnchor.lng, center.lat, center.lng).toFixed(1)),
+            lat: Number((center.lat + (((providerIdx % 7) - 3) * 0.0025) + (mealIdx * 0.00035)).toFixed(6)),
+            lng: Number((center.lng + (((dayIdx % 7) - 3) * 0.0025) + (mealIdx * 0.00035)).toFixed(6)),
             hasPickupCode: true,
             dineInPossible: true,
             reuse: { enabled: false, deposit: 0 },
@@ -301,10 +402,12 @@
     var nextOffers = keepOffers.concat(generatedOffers);
     save(LS.offers, nextOffers);
     save(LS.week, nextWeek);
+    save(LS.massTestCustomers, testCustomers);
     if(typeof window !== 'undefined'){
       window.offers = nextOffers;
+      window.massTestCustomers = testCustomers;
     }
-    return { providers: rows.length, offers: generatedOffers.length, days: dayKeys.length };
+    return { providers: rows.length, offers: generatedOffers.length, days: dayKeys.length, customers: testCustomers.length };
   }
 
   function ensureMassProviderWeekTestSeed(force){
@@ -382,7 +485,7 @@
       var next = Object.assign({}, row || {});
       var key = providerDirectoryKey(next);
       var persistedLogin = key ? existingByKey.get(key) : '';
-      if(!normalizeEmailAddress(next.loginEmail) && persistedLogin){
+      if(persistedLogin && (!normalizeEmailAddress(next.loginEmail) || isGeneratedProviderTestEmail(next.loginEmail))){
         next.loginEmail = persistedLogin;
       }
       return next;
@@ -463,6 +566,28 @@
         console.log('[provider-week-seed] manual run', result);
       }
       return result;
+    };
+    window.getMassTestCustomers = function(){
+      return load(LS.massTestCustomers, []);
+    };
+    window.activateMassTestCustomer = function(customerId){
+      var list = load(LS.massTestCustomers, []);
+      if(!Array.isArray(list) || !list.length) return null;
+      var target = list.find(function(item){ return String(item.id) === String(customerId || ''); }) || list[0];
+      if(!target) return null;
+      if(typeof customer !== 'undefined' && customer){
+        customer.loggedIn = true;
+        customer.name = target.name || customer.name;
+        customer.email = target.email || customer.email;
+        save(LS.customer, customer);
+      }
+      locationQuery = target.locationLabel || target.city || 'Stuttgart';
+      userLat = Number(target.lat);
+      userLng = Number(target.lng);
+      discoverRadiusM = Number(target.discoverRadiusM || 3000);
+      save('mittagio_discover_radius', discoverRadiusM);
+      if(typeof renderDiscover === 'function') renderDiscover();
+      return target;
     };
     window.findProviderDirectoryByLoginEmail = findProviderDirectoryByLoginEmail;
     window.resolveProviderDirectoryEntryForCurrentProvider = resolveProviderDirectoryEntryForCurrentProvider;
@@ -9294,6 +9419,10 @@
         showToast('Diese E-Mail ist noch nicht freigeschaltet.', 2500);
         return;
       }
+      if(!isDemoEmail && pass !== 'admin'){
+        showToast('Für Testanbieter lautet das Passwort: admin', 2500);
+        return;
+      }
       
       // Session-Check: Prüfe ob bereits eine aktive Session existiert
       const existingSession = load(LS.providerSession, null);
@@ -15798,6 +15927,7 @@
     const providerBaseSource = document.getElementById('adminProviderBaseSource');
     const providerBasePreview = document.getElementById('adminProviderBasePreview');
     const providerBaseRefreshBtn = document.getElementById('adminBtnProviderBaseRefresh');
+    const massTestRunBtn = document.getElementById('adminBtnMassTestRun');
     const providerBaseAddBtn = document.getElementById('adminBtnProviderBaseAdd');
     const providerBaseCsvBtn = document.getElementById('adminBtnProviderBaseCsvExport');
     const providerOpenCsvBtn = document.getElementById('adminBtnProviderOpenCsvExport');
@@ -16167,6 +16297,33 @@
         } else if(typeof showToast === 'function'){
           showToast('Reload derzeit nicht verfügbar.');
         }
+      };
+    }
+    if(massTestRunBtn){
+      massTestRunBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var seedResult = (typeof window !== 'undefined' && typeof window.seedAllProvidersTestWeek === 'function')
+          ? window.seedAllProvidersTestWeek()
+          : ensureMassProviderWeekTestSeed(true);
+        var testCustomers = (typeof window !== 'undefined' && typeof window.getMassTestCustomers === 'function')
+          ? window.getMassTestCustomers()
+          : load(LS.massTestCustomers, []);
+        var firstCustomer = Array.isArray(testCustomers) ? testCustomers[0] : null;
+        if(firstCustomer && typeof window !== 'undefined' && typeof window.activateMassTestCustomer === 'function'){
+          window.activateMassTestCustomer(firstCustomer.id);
+        }
+        if(typeof showToast === 'function'){
+          showToast(
+            'Batch-Testlauf aktiv: ' +
+            String((seedResult && seedResult.providers) || 0) +
+            ' Anbieter, ' +
+            String((seedResult && seedResult.offers) || 0) +
+            ' Inserate, ' +
+            String((seedResult && seedResult.customers) || (Array.isArray(testCustomers) ? testCustomers.length : 0)) +
+            ' Testkunden.'
+          , 3800);
+        }
+        renderAdmin();
       };
     }
 
