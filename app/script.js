@@ -4356,50 +4356,63 @@
     const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
     let walkingMin = '';
     let carMin = '';
+    let distanceLabel = '';
     if(data.distanceKm != null){
       walkingMin = Math.round(Number(data.distanceKm) * 12) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 12));
       carMin = Math.round(Number(data.distanceKm) * 1.5) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 1.5));
+      var dist = Number(data.distanceKm);
+      distanceLabel = dist < 1 ? '< 1 km' : (String(dist.toFixed(1)).replace('.', ',') + ' km');
     }
-    const providerName = esc(data.providerName || 'Anbieter');
     const dishName = esc(data.dish || 'Gericht');
+    const providerName = esc(data.providerName || 'Anbieter');
+    const uspOverlay = abholnummer
+      ? `🎫1️⃣ Abholnummer · 🕒 ${walkingMin || '–'} Min`
+      : `🕒 ${walkingMin || '–'} Min`;
+    const feedbackTap = () => {
+      try{
+        if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+        else if(typeof haptic === 'function') haptic(8);
+        else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+      } catch(_e){}
+    };
     
     card.innerHTML = `
-      <div class="tgtg-list-item-img-wrap tgtg-list-item-img-compact">
+      <div class="tgtg-list-item-img-wrap">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="tgtg-actions-top">
-          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
-          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#1a1a1a;"></i></button>
+        <div class="tgtg-usp-overlay ${abholnummer ? 'is-active' : ''}">
+          <span>${uspOverlay}</span>
         </div>
-        <div class="tgtg-price-badge">${euro(data.price)}</div>
       </div>
-      <div class="tgtg-list-item-body">
-        <div class="tgtg-list-item-pillars">
-          <span class="tgtg-list-item-pill ${vorOrt ? 'active' : ''}">🍴</span>
-          <span class="tgtg-list-item-pill ${mehrweg ? 'active' : ''}">🔄</span>
-          <span class="tgtg-list-item-pill ${abholnummer ? 'active' : ''}">🧾</span>
-        </div>
-        <h3 class="tgtg-list-item-title">${dishName}</h3>
-        <p class="tgtg-list-item-meta">${providerName} &gt;</p>
-        <div class="tgtg-list-item-row tgtg-list-item-meta-row">
-          ${walkingMin ? `<span class="tgtg-meta-chip">🏃 ${walkingMin} Min.</span>` : ''}
-          ${carMin ? `<span class="tgtg-meta-chip">🚗 ${carMin} Min.</span>` : ''}
-        </div>
-        <div class="tgtg-list-item-row tgtg-list-item-cta-row">
+      <div class="tgtg-list-item-content">
+        <div class="tgtg-list-item-head-row">
+          <h3 class="tgtg-list-item-title">${dishName}</h3>
           <span class="tgtg-list-item-price">${euro(data.price)}</span>
-          <button type="button" class="btn-cust-primary dish-card-cta">In meine Box 🍱</button>
         </div>
+        <p class="tgtg-list-item-provider">${providerName} &gt;</p>
+        <p class="tgtg-list-item-facts">
+          ${distanceLabel ? `📍 ${distanceLabel}` : ''} ${carMin ? ` · 🚗 ${carMin} Min` : ''}
+          ${mehrweg ? ' · ♻️ Mehrweg' : ''} ${vorOrt ? ' · 🍽️ Vor Ort' : ''}
+        </p>
+      </div>
+      <div class="tgtg-list-item-action-bar dish-card-actions">
+        <div class="tgtg-actions-left">
+          <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#6b7280;'}"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
+        </div>
+        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">In meine Box 🍱</button>
       </div>
     `;
     
     const imgEl = card.querySelector('.tgtg-list-item-img-wrap img');
     if(imgEl){ imgEl.onload = function(){ imgEl.classList.add('img-loaded'); }; if(imgEl.complete) imgEl.classList.add('img-loaded'); }
     
-    const shareBtn = card.querySelector('.tgtg-actions-top .tgtg-btn-floating[aria-label="Teilen"]');
-    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); shareOffer(data); };
+    const shareBtn = card.querySelector('.action-btn-share');
+    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); feedbackTap(); shareOffer(data); };
     const favBtn = card.querySelector('.action-btn-fav');
     if(favBtn){
       favBtn.onclick = function(e){
         e.stopPropagation(); e.preventDefault();
+        feedbackTap();
         toggleFavorite(data.id, favBtn);
         if(typeof lucide !== 'undefined') lucide.createIcons();
         favBtn.classList.add('heart-just-clicked');
@@ -4413,6 +4426,7 @@
       else {
         ctaBtn.onclick = function(e){
           e.stopPropagation(); e.preventDefault();
+          feedbackTap();
           const thumb = card.querySelector('.tgtg-list-item-img-wrap img');
           flyThumbnailToMittagsbox(thumb, function(){
             if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
@@ -4426,7 +4440,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.tgtg-actions-top') || e.target.closest('.tgtg-price-badge') || e.target.closest('.dish-card-cta')) return;
+      if(e.target.closest('.tgtg-actions-left') || e.target.closest('.dish-card-cta')) return;
       openOffer(data.id);
     };
     

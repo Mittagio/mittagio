@@ -59,3 +59,43 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Active-State ist bewusst subtil (dunkler Text/Icon + leicht hoehere Gewichtung), inaktive Tabs bleiben neutral grau.
 - Inline-Layoutstyles an `#customerNav` und den Nav-Buttons wurden entfernt; Groessen/Abstaende/Typografie laufen jetzt zentral ueber CSS.
 - Kein Separator oberhalb der Kunden-Nav: die Leiste bleibt bewusst clean ohne graue Trennlinie.
+
+## Update: USP-First Card-Layout
+
+- Listenoptik entfernt: jede Speise als eigenstaendige weisse Card mit Radius (`~18px`), subtilem Schatten und klaren Abstaenden.
+- Horizontaler Aufbau: kleines 1:1-Bild links, kompletter Inhalt rechts.
+- Oben rechts in der Card: Favorit + Teilen als ruhige runde Mini-Buttons.
+- Oberste Informationszeile priorisiert USPs: `Abholnummer`, `⏱️ Gehzeit`, `🚗 Fahrzeit`, `📍 Entfernung`.
+- Zweite Zeile zeigt kompakt `Mehrweg` und `Vor Ort` als kurze Badges.
+- Titel darunter prominent (max. 2 Zeilen), Anbietername nicht mehr prominent.
+- Unten: Preis dunkel links, gelber CTA `In meine Box` rechts als Primary Action.
+
+## Update: Card-Trennung (mobile.de-Charakter)
+
+- Deutlich mehr Abstand zwischen den Karten (`~22px`), damit jede Kachel als einzelnes Modul wahrgenommen wird.
+- Cards visuell abgehoben durch Kombination aus `1px`-Hellgrau-Border (`#eee`) und leicht staerkerem, aber weiterhin ruhigem Shadow.
+- Klare Zonenstruktur in jeder Card: `USP-Zone` -> `Titel-Zone` -> `Preis+Button-Zone`.
+- Vertikale Zone-Abstaende verstaerkt (USP->Titel und Titel->Preis/Button jeweils im Bereich `12-16px`).
+- Preis und CTA bleiben nebeneinander, mit fixem Mindestabstand und ohne Full-Width-Button.
+- Bild links sauber gebunden (`~110px`, 1:1, oben ausgerichtet), damit es nicht schwebend wirkt.
+
+## Update: Vollbreiten-Titel + Trenner
+
+- Card-Struktur in drei Bloecke: `Bild+USP` (oben), `Titel volle Breite` (Mitte), `Preis+CTA` (unten).
+- Der Gerichtstitel ist aus der rechten Spalte geloest und steht als eigener, ruhiger Vollbreiten-Block.
+- Zwischen Titelzeile und Preis/CTA liegt eine dezente horizontale Trennlinie (mobile.de-Charakter).
+- Vertikale Lesereihenfolge ist damit klar: erst USP, dann Titel, dann Entscheidung ueber Preis und `In meine Box`.
+
+## Update: Marketplace-Kachel (mobile.de-Logik)
+
+- Alte `#v-discover .dish-card`-Styles im Discover-Bereich entfernt; Discover nutzt die neue Marketplace-Kachelstruktur.
+- Oben: vollbreites Bild mit USP-Overlay rechts (`Abholnummer` + `Zeit`) fuer schnellen Vertrauensanker.
+- Mitte: Name/Preis in einer Zeile (Name links, Preis rechts), darunter Anbieter klein und dezent.
+- Unten: feste Action-Bar mit Favorit + Teilen links und gelbem CTA `In meine Box` rechts.
+- Fokus bleibt auf schnellen Fakten und klarer Entscheidungszone statt Listenoptik.
+
+## Update: Action-Bar + Haptik
+
+- Action-Bar am Kartenfuß auf klare 48px-Höhe harmonisiert: zwei Icon-Buttons links, CTA rechts auf derselben Ebene.
+- CTA `In meine Box` nutzt in der Leiste `flex-grow`, damit der verfügbare Restplatz sauber genutzt wird.
+- Auf den Kernaktionen (`Favorit`, `Teilen`, `In meine Box`) wurde kurzes haptisches Feedback ergänzt (Vibration/Fallback).
