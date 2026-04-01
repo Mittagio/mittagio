@@ -280,9 +280,19 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
     <section class="view content-padding-bottom-compact" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
       <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px;">
-          <h1 class="ds-h1" style="margin:0;">Admin</h1>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <h1 class="ds-h1" style="margin:0;">Admin Dashboard</h1>
           <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
+        </div>
+        <p style="margin:0 0 20px; color:#64748b; font-size:14px;">Zentrale Verwaltung für Anbieter-Freischaltung, Aktivität und Umsatzentwicklung.</p>
+        <div class="admin-rollout-progress-card" aria-label="Freischaltungsfortschritt">
+          <div class="admin-rollout-progress-head">
+            <h2>Freischaltungsfortschritt</h2>
+            <span id="adminRolloutProgressLabel">0 / 0 · 0%</span>
+          </div>
+          <div class="admin-rollout-progress-track">
+            <span id="adminRolloutProgressBar"></span>
+          </div>
         </div>
         <!-- KPI-Sektion -->
         <div id="adminKpis" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
@@ -298,6 +308,93 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Abholnummern gebucht</div>
             <div id="adminKpiAbholnummern" style="font-size:28px; font-weight:900; color:#3b82f6;">0</div>
           </div>
+          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Anbieter gesamt</div>
+            <div id="adminKpiProviders" style="font-size:28px; font-weight:900; color:#111827;">0</div>
+          </div>
+          <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Freigeschaltet</div>
+            <div id="adminKpiUnlockedProviders" style="font-size:28px; font-weight:900; color:#166534;">0</div>
+          </div>
+        </div>
+        <div class="admin-insight-grid">
+          <div class="admin-insight-card">
+            <h3>7-Tage-Umsatz</h3>
+            <div id="adminRevenueTrendList" class="admin-revenue-trend-list"></div>
+          </div>
+          <div class="admin-insight-card">
+            <h3>Systemaktivität</h3>
+            <ul id="adminActivityList" class="admin-activity-list"></ul>
+          </div>
+        </div>
+        <div class="admin-provider-base-card">
+          <div class="admin-provider-base-head">
+            <div>
+              <p class="admin-provider-base-kicker">Datenquelle</p>
+              <h2 class="admin-provider-base-title">Anbieterbasis</h2>
+            </div>
+            <span id="adminProviderBaseCount" class="admin-provider-base-count">0</span>
+          </div>
+          <p id="adminProviderBaseSource" class="admin-provider-base-source">Quelle: wird geladen ...</p>
+          <div class="admin-provider-base-actions">
+            <button type="button" id="adminBtnProviderBaseRefresh" class="admin-provider-base-refresh-btn">Anbieterbasis neu laden</button>
+            <button type="button" id="adminBtnProviderBaseAdd" class="admin-provider-base-secondary-btn">Neuer Anbieter</button>
+            <button type="button" id="adminBtnProviderBaseCsvExport" class="admin-provider-base-secondary-btn">Anbieter-CSV exportieren</button>
+            <button type="button" id="adminBtnProviderOpenCsvExport" class="admin-provider-base-secondary-btn">Nur offene Freischaltungen exportieren</button>
+          </div>
+          <div class="admin-provider-base-checklist" aria-label="Freischalten und Zugangsdaten senden">
+            <p class="admin-provider-base-checklist-title">Freischalten &amp; Zugangsdaten senden</p>
+            <ol class="admin-provider-base-checklist-list">
+              <li>Anbieter in der Liste suchen oder neu anlegen.</li>
+              <li><code>Login E-Mail</code> im Datensatz setzen und speichern.</li>
+              <li>Kurzer Test: Login mit E-Mail zeigt grünen Freischalt-Status.</li>
+              <li>Zugangsdaten an Anbieter senden (E-Mail + Passwortweg).</li>
+            </ol>
+          </div>
+          <div class="admin-provider-base-filters">
+            <div class="admin-provider-filter-tabs">
+              <button type="button" id="adminProviderTabAll" class="admin-provider-filter-tab active">Alle Anbieter</button>
+              <button type="button" id="adminProviderTabOpen" class="admin-provider-filter-tab">Freischaltung offen</button>
+            </div>
+            <label class="admin-provider-base-label">Suche (Name, Straße, PLZ, Ort)
+              <input id="adminProviderSearch" class="admin-provider-base-input" type="text" placeholder="z. B. Stuttgart oder Amici" />
+            </label>
+            <div class="admin-provider-base-grid">
+              <label class="admin-provider-base-label">Ort
+                <select id="adminProviderCityFilter" class="admin-provider-base-input">
+                  <option value="">Alle Orte</option>
+                </select>
+              </label>
+              <label class="admin-provider-base-label">Filter
+                <button type="button" id="adminBtnProviderFilterReset" class="admin-provider-base-secondary-btn">Zurücksetzen</button>
+              </label>
+            </div>
+          </div>
+          <form id="adminProviderBaseForm" class="admin-provider-base-form is-hidden" aria-label="Anbieter bearbeiten">
+            <input type="hidden" id="adminProviderEditId" />
+            <label class="admin-provider-base-label">Name
+              <input id="adminProviderName" class="admin-provider-base-input" type="text" required />
+            </label>
+            <label class="admin-provider-base-label">Login E-Mail
+              <input id="adminProviderLoginEmail" class="admin-provider-base-input" type="email" placeholder="anbieter@beispiel.de" />
+            </label>
+            <label class="admin-provider-base-label">Straße
+              <input id="adminProviderStreet" class="admin-provider-base-input" type="text" required />
+            </label>
+            <div class="admin-provider-base-grid">
+              <label class="admin-provider-base-label">PLZ
+                <input id="adminProviderZip" class="admin-provider-base-input" type="text" required />
+              </label>
+              <label class="admin-provider-base-label">Ort
+                <input id="adminProviderCity" class="admin-provider-base-input" type="text" required />
+              </label>
+            </div>
+            <div class="admin-provider-base-form-actions">
+              <button type="submit" id="adminBtnProviderFormSave" class="admin-provider-base-refresh-btn">Speichern</button>
+              <button type="button" id="adminBtnProviderFormCancel" class="admin-provider-base-secondary-btn">Abbrechen</button>
+            </div>
+          </form>
+          <ul id="adminProviderBasePreview" class="admin-provider-base-preview"></ul>
         </div>
         <!-- Inserats-Feed (Live-Angebote, 3 Säulen) -->
         <div style="background:#fff; border-radius:16px; padding:20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
@@ -1549,6 +1646,28 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
               <span class="provider-glam-subtitle">Was ist das?</span>
             </button>
           </div>
+        </section>
+
+        <section class="provider-live-base-card" id="providerLiveBaseCard" aria-label="Direkte Anbieter-Datenbasis">
+          <div class="provider-live-base-head">
+            <div>
+              <p class="provider-live-base-kicker">Live-Basis</p>
+              <h3 class="provider-live-base-title">Anbieter-Datenbasis</h3>
+            </div>
+            <span class="provider-live-base-count" id="providerDirectoryCount">0</span>
+          </div>
+          <p class="provider-live-base-meta" id="providerDirectoryMeta">Noch keine Einträge geladen.</p>
+          <ul class="provider-live-base-preview" id="providerDirectoryPreview"></ul>
+        </section>
+
+        <section class="provider-launch-check-card" id="providerLaunchCheckCard" aria-label="Go-Live Test">
+          <div class="provider-launch-check-head">
+            <h3>Go-Live Schnelltest</h3>
+            <span class="provider-launch-check-badge" id="providerLaunchCheckBadge">Bereit</span>
+          </div>
+          <p class="provider-launch-check-copy">Prüft Datenqualität der Anbieterbasis (Pflichtfelder, Dubletten, Adressen) und zeigt den Status für den Launch.</p>
+          <button type="button" id="btnProviderRunLaunchCheck" class="provider-launch-check-btn">Test jetzt ausführen</button>
+          <ul class="provider-launch-check-results" id="providerLaunchCheckResults"></ul>
         </section>
 
         <div id="providerFaqOverlayBd" class="provider-faq-overlay-backdrop is-hidden" aria-hidden="true"></div>
@@ -3082,6 +3201,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </div>
     <div style="display:flex; flex-direction:column; gap:16px;">
       <input class="field" id="providerLoginEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
+      <div id="providerLoginPrecheckHint" class="provider-login-precheck-hint">
+        Nur vorangelegte Anbieter sind freigeschaltet. Falls dein Login noch nicht aktiv ist, kontaktiere den Admin.
+      </div>
       <input class="field" id="providerLoginPass" type="password" placeholder="Passwort" autocomplete="current-password" style="width:100%; padding:14px 16px; border-radius:14px; border:1px solid var(--border); font-size:16px; background:#fbfaf7;" />
       <button class="btn-primary" type="button" id="btnProviderLoginModal" style="width:100%; min-height:52px; font-size:16px; font-weight:700; margin-top:8px; background:linear-gradient(135deg, #9ca3af 0%, #6b7280 100%); color:#fff; border:none;">
         <i data-lucide="log-in" style="width:20px;height:20px;"></i>

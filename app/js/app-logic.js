@@ -170,7 +170,19 @@
     var setModeFn = window.setMode;
     var showProviderHomeFn = window.showProviderHome;
     var updateProfileViewFn = window.updateProfileView;
+    var findProviderDirectoryByLoginEmailFn = window.findProviderDirectoryByLoginEmail;
+    var applyProviderDirectoryEntryToProfileFn = window.applyProviderDirectoryEntryToProfile;
     if(!cryptoId || !saveFn || !providerRef || !setCookieFn){ console.warn('performProviderLogin: Abhängigkeiten fehlen'); return; }
+    var normalizedEmail = String(email || '').trim().toLowerCase();
+    var isDemoAccount = normalizedEmail === 'demo@mittagio.de';
+    var preCreatedEntry = null;
+    if(!isDemoAccount){
+      preCreatedEntry = (typeof findProviderDirectoryByLoginEmailFn === 'function') ? findProviderDirectoryByLoginEmailFn(normalizedEmail) : null;
+      if(!preCreatedEntry){
+        if(showToastFn) showToastFn('Dieser Anbieter ist noch nicht freigeschaltet. Bitte Admin kontaktieren.', 3500);
+        return;
+      }
+    }
     var newSessionId = cryptoId();
     var sessionData = { email: email, sessionId: newSessionId, createdAt: Date.now(), lastActivity: Date.now() };
     saveFn(LSref.providerSession, sessionData);
@@ -179,6 +191,21 @@
     providerRef.loggedIn = true;
     providerRef.email = email;
     providerRef.current_session_id = newSessionId;
+    if(preCreatedEntry){
+      providerRef.profile = providerRef.profile || {};
+      providerRef.profile.email = normalizedEmail;
+      if(typeof applyProviderDirectoryEntryToProfileFn === 'function'){
+        applyProviderDirectoryEntryToProfileFn(preCreatedEntry);
+      } else {
+        providerRef.profile.name = preCreatedEntry.name || providerRef.profile.name || '';
+        providerRef.profile.street = preCreatedEntry.street || providerRef.profile.street || '';
+        providerRef.profile.zip = preCreatedEntry.zip || providerRef.profile.zip || '';
+        providerRef.profile.city = preCreatedEntry.city || providerRef.profile.city || '';
+        providerRef.profile.address = [providerRef.profile.street, [providerRef.profile.zip, providerRef.profile.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+        providerRef.profile.lockedAddress = true;
+        providerRef.linkedProviderDirectoryId = preCreatedEntry.id || providerRef.linkedProviderDirectoryId || '';
+      }
+    }
     saveFn(LSref.provider, providerRef);
     if(email === 'demo@mittagio.de' && typeof window.seedDemoProvider === 'function'){
       window.seedDemoProvider();

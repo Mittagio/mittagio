@@ -99,11 +99,194 @@
     transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
     weekTemplates: 'mittagio_week_templates_v1', // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
     inseratQuickbook: 'mittagio_inserat_quickbook_v1', // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
-    weekVeggieReminder: 'mittagio_week_veggie_reminder_v1'
+    weekVeggieReminder: 'mittagio_week_veggie_reminder_v1',
+    providerDirectory: 'mittagio_provider_directory_v1',
+    providerDirectoryVersion: 'mittagio_provider_directory_version_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+
+  const REAL_PROVIDER_DIRECTORY_VERSION = '2026-03-31-live-base-2';
+  const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
+  function normalizeEmailAddress(value){
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function parseProviderDirectoryCsv(csv){
+    var lines = String(csv || '').split(/\r?\n/).map(function(line){ return line.trim(); }).filter(Boolean);
+    if(!lines.length) return [];
+    var out = [];
+    var seen = new Set();
+    for(var i = 0; i < lines.length; i++){
+      var line = lines[i];
+      if(!line) continue;
+      var lineLower = line.toLowerCase();
+      if(lineLower.indexOf('firma;strasse;plz;ort;land') === 0) continue;
+      var cols = line.split(';');
+      if(cols.length < 5) continue;
+      var name = String(cols[0] || '').trim();
+      var street = String(cols[1] || '').trim();
+      var zip = String(cols[2] || '').trim();
+      var city = String(cols[3] || '').trim();
+      var country = String(cols[4] || '').trim() || 'Deutschland';
+      var loginEmail = normalizeEmailAddress(cols[5] || '');
+      if(!name || name.toLowerCase() === 'firma' || name.length <= 1) continue;
+      if(!street && !(zip && city)) continue;
+      var key = [name, street, zip, city].join('|').toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      out.push({
+        id: 'dir_' + cryptoId(),
+        name: name,
+        street: street,
+        zip: zip,
+        city: city,
+        country: country,
+        loginEmail: loginEmail,
+        address: buildAddress({ street: street, zip: zip, city: city }),
+        source: 'live-provider-base',
+        importedAt: Date.now()
+      });
+    }
+    return out;
+  }
+
+  function setProviderDirectoryWindow(entries){
+    if(typeof window === 'undefined') return;
+    var list = Array.isArray(entries) ? entries : [];
+    window.providerDirectory = list;
+    window.getProviderDirectory = function(){ return load(LS.providerDirectory, []); };
+  }
+
+  function mergeProviderDirectoryEntries(existing, incoming){
+    var base = Array.isArray(existing) ? existing : [];
+    var add = Array.isArray(incoming) ? incoming : [];
+    var map = new Map();
+    base.forEach(function(entry){
+      if(!entry) return;
+      var key = [entry.name, entry.street, entry.zip, entry.city].map(function(v){ return String(v || '').trim().toLowerCase(); }).join('|');
+      if(!key || key === '|||') return;
+      map.set(key, entry);
+    });
+    add.forEach(function(entry){
+      if(!entry) return;
+      var key = [entry.name, entry.street, entry.zip, entry.city].map(function(v){ return String(v || '').trim().toLowerCase(); }).join('|');
+      if(!key || key === '|||') return;
+      if(!map.has(key)) map.set(key, entry);
+      else {
+        var prev = map.get(key) || {};
+        if(!prev.loginEmail && entry.loginEmail){
+          prev.loginEmail = entry.loginEmail;
+          map.set(key, prev);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }
+
+  function findProviderDirectoryByLoginEmail(email){
+    var normEmail = normalizeEmailAddress(email);
+    if(!normEmail) return null;
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows)) return null;
+    for(var i = 0; i < rows.length; i++){
+      var row = rows[i] || {};
+      var rowEmail = normalizeEmailAddress(row.loginEmail || row.email);
+      if(rowEmail && rowEmail === normEmail) return row;
+    }
+    return null;
+  }
+
+  function resolveProviderDirectoryEntryForCurrentProvider(){
+    var p = (typeof provider !== 'undefined' && provider) ? provider : null;
+    if(!p) return null;
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows) || !rows.length) return null;
+    var linkedId = p.linkedProviderDirectoryId ? String(p.linkedProviderDirectoryId) : '';
+    if(linkedId){
+      var byId = rows.find(function(row){ return String(row && row.id) === linkedId; });
+      if(byId) return byId;
+    }
+    return findProviderDirectoryByLoginEmail(p.email || (p.profile && p.profile.email) || '');
+  }
+
+  function applyProviderDirectoryEntryToProfile(providerObj, entry){
+    if(!providerObj || !entry) return providerObj;
+    if(!providerObj.profile) providerObj.profile = {};
+    providerObj.linkedProviderDirectoryId = entry.id || providerObj.linkedProviderDirectoryId || '';
+    providerObj.profile.name = entry.name || providerObj.profile.name || '';
+    providerObj.profile.street = entry.street || providerObj.profile.street || '';
+    providerObj.profile.zip = entry.zip || providerObj.profile.zip || '';
+    providerObj.profile.city = entry.city || providerObj.profile.city || '';
+    providerObj.profile.address = buildAddress(providerObj.profile);
+    providerObj.profile.lockedAddress = true;
+    if(entry.loginEmail) providerObj.profile.email = entry.loginEmail;
+    return providerObj;
+  }
+
+  function upsertRealProviderDirectory(incoming){
+    var existing = load(LS.providerDirectory, []);
+    if(!Array.isArray(existing)) existing = [];
+    var merged = mergeProviderDirectoryEntries(existing, incoming);
+    save(LS.providerDirectory, merged);
+    save(LS.providerDirectoryVersion, REAL_PROVIDER_DIRECTORY_VERSION);
+    setProviderDirectoryWindow(merged);
+    return { imported: Array.isArray(incoming) ? incoming.length : 0, total: merged.length };
+  }
+
+  function fetchProviderDirectoryCsv(){
+    if(typeof fetch !== 'function') return Promise.resolve([]);
+    return fetch(PROVIDER_DIRECTORY_SOURCE_URL, { cache: 'no-store' })
+      .then(function(response){
+        if(!response || !response.ok) throw new Error('provider-directory-csv-load-failed');
+        return response.text();
+      })
+      .then(function(csvText){
+        return parseProviderDirectoryCsv(csvText);
+      });
+  }
+
+  (function ensureRealProviderDirectory(){
+    var currentVersion = load(LS.providerDirectoryVersion, null);
+    var existing = load(LS.providerDirectory, []);
+    if(Array.isArray(existing) && existing.length){
+      setProviderDirectoryWindow(existing);
+    } else {
+      setProviderDirectoryWindow([]);
+    }
+    var shouldRefresh = currentVersion !== REAL_PROVIDER_DIRECTORY_VERSION || !Array.isArray(existing) || existing.length === 0;
+    if(!shouldRefresh) return;
+    fetchProviderDirectoryCsv()
+      .then(function(parsed){
+        var result = upsertRealProviderDirectory(parsed);
+        if(typeof console !== 'undefined' && console.log){
+          console.log('[provider-directory] live base imported:', result.imported, 'entries, total:', result.total);
+        }
+      })
+      .catch(function(err){
+        if(typeof console !== 'undefined' && console.warn){
+          console.warn('[provider-directory] csv load failed', err);
+        }
+      });
+  })();
+
+  if(typeof window !== 'undefined'){
+    window.refreshProviderDirectory = function(){
+      return fetchProviderDirectoryCsv().then(function(parsed){
+        var result = upsertRealProviderDirectory(parsed);
+        return result;
+      });
+    };
+    window.findProviderDirectoryByLoginEmail = findProviderDirectoryByLoginEmail;
+    window.resolveProviderDirectoryEntryForCurrentProvider = resolveProviderDirectoryEntryForCurrentProvider;
+    window.applyProviderDirectoryEntryToProfile = function(entry){
+      if(typeof provider === 'undefined' || !provider) return null;
+      applyProviderDirectoryEntryToProfile(provider, entry);
+      save(LS.provider, provider);
+      return provider;
+    };
+  }
   /* V47: ABSOLUTE IDENTITÄTS-GARANTIE [cite: 2026-03-04] */
   if(typeof window !== 'undefined'){
     var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
@@ -1502,8 +1685,9 @@
     title.textContent = 'Betriebsdaten';
     wrap.appendChild(title);
     var subtitle = document.createElement('p');
+    subtitle.id = 'providerBusinessDataSubtitle';
     subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
-    subtitle.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
+    subtitle.textContent = 'Betriebsname tippen – wir übernehmen Adresse automatisch aus deiner Anbieterbasis.';
     wrap.appendChild(subtitle);
     wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
     wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
@@ -8837,6 +9021,7 @@
     const providerLoginSheet = document.getElementById('providerLoginSheet');
     if(providerLoginBd){ show(providerLoginBd); providerLoginBd.classList.add('active'); }
     if(providerLoginSheet){ show(providerLoginSheet); providerLoginSheet.classList.add('active'); }
+    updateProviderLoginPrecheckHint('');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
@@ -8850,6 +9035,45 @@
     const passField = document.getElementById('providerLoginPass');
     if(emailField) emailField.value = '';
     if(passField) passField.value = '';
+    updateProviderLoginPrecheckHint('');
+  }
+  function setProviderLoginButtonEnabled(enabled){
+    var btn = document.getElementById('btnProviderLoginModal');
+    if(!btn) return;
+    var isEnabled = !!enabled;
+    btn.disabled = !isEnabled;
+    btn.classList.toggle('is-faded', !isEnabled);
+    btn.style.cursor = isEnabled ? 'pointer' : 'not-allowed';
+  }
+  function updateProviderLoginPrecheckHint(email){
+    var hintEl = document.getElementById('providerLoginPrecheckHint');
+    if(!hintEl){
+      setProviderLoginButtonEnabled(false);
+      return;
+    }
+    var normalized = normalizeEmailAddress(email || '');
+    hintEl.classList.remove('is-ok', 'is-warn');
+    if(!normalized){
+      hintEl.textContent = 'Nur vorangelegte Anbieter sind freigeschaltet. Falls dein Login noch nicht aktiv ist, kontaktiere den Admin.';
+      setProviderLoginButtonEnabled(false);
+      return;
+    }
+    if(normalized === 'demo@mittagio.de'){
+      hintEl.classList.add('is-ok');
+      hintEl.textContent = 'Demo-Zugang erkannt. Du kannst dich mit demo@mittagio.de anmelden.';
+      setProviderLoginButtonEnabled(true);
+      return;
+    }
+    var match = (typeof findProviderDirectoryByLoginEmail === 'function') ? findProviderDirectoryByLoginEmail(normalized) : null;
+    if(match){
+      hintEl.classList.add('is-ok');
+      hintEl.textContent = 'Freigeschaltet: ' + (match.name || 'Anbieter') + ' ist vorangelegt.';
+      setProviderLoginButtonEnabled(true);
+      return;
+    }
+    hintEl.classList.add('is-warn');
+    hintEl.textContent = 'Diese E-Mail ist noch nicht freigeschaltet. Bitte zuerst im Admin unter Anbieterbasis anlegen.';
+    setProviderLoginButtonEnabled(false);
   }
   function showLoginView(){ if(typeof showView === 'function' && views && views.providerLogin) showView(views.providerLogin); }
   if(typeof window !== 'undefined'){
@@ -8874,6 +9098,14 @@
       const pass = document.getElementById('providerLoginPass').value.trim();
       if(!email || !pass){
         showToast('Bitte E-Mail und Passwort eingeben.', 2000);
+        return;
+      }
+      updateProviderLoginPrecheckHint(email);
+      var normalizedEmail = normalizeEmailAddress(email);
+      var isDemoEmail = normalizedEmail === 'demo@mittagio.de';
+      var preCreatedMatch = (typeof findProviderDirectoryByLoginEmail === 'function') ? findProviderDirectoryByLoginEmail(normalizedEmail) : null;
+      if(!isDemoEmail && !preCreatedMatch){
+        showToast('Diese E-Mail ist noch nicht freigeschaltet.', 2500);
         return;
       }
       
@@ -9000,6 +9232,9 @@
   const providerLoginEmail = document.getElementById('providerLoginEmail');
   const providerLoginPass = document.getElementById('providerLoginPass');
   if(providerLoginEmail && providerLoginPass){
+    providerLoginEmail.addEventListener('input', function(){
+      updateProviderLoginPrecheckHint(providerLoginEmail.value);
+    });
     [providerLoginEmail, providerLoginPass].forEach(field => {
       field.onkeydown = (e) => {
         if(e.key === 'Enter'){
@@ -14342,6 +14577,105 @@
       var logoSrc = (p.logoUrl || p.logoData || '').trim();
       if(logoSrc) masterLogo.src = logoSrc;
     }
+    var directoryCountEl = document.getElementById('providerDirectoryCount');
+    var directoryMetaEl = document.getElementById('providerDirectoryMeta');
+    var directoryPreviewEl = document.getElementById('providerDirectoryPreview');
+    var launchCheckBadgeEl = document.getElementById('providerLaunchCheckBadge');
+    var launchCheckResultsEl = document.getElementById('providerLaunchCheckResults');
+    var runLaunchCheckBtn = document.getElementById('btnProviderRunLaunchCheck');
+    var directoryList = (typeof window !== 'undefined' && typeof window.getProviderDirectory === 'function')
+      ? window.getProviderDirectory()
+      : load(LS.providerDirectory, []);
+    if(!Array.isArray(directoryList)) directoryList = [];
+    if(directoryCountEl) directoryCountEl.textContent = String(directoryList.length);
+    if(directoryMetaEl){
+      var cityStats = {};
+      directoryList.forEach(function(item){
+        var city = (item && item.city ? String(item.city) : '').trim();
+        if(!city) return;
+        cityStats[city] = (cityStats[city] || 0) + 1;
+      });
+      var topCities = Object.keys(cityStats)
+        .map(function(city){ return { city: city, count: cityStats[city] }; })
+        .sort(function(a,b){ return b.count - a.count; })
+        .slice(0,3)
+        .map(function(x){ return x.city + ' (' + x.count + ')'; });
+      directoryMetaEl.textContent = topCities.length
+        ? 'Top-Städte: ' + topCities.join(' · ')
+        : 'Anbieterbasis geladen.';
+    }
+    if(directoryPreviewEl){
+      var previewItems = directoryList.slice(0, 8);
+      if(!previewItems.length){
+        directoryPreviewEl.innerHTML = '<li><span class="name">Keine Anbieter vorhanden</span><span class="addr">Bitte Datenbasis prüfen.</span></li>';
+      } else {
+        directoryPreviewEl.innerHTML = previewItems.map(function(item){
+          var n = esc(item && item.name ? item.name : 'Anbieter');
+          var addrLine = esc(buildAddress(item || {}) || '');
+          return '<li><span class="name">' + n + '</span><span class="addr">' + addrLine + '</span></li>';
+        }).join('');
+      }
+    }
+    function renderLaunchCheckResults(results){
+      if(!launchCheckResultsEl || !Array.isArray(results)) return;
+      launchCheckResultsEl.innerHTML = results.map(function(entry){
+        var cls = entry.ok ? 'is-ok' : 'is-warn';
+        var state = entry.ok ? 'OK' : 'Hinweis';
+        return '<li class="' + cls + '"><span>' + esc(entry.label || '') + '</span><span class="state">' + state + '</span></li>';
+      }).join('');
+    }
+    function runProviderLaunchCheck(){
+      var rows = Array.isArray(directoryList) ? directoryList : [];
+      var total = rows.length;
+      var withName = rows.filter(function(r){ return !!String((r && r.name) || '').trim(); }).length;
+      var withAddress = rows.filter(function(r){
+        var street = String((r && r.street) || '').trim();
+        var zip = String((r && r.zip) || '').trim();
+        var city = String((r && r.city) || '').trim();
+        var addr = String((r && r.address) || '').trim();
+        return !!addr || !!street || !!(zip && city);
+      }).length;
+      var keys = new Set();
+      var duplicateCount = 0;
+      rows.forEach(function(r){
+        var key = [
+          String((r && r.name) || '').trim().toLowerCase(),
+          String((r && r.street) || '').trim().toLowerCase(),
+          String((r && r.zip) || '').trim().toLowerCase(),
+          String((r && r.city) || '').trim().toLowerCase()
+        ].join('|');
+        if(!key || key === '|||') return;
+        if(keys.has(key)) duplicateCount++;
+        else keys.add(key);
+      });
+      var results = [
+        { label: 'Anzahl Anbieter > 0 (' + total + ')', ok: total > 0 },
+        { label: 'Pflichtfeld Name gesetzt (' + withName + '/' + total + ')', ok: total > 0 && withName === total },
+        { label: 'Adresse vollständig nutzbar (' + withAddress + '/' + total + ')', ok: total > 0 && withAddress === total },
+        { label: 'Keine Dubletten im Schlüssel (gefunden: ' + duplicateCount + ')', ok: duplicateCount === 0 }
+      ];
+      var okCount = results.filter(function(r){ return !!r.ok; }).length;
+      var allOk = okCount === results.length;
+      if(launchCheckBadgeEl){
+        launchCheckBadgeEl.classList.remove('is-ok', 'is-warn');
+        launchCheckBadgeEl.classList.add(allOk ? 'is-ok' : 'is-warn');
+        launchCheckBadgeEl.textContent = allOk ? 'Launch-ready' : 'Bitte prüfen';
+      }
+      renderLaunchCheckResults(results);
+      if(typeof showToast === 'function') showToast('Go-Live-Test: ' + okCount + '/' + results.length + ' Checks ok');
+    }
+    if(runLaunchCheckBtn){
+      runLaunchCheckBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        runProviderLaunchCheck();
+      };
+    }
+    if(!launchCheckResultsEl || !launchCheckResultsEl.children || launchCheckResultsEl.children.length === 0){
+      renderLaunchCheckResults([
+        { label: 'Anzahl Anbieter > 0', ok: directoryList.length > 0 },
+        { label: 'Pflichtfelder und Dubletten prüfen', ok: true }
+      ]);
+    }
     /* Glamour-Grid: Meine Regeln, Abrechnungen, Support, FAQ */
     var currentBillingMonthKey = (function(){
       var d = new Date();
@@ -14480,6 +14814,13 @@
     const profileEmail = document.getElementById('providerProfileEmail');
     const profileWebsite = document.getElementById('providerProfileWebsite');
     const btnSaveBusiness = document.getElementById('btnProviderSaveBusiness');
+    var linkedDirectoryEntry = (typeof resolveProviderDirectoryEntryForCurrentProvider === 'function')
+      ? resolveProviderDirectoryEntryForCurrentProvider()
+      : null;
+    var hasLinkedDirectoryEntry = !!linkedDirectoryEntry;
+    if(hasLinkedDirectoryEntry && typeof applyProviderDirectoryEntryToProfile === 'function'){
+      applyProviderDirectoryEntryToProfile(provider, linkedDirectoryEntry);
+    }
     const businessFields = [profileBusinessName, profileStreet, profileZip, profileCity, profilePhone, profileEmail, profileWebsite].filter(Boolean);
     const lastBusinessField = businessFields.length ? businessFields[businessFields.length - 1] : null;
     let businessFinalizeHintTimer = null;
@@ -14541,9 +14882,17 @@
     const saveAllBusinessData = () => {
       if(!provider.profile) provider.profile = {};
       provider.profile.name = profileBusinessName ? profileBusinessName.value.trim() : (p.name || '');
-      provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
-      provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
-      provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
+      if(hasLinkedDirectoryEntry){
+        provider.profile.street = linkedDirectoryEntry.street || '';
+        provider.profile.zip = linkedDirectoryEntry.zip || '';
+        provider.profile.city = linkedDirectoryEntry.city || '';
+        provider.profile.lockedAddress = true;
+      } else {
+        provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
+        provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
+        provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
+        provider.profile.lockedAddress = false;
+      }
       provider.profile.phone = profilePhone ? profilePhone.value.trim() : (p.phone || '');
       provider.profile.email = profileEmail ? profileEmail.value.trim() : (p.email || '');
       provider.profile.website = profileWebsite ? profileWebsite.value.trim() : (p.website || '');
@@ -14557,6 +14906,11 @@
     if(profileStreet) profileStreet.value = p.street || '';
     if(profileZip) profileZip.value = p.zip || '';
     if(profileCity) profileCity.value = p.city || '';
+    if(hasLinkedDirectoryEntry){
+      if(profileStreet) profileStreet.value = linkedDirectoryEntry.street || '';
+      if(profileZip) profileZip.value = linkedDirectoryEntry.zip || '';
+      if(profileCity) profileCity.value = linkedDirectoryEntry.city || '';
+    }
     if(profilePhone) profilePhone.value = p.phone || '';
     if(profileEmail) profileEmail.value = p.email || '';
     if(profileWebsite) profileWebsite.value = p.website || '';
@@ -14582,6 +14936,127 @@
       });
     }
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
+    if(profileStreet && hasLinkedDirectoryEntry){
+      var streetGroup = profileStreet.closest('.input-group');
+      var zipGroup = profileZip ? profileZip.closest('.input-group') : null;
+      var cityGroup = profileCity ? profileCity.closest('.input-group') : null;
+      var businessSubtitle = document.getElementById('providerBusinessDataSubtitle');
+      if(streetGroup) hide(streetGroup);
+      if(zipGroup) hide(zipGroup);
+      if(cityGroup) hide(cityGroup);
+      if(businessSubtitle) businessSubtitle.textContent = 'Adresse ist zentral vorangelegt und wird vom Admin verwaltet.';
+      if(profileBusinessName){
+        profileBusinessName.placeholder = '';
+        profileBusinessName.setAttribute('aria-description', 'Anbieter ist vorangelegt. Adresse wird zentral verwaltet.');
+      }
+      if(profileEmail){
+        profileEmail.value = normalizeEmailAddress(linkedDirectoryEntry.loginEmail || provider.email || p.email || '');
+        profileEmail.readOnly = true;
+        profileEmail.setAttribute('aria-description', 'Login E-Mail wird vom Admin verwaltet.');
+      }
+    } else {
+      var businessSubtitleDefault = document.getElementById('providerBusinessDataSubtitle');
+      if(businessSubtitleDefault) businessSubtitleDefault.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
+      if(profileEmail) profileEmail.readOnly = false;
+    }
+
+    // Lokales Autocomplete aus Anbieterbasis (ohne externe API)
+    (function initProviderDirectoryAutofill(){
+      var nameInput = document.getElementById('providerProfileBusinessName');
+      var streetInput = document.getElementById('providerProfileStreet');
+      var zipInput = document.getElementById('providerProfileZip');
+      var cityInput = document.getElementById('providerProfileCity');
+      var emailInput = document.getElementById('providerProfileEmail');
+      if(!nameInput || hasLinkedDirectoryEntry) return;
+      var rows = load(LS.providerDirectory, []);
+      if(!Array.isArray(rows) || !rows.length) return;
+      var options = rows.filter(function(r){ return !!String((r && r.name) || '').trim(); });
+      if(!options.length) return;
+
+      function pickRowByName(rawName){
+        var q = String(rawName || '').trim().toLowerCase();
+        if(!q) return null;
+        var exact = options.filter(function(r){ return String(r.name || '').trim().toLowerCase() === q; });
+        if(exact.length === 1) return exact[0];
+        var starts = options.filter(function(r){ return String(r.name || '').trim().toLowerCase().indexOf(q) === 0; });
+        if(starts.length === 1) return starts[0];
+        return null;
+      }
+      function applyRow(row){
+        if(!row) return;
+        if(streetInput) streetInput.value = String(row.street || '').trim();
+        if(zipInput) zipInput.value = String(row.zip || '').trim();
+        if(cityInput) cityInput.value = String(row.city || '').trim();
+        if(emailInput && !String(emailInput.value || '').trim() && row.loginEmail){
+          emailInput.value = String(row.loginEmail || '').trim();
+        }
+        [nameInput, streetInput, zipInput, cityInput, emailInput].forEach(function(el){
+          if(el && el.value && el.classList) el.classList.add('floating-filled');
+        });
+        if(typeof showToast === 'function') showToast('Anbieterdaten übernommen');
+      }
+      function closeSuggestions(){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list) return;
+        list.classList.add('is-hidden');
+        list.innerHTML = '';
+      }
+      function renderSuggestions(query){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list) return;
+        var q = String(query || '').trim().toLowerCase();
+        if(!q){
+          closeSuggestions();
+          return;
+        }
+        var matches = options.filter(function(r){
+          var name = String(r.name || '').trim().toLowerCase();
+          return name.indexOf(q) >= 0;
+        }).slice(0, 8);
+        if(!matches.length){
+          closeSuggestions();
+          return;
+        }
+        list.classList.remove('is-hidden');
+        list.innerHTML = matches.map(function(row){
+          var name = esc(String(row.name || '').trim());
+          var meta = esc([row.city, row.street].filter(Boolean).join(' · '));
+          var login = esc(normalizeEmailAddress(row.loginEmail || row.email || ''));
+          return '<button type="button" class="provider-business-suggestion-item" data-name="' + name + '">' +
+            '<span class="title">' + name + '</span>' +
+            '<span class="meta">' + meta + '</span>' +
+            (login ? '<span class="meta">Login: ' + login + '</span>' : '') +
+          '</button>';
+        }).join('');
+      }
+      nameInput.addEventListener('change', function(){ applyRow(pickRowByName(nameInput.value)); });
+      nameInput.addEventListener('blur', function(){ applyRow(pickRowByName(nameInput.value)); });
+      nameInput.addEventListener('input', function(){ renderSuggestions(nameInput.value); });
+      var nameGroup = nameInput.closest('.input-group');
+      if(nameGroup){
+        var existingList = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!existingList){
+          var list = document.createElement('div');
+          list.id = 'providerBusinessNameSuggestionsList';
+          list.className = 'provider-business-suggestions is-hidden';
+          nameGroup.appendChild(list);
+          list.addEventListener('click', function(ev){
+            var item = ev.target && ev.target.closest ? ev.target.closest('.provider-business-suggestion-item') : null;
+            if(!item) return;
+            var pickedName = item.getAttribute('data-name') || '';
+            nameInput.value = pickedName;
+            applyRow(pickRowByName(pickedName));
+            closeSuggestions();
+          });
+        }
+      }
+      document.addEventListener('click', function(ev){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list || list.classList.contains('is-hidden')) return;
+        if(ev.target === nameInput || (ev.target && ev.target.closest && ev.target.closest('#providerBusinessNameSuggestionsList'))) return;
+        closeSuggestions();
+      });
+    })();
 
     // Google Places Autocomplete: Betriebsname/Adresse suchen, Rest ausfüllen
     (function initProviderPlacesAutocomplete(){
@@ -14589,7 +15064,7 @@
       var streetInput = document.getElementById('providerProfileStreet');
       var zipInput = document.getElementById('providerProfileZip');
       var cityInput = document.getElementById('providerProfileCity');
-      if(!nameInput || !GOOGLE_PLACES_API_KEY) return;
+      if(!nameInput || !GOOGLE_PLACES_API_KEY || hasLinkedDirectoryEntry) return;
       function attachAutocomplete(){
         if(typeof google === 'undefined' || !google.maps || !google.maps.places) return;
         try {
@@ -15127,6 +15602,32 @@
     const kpiUmsatz = document.getElementById('adminKpiUmsatz');
     const kpiInserate = document.getElementById('adminKpiInserate');
     const kpiAbholnummern = document.getElementById('adminKpiAbholnummern');
+    const kpiProviders = document.getElementById('adminKpiProviders');
+    const kpiUnlockedProviders = document.getElementById('adminKpiUnlockedProviders');
+    const rolloutProgressLabel = document.getElementById('adminRolloutProgressLabel');
+    const rolloutProgressBar = document.getElementById('adminRolloutProgressBar');
+    const revenueTrendList = document.getElementById('adminRevenueTrendList');
+    const activityList = document.getElementById('adminActivityList');
+    const providerBaseCount = document.getElementById('adminProviderBaseCount');
+    const providerBaseSource = document.getElementById('adminProviderBaseSource');
+    const providerBasePreview = document.getElementById('adminProviderBasePreview');
+    const providerBaseRefreshBtn = document.getElementById('adminBtnProviderBaseRefresh');
+    const providerBaseAddBtn = document.getElementById('adminBtnProviderBaseAdd');
+    const providerBaseCsvBtn = document.getElementById('adminBtnProviderBaseCsvExport');
+    const providerOpenCsvBtn = document.getElementById('adminBtnProviderOpenCsvExport');
+    const providerSearchInput = document.getElementById('adminProviderSearch');
+    const providerCityFilter = document.getElementById('adminProviderCityFilter');
+    const providerFilterResetBtn = document.getElementById('adminBtnProviderFilterReset');
+    const providerTabAll = document.getElementById('adminProviderTabAll');
+    const providerTabOpen = document.getElementById('adminProviderTabOpen');
+    const providerForm = document.getElementById('adminProviderBaseForm');
+    const providerEditId = document.getElementById('adminProviderEditId');
+    const providerNameInput = document.getElementById('adminProviderName');
+    const providerLoginEmailInput = document.getElementById('adminProviderLoginEmail');
+    const providerStreetInput = document.getElementById('adminProviderStreet');
+    const providerZipInput = document.getElementById('adminProviderZip');
+    const providerCityInput = document.getElementById('adminProviderCity');
+    const providerFormCancelBtn = document.getElementById('adminBtnProviderFormCancel');
     const feedList = document.getElementById('adminFeedList');
     const tableBody = document.getElementById('adminTableBody');
     const tableSum = document.getElementById('adminTableSum');
@@ -15144,6 +15645,344 @@
     if(kpiUmsatz) kpiUmsatz.textContent = (tagesumsatz.toFixed(2)).replace('.', ',') + ' €';
     if(kpiInserate) kpiInserate.textContent = String(activeOffers.length);
     if(kpiAbholnummern) kpiAbholnummern.textContent = String(abholnummernCount);
+    var dirRows = (typeof window !== 'undefined' && typeof window.getProviderDirectory === 'function')
+      ? window.getProviderDirectory()
+      : load(LS.providerDirectory, []);
+    if(!Array.isArray(dirRows)) dirRows = [];
+    dirRows = dirRows.slice().sort(function(a, b){
+      var ac = String((a && a.city) || '').toLowerCase();
+      var bc = String((b && b.city) || '').toLowerCase();
+      if(ac !== bc) return ac < bc ? -1 : 1;
+      var an = String((a && a.name) || '').toLowerCase();
+      var bn = String((b && b.name) || '').toLowerCase();
+      return an < bn ? -1 : an > bn ? 1 : 0;
+    });
+    function persistDirectory(rows){
+      save(LS.providerDirectory, rows);
+      save(LS.providerDirectoryVersion, REAL_PROVIDER_DIRECTORY_VERSION);
+      if(typeof setProviderDirectoryWindow === 'function') setProviderDirectoryWindow(rows);
+    }
+    function closeProviderForm(){
+      if(!providerForm) return;
+      providerForm.classList.add('is-hidden');
+      if(providerEditId) providerEditId.value = '';
+      if(providerNameInput) providerNameInput.value = '';
+      if(providerLoginEmailInput) providerLoginEmailInput.value = '';
+      if(providerStreetInput) providerStreetInput.value = '';
+      if(providerZipInput) providerZipInput.value = '';
+      if(providerCityInput) providerCityInput.value = '';
+    }
+    function openProviderForm(row){
+      if(!providerForm) return;
+      providerForm.classList.remove('is-hidden');
+      if(providerEditId) providerEditId.value = row && row.id ? String(row.id) : '';
+      if(providerNameInput) providerNameInput.value = row && row.name ? String(row.name) : '';
+      if(providerLoginEmailInput) providerLoginEmailInput.value = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(providerStreetInput) providerStreetInput.value = row && row.street ? String(row.street) : '';
+      if(providerZipInput) providerZipInput.value = row && row.zip ? String(row.zip) : '';
+      if(providerCityInput) providerCityInput.value = row && row.city ? String(row.city) : '';
+      if(providerNameInput && typeof providerNameInput.focus === 'function') providerNameInput.focus();
+    }
+    if(providerCityFilter){
+      var currentCity = String(providerCityFilter.value || '');
+      var cityList = dirRows.map(function(r){ return String((r && r.city) || '').trim(); }).filter(Boolean);
+      cityList = Array.from(new Set(cityList)).sort(function(a,b){ return a.localeCompare(b, 'de'); });
+      providerCityFilter.innerHTML = '<option value="">Alle Orte</option>' + cityList.map(function(city){
+        return '<option value="' + esc(city) + '">' + esc(city) + '</option>';
+      }).join('');
+      providerCityFilter.value = cityList.indexOf(currentCity) >= 0 ? currentCity : '';
+    }
+    var searchTerm = String((providerSearchInput && providerSearchInput.value) || '').trim().toLowerCase();
+    var cityTerm = String((providerCityFilter && providerCityFilter.value) || '').trim().toLowerCase();
+    var openOnly = !!(providerTabOpen && providerTabOpen.classList.contains('active'));
+    var filteredRows = dirRows.filter(function(row){
+      var city = String((row && row.city) || '').trim().toLowerCase();
+      var loginNorm = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(openOnly && loginNorm) return false;
+      if(cityTerm && city !== cityTerm) return false;
+      if(!searchTerm) return true;
+      var haystack = [
+        row && row.name,
+        row && row.loginEmail,
+        row && row.street,
+        row && row.zip,
+        row && row.city,
+        row && row.address
+      ].map(function(v){ return String(v || '').toLowerCase(); }).join(' ');
+      return haystack.indexOf(searchTerm) >= 0;
+    });
+    var unlockedProviders = dirRows.filter(function(row){ return !!normalizeEmailAddress(row && (row.loginEmail || row.email)); }).length;
+    var totalProviders = dirRows.length;
+    var progressPct = totalProviders > 0 ? Math.round((unlockedProviders / totalProviders) * 100) : 0;
+    if(kpiProviders) kpiProviders.textContent = String(dirRows.length);
+    if(kpiUnlockedProviders) kpiUnlockedProviders.textContent = String(unlockedProviders);
+    if(rolloutProgressLabel) rolloutProgressLabel.textContent = String(unlockedProviders) + ' / ' + String(totalProviders) + ' · ' + String(progressPct) + '%';
+    if(rolloutProgressBar) rolloutProgressBar.style.width = String(progressPct) + '%';
+    if(revenueTrendList){
+      var dailyRevenue = {};
+      for(var d = 6; d >= 0; d--){
+        var dayDate = new Date();
+        dayDate.setDate(dayDate.getDate() - d);
+        var dayKey = (typeof isoDate === 'function') ? isoDate(dayDate) : dayDate.toISOString().slice(0,10);
+        dailyRevenue[dayKey] = 0;
+      }
+      txs.forEach(function(t){
+        if(!t || !t.timestamp) return;
+        var key = String(t.timestamp).slice(0,10);
+        if(dailyRevenue[key] == null) return;
+        dailyRevenue[key] += Number(t.total_amount || 0);
+      });
+      var trendRows = Object.keys(dailyRevenue).map(function(key){
+        return { key: key, value: Number(dailyRevenue[key] || 0) };
+      });
+      var maxVal = trendRows.reduce(function(m, row){ return Math.max(m, row.value); }, 0) || 1;
+      revenueTrendList.innerHTML = trendRows.map(function(row){
+        var dayLabel = new Date(row.key).toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit' });
+        var pct = Math.max(8, Math.round((row.value / maxVal) * 100));
+        return '<div class="admin-revenue-trend-row">' +
+          '<span class="day">' + esc(dayLabel) + '</span>' +
+          '<span class="bar"><span style="width:' + pct + '%;"></span></span>' +
+          '<span class="val">' + (row.value.toFixed(2).replace('.', ',')) + ' €</span>' +
+        '</div>';
+      }).join('');
+    }
+    if(activityList){
+      var actRows = [];
+      txs.slice(0, 5).forEach(function(t){
+        var amount = Number(t && t.total_amount || 0).toFixed(2).replace('.', ',') + ' €';
+        var when = t && t.timestamp ? new Date(t.timestamp).toLocaleString('de-DE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '–';
+        actRows.push({ text: 'Buchung: ' + amount, meta: when });
+      });
+      activeOffers.slice(0, 3).forEach(function(o){
+        actRows.push({
+          text: 'Live-Inserat: ' + String((o && (o.dishName || o.dish || o.name)) || 'Gericht'),
+          meta: String((o && o.day) || 'heute')
+        });
+      });
+      if(!actRows.length){
+        activityList.innerHTML = '<li><span class="txt">Noch keine Aktivität vorhanden.</span><span class="meta">–</span></li>';
+      } else {
+        activityList.innerHTML = actRows.slice(0,8).map(function(item){
+          return '<li><span class="txt">' + esc(item.text) + '</span><span class="meta">' + esc(item.meta) + '</span></li>';
+        }).join('');
+      }
+    }
+    if(providerBaseCount) providerBaseCount.textContent = String(filteredRows.length) + ' / ' + String(dirRows.length);
+    if(providerBaseSource){
+      providerBaseSource.textContent = 'Quelle: app/data/provider-directory.csv · Version ' + REAL_PROVIDER_DIRECTORY_VERSION;
+    }
+    if(providerBasePreview){
+      var previewRows = filteredRows.slice(0, 25);
+      if(!previewRows.length){
+        providerBasePreview.innerHTML = '<li><span class="name">Keine Treffer</span><span class="addr">Filter anpassen oder zurücksetzen.</span></li>';
+      } else {
+        providerBasePreview.innerHTML = previewRows.map(function(row){
+          var id = esc(row && row.id ? row.id : '');
+          var n = esc(row && row.name ? row.name : 'Anbieter');
+          var a = esc(buildAddress(row || {}) || '');
+          var loginNorm = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+          var loginInfo = esc(loginNorm || 'kein Login gesetzt');
+          var statusClass = loginNorm ? 'is-ok' : 'is-missing';
+          var statusLabel = loginNorm ? 'Freigeschaltet' : 'E-Mail fehlt';
+          return '<li data-provider-id="' + id + '">' +
+            '<div class="admin-provider-base-row">' +
+              '<div><span class="name">' + n + '</span><span class="addr">' + a + '</span><span class="addr">Login: ' + loginInfo + '</span><span class="admin-provider-status ' + statusClass + '">' + statusLabel + '</span></div>' +
+              '<div class="admin-provider-base-item-actions">' +
+                '<button type="button" class="admin-provider-base-item-btn" data-action="edit">Bearbeiten</button>' +
+                '<button type="button" class="admin-provider-base-item-btn danger" data-action="delete">Löschen</button>' +
+              '</div>' +
+            '</div>' +
+          '</li>';
+        }).join('');
+      }
+      providerBasePreview.onclick = function(ev){
+        var btn = ev.target && ev.target.closest ? ev.target.closest('button[data-action]') : null;
+        if(!btn) return;
+        var li = btn.closest('li[data-provider-id]');
+        if(!li) return;
+        var id = li.getAttribute('data-provider-id');
+        var action = btn.getAttribute('data-action');
+        var target = dirRows.find(function(r){ return String(r.id) === String(id); });
+        if(!target) return;
+        if(action === 'edit'){
+          if(typeof haptic === 'function') haptic(6);
+          openProviderForm(target);
+          return;
+        }
+        if(action === 'delete'){
+          if(typeof haptic === 'function') haptic(6);
+          var ok = confirm('Anbieter "' + (target.name || '') + '" wirklich löschen?');
+          if(!ok) return;
+          var nextRows = dirRows.filter(function(r){ return String(r.id) !== String(id); });
+          persistDirectory(nextRows);
+          if(typeof showToast === 'function') showToast('Anbieter gelöscht');
+          renderAdmin();
+        }
+      };
+    }
+    if(providerSearchInput){
+      providerSearchInput.oninput = function(){ renderAdmin(); };
+    }
+    if(providerCityFilter){
+      providerCityFilter.onchange = function(){ renderAdmin(); };
+    }
+    if(providerTabAll){
+      providerTabAll.onclick = function(){
+        providerTabAll.classList.add('active');
+        if(providerTabOpen) providerTabOpen.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerTabOpen){
+      providerTabOpen.onclick = function(){
+        providerTabOpen.classList.add('active');
+        if(providerTabAll) providerTabAll.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerFilterResetBtn){
+      providerFilterResetBtn.onclick = function(){
+        if(providerSearchInput) providerSearchInput.value = '';
+        if(providerCityFilter) providerCityFilter.value = '';
+        if(providerTabAll) providerTabAll.classList.add('active');
+        if(providerTabOpen) providerTabOpen.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerBaseAddBtn){
+      providerBaseAddBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        openProviderForm(null);
+      };
+    }
+    if(providerForm){
+      providerForm.onsubmit = function(ev){
+        if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+        var nameVal = String((providerNameInput && providerNameInput.value) || '').trim();
+        var loginEmailVal = normalizeEmailAddress((providerLoginEmailInput && providerLoginEmailInput.value) || '');
+        var streetVal = String((providerStreetInput && providerStreetInput.value) || '').trim();
+        var zipVal = String((providerZipInput && providerZipInput.value) || '').trim();
+        var cityVal = String((providerCityInput && providerCityInput.value) || '').trim();
+        if(!nameVal || !streetVal || !zipVal || !cityVal){
+          if(typeof showToast === 'function') showToast('Bitte Name, Straße, PLZ und Ort ausfüllen.');
+          return;
+        }
+        var editId = String((providerEditId && providerEditId.value) || '').trim();
+        var nextRows = dirRows.slice();
+        if(editId){
+          nextRows = nextRows.map(function(row){
+            if(String(row.id) !== editId) return row;
+            return {
+              id: row.id,
+              name: nameVal,
+              loginEmail: loginEmailVal,
+              street: streetVal,
+              zip: zipVal,
+              city: cityVal,
+              country: row.country || 'Deutschland',
+              address: buildAddress({ street: streetVal, zip: zipVal, city: cityVal }),
+              source: row.source || 'admin-manual',
+              importedAt: row.importedAt || Date.now()
+            };
+          });
+        } else {
+          nextRows.push({
+            id: 'dir_' + cryptoId(),
+            name: nameVal,
+            loginEmail: loginEmailVal,
+            street: streetVal,
+            zip: zipVal,
+            city: cityVal,
+            country: 'Deutschland',
+            address: buildAddress({ street: streetVal, zip: zipVal, city: cityVal }),
+            source: 'admin-manual',
+            importedAt: Date.now()
+          });
+        }
+        persistDirectory(nextRows);
+        closeProviderForm();
+        if(typeof showToast === 'function') showToast(editId ? 'Anbieter gespeichert' : 'Anbieter hinzugefügt');
+        renderAdmin();
+      };
+    }
+    if(providerFormCancelBtn){
+      providerFormCancelBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        closeProviderForm();
+      };
+    }
+    if(providerBaseCsvBtn){
+      providerBaseCsvBtn.onclick = function(){
+        var rows = ['Firma;Strasse;PLZ;Ort;Land;LoginEmail'];
+        dirRows.forEach(function(r){
+          rows.push([
+            String((r && r.name) || '').replace(/;/g, ','),
+            String((r && r.street) || '').replace(/;/g, ','),
+            String((r && r.zip) || '').replace(/;/g, ','),
+            String((r && r.city) || '').replace(/;/g, ','),
+            String((r && r.country) || 'Deutschland').replace(/;/g, ','),
+            normalizeEmailAddress((r && (r.loginEmail || r.email)) || '').replace(/;/g, ',')
+          ].join(';'));
+        });
+        var csv = '\uFEFF' + rows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Anbieterbasis_' + todayStr + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if(typeof showToast === 'function') showToast('Anbieter-CSV exportiert.');
+      };
+    }
+    if(providerOpenCsvBtn){
+      var openRows = dirRows.filter(function(r){ return !normalizeEmailAddress((r && (r.loginEmail || r.email)) || ''); });
+      providerOpenCsvBtn.disabled = openRows.length === 0;
+      providerOpenCsvBtn.classList.toggle('is-faded', openRows.length === 0);
+      providerOpenCsvBtn.style.cursor = openRows.length === 0 ? 'not-allowed' : 'pointer';
+      providerOpenCsvBtn.onclick = function(){
+        if(openRows.length === 0){
+          if(typeof showToast === 'function') showToast('Keine offenen Freischaltungen.');
+          return;
+        }
+        var rows = ['Firma;Strasse;PLZ;Ort;Land;LoginEmail'];
+        openRows.forEach(function(r){
+          rows.push([
+            String((r && r.name) || '').replace(/;/g, ','),
+            String((r && r.street) || '').replace(/;/g, ','),
+            String((r && r.zip) || '').replace(/;/g, ','),
+            String((r && r.city) || '').replace(/;/g, ','),
+            String((r && r.country) || 'Deutschland').replace(/;/g, ','),
+            ''
+          ].join(';'));
+        });
+        var csv = '\uFEFF' + rows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Anbieter_Freischaltung_offen_' + todayStr + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if(typeof showToast === 'function') showToast('Offene Freischaltungen exportiert: ' + String(openRows.length));
+      };
+    }
+    if(providerBaseRefreshBtn){
+      providerBaseRefreshBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        if(typeof window !== 'undefined' && typeof window.refreshProviderDirectory === 'function'){
+          window.refreshProviderDirectory().then(function(result){
+            closeProviderForm();
+            if(typeof showToast === 'function'){
+              showToast('Anbieterbasis aktualisiert: ' + String(result && result.total ? result.total : 0) + ' Einträge');
+            }
+            renderAdmin();
+          }).catch(function(){
+            if(typeof showToast === 'function') showToast('Anbieterbasis konnte nicht geladen werden.');
+          });
+        } else if(typeof showToast === 'function'){
+          showToast('Reload derzeit nicht verfügbar.');
+        }
+      };
+    }
 
     if(feedList){
       feedList.innerHTML = activeOffers.slice(0, 20).map(function(o){
@@ -16751,9 +17590,11 @@
 
     if(!offer.providerStreet){
       var p = normalizeProviderProfile(provider.profile || {});
-      var hasAddr = !!(p.street && p.street.trim()) || (p.zip && p.city);
+      var profileAddress = String(p.address || '').trim();
+      var profileStreet = String(p.street || '').trim();
+      var hasAddr = !!profileAddress || !!profileStreet || !!(p.zip && p.city);
       if(!hasAddr){ showAddressRequiredModal(); return; }
-      offer.providerStreet = p.street || buildAddress(p);
+      offer.providerStreet = profileStreet || profileAddress || buildAddress(p);
       offer.providerZip = p.zip; offer.providerCity = p.city;
     }
 
@@ -16797,9 +17638,11 @@
 
     if(!offer.providerStreet){
       var p = normalizeProviderProfile(provider.profile || {});
-      var hasAddr = !!(p.street && p.street.trim()) || (p.zip && p.city);
+      var profileAddress = String(p.address || '').trim();
+      var profileStreet = String(p.street || '').trim();
+      var hasAddr = !!profileAddress || !!profileStreet || !!(p.zip && p.city);
       if(!hasAddr){ showAddressRequiredModal(); return; }
-      offer.providerStreet = p.street || buildAddress(p);
+      offer.providerStreet = profileStreet || profileAddress || buildAddress(p);
       offer.providerZip = p.zip; offer.providerCity = p.city;
     }
 
@@ -20351,7 +21194,7 @@
         footerBtn.style.setProperty('opacity', '1');
         footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
-        footerBtn.onclick=function(){
+        var handleStep2PublishClick = function(){
           try{
             hapticLight();
             var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
@@ -20364,7 +21207,9 @@
             }
             if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
             var p = normalizeProviderProfile((provider && provider.profile) || {});
-            var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
+            var profileAddress = String(p.address || '').trim();
+            var profileStreet = String(p.street || '').trim();
+            var hasAddr = !!profileAddress || !!profileStreet || !!((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim()));
             var usePickup=!!w.data.step2PickupEnabled;
             w.data.hasPickupCode=usePickup;
             w.data.pricingChoice=usePickup?'pro':'499';
@@ -20388,6 +21233,20 @@
             if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
           }
         };
+        footerBtn.onclick = null;
+        footerBtn.onpointerup = null;
+        footerBtn.ontouchend = null;
+        var lastStep2CtaTriggerTs = 0;
+        var triggerStep2Publish = function(ev){
+          if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+          var now = Date.now();
+          if(now - lastStep2CtaTriggerTs < 300) return;
+          lastStep2CtaTriggerTs = now;
+          handleStep2PublishClick();
+        };
+        footerBtn.addEventListener('click', triggerStep2Publish);
+        footerBtn.addEventListener('touchend', triggerStep2Publish, { passive: false });
         airbnbFooter.appendChild(footerBtn);
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
         document.body.appendChild(airbnbFooter);
@@ -20746,7 +21605,9 @@
       out.providerCity = profile.city || '';
       if(!out.providerStreet && (out.providerZip || out.providerCity)) out.providerStreet = buildAddress(out);
     }
-    var hasAddress = !!(out.providerStreet && out.providerStreet.trim()) || (out.providerZip && out.providerCity);
+    var hasAddress = !!(out.providerStreet && out.providerStreet.trim()) ||
+      !!(out.address && String(out.address).trim()) ||
+      !!(out.providerZip && out.providerCity);
     if(!hasAddress){
       showAddressRequiredModal();
       return null;

@@ -72,3 +72,28 @@ Anbieter-Profil: Betriebsdaten, Einstellungen, Rechtliches, Support, Abmelden.
 - **Farbcodierung:** `↗` in Grün (`#008a00`), `↘` in Rot, Gleichstand als grauer Strich.
 - **S25-Haptik im Blick:** Der Pfeil wird nach Abschluss des Umsatz-Count-Ups mit einer kurzen Pulse-Animation hervorgehoben.
 - **Tooltip:** Der Trendpfeil zeigt zusätzlich den Prozentvergleich als Hinweis (`+X% / -X% / 0% vs gestern`), inklusive robustem Fallback bei `0 €` am Vortag.
+
+## Live-Basis: Anbieterverzeichnis importiert
+
+- **Direkte Datenbasis:** Die übergebene reale Anbieterliste ist jetzt als persistentes Verzeichnis in `localStorage` hinterlegt (`LS.providerDirectory`).
+- **Source & Version:** Initialisierung aus statischem CSV-Bundle in `app/script.js` mit Versionsschlüssel `REAL_PROVIDER_DIRECTORY_VERSION`.
+- **Bereinigung beim Import:** Doppelte Header-/Fehlerzeilen werden entfernt, unvollständige Einträge verworfen, Dubletten über `name + street + zip + city` dedupliziert.
+- **Persistenz/Upsert:** Bestehende Verzeichniseinträge bleiben erhalten; neue Datensätze werden idempotent ergänzt (kein blindes Überschreiben).
+- **Runtime-Zugriff:** Für Folgeschritte steht die Basis über `window.providerDirectory` und `window.getProviderDirectory()` bereit.
+
+## Live-Operations im Profil
+
+- **Provider-Übersicht direkt im Profil:** Neue Karte „Anbieter-Datenbasis“ zeigt Gesamtanzahl, Top-Städte und eine Vorschau der ersten Einträge.
+- **Go-Live Schnelltest:** Neue Testkarte mit Button „Test jetzt ausführen“ validiert live die Basisdaten.
+- **Prüfregeln im Schnelltest:** Anzahl > 0, Name vollständig, Adresse nutzbar (`address` oder `street/zip/city`), keine Dubletten im Schlüssel `name+street+zip+city`.
+- **Statusanzeige:** Ergebnis wird als Badge `Launch-ready` oder `Bitte prüfen` dargestellt und in einer Ergebnisliste aufgeschlüsselt.
+- **Nutzung für Launch-Tag:** Ein Tap auf den Test reicht, um die Datenbasis vor Live-Schaltung schnell technisch zu verifizieren.
+
+## Pre-Created Anbieter im Profil
+
+- **Adresse nicht mehr frei editierbar:** Bei verknüpften, vorangelegten Anbietern werden Straße/PLZ/Ort im Bereich „Meine Daten“ ausgeblendet.
+- **Zentrale Führung:** Adressdaten kommen aus der Anbieterbasis (`provider-directory`) und werden beim Login ins Profil gespiegelt.
+- **Login-E-Mail geschützt:** Für verknüpfte Anbieter ist die Login-E-Mail im Profil read-only, damit die Admin-Verknüpfung stabil bleibt.
+- **Auto-Fill ohne API:** Für nicht verknüpfte Fälle schlägt das Feld `Betriebsname` lokale Anbieter aus der Basis vor und übernimmt Adresse (und ggf. Login-E-Mail) automatisch.
+- **Mobile Suggestion-Liste:** Unter `Betriebsname` erscheint eine tapbare Vorschlagsliste (Name, Ort/Adresse, optional Login), Auswahl übernimmt die Daten sofort.
+- **UI-Polish:** Betriebsdaten-Inputs wurden visuell auf ein moderneres App-Card-Layout mit klarer Typo und ruhiger Hierarchie umgestellt.
