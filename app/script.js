@@ -109,7 +109,7 @@
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
   const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
-  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v1';
+  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v2';
   const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
   function normalizeEmailAddress(value){
     return String(value || '').trim().toLowerCase();
@@ -251,8 +251,10 @@
     rows.forEach(function(entry, providerIdx){
       var providerName = String((entry && entry.name) || 'Anbieter').trim() || 'Anbieter';
       var providerStreet = String((entry && entry.street) || '').trim();
-      var providerZip = String((entry && entry.zip) || '').trim();
-      var providerCity = String((entry && entry.city) || '').trim();
+      /* Kundenseite filtert standardmäßig auf Schorndorf + engen Radius.
+         Test-Seed wird deshalb explizit auf Schorndorf normalisiert. */
+      var providerZip = '73614';
+      var providerCity = 'Schorndorf';
       var providerAddress = buildAddress({ street: providerStreet, zip: providerZip, city: providerCity });
       var providerPid = normalizeEmailAddress(entry && entry.loginEmail) || stableProviderIdFromDirectoryEntry(entry);
       dayKeys.forEach(function(dayKey, dayIdx){
@@ -274,6 +276,7 @@
             price: price,
             pickupWindow: '11:30 – 14:00',
             day: dayKey,
+            distanceKm: 0.7,
             hasPickupCode: true,
             dineInPossible: true,
             reuse: { enabled: false, deposit: 0 },
@@ -298,6 +301,9 @@
     var nextOffers = keepOffers.concat(generatedOffers);
     save(LS.offers, nextOffers);
     save(LS.week, nextWeek);
+    if(typeof window !== 'undefined'){
+      window.offers = nextOffers;
+    }
     return { providers: rows.length, offers: generatedOffers.length, days: dayKeys.length };
   }
 

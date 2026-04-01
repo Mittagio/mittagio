@@ -34,6 +34,7 @@ Admin-Dashboard: KPIs, Inserats-Feed, Buchhaltung, CSV-Export und Pflege-Entry f
 - **Ziel:** Für Last-/UI-Tests werden für jeden Anbieter aus der Live-Basis automatisch Tagesgerichte erzeugt.
 - **Umfang:** `3` aktive Gerichte pro Anbieter und Tag für die nächsten `7` Tage (bei 200 Anbietern = `4.200` Inserate).
 - **Datenpfad:** Einmaliger, versionierter Seed in `app/script.js` (`MASS_PROVIDER_WEEK_SEED_VERSION`), gespeichert in `LS.offers` und `LS.week`.
+- **Kundenseiten-Sichtbarkeit:** Für den Testseed werden Standortfelder auf `73614 Schorndorf` und `distanceKm: 0.7` normalisiert, damit die Discover-Defaultfilter (Ort/Radius/Zeit) Ergebnisse zeigen.
 - **Duplikatschutz:** Alte Seed-Einträge mit derselben Source werden vor Neuaufbau entfernt; normale manuelle Daten bleiben erhalten.
 - **Manueller Trigger:** `window.seedAllProvidersTestWeek()` erzwingt den Seed erneut für Testzwecke.
 
