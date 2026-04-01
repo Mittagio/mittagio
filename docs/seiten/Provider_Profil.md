@@ -78,7 +78,7 @@ Anbieter-Profil: Betriebsdaten, Einstellungen, Rechtliches, Support, Abmelden.
 - **Direkte Datenbasis:** Die übergebene reale Anbieterliste ist jetzt als persistentes Verzeichnis in `localStorage` hinterlegt (`LS.providerDirectory`).
 - **Source & Version:** Initialisierung aus statischem CSV-Bundle in `app/script.js` mit Versionsschlüssel `REAL_PROVIDER_DIRECTORY_VERSION`.
 - **Bereinigung beim Import:** Doppelte Header-/Fehlerzeilen werden entfernt, unvollständige Einträge verworfen, Dubletten über `name + street + zip + city` dedupliziert.
-- **Persistenz/Upsert:** Bestehende Verzeichniseinträge bleiben erhalten; neue Datensätze werden idempotent ergänzt (kein blindes Überschreiben).
+- **Feste Live-Basis (200 Anbieter):** Beim Refresh wird die lokale Liste vollständig auf den CSV-Bestand gesetzt. Alte Testadressen werden entfernt; nur Login-E-Mails passender Live-Einträge bleiben erhalten.
 - **Runtime-Zugriff:** Für Folgeschritte steht die Basis über `window.providerDirectory` und `window.getProviderDirectory()` bereit.
 
 ## Live-Operations im Profil

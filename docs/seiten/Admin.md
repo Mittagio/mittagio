@@ -26,6 +26,7 @@ Admin-Dashboard: KPIs, Inserats-Feed, Buchhaltung, CSV-Export und Pflege-Entry f
 - **Source of truth:** `app/data/provider-directory.csv`
 - **Import-Flow:** `script.js` lädt CSV per `fetch`, normalisiert (`parseProviderDirectoryCsv`) und speichert in `localStorage` (`LS.providerDirectory`).
 - **Versionierung:** `REAL_PROVIDER_DIRECTORY_VERSION` steuert, wann ein Refresh der Basis erzwungen wird.
+- **Keine Testadressen:** Beim Live-Refresh wird die lokale Liste auf den CSV-Bestand zurückgesetzt (statt zu mergen). Testeinträge werden dadurch entfernt; bestehende Login-E-Mails passender Live-Anbieter bleiben erhalten.
 - **Admin-Hook:** In `v-admin` zeigt die Karte die Anzahl, Vorschau und bietet „Anbieterbasis neu laden“ (`window.refreshProviderDirectory()`).
 
 ## Anbieter-CRUD im Admin

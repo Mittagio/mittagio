@@ -107,7 +107,7 @@
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
-  const REAL_PROVIDER_DIRECTORY_VERSION = '2026-03-31-live-base-2';
+  const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
   const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
   function normalizeEmailAddress(value){
     return String(value || '').trim().toLowerCase();
@@ -185,6 +185,16 @@
     return Array.from(map.values());
   }
 
+  function providerDirectoryKey(entry){
+    if(!entry) return '';
+    return [
+      String(entry.name || '').trim().toLowerCase(),
+      String(entry.street || '').trim().toLowerCase(),
+      String(entry.zip || '').trim().toLowerCase(),
+      String(entry.city || '').trim().toLowerCase()
+    ].join('|');
+  }
+
   function findProviderDirectoryByLoginEmail(email){
     var normEmail = normalizeEmailAddress(email);
     if(!normEmail) return null;
@@ -228,11 +238,33 @@
   function upsertRealProviderDirectory(incoming){
     var existing = load(LS.providerDirectory, []);
     if(!Array.isArray(existing)) existing = [];
-    var merged = mergeProviderDirectoryEntries(existing, incoming);
-    save(LS.providerDirectory, merged);
+    var parsed = Array.isArray(incoming) ? incoming : [];
+    if(!parsed.length){
+      setProviderDirectoryWindow(existing);
+      return { imported: 0, total: existing.length };
+    }
+    /* Harte Live-Basis: Testadressen entfernen, nur CSV-Bestand behalten.
+       Bereits gesetzte Login-E-Mails werden pro Schlüssel übernommen. */
+    var existingByKey = new Map();
+    existing.forEach(function(row){
+      var key = providerDirectoryKey(row);
+      if(!key) return;
+      var login = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(login) existingByKey.set(key, login);
+    });
+    var liveOnly = parsed.map(function(row){
+      var next = Object.assign({}, row || {});
+      var key = providerDirectoryKey(next);
+      var persistedLogin = key ? existingByKey.get(key) : '';
+      if(!normalizeEmailAddress(next.loginEmail) && persistedLogin){
+        next.loginEmail = persistedLogin;
+      }
+      return next;
+    });
+    save(LS.providerDirectory, liveOnly);
     save(LS.providerDirectoryVersion, REAL_PROVIDER_DIRECTORY_VERSION);
-    setProviderDirectoryWindow(merged);
-    return { imported: Array.isArray(incoming) ? incoming.length : 0, total: merged.length };
+    setProviderDirectoryWindow(liveOnly);
+    return { imported: parsed.length, total: liveOnly.length };
   }
 
   function fetchProviderDirectoryCsv(){
@@ -263,6 +295,12 @@
         if(typeof console !== 'undefined' && console.log){
           console.log('[provider-directory] live base imported:', result.imported, 'entries, total:', result.total);
         }
+        if(typeof document !== 'undefined'){
+          var activeProfile = document.querySelector('#v-provider-profile.view.active');
+          var activeAdmin = document.querySelector('#v-admin.view.active');
+          if(activeProfile && typeof renderProviderProfile === 'function') renderProviderProfile();
+          if(activeAdmin && typeof renderAdmin === 'function') renderAdmin();
+        }
       })
       .catch(function(err){
         if(typeof console !== 'undefined' && console.warn){
@@ -275,6 +313,12 @@
     window.refreshProviderDirectory = function(){
       return fetchProviderDirectoryCsv().then(function(parsed){
         var result = upsertRealProviderDirectory(parsed);
+        if(typeof document !== 'undefined'){
+          var activeProfile = document.querySelector('#v-provider-profile.view.active');
+          var activeAdmin = document.querySelector('#v-admin.view.active');
+          if(activeProfile && typeof renderProviderProfile === 'function') renderProviderProfile();
+          if(activeAdmin && typeof renderAdmin === 'function') renderAdmin();
+        }
         return result;
       });
     };
