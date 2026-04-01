@@ -34,6 +34,13 @@ Wochenübersicht: Gerichte pro Tag planen. Plus-Kacheln öffnen Inseratsauswahl.
 - Mobile-Browser-Stabilizer (kein PWA): Für `display-mode: browser` wurden harte `100dvh`-Locks im Provider-Bereich entschärft (`100svh/auto`) und Footer/Chrome (`providerNav`, Week-/Cookbook-Footer) auf volle Breite mit Safe-Area-Inset und weißem Background vereinheitlicht, damit Dashboard + Wochenplan im Browser gleich ruhig wie in der installierten App wirken.
 - Browser-Navigation Feintuning (Provider): Das aktive Tab in der Bottom-Navigation ist im mobilen Browser nun klarer erkennbar (höhere aktive Kontrastierung + dezente Goldfläche am Icon), während inaktive Tabs bewusst zurückgenommen bleiben.
 
+## Testmodus: Vollbelegung für Geräte-Check
+
+- Für die technische Prüfung der Wochenansicht kann die App eine Vollbelegung erzeugen: pro Anbieter `3` Gerichte pro Tag über `7` Tage.
+- Die Einträge werden als Seed-Daten mit Source-Tag gespeichert und sind als echte Wochenplan-/Angebotsdaten in der UI sichtbar.
+- Der Seed ist versioniert und idempotent, damit bei Reload keine unendlichen Dubletten entstehen.
+- Bei Bedarf kann der Seed manuell erneut angestoßen werden über `window.seedAllProvidersTestWeek()`.
+
 ## Update: Magic in den Header verlegt
 
 - Der bisherige `weekMagicFab` (Floating Button unten rechts) wurde vollständig entfernt (Markup, FAB-Styles, FAB-Klick-Bindings).

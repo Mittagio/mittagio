@@ -101,13 +101,15 @@
     inseratQuickbook: 'mittagio_inserat_quickbook_v1', // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
     weekVeggieReminder: 'mittagio_week_veggie_reminder_v1',
     providerDirectory: 'mittagio_provider_directory_v1',
-    providerDirectoryVersion: 'mittagio_provider_directory_version_v1'
+    providerDirectoryVersion: 'mittagio_provider_directory_version_v1',
+    massProviderWeekSeedVersion: 'mittagio_mass_provider_week_seed_version_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
   const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
+  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v1';
   const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
   function normalizeEmailAddress(value){
     return String(value || '').trim().toLowerCase();
@@ -193,6 +195,124 @@
       String(entry.zip || '').trim().toLowerCase(),
       String(entry.city || '').trim().toLowerCase()
     ].join('|');
+  }
+
+  function stableProviderIdFromDirectoryEntry(entry){
+    var key = providerDirectoryKey(entry);
+    if(!key) return 'prov_dir_unknown';
+    var h = 0;
+    for(var i = 0; i < key.length; i++){
+      h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    }
+    return 'prov_dir_' + h.toString(16);
+  }
+
+  function seedMassProviderWeekTestData(providerRows){
+    var rows = Array.isArray(providerRows) ? providerRows.filter(Boolean) : [];
+    if(!rows.length) return { providers: 0, offers: 0, days: 0 };
+    var mealTemplates = [
+      { dish: 'Pasta Napoli', category: 'Veggie', price: 8.40 },
+      { dish: 'Hähnchen mit Reis', category: 'Mit Fleisch', price: 9.80 },
+      { dish: 'Gemüse-Curry', category: 'Vegan', price: 8.90 },
+      { dish: 'Käsespätzle', category: 'Veggie', price: 8.20 },
+      { dish: 'Rindergulasch mit Spätzle', category: 'Mit Fleisch', price: 10.90 },
+      { dish: 'Linseneintopf', category: 'Vegan', price: 7.90 },
+      { dish: 'Ofenkartoffel mit Quark', category: 'Veggie', price: 8.10 },
+      { dish: 'Fischfilet mit Gemüse', category: 'Fisch', price: 11.20 },
+      { dish: 'Falafel Bowl', category: 'Vegan', price: 8.70 }
+    ];
+    var existingOffers = load(LS.offers, []);
+    if(!Array.isArray(existingOffers)) existingOffers = [];
+    var existingWeek = load(LS.week, {});
+    if(!existingWeek || typeof existingWeek !== 'object' || Array.isArray(existingWeek)) existingWeek = {};
+
+    var today = new Date();
+    today.setHours(12, 0, 0, 0);
+    var dayKeys = [];
+    for(var di = 0; di < 7; di++){
+      var d = new Date(today);
+      d.setDate(today.getDate() + di);
+      dayKeys.push(isoDate(d));
+    }
+
+    var keepOffers = existingOffers.filter(function(o){
+      return String((o && (o.source || o.seedSource)) || '') !== MASS_PROVIDER_WEEK_SEED_VERSION;
+    });
+    var nextWeek = Object.assign({}, existingWeek);
+    dayKeys.forEach(function(dayKey){
+      var dayEntries = Array.isArray(existingWeek[dayKey]) ? existingWeek[dayKey] : [];
+      nextWeek[dayKey] = dayEntries.filter(function(entry){
+        return String((entry && (entry.source || entry.seedSource)) || '') !== MASS_PROVIDER_WEEK_SEED_VERSION;
+      });
+    });
+
+    var createdAtBase = Date.now();
+    var generatedOffers = [];
+    rows.forEach(function(entry, providerIdx){
+      var providerName = String((entry && entry.name) || 'Anbieter').trim() || 'Anbieter';
+      var providerStreet = String((entry && entry.street) || '').trim();
+      var providerZip = String((entry && entry.zip) || '').trim();
+      var providerCity = String((entry && entry.city) || '').trim();
+      var providerAddress = buildAddress({ street: providerStreet, zip: providerZip, city: providerCity });
+      var providerPid = normalizeEmailAddress(entry && entry.loginEmail) || stableProviderIdFromDirectoryEntry(entry);
+      dayKeys.forEach(function(dayKey, dayIdx){
+        for(var mealIdx = 0; mealIdx < 3; mealIdx++){
+          var tpl = mealTemplates[(providerIdx * 3 + dayIdx + mealIdx) % mealTemplates.length];
+          var offerId = 'mass_seed_' + cryptoId();
+          var priceOffset = ((providerIdx + dayIdx + mealIdx) % 3) * 0.4;
+          var price = Number((Number(tpl.price || 8.5) + priceOffset).toFixed(2));
+          generatedOffers.push({
+            id: offerId,
+            providerId: providerPid,
+            providerName: providerName,
+            providerStreet: providerStreet,
+            providerZip: providerZip,
+            providerCity: providerCity,
+            address: providerAddress,
+            dish: tpl.dish,
+            category: tpl.category,
+            price: price,
+            pickupWindow: '11:30 – 14:00',
+            day: dayKey,
+            hasPickupCode: true,
+            dineInPossible: true,
+            reuse: { enabled: false, deposit: 0 },
+            active: true,
+            source: MASS_PROVIDER_WEEK_SEED_VERSION,
+            seedSource: MASS_PROVIDER_WEEK_SEED_VERSION,
+            createdAt: createdAtBase - (providerIdx * 3000 + dayIdx * 500 + mealIdx * 50)
+          });
+          nextWeek[dayKey].push({
+            providerId: providerPid,
+            cookbookId: '',
+            dish: tpl.dish,
+            price: price,
+            active: true,
+            source: MASS_PROVIDER_WEEK_SEED_VERSION,
+            seedSource: MASS_PROVIDER_WEEK_SEED_VERSION
+          });
+        }
+      });
+    });
+
+    var nextOffers = keepOffers.concat(generatedOffers);
+    save(LS.offers, nextOffers);
+    save(LS.week, nextWeek);
+    return { providers: rows.length, offers: generatedOffers.length, days: dayKeys.length };
+  }
+
+  function ensureMassProviderWeekTestSeed(force){
+    var currentVersion = load(LS.massProviderWeekSeedVersion, null);
+    if(currentVersion === MASS_PROVIDER_WEEK_SEED_VERSION && !force){
+      return { skipped: true, reason: 'already-seeded' };
+    }
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows) || !rows.length){
+      return { skipped: true, reason: 'no-provider-directory' };
+    }
+    var result = seedMassProviderWeekTestData(rows);
+    save(LS.massProviderWeekSeedVersion, MASS_PROVIDER_WEEK_SEED_VERSION);
+    return result;
   }
 
   function findProviderDirectoryByLoginEmail(email){
@@ -288,12 +408,19 @@
       setProviderDirectoryWindow([]);
     }
     var shouldRefresh = currentVersion !== REAL_PROVIDER_DIRECTORY_VERSION || !Array.isArray(existing) || existing.length === 0;
-    if(!shouldRefresh) return;
+    if(!shouldRefresh){
+      ensureMassProviderWeekTestSeed(false);
+      return;
+    }
     fetchProviderDirectoryCsv()
       .then(function(parsed){
         var result = upsertRealProviderDirectory(parsed);
+        var seedResult = ensureMassProviderWeekTestSeed(false);
         if(typeof console !== 'undefined' && console.log){
           console.log('[provider-directory] live base imported:', result.imported, 'entries, total:', result.total);
+          if(seedResult && !seedResult.skipped){
+            console.log('[provider-week-seed] generated:', seedResult.offers, 'offers for', seedResult.providers, 'providers');
+          }
         }
         if(typeof document !== 'undefined'){
           var activeProfile = document.querySelector('#v-provider-profile.view.active');
@@ -306,6 +433,7 @@
         if(typeof console !== 'undefined' && console.warn){
           console.warn('[provider-directory] csv load failed', err);
         }
+        ensureMassProviderWeekTestSeed(false);
       });
   })();
 
@@ -313,6 +441,7 @@
     window.refreshProviderDirectory = function(){
       return fetchProviderDirectoryCsv().then(function(parsed){
         var result = upsertRealProviderDirectory(parsed);
+        ensureMassProviderWeekTestSeed(false);
         if(typeof document !== 'undefined'){
           var activeProfile = document.querySelector('#v-provider-profile.view.active');
           var activeAdmin = document.querySelector('#v-admin.view.active');
@@ -321,6 +450,13 @@
         }
         return result;
       });
+    };
+    window.seedAllProvidersTestWeek = function(){
+      var result = ensureMassProviderWeekTestSeed(true);
+      if(typeof console !== 'undefined' && console.log){
+        console.log('[provider-week-seed] manual run', result);
+      }
+      return result;
     };
     window.findProviderDirectoryByLoginEmail = findProviderDirectoryByLoginEmail;
     window.resolveProviderDirectoryEntryForCurrentProvider = resolveProviderDirectoryEntryForCurrentProvider;
