@@ -19,6 +19,8 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 
 - 3 Saeulen unter dem Bild; Icons farbig (aktiv) oder ausgegraut
 - Layout nur Kundenseite
+- App-Start ist immer Kundenseite `Entdecken` (kein automatischer Provider-Start beim Laden).
+- Test-Voreinstellung aktiv: Standort-Fallback `Stuttgart`, großer Radius (`50 km`) und kein Zeitlimit, damit alle Anbieter schnell durchgeklickt werden können.
 
 ## Update: Airbnb-Footer, Header-Cleaning & Kachel-Korrektur
 

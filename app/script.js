@@ -1006,7 +1006,7 @@
   if(typeof window !== 'undefined'){ window.loadOrders = loadOrders; window.saveOrders = saveOrders; }
 
   // --- State ---
-  let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
+  let mode = 'customer'; // Immer auf Kundenseite starten (Discover)
   if(typeof window !== 'undefined') window.mode = mode; // Für js/ui-navigation.js
   // Angebote werden später durch seedExampleData() oder seed() geladen
   // Zuerst aus localStorage laden, falls vorhanden
@@ -1031,29 +1031,14 @@
     reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
-  /* V47-Garantie: loggedIn=true auf Live + localhost [cite: 2026-03-06] */
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
-    provider.loggedIn = true;
-    provider.onboardingCompleted = provider.onboardingCompleted !== false;
-    provider.id = provider.id || 'p1';
-    provider.email = provider.email || 'demo@mittagio.de';
-    if(!provider.profile) provider.profile = { name: 'Mein Betrieb' };
-  }
   if(typeof window !== 'undefined') window.provider = provider;
-  // V50: ABSOLUTE ENTRIEGELUNG (VIP-Bypass) – Live-Seite + localhost ohne localStorage [cite: 2026-03-05]
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
-    mode = 'provider';
-    if(typeof window !== 'undefined') window.mode = mode;
-    if(document.body) document.body.classList.add('provider-mode');
-    if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff erzwungen (host=', location.hostname, ')');
-  }
-  /* HOISTING-FIX v2: Zuweisung im GLEICHEN Scope wie startListingFlow – direkt nach V50 [cite: Weisser-Screen-Fix 2026-03-11] */
+  /* HOISTING-FIX v2: Zuweisung im GLEICHEN Scope wie startListingFlow */
   if(typeof startListingFlow === 'function'){
     window.startListingFlow = startListingFlow;
     if(typeof startWizard === 'function') window.startWizard = startWizard;
-    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] ✅ startListingFlow via Hoisting auf window (nach V50)');
+    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] ✅ startListingFlow via Hoisting auf window');
   } else {
-    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] ⚠️ startListingFlow NICHT gehoisted bei V50 – typeof:', typeof startListingFlow);
+    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] ⚠️ startListingFlow NICHT gehoisted – typeof:', typeof startListingFlow);
   }
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
@@ -1131,12 +1116,12 @@
   let weekUndoTimer = null;
   let weekJustSwiped = false;
   let weekPlanSortMode = false;
-  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt; Fallback: Schorndorf (73614)
+  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt; Fallback: Stuttgart
   let userLat = null;
   let userLng = null;
-  const SCHORNDORF_LAT = 48.8014;
-  const SCHORNDORF_LNG = 9.5282;
-  const DEFAULT_LOCATION_FALLBACK = 'Schorndorf';
+  const SCHORNDORF_LAT = 48.7784;
+  const SCHORNDORF_LNG = 9.1800;
+  const DEFAULT_LOCATION_FALLBACK = 'Stuttgart';
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
@@ -2305,14 +2290,15 @@
   // --- Discover render (App-like UX, PWA, Light Mode) ---
   let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Veggie', 'Vegan', 'provider' [SYNC MASTER-CARD]
   let currentProviderFilter = null;
-  let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
+  let discoverRadiusM = 50000; // Testmodus: groß genug, um alle Anbieter durchzuklicken
+  save('mittagio_discover_radius', discoverRadiusM);
   const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], 'Mit Fleisch': ['Fleisch','Mit Fleisch'], Veggie: ['Veggie'], Vegan: ['Vegan'], Fisch: ['Fisch'] };
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo)
   const locationSuggestions = [
-    'Schorndorf', '73614', '73614 Schorndorf',
-    'Schorndorf-Weiler', 'Winterbach', 'Remshalden', 'Urbach', 'Plüderhausen',
-    '73614', '73617', '73630', '73634', '73642', '73660'
+    'Stuttgart', '70173', '70174', '70178', '70182',
+    'Ludwigsburg', '71634', 'Bietigheim-Bissingen', '74321',
+    'Schorndorf', '73614'
   ];
   
   function filterLocationSuggestions(query){
@@ -2470,7 +2456,7 @@
     // Globale Funktion für Location-Auswahl (Schorndorf setzt Koordinaten für Filter)
     window.selectLocation = function(loc){
       locationQuery = loc;
-      if(/schorndorf|73614/i.test(String(loc))){
+      if(/stuttgart|701|schorndorf|73614/i.test(String(loc))){
         userLat = SCHORNDORF_LAT;
         userLng = SCHORNDORF_LNG;
       }
@@ -2666,7 +2652,8 @@
     
     // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
-    if(q){
+    const isDefaultCityQuery = q === String(DEFAULT_LOCATION_FALLBACK).toLowerCase();
+    if(q && !isDefaultCityQuery){
       list = list.filter(o=>{
         const data = normalizeOffer(o);
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
@@ -2745,7 +2732,8 @@
   let discoverViewMode = load(LS.discoverView, 'list'); // 'list' oder 'swipe'
   
   // Zeit-Filter State (Standard: 10 Min Gehzeit)
-  let activeTimeFilter = load('mittagio_timeFilter', 'walking'); // 'walking' (10 min) oder 'driving' (15 min)
+  let activeTimeFilter = 'all'; // Testmodus: kein Zeit-Limit
+  save('mittagio_timeFilter', activeTimeFilter);
   
   // Swipe-Location-Info aktualisieren
   function updateSwipeLocationInfo(){
@@ -2829,7 +2817,7 @@
   
   var discoverLeafletMap = null;
   var discoverLeafletMarkers = [];
-  var SCHORNDORF_CENTER = [48.8054, 9.5272];
+  var SCHORNDORF_CENTER = [48.7784, 9.1800];
   function offerToLatLng(o){
     var data = normalizeOffer(o);
     if(o.lat != null && o.lng != null) return [Number(o.lat), Number(o.lng)];
@@ -2854,7 +2842,8 @@
       return d <= radiusKm;
     });
     var q = String(locationQuery||'').trim().toLowerCase();
-    if(q){
+    var isDefaultCityQuery = q === String(DEFAULT_LOCATION_FALLBACK).toLowerCase();
+    if(q && !isDefaultCityQuery){
       list = list.filter(function(o){
         var data = normalizeOffer(o);
         var addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
@@ -23830,14 +23819,7 @@
   if(_effectiveLoggedIn && !provider.loggedIn){ provider.loggedIn = true; } // Lokale Variable synchronisieren
   if(mode==='provider' && !_effectiveLoggedIn) mode='customer';
   if(mode==='start') mode='customer';
-  // Auto-Login Wiedererkennung: user_role === 'provider' → direkt Dashboard, Discovery überspringen [cite: Agent-Modus]
-  try {
-    var ur = localStorage.getItem('user_role');
-    if(ur === 'provider' && provider && provider.loggedIn && checkSessionValidity()){
-      mode = 'provider';
-      save(LS.mode, mode);
-    }
-  } catch(e){}
+  // Startmodus bleibt bewusst Customer/Discover.
   
   // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
   if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){

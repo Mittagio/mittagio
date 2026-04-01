@@ -83,11 +83,9 @@ Anbieter-Profil: Betriebsdaten, Einstellungen, Rechtliches, Support, Abmelden.
 
 ## Live-Operations im Profil
 
-- **Provider-Übersicht direkt im Profil:** Neue Karte „Anbieter-Datenbasis“ zeigt Gesamtanzahl, Top-Städte und eine Vorschau der ersten Einträge.
-- **Go-Live Schnelltest:** Neue Testkarte mit Button „Test jetzt ausführen“ validiert live die Basisdaten.
-- **Prüfregeln im Schnelltest:** Anzahl > 0, Name vollständig, Adresse nutzbar (`address` oder `street/zip/city`), keine Dubletten im Schlüssel `name+street+zip+city`.
-- **Statusanzeige:** Ergebnis wird als Badge `Launch-ready` oder `Bitte prüfen` dargestellt und in einer Ergebnisliste aufgeschlüsselt.
-- **Nutzung für Launch-Tag:** Ein Tap auf den Test reicht, um die Datenbasis vor Live-Schaltung schnell technisch zu verifizieren.
+- **Bereinigt:** Die Profil-Unteransicht zeigt keine separate Karte „Anbieter-Datenbasis“ und keinen „Go-Live Schnelltest“ mehr.
+- **Ziel:** Kein Test-/Count-Block mehr am unteren Profilende; Fokus bleibt auf „Meine Daten“, Regeln, Abrechnungen, Support und FAQ.
+- **Admin-only:** Prüfungen und Datenbasis-Operationen bleiben zentral im Admin-Dashboard.
 
 ## Pre-Created Anbieter im Profil
 
