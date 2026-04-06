@@ -1,22 +1,52 @@
 # Favoriten
 
 **View-ID:** `v-fav` · Kundenseite  
-**Stand:** 14.02.2026
+**Stand:** 06.04.2026
 
 ---
 
-## Konzept
+## Konzept (Marketplace + Gemeinsam-entscheiden optional)
 
-Favoriten für heute. 2×2 Grid, Share, „In die Mittagsbox“.
+Die Favoriten-Seite nutzt zwei Modi:
 
-## Aufbau
+- **Solo (Default):** persönliche Favoriten ohne Voting-Badges.
+- **Gemeinsam (opt-in):** Beliebtheits-Badges + Teilen für die Gruppe.
 
-- Header: „Deine Favoriten für heute:“, Share
-- Grid: Kacheln mit Bild, 3 Säulen (🍴🧾🔄), Name
-- Button: „In die Mittagsbox“
+## Empty State
 
-## Regeln
+Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
 
-- 2×2 Grid, gap 12px, homogene Höhe
-- Abholnummer #FFD700
-- Keine Schiefertafeln
+- **Solo:** persönlicher Einstieg (Favorit markieren, später wiederfinden, zur Mittagsbox legen).
+- **Gemeinsam:** Onboarding für gemeinsames Entscheiden (`Allein essen ist doof?` + Share-Flow).
+- Primär-CTA: **„Angebote in Schorndorf entdecken“** (führt zu Discover).
+
+## Aktive Favoriten (Cards)
+
+- Hero-Bild mit Hand-Cut-Radius.
+- USP-Overlay oben rechts (Abholnummer + Zeit), Discovery-Optik.
+- Mitte: Titel links (Serif), Preis rechts (Sans/Bold) in einer Zeile.
+- Untertitel: Anbietername in Grau.
+- Beliebtheits-Badge: `🔥 X Stimmen` (**nur im Gemeinsam-Modus**).
+- Action-Bar:
+  - Links: Favorit (rot gefüllt), Teilen.
+  - Rechts: Gelber CTA „Zur Mittagsbox“.
+  - Alle Controls exakt **52px** hoch.
+
+## Interaktion
+
+- Favorit entfernen via Herz:
+  - Karte verschwindet sofort per Shrink-Out.
+  - Haptik-Feedback.
+  - Undo-Banner (3 Sekunden): „Gericht entfernt – Rückgängig?“.
+
+- Header-Aktion:
+  - Im Solo-Modus: **„Was essen wir heute?“** öffnet ein Bottom-Sheet mit:
+    - **Schnell teilen** (bleibt Solo)
+    - **Gemeinsam entscheiden** (opt-in)
+  - Im Gemeinsam-Modus: **„Ich entscheide heute allein“**.
+
+## Footer-System
+
+- Kundenseiten-Footer immer weiß.
+- Obere Trennlinie: `#ebebeb`.
+- Bündig mit Displayrand, Safe-Area via `env(safe-area-inset-bottom)`.

@@ -531,6 +531,12 @@
             console.log('[provider-week-seed] generated:', seedResult.offers, 'offers for', seedResult.providers, 'providers');
           }
         }
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
         if(typeof document !== 'undefined'){
           var activeProfile = document.querySelector('#v-provider-profile.view.active');
           var activeAdmin = document.querySelector('#v-admin.view.active');
@@ -543,6 +549,12 @@
           console.warn('[provider-directory] csv load failed', err);
         }
         ensureMassProviderWeekTestSeed(false);
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
       });
   })();
 
@@ -551,6 +563,12 @@
       return fetchProviderDirectoryCsv().then(function(parsed){
         var result = upsertRealProviderDirectory(parsed);
         ensureMassProviderWeekTestSeed(false);
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
         if(typeof document !== 'undefined'){
           var activeProfile = document.querySelector('#v-provider-profile.view.active');
           var activeAdmin = document.querySelector('#v-admin.view.active');
@@ -562,6 +580,12 @@
     };
     window.seedAllProvidersTestWeek = function(){
       var result = ensureMassProviderWeekTestSeed(true);
+      if(typeof offers !== 'undefined'){
+        try{
+          offers = load(LS.offers, []);
+          if(typeof window !== 'undefined') window.offers = offers;
+        }catch(_e){}
+      }
       if(typeof console !== 'undefined' && console.log){
         console.log('[provider-week-seed] manual run', result);
       }
@@ -824,9 +848,9 @@
     pillarsRow.className = 'discover-card-pillars card-pillars';
     pillarsRow.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 16px 8px; font-size:18px; line-height:1;';
     pillarsRow.innerHTML = [
-      '<span class="pillar-icon" title="Vor Ort" style="' + (vorOrt ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🍴</span>',
-      '<span class="pillar-icon" title="Abholnummer" style="' + (abholnummer ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🧾</span>',
-      '<span class="pillar-icon" title="Mehrweg" style="' + (mehrweg ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🔄</span>',
+      '<span class="pillar-icon' + (vorOrt ? '' : ' pillar-icon--dim') + '" title="Vor Ort">🍴</span>',
+      '<span class="pillar-icon pillar-abholnummer-icon' + (abholnummer ? '' : ' pillar-icon--dim') + '" title="Abholnummer"><i data-lucide="receipt" style="width:18px;height:18px;"></i></span>',
+      '<span class="pillar-icon' + (mehrweg ? '' : ' pillar-icon--dim') + '" title="Mehrweg">🔄</span>',
     ].join('');
     card.appendChild(pillarsRow);
     
@@ -860,7 +884,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn btn-mittagsbox-cta';
     ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
+    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.setProperty('transform', 'scale(1.02)'); ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.setProperty('transform', 'scale(1)'); ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -901,6 +925,7 @@
 
   function toggleFavorite(id, btn){
     if(!id) return;
+    normalizeDishFavoritesStore();
     const sid = String(id);
     const isRemoving = dishFavs.has(sid);
     if(isRemoving){
@@ -913,7 +938,9 @@
       showToast('Zu Favoriten hinzugefügt! ❤️');
       if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
     }
-    save(LS.dishFavs, Array.from(dishFavs));
+    const packed = Array.from(dishFavs);
+    save(LS.dishFavs, packed);
+    localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     if(typeof renderFavorites === 'function') renderFavorites();
     if(typeof renderDiscover === 'function') renderDiscover();
   }
@@ -1015,6 +1042,40 @@
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
+  function normalizeDishFavoritesStore(){
+    try{
+      const modern = load(LS.dishFavs, []);
+      const legacyRaw = localStorage.getItem('mittagio_favorites');
+      const legacy = legacyRaw ? JSON.parse(legacyRaw) : [];
+      const merged = new Set();
+      (Array.isArray(modern) ? modern : []).forEach(function(fid){
+        if(fid == null || fid === '') return;
+        merged.add(String(fid));
+      });
+      (Array.isArray(legacy) ? legacy : []).forEach(function(fid){
+        if(fid == null || fid === '') return;
+        merged.add(String(fid));
+      });
+      dishFavs = merged;
+      const packed = Array.from(merged);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+      return merged;
+    } catch(_e){
+      return dishFavs;
+    }
+  }
+  normalizeDishFavoritesStore();
+  /** In-Memory-`offers` mit localStorage (und async Seed nach CSV-Load) abgleichen – sonst leere Favoriten trotz gespeicherter IDs. */
+  function syncOffersFromStorage(){
+    try{
+      const lo = load(LS.offers, []);
+      if(Array.isArray(lo)){
+        offers = lo;
+        if(typeof window !== 'undefined') window.offers = lo;
+      }
+    }catch(_e){}
+  }
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
   let orders = loadOrders(); // Load via Order Store
   let customer = load(LS.customer, {
@@ -2311,6 +2372,7 @@
   }
   
   function renderDiscover(){
+    syncOffersFromStorage();
     // Date Bar rendern (neu)
     renderDiscoverDays();
     
@@ -2921,7 +2983,7 @@
     var p = offers.find(function(x){ return x.providerId === data.providerId; });
     var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
     var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    pillarsEl.innerHTML = '<div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer aktiv">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active petrol' : '') + '" title="Mehrweg verfügbar">🔄</div>';
+    pillarsEl.innerHTML = '<div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active pickup' : '') + '" title="Abholnummer aktiv"><i data-lucide="receipt" style="width:16px;height:16px;"></i></div><div class="pillar-mini ' + (mehrweg ? 'active petrol' : '') + '" title="Mehrweg verfügbar">🔄</div>';
     var walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
     var carMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 1.5) : null;
     if(minutesEl) minutesEl.textContent = (walkMin != null ? '🚶 ' + (walkMin < 1 ? '< 1' : walkMin) + ' Min. zu Fuß' : '') + (walkMin != null && carMin != null ? ' · ' : '') + (carMin != null ? '🚗 ' + (carMin < 1 ? '< 1' : carMin) + ' Min. mit dem Auto' : '') || '';
@@ -2934,6 +2996,7 @@
     btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
     if(backdrop) backdrop.classList.add('open');
     drawer.classList.add('open');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 40);
   };
   
   window.closeDiscoverPinDrawer = function(){
@@ -3077,15 +3140,13 @@
       });
     }
     
-    // Filter: Entferne bereits gelikte oder abgelehnte Gerichte
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    // Filter: Entferne bereits favorisierte (Quelle: dishFavs) oder abgelehnte Gerichte
     const disliked = JSON.parse(sessionStorage.getItem('mittagio_disliked') || '[]');
     
     list = list.filter(o => {
       const data = normalizeOffer(o);
-      const dishKey = data.id;
-      // Zeige nur Gerichte, die weder geliked noch abgelehnt wurden
-      return !favorites.includes(dishKey) && !disliked.includes(dishKey);
+      const dishKey = String(data.id);
+      return !dishFavs.has(dishKey) && !disliked.includes(dishKey) && !disliked.includes(data.id);
     });
     
     swipeCards = list;
@@ -3479,17 +3540,14 @@
     const abholnummer = !!(offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
     const mehrweg = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
     
+    const sid = String(dishKey);
     // 3-Säulen einfrieren: Status beim Favorisieren speichern
-    setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
-    
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    if(!favorites.includes(dishKey)){
-      favorites.push(dishKey);
-      localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-    }
-    if(!dishFavs.has(dishKey)){
-      dishFavs.add(dishKey);
-      save(LS.dishFavs, Array.from(dishFavs));
+    setFavPillars(sid, { vorOrt, abholnummer, mehrweg });
+    if(!dishFavs.has(sid)){
+      dishFavs.add(sid);
+      const packed = Array.from(dishFavs);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     }
     
     triggerHapticFeedback([20, 10, 30]);
@@ -3519,7 +3577,7 @@
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In meine Box 🍱</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zur Mittagsbox 🍱</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
@@ -4365,9 +4423,9 @@
     }
     const dishName = esc(data.dish || 'Gericht');
     const providerName = esc(data.providerName || 'Anbieter');
-    const uspOverlay = abholnummer
-      ? `🎫1️⃣ Abholnummer · 🕒 ${walkingMin || '–'} Min`
-      : `🕒 ${walkingMin || '–'} Min`;
+    const uspOverlayHtml = abholnummer
+      ? `<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
+      : `<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`;
     const feedbackTap = () => {
       try{
         if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
@@ -4380,7 +4438,7 @@
       <div class="tgtg-list-item-img-wrap">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
         <div class="tgtg-usp-overlay ${abholnummer ? 'is-active' : ''}">
-          <span>${uspOverlay}</span>
+          ${uspOverlayHtml}
         </div>
       </div>
       <div class="tgtg-list-item-content">
@@ -4399,7 +4457,7 @@
           <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#6b7280;'}"></i></button>
           <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
         </div>
-        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">In meine Box 🍱</button>
+        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">Zur Mittagsbox 🍱</button>
       </div>
     `;
     
@@ -4690,7 +4748,7 @@
       }
     }
     
-    // Actions: Primary CTA "In meine Box" (gelber Button ohne graue Box)
+    // Actions: Primary CTA "Zur Mittagsbox" (gelber Button ohne graue Box)
     if(interactive){
       if(isPolaroid){
         // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
@@ -4705,7 +4763,7 @@
           orderBtn.style.setProperty('transform', 'translateY(0)');
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
-        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>`;
+        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
           orderBtn.style.setProperty('opacity', '0.5');
@@ -4726,7 +4784,7 @@
         const orderBtn=document.createElement('button');
         orderBtn.type='button';
         orderBtn.className='card-action primary';
-        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In meine Box</span>`;
+        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Zur Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         orderBtn.onclick=(e)=>{ e.stopPropagation(); const thumb = card.querySelector('img'); flyThumbnailToMittagsbox(thumb, () => handleOrderClick(data)); };
         
@@ -4846,6 +4904,7 @@
 
   function toggleDishFav(offerId){
     if(!offerId) return;
+    normalizeDishFavoritesStore();
     const sid = String(offerId);
     triggerHapticFeedback([15]);
     if(dishFavs.has(sid)){
@@ -4863,7 +4922,9 @@
         setFavPillars(sid, { vorOrt, abholnummer, mehrweg });
       }
     }
-    save(LS.dishFavs, Array.from(dishFavs));
+    const packed = Array.from(dishFavs);
+    save(LS.dishFavs, packed);
+    localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     renderDiscover();
     renderStart();
     renderFavorites();
@@ -4960,15 +5021,74 @@
 
   // Heute-Fokus: Immer nur heute anzeigen (kein Day-Switcher mehr)
   let activeFavDay = isoDate(new Date()); // Immer heute
+  const LS_FAVORITES_MODE = 'mittagio_favorites_mode_v1';
+  function getFavoritesMode(){
+    const raw = load(LS_FAVORITES_MODE, 'solo');
+    return raw === 'team' ? 'team' : 'solo';
+  }
+  function setFavoritesMode(nextMode){
+    const safe = nextMode === 'team' ? 'team' : 'solo';
+    save(LS_FAVORITES_MODE, safe);
+    return safe;
+  }
+  let favShareChoiceActions = null;
+  function closeFavShareChoiceSheet(){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet){
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+    favShareChoiceActions = null;
+  }
+  function openFavShareChoiceSheet(actions){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    if(!bd || !sheet){
+      if(actions && typeof actions.onQuickShare === 'function') actions.onQuickShare();
+      return;
+    }
+    favShareChoiceActions = actions || {};
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    sheet.setAttribute('aria-hidden', 'false');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [sheet] }); }, 20);
+  }
+  (function initFavShareChoiceSheet(){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    const btnQuick = document.getElementById('btnFavChoiceQuickShare');
+    const btnTogether = document.getElementById('btnFavChoiceTogether');
+    const btnCancel = document.getElementById('btnFavChoiceCancel');
+    if(!bd || !sheet || !btnQuick || !btnTogether || !btnCancel) return;
+    if(sheet.dataset.bound === '1') return;
+    sheet.dataset.bound = '1';
+    bd.onclick = function(){ closeFavShareChoiceSheet(); };
+    btnCancel.onclick = function(){ closeFavShareChoiceSheet(); };
+    btnQuick.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onQuickShare === 'function') actions.onQuickShare();
+    };
+    btnTogether.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onTogether === 'function') actions.onTogether();
+    };
+  })();
   
   function renderFavorites(){
+    syncOffersFromStorage();
+    normalizeDishFavoritesStore();
+    const favoritesMode = getFavoritesMode();
     const provGrid=document.getElementById('favProviders');
     const provEmpty=document.getElementById('emptyFavProviders');
     const dishGrid=document.getElementById('favDishes');
     const dishEmpty=document.getElementById('emptyFavDishes');
     const favEmptyState = document.getElementById('favEmptyState');
     const favContent = document.getElementById('favContent');
-    if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
+    if(!provGrid || !dishGrid || !dishEmpty) return;
     
     // Day-Switcher ENTFERNT: Fokus zu 100% auf dem aktuellen Tag
     // activeFavDay wird immer auf heute gesetzt
@@ -5015,6 +5135,23 @@
       if(hasAnyFavorites) show(favContent);
       else hide(favContent);
     }
+    const favEmptyIcon = document.getElementById('favEmptyIcon');
+    const favEmptyTitle = document.getElementById('favEmptyTitle');
+    const favEmptyText = document.getElementById('favEmptyText');
+    const favEmptySteps = document.getElementById('favEmptySteps');
+    if(favEmptyTitle && favEmptyText && favEmptySteps){
+      if(favoritesMode === 'team'){
+        if(favEmptyIcon) favEmptyIcon.textContent = '🗳️';
+        favEmptyTitle.textContent = 'Allein essen ist doof?';
+        favEmptyText.textContent = 'Markiere deine Favoriten und teile sie mit deinem Team. Gemeinsam entscheiden, schneller genießen!';
+        favEmptySteps.innerHTML = '<li>❤️ Herz drücken</li><li>🔗 Link teilen</li><li>🗳️ Abstimmen</li>';
+      } else {
+        if(favEmptyIcon) favEmptyIcon.textContent = '🍱';
+        favEmptyTitle.textContent = 'Deine Favoriten warten auf dich';
+        favEmptyText.textContent = 'Speichere Gerichte mit ❤️ und entscheide später in Ruhe, was in deine Mittagsbox kommt.';
+        favEmptySteps.innerHTML = '<li>❤️ Favorit markieren</li><li>📌 Später wiederfinden</li><li>🍱 Zur Mittagsbox legen</li>';
+      }
+    }
     
     // Provider Section - "Deine Lieblings-Anbieter heute"
     const sectionProvidersWrapper = document.getElementById('sectionProvidersWrapper');
@@ -5036,7 +5173,9 @@
       if(providerList.length > 0) show(sectionProviders);
       else hide(sectionProviders);
     }
-    if(providerList.length) hide(provEmpty); else show(provEmpty);
+    if(provEmpty){
+      if(providerList.length) hide(provEmpty); else show(provEmpty);
+    }
     
     // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
     const allFavoritedProviders = Array.from(providerFavs);
@@ -5112,7 +5251,7 @@
     topFour.forEach(o=>{
       if(o?.id){
         try {
-          const favCard = createFavoriteGridCard(o);
+          const favCard = createFavoriteGridCard(o, { mode: favoritesMode });
           dishGrid.appendChild(favCard);
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
@@ -5164,7 +5303,7 @@
         };
         if(navigator.share && typeof navigator.share === 'function'){
           navigator.share({ title: shareTitle, text: shareText, url: linkToDish })
-            .then(() => { if(typeof showToast === 'function') showToast('Geteilt'); })
+            .then(() => { if(typeof showToast === 'function') showToast('Frage geteilt – jetzt können alle mitentscheiden'); })
             .catch((err) => { if(err && err.name === 'AbortError') return; doFallback(); });
         } else {
           doFallback();
@@ -5173,18 +5312,46 @@
         if(typeof showToast === 'function') showToast('Teilen nicht möglich – bitte Link manuell kopieren');
       }
     };
-    const btnFavShareHeader = document.getElementById('btnFavShareHeader');
-    if(btnFavShareHeader){
-      if(topFour.length > 0 || providerList.length > 0) show(btnFavShareHeader, 'flex');
-      else hide(btnFavShareHeader);
-      btnFavShareHeader.onclick = function(e){ e.preventDefault(); e.stopPropagation(); shareFavAction(); };
+    const btnFavTeamVote = document.getElementById('btnFavTeamVote');
+    if(btnFavTeamVote){
+      if(favoritesMode === 'team'){
+        show(btnFavTeamVote, 'flex');
+        btnFavTeamVote.textContent = 'Ich entscheide heute allein';
+        btnFavTeamVote.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          setFavoritesMode('solo');
+          if(typeof showToast === 'function') showToast('Zurück zu deinen Favoriten');
+          renderFavorites();
+        };
+      } else if(topFour.length > 0 || providerList.length > 0){
+        show(btnFavTeamVote, 'flex');
+        btnFavTeamVote.textContent = 'Was essen wir heute?';
+        btnFavTeamVote.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          openFavShareChoiceSheet({
+            onQuickShare: function(){
+              shareFavAction();
+            },
+            onTogether: function(){
+              setFavoritesMode('team');
+              renderFavorites();
+              if(typeof showToast === 'function') showToast('Gemeinsam entscheiden aktiviert');
+              shareFavAction();
+            }
+          });
+        };
+      } else {
+        hide(btnFavTeamVote);
+      }
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
     if(btnShareMyLunch) btnShareMyLunch.onclick = shareFavAction;
     
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');
-    const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(o.id) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
+    const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(String(o.id)) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
     if(favPullHint){
       if(hasUpcoming) show(favPullHint);
       else hide(favPullHint);
@@ -5223,7 +5390,7 @@
       // Favoriten für diesen Tag finden
       const dayDishes = offers.filter(o => 
         o.active !== false && 
-        dishFavs.has(o.id) && 
+        dishFavs.has(String(o.id)) && 
         o.day === dayKey
       );
       
@@ -5383,25 +5550,93 @@
     try { sessionStorage.setItem('mittagio_favAbgeholt', JSON.stringify(Array.from(set))); } catch(e){}
   }
   function isFavAbgeholt(id){ return getFavAbgeholtIds().has(String(id)); }
+  function getFavoriteVoteCount(offerId){
+    const sid = String(offerId || '');
+    if(!sid) return 0;
+    const key = 'mittagio_fav_votes_v1';
+    try{
+      const raw = localStorage.getItem(key);
+      const map = raw ? JSON.parse(raw) : {};
+      if(map && Number.isFinite(Number(map[sid])) && Number(map[sid]) > 0) return Number(map[sid]);
+      let hash = 0;
+      for(let i = 0; i < sid.length; i++) hash = ((hash << 5) - hash + sid.charCodeAt(i)) | 0;
+      const votes = Math.abs(hash % 17) + 1;
+      map[sid] = votes;
+      localStorage.setItem(key, JSON.stringify(map));
+      return votes;
+    } catch(_e){
+      return 1;
+    }
+  }
+  let favoritesUndoState = null;
+  function clearFavoritesUndoToast(){
+    const old = document.getElementById('favUndoToast');
+    if(old) old.remove();
+    if(favoritesUndoState && favoritesUndoState.timer){
+      clearTimeout(favoritesUndoState.timer);
+    }
+    favoritesUndoState = null;
+  }
+  function removeFavoriteWithUndo(data, cardEl){
+    if(!data || !data.id) return;
+    normalizeDishFavoritesStore();
+    const sid = String(data.id);
+    if(!dishFavs.has(sid)) return;
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+    if(cardEl){
+      cardEl.classList.add('fav-card-removing');
+    }
+    const finalizeRemoval = function(){
+      dishFavs.delete(sid);
+      clearFavPillars(sid);
+      const packed = Array.from(dishFavs);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+      renderDiscover();
+      renderStart();
+      renderFavorites();
+      updateSheetFavs();
+    };
+    setTimeout(finalizeRemoval, cardEl ? 220 : 0);
+    clearFavoritesUndoToast();
+    const toast = document.createElement('div');
+    toast.id = 'favUndoToast';
+    toast.className = 'fav-undo-toast';
+    toast.innerHTML = '<span>Gericht entfernt - Rückgängig?</span><button type="button">Rückgängig</button>';
+    const undoBtn = toast.querySelector('button');
+    if(undoBtn){
+      undoBtn.onclick = function(){
+        if(favoritesUndoState && favoritesUndoState.offerId === sid){
+          if(favoritesUndoState.timer) clearTimeout(favoritesUndoState.timer);
+          dishFavs.add(sid);
+          const packed = Array.from(dishFavs);
+          save(LS.dishFavs, packed);
+          localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+          renderFavorites();
+          renderDiscover();
+        }
+        clearFavoritesUndoToast();
+      };
+    }
+    const favView = document.getElementById('v-fav');
+    if(favView) favView.appendChild(toast);
+    favoritesUndoState = {
+      offerId: sid,
+      timer: setTimeout(function(){ clearFavoritesUndoToast(); }, 3000)
+    };
+  }
 
-  // Favoriten-Karte: 95% breit, Slim-Pills (🍴 🧾 🔄), Aktionen „Jetzt Abholnummer ziehen“ / „Route starten“, Abgeholt Grayscale
-  function createFavoriteGridCard(o){
+  // Favoriten-Karte: Marketplace-Style (Bild+USP, Titel/Preis, Voting, 52px Action-Bar)
+  function createFavoriteGridCard(o, opts){
+    opts = opts || {};
+    const mode = opts.mode === 'team' ? 'team' : 'solo';
     const data = normalizeOffer(o);
     const p = offers.find(x => x.providerId === data.providerId);
     const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
-    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    const abgeholt = isFavAbgeholt(data.id);
-
     const card = document.createElement('div');
-    card.className = 'fav-card' + (abgeholt ? ' fav-card-abgeholt' : '');
+    card.className = 'fav-card';
     card.setAttribute('data-fav-id', data.id);
     card.onclick = () => openOffer(data.id);
-
-    const removeBtn = document.createElement('button');
-    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
-    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px; height:16px; color:#E34D4D;"></i>';
-    removeBtn.onclick = (e) => { e.stopPropagation(); toggleDishFav(data.id); renderFavorites(); };
-    card.appendChild(removeBtn);
 
     const imgWrap = document.createElement('div');
     imgWrap.className = 'fav-card-img-wrap';
@@ -5411,76 +5646,100 @@
     img.loading = 'lazy';
     img.alt = esc(data.dish || 'Gericht');
     imgWrap.appendChild(img);
-    const priceSticker = document.createElement('span');
-    priceSticker.className = 'fav-card-price-sticker';
-    priceSticker.textContent = euro(data.price);
-    imgWrap.appendChild(priceSticker);
+    const walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
+    const walkLabel = walkMin != null ? (walkMin < 1 ? '< 1' : walkMin) + ' Min' : '– Min';
+    const usp = document.createElement('div');
+    usp.className = 'fav-card-usp';
+    if(abholnummer){
+      usp.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+    } else {
+      usp.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+    }
+    imgWrap.appendChild(usp);
     card.appendChild(imgWrap);
 
     const body = document.createElement('div');
     body.className = 'fav-card-body';
+    const titleRow = document.createElement('div');
+    titleRow.className = 'fav-title-row';
     const title = document.createElement('div');
     title.className = 'fav-card-title';
     title.textContent = data.dish || 'Gericht';
-    body.appendChild(title);
-    const meta = document.createElement('div');
-    meta.style.cssText = 'font-size:13px; font-weight:600; color:var(--header-subtitle-color); margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
-    meta.textContent = data.providerName || 'Anbieter';
+    const price = document.createElement('div');
+    price.className = 'fav-card-price';
+    price.textContent = euro(data.price);
+    titleRow.appendChild(title);
+    titleRow.appendChild(price);
+    body.appendChild(titleRow);
+    const meta = document.createElement('p');
+    meta.className = 'fav-card-provider';
+    meta.textContent = (data.providerName || 'Anbieter') + ' >';
     body.appendChild(meta);
-
-    const pillars = document.createElement('div');
-    pillars.className = 'fav-card-pillars';
-    pillars.innerHTML = `
-      <span class="pillar-pill active">🍴</span>
-      <span class="pillar-pill pillar-abholnummer ${abholnummer ? 'active' : ''}">🧾</span>
-      <span class="pillar-pill ${mehrweg ? 'active' : ''}">🔄</span>
-    `;
-    body.appendChild(pillars);
+    if(mode === 'team'){
+      const vote = document.createElement('div');
+      vote.className = 'fav-vote-badge';
+      vote.textContent = '🔥 ' + getFavoriteVoteCount(data.id) + ' Stimmen';
+      body.appendChild(vote);
+    }
 
     const actions = document.createElement('div');
     actions.className = 'fav-card-actions';
-    const routeBtn = document.createElement('button');
-    routeBtn.type = 'button';
-    routeBtn.className = 'btn-route';
-    routeBtn.innerHTML = '<i data-lucide="map-pin" style="width:18px;height:18px;"></i> Route starten';
-    routeBtn.onclick = (e) => {
+    const left = document.createElement('div');
+    left.className = 'fav-action-left';
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'fav-action-icon heart-on';
+    removeBtn.setAttribute('aria-label', 'Favorit entfernen');
+    removeBtn.innerHTML = '<i data-lucide="heart" style="width:18px;height:18px; fill: currentColor;"></i>';
+    removeBtn.onclick = (e) => {
       e.stopPropagation();
-      const addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
-      if(addr){
-        const url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr);
-        window.open(url, '_blank');
-      } else { if(typeof showToast === 'function') showToast('Keine Adresse hinterlegt'); }
+      e.preventDefault();
+      removeFavoriteWithUndo(data, card);
     };
-    actions.appendChild(routeBtn);
-    if(abholnummer){
-      const abholBtn = document.createElement('button');
-      abholBtn.type = 'button';
-      abholBtn.className = 'btn-abholnummer';
-      abholBtn.innerHTML = '<i data-lucide="receipt" style="width:18px;height:18px;"></i> Jetzt Abholnummer ziehen';
-      abholBtn.onclick = (e) => {
+    const shareBtn = document.createElement('button');
+    shareBtn.type = 'button';
+    shareBtn.className = 'fav-action-icon';
+    shareBtn.setAttribute('aria-label', 'Teilen');
+    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:18px;height:18px;"></i>';
+    shareBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      shareOffer(data);
+    };
+    left.appendChild(removeBtn);
+    left.appendChild(shareBtn);
+    actions.appendChild(left);
+    const boxBtn = document.createElement('button');
+    boxBtn.type = 'button';
+    boxBtn.className = 'fav-box-btn';
+    boxBtn.innerHTML = 'Zur Mittagsbox';
+    if(!abholnummer){
+      boxBtn.classList.add('is-disabled');
+      boxBtn.disabled = true;
+      boxBtn.onclick = (e) => {
         e.stopPropagation();
-        openOffer(data.id);
+        e.preventDefault();
+        if(typeof showToast === 'function') showToast('Keine Abholnummer - nur ansehen.', 2000);
       };
-      actions.appendChild(abholBtn);
+    } else {
+      boxBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const thumb = card.querySelector('.fav-card-img-wrap img');
+        flyThumbnailToMittagsbox(thumb, function(){
+          if(!addToCart(o)){ if(typeof showToast === 'function') showToast('Fehler beim Hinzufügen.', 2000); return; }
+          if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([20]);
+          if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
+          if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+          if(typeof showToast === 'function') showToast('In der Box! 🥗', 1500);
+        });
+      };
     }
+    actions.appendChild(boxBtn);
     body.appendChild(actions);
 
-    const abgeholtRow = document.createElement('div');
-    abgeholtRow.style.cssText = 'margin-top:10px; font-size:12px; font-weight:600; color:var(--header-subtitle-color);';
-    const abgeholtToggle = document.createElement('button');
-    abgeholtToggle.type = 'button';
-    abgeholtToggle.style.cssText = 'background:none; border:none; padding:0; cursor:pointer; font-size:12px; font-weight:700; color:#22c55e; text-decoration:underline;';
-    abgeholtToggle.textContent = abgeholt ? '✓ Abgeholt · Erneut anzeigen' : 'Als abgeholt markieren';
-    abgeholtToggle.onclick = (e) => {
-      e.stopPropagation();
-      setFavAbgeholt(data.id, !abgeholt);
-      renderFavorites();
-    };
-    abgeholtRow.appendChild(abgeholtToggle);
-    body.appendChild(abgeholtRow);
-
     card.appendChild(body);
-    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [removeBtn, routeBtn, actions] }); }, 10);
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [card] }); }, 10);
     return card;
   }
   
@@ -5773,17 +6032,22 @@
   let navigationHistory = [];
   
   function openOffer(id){
-    const raw = offers.find(x=>x.id===id);
+    syncOffersFromStorage();
+    normalizeDishFavoritesStore();
+    const sid = String(id);
+    const raw = offers.find(x => String(x.id) === sid);
     if(!raw) return;
     const o = normalizeOffer(raw);
     const offerProvider = offers.find(p => p.providerId === o.providerId);
     const orderingEnabled = !!(offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode)));
-    activeOfferId = id;
+    activeOfferId = sid;
     
     // UI Elements
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
+    const sUspOverlay = document.getElementById('sUspOverlay');
+    const sInlinePrice = document.getElementById('sInlinePrice');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
     const sProviderAddress = document.getElementById('sProviderAddress');
@@ -5799,6 +6063,8 @@
     const aw = document.getElementById('sAllergensWrap');
     const sAllergens = document.getElementById('sAllergens');
     const ew = document.getElementById('sExtrasWrap');
+    const extrasOptionsEl = document.getElementById('sExtrasOptions');
+    const extrasHintEl = document.getElementById('sExtrasHint');
     const rw = document.getElementById('sReuseWrap');
     const ecoBadgeEl = document.getElementById('sEcoBadge');
     const btnOpenRoute = document.getElementById('btnOpenRoute');
@@ -5813,7 +6079,32 @@
     
     if(sDish) sDish.textContent = o.dish || '';
     const sPriceSticker = document.getElementById('sPriceSticker');
-    if(sPriceSticker) sPriceSticker.textContent = euro(o.price);
+    const basePrice = Number(o.price || 0);
+    const selectedExtras = new Set();
+    const toNumber = function(v){
+      var n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const getSelectedExtras = function(){
+      return (o.extras || []).filter(function(ex){
+        var key = String((ex && (ex.id || ex.name)) || '');
+        return key && selectedExtras.has(key);
+      });
+    };
+    const getExtrasTotal = function(){
+      return getSelectedExtras().reduce(function(sum, ex){ return sum + toNumber(ex.price); }, 0);
+    };
+    const getLivePrice = function(){
+      return Number((basePrice + getExtrasTotal()).toFixed(2));
+    };
+    const applyLivePrice = function(){
+      var live = getLivePrice();
+      if(sPriceSticker) sPriceSticker.textContent = euro(live);
+      if(sInlinePrice) sInlinePrice.textContent = euro(live);
+      if(primaryCTAText) primaryCTAText.textContent = 'Zur Mittagsbox • ' + euro(live);
+    };
+    if(sPriceSticker) sPriceSticker.textContent = euro(basePrice);
+    if(sInlinePrice) sInlinePrice.textContent = euro(basePrice);
 
     const sProviderNameEl = document.getElementById('sProviderName');
     if(sProviderNameEl) sProviderNameEl.textContent = o.providerName || 'Anbieter';
@@ -5828,9 +6119,8 @@
       };
     }
     
-    // Favorite State
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const isFav = favorites.includes(id);
+    // Favorite State (eine Quelle: dishFavs / mittagio_dish_favs_v1 – nicht legacy mittagio_favorites)
+    const isFav = dishFavs.has(sid);
     const heartIcon = sFavoriteBtn ? sFavoriteBtn.querySelector('i[data-lucide="heart"]') : null;
     if(heartIcon){
       heartIcon.style.fill = isFav ? '#e74c3c' : 'none';
@@ -5839,39 +6129,32 @@
     if(sFavoriteBtn){
       sFavoriteBtn.onclick = (e) => {
         e.stopPropagation();
-        toggleFavorite(id, sFavoriteBtn);
+        toggleFavorite(sid, sFavoriteBtn);
       };
     }
 
-    // 3 Säulen: weiße Pill-Kacheln mit Label (VOR ORT, MEHRWEG, ABHOLNUMMER), aktiv = Akzentfarbe, inaktiv = opacity 0.3 + grayscale
-    if(sThreePillars){
-      sThreePillars.innerHTML = '';
-      sThreePillars.className = 'detail-power-bar detail-power-bar-pills';
-      const hasReuse = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
-      const hasDineIn = !!(offerProvider && (offerProvider.dineInPossible !== false));
-      const pillars = [
-        { emo: '🍴', label: 'VOR ORT', active: hasDineIn, data: 'vorort' },
-        { emo: '🔄', label: 'MEHRWEG', active: hasReuse, data: 'mehrweg' },
-        { emo: '🧾', label: 'ABHOLNUMMER', active: orderingEnabled, data: 'abholnummer' },
-      ];
-      pillars.forEach(function(p){
-        const tile = document.createElement('div');
-        tile.className = 'detail-pillar-tile' + (p.active ? ' active' : '');
-        tile.setAttribute('data-pillar', p.data);
-        tile.setAttribute('aria-label', p.label);
-        tile.innerHTML = '<span class="detail-pillar-emoji">' + p.emo + '</span><span class="detail-pillar-label">' + (typeof esc === 'function' ? esc(p.label) : p.label) + '</span>';
-        sThreePillars.appendChild(tile);
-      });
+    // Discovery-Sync: USP-Badge auf dem Hero (Abholnummer + Zeit), keine 3-Säulen in der Detailansicht
+    if(sUspOverlay){
+      const walkTime = o.distanceKm != null ? Math.round(Number(o.distanceKm) * 12) : null;
+      const walkLabel = walkTime != null ? (walkTime < 1 ? '< 1' : walkTime) + ' Min' : '– Min';
+      if(orderingEnabled){
+        sUspOverlay.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+      } else {
+        sUspOverlay.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+      }
     }
 
-    // Sticky Bottom CTA: Mittagio-Gelb und Text "Mittagsbox"
+    if(sThreePillars){
+      hide(sThreePillars);
+    }
+
+    // Sticky Bottom CTA
     if(btnCTA){
       btnCTA.style.background = '#FFD700';
       btnCTA.style.color = '#1a1a1a';
       btnCTA.style.border = 'none';
       btnCTA.style.fontWeight = '900';
-      btnCTA.style.boxShadow = '0 8px 24px rgba(255,215,0,0.25)';
-      if(primaryCTAText) primaryCTAText.textContent = 'In meine Box legen';
+      btnCTA.style.boxShadow = 'none';
     }
 
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
@@ -6011,13 +6294,47 @@
       }
     }
 
-    // Extras
+    // Extras (nur anzeigen, wenn Extras vorhanden) + Live-Preis im CTA
     if(ew){
-      if(o.extras && o.extras.length){
+      if(Array.isArray(o.extras) && o.extras.length){
         show(ew);
+        if(extrasHintEl) show(extrasHintEl);
+        if(extrasOptionsEl){
+          extrasOptionsEl.innerHTML = '';
+          o.extras.forEach(function(ex, idx){
+            var key = String((ex && (ex.id || ex.name)) || ('extra_' + idx));
+            var row = document.createElement('label');
+            row.className = 'sheet-detail-extra-option';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.value = key;
+            input.setAttribute('data-extra-key', key);
+            input.onchange = function(){
+              if(input.checked) selectedExtras.add(key);
+              else selectedExtras.delete(key);
+              applyLivePrice();
+            };
+            var left = document.createElement('span');
+            left.className = 'sheet-detail-extra-label';
+            left.appendChild(input);
+            var title = document.createElement('span');
+            title.textContent = (ex && ex.name) ? String(ex.name) : 'Extra';
+            left.appendChild(title);
+            var price = document.createElement('span');
+            price.className = 'sheet-detail-extra-price';
+            price.textContent = '+' + euro(toNumber(ex && ex.price));
+            row.appendChild(left);
+            row.appendChild(price);
+            extrasOptionsEl.appendChild(row);
+          });
+        }
         const sx = document.getElementById('sExtras');
-        if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
-      } else hide(ew);
+        if(sx) sx.textContent = o.extras.map(function(ex){ return (ex.name || 'Extra') + ' (+' + euro(toNumber(ex.price)) + ')'; }).join(' · ');
+      } else {
+        hide(ew);
+        if(extrasHintEl) hide(extrasHintEl);
+        if(extrasOptionsEl) extrasOptionsEl.innerHTML = '';
+      }
     }
 
     // Reuse
@@ -6054,7 +6371,7 @@
         primaryCTAText.textContent = !isActive ? 'Angebot nicht verfügbar' : 'Angebot nicht mehr verfügbar';
         btnCTA.onclick = null;
       } else if(orderingEnabled){
-        primaryCTAText.textContent = 'In meine Box legen';
+        applyLivePrice();
         if(sInfoHint) hide(sInfoHint);
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
@@ -6062,17 +6379,21 @@
           primaryCTAText.textContent = 'Wird hinzugefügt...';
           
           // Auto-Favorite
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          if(!favs.includes(o.id)){
-            favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
-            dishFavs.add(o.id);
-            save(LS.dishFavs, Array.from(dishFavs));
+          const oid = String(o.id);
+          if(!dishFavs.has(oid)){
+            dishFavs.add(oid);
+            const packed = Array.from(dishFavs);
+            save(LS.dishFavs, packed);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
           
           flyThumbnailToMittagsbox(sImg, () => {
-            if(addToCart(o)){
+            const orderOffer = Object.assign({}, o, {
+              price: getLivePrice(),
+              selectedExtras: getSelectedExtras()
+            });
+            if(addToCart(orderOffer)){
               triggerCartIconGlow();
               btnCTA.classList.remove('loading');
               btnCTA.classList.add('success');
@@ -6084,30 +6405,30 @@
                 setTimeout(() => {
                   btnCTA.disabled = false;
                   btnCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'In meine Box legen';
+                  applyLivePrice();
                 }, 500);
               }, 300);
             } else {
               btnCTA.disabled = false;
               btnCTA.classList.remove('loading');
-              primaryCTAText.textContent = 'In meine Box legen';
+              applyLivePrice();
               showToast('Fehler beim Hinzufügen.');
             }
           });
         };
       } else {
-        primaryCTAText.textContent = 'In meine Box legen';
+        applyLivePrice();
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
           show(sInfoHint);
         }
         btnCTA.onclick = () => {
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          if(!favs.includes(o.id)){
-            favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
-            dishFavs.add(o.id);
-            save(LS.dishFavs, Array.from(dishFavs));
+          const oid = String(o.id);
+          if(!dishFavs.has(oid)){
+            dishFavs.add(oid);
+            const packed = Array.from(dishFavs);
+            save(LS.dishFavs, packed);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
           const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
@@ -6120,7 +6441,7 @@
           setTimeout(() => {
             btnCTA.disabled = false;
             btnCTA.classList.remove('success');
-            primaryCTAText.textContent = 'In meine Box legen';
+            applyLivePrice();
           }, 2000);
         };
       }
@@ -7721,7 +8042,7 @@
   // Share Button im Header (Offer Detail Page)
   const btnShareHeader = document.getElementById('btnShareHeader');
   if(btnShareHeader) btnShareHeader.onclick=()=>{
-    const o = offers.find(x=>x.id===activeOfferId);
+    const o = offers.find(x=>String(x.id)===String(activeOfferId));
     if(!o) return;
     shareOffer(o);
   };
@@ -11155,7 +11476,7 @@
           const dishName = d.dish || d.title || 'Gericht';
           const isLive = o.active !== false;
           const viewsCount = parseInt(localStorage.getItem('mittagio_views_' + o.id) || '0', 10);
-          const favCount = (JSON.parse(localStorage.getItem('mittagio_favorites') || '[]')).filter(function(id){ return id === o.id; }).length;
+          const favCount = (load(LS.dishFavs, [])).filter(function(fid){ return String(fid) === String(o.id); }).length;
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
           const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
