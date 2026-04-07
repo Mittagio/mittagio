@@ -5,12 +5,12 @@
 
 ---
 
-## Konzept (Marketplace + Gemeinsam-entscheiden optional)
+## Konzept (Marketplace + Solo-first)
 
 Die Favoriten-Seite nutzt zwei Modi:
 
-- **Solo (Default):** persönliche Favoriten ohne Voting-Badges.
-- **Gemeinsam (opt-in):** Beliebtheits-Badges + Teilen für die Gruppe.
+- **Solo (Default):** persoenliche Favoriten ohne Voting-Badges.
+- **Gemeinsam (opt-in Zusatz):** Beliebtheits-Badges + Teilen fuer die Gruppe.
 
 ## Empty State
 
@@ -39,11 +39,27 @@ Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
   - Haptik-Feedback.
   - Undo-Banner (3 Sekunden): „Gericht entfernt – Rückgängig?“.
 
-- Header-Aktion:
-  - Im Solo-Modus: **„Was essen wir heute?“** öffnet ein Bottom-Sheet mit:
-    - **Schnell teilen** (bleibt Solo)
-    - **Gemeinsam entscheiden** (opt-in)
-  - Im Gemeinsam-Modus: **„Ich entscheide heute allein“**.
+- Header-Aktion (dezent):
+  - Im Solo-Modus: kleines Share-Icon im Header oeffnet ein Bottom-Sheet mit:
+    - **Dieses Gericht teilen** (ein Vorschlag)
+    - **Alle Favoriten teilen** (Default)
+    - **Gemeinsam entscheiden** (opt-in als Zusatz)
+  - Im Gemeinsam-Modus: kleines Users-Icon (tap = zurueck auf Solo).
+
+## Share-Texte (versendet + Toast)
+
+- **Dieses Gericht teilen**
+  - Versandtext: `Mein Vorschlag fuer heute: <Gericht> bei <Anbieter> ... <Link>`
+  - Toast Erfolg: `Gericht geteilt`
+  - Toast Fallback: `Link kopiert`
+
+- **Alle Favoriten teilen**
+  - Versandtext: `Schau dir meine Favoriten an: <Gericht 1>, <Gericht 2> ... <Link>`
+  - Toast Erfolg: `Alle Favoriten geteilt`
+  - Toast Fallback: `Link kopiert`
+
+- **Fehlerfall**
+  - Toast: `Teilen nicht moeglich`
 
 ## Footer-System
 

@@ -10382,6 +10382,21 @@
       font-weight: 700;
       color: #334155;
     }
+    /* Fail-safe: Header-Aktion in Favoriten bleibt reines Icon */
+    #v-fav #btnFavTeamVote{
+      font-size: 0 !important;
+      line-height: 0 !important;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    #v-fav #btnFavTeamVote i,
+    #v-fav #btnFavTeamVote svg{
+      width: 16px !important;
+      height: 16px !important;
+      font-size: 16px !important;
+      line-height: 1 !important;
+      flex-shrink: 0;
+    }
 
     #v-fav #favDishes{
       display: flex !important;

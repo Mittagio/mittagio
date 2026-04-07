@@ -5045,11 +5045,22 @@
   function openFavShareChoiceSheet(actions){
     const bd = document.getElementById('favShareChoiceBd');
     const sheet = document.getElementById('favShareChoiceSheet');
+    const btnSingle = document.getElementById('btnFavChoiceSingleShare');
+    const singleText = document.getElementById('favChoiceSingleText');
     if(!bd || !sheet){
-      if(actions && typeof actions.onQuickShare === 'function') actions.onQuickShare();
+      if(actions && typeof actions.onAllShare === 'function') actions.onAllShare();
       return;
     }
     favShareChoiceActions = actions || {};
+    if(btnSingle){
+      if(actions && typeof actions.onSingleShare === 'function'){
+        show(btnSingle, 'flex');
+        const label = (actions.singleLabel && String(actions.singleLabel).trim()) ? String(actions.singleLabel).trim() : 'Dieses Gericht teilen';
+        if(singleText) singleText.textContent = label;
+      } else {
+        hide(btnSingle);
+      }
+    }
     bd.classList.add('active');
     sheet.classList.add('active');
     sheet.setAttribute('aria-hidden', 'false');
@@ -5058,18 +5069,24 @@
   (function initFavShareChoiceSheet(){
     const bd = document.getElementById('favShareChoiceBd');
     const sheet = document.getElementById('favShareChoiceSheet');
+    const btnSingle = document.getElementById('btnFavChoiceSingleShare');
     const btnQuick = document.getElementById('btnFavChoiceQuickShare');
     const btnTogether = document.getElementById('btnFavChoiceTogether');
     const btnCancel = document.getElementById('btnFavChoiceCancel');
-    if(!bd || !sheet || !btnQuick || !btnTogether || !btnCancel) return;
+    if(!bd || !sheet || !btnQuick || !btnTogether || !btnCancel || !btnSingle) return;
     if(sheet.dataset.bound === '1') return;
     sheet.dataset.bound = '1';
     bd.onclick = function(){ closeFavShareChoiceSheet(); };
     btnCancel.onclick = function(){ closeFavShareChoiceSheet(); };
+    btnSingle.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onSingleShare === 'function') actions.onSingleShare();
+    };
     btnQuick.onclick = function(){
       const actions = favShareChoiceActions || {};
       closeFavShareChoiceSheet();
-      if(typeof actions.onQuickShare === 'function') actions.onQuickShare();
+      if(typeof actions.onAllShare === 'function') actions.onAllShare();
     };
     btnTogether.onclick = function(){
       const actions = favShareChoiceActions || {};
@@ -5259,10 +5276,7 @@
       }
     });
     
-    // Share (Web Share API) – Logik-Weiche:
-    // IF User wählt 'Team-Bestellung': Variante 2 (Direkt-Warenkorb-Link) – zukünftig
-    // ELSE IF Abholnummer 🧾 vorhanden: Variante 1 (Fokus Zeitersparnis / Skip-the-line)
-    // ELSE (Keine Abholnummer): Variante 3 (Fokus Gericht & Treffen – „Lockerer Lunch“)
+    // Share (Web Share API): ein Gericht oder komplette Favoritenliste
     const favShareWrap = document.getElementById('favShareWrap');
     if(favShareWrap) hide(favShareWrap);
     const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
@@ -5273,50 +5287,108 @@
       const p = offers.find(x => x.providerId === (o && o.providerId));
       return !!(p && (p.orderingEnabled !== false && ((o && (o.hasPickupCode || o.orderingEnabled)) || (p.hasPickupCode))));
     })();
-    // Smart-Share: Anbietername aus Favoriten-Kachel; abholnummer → „skippen“ vs. „Mittag machen“
-    const shareFavAction = () => {
+    const shareWithFallback = function(payload){
+      if(!payload) return;
+      const title = payload.title || 'Mittagio';
+      const text = payload.text || '';
+      const url = payload.url || baseUrl;
+      const successToast = payload.successToast || 'Geteilt';
+      const copyToast = payload.copyToast || 'Link kopiert';
+      const errorToast = payload.errorToast || 'Teilen nicht moeglich';
+      const fallbackCopy = function(){
+        try{
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(text).then(function(){
+              if(typeof showToast === 'function') showToast(copyToast);
+            }).catch(function(){
+              if(typeof showToast === 'function') showToast(copyToast);
+            });
+          } else {
+            if(typeof copyToClipboard === 'function') copyToClipboard(text);
+            if(typeof showToast === 'function') showToast(copyToast);
+          }
+        } catch(_e){
+          if(typeof showToast === 'function') showToast(errorToast);
+        }
+      };
+      if(navigator.share && typeof navigator.share === 'function'){
+        navigator.share({ title: title, text: text, url: url })
+          .then(function(){
+            if(typeof showToast === 'function') showToast(successToast);
+          })
+          .catch(function(err){
+            if(err && err.name === 'AbortError') return;
+            fallbackCopy();
+          });
+      } else {
+        fallbackCopy();
+      }
+    };
+    const shareSingleSuggestionAction = () => {
+      if(firstDish && firstDish.id){
+        const dishName = (firstDish.dish || firstDish.title || 'Gericht').trim();
+        const providerName = (firstDish.providerName || firstProviderName || 'Mittagio').trim();
+        const singleUrl = (typeof buildOfferShareUrl === 'function')
+          ? buildOfferShareUrl(firstDish)
+          : (baseUrl + '#offer=' + firstDish.id);
+        const singleText = firstHasAbholnummer
+          ? `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Mit Abholnummer geht es besonders schnell. ${singleUrl}`
+          : `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Vielleicht ist das auch was fuer dich. ${singleUrl}`;
+        shareWithFallback({
+          title: `Vorschlag: ${dishName} | Mittagio`,
+          text: singleText,
+          url: singleUrl,
+          successToast: 'Gericht geteilt',
+          copyToast: 'Link kopiert',
+          errorToast: 'Teilen nicht moeglich'
+        });
+        return;
+      }
+      shareAllFavoritesAction();
+    };
+    const shareAllFavoritesAction = () => {
       try {
         const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : (firstProviderName || 'Mittagio');
-        const dishName = (firstDish && (firstDish.dish || firstDish.title)) ? (firstDish.dish || firstDish.title) : '';
-        const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
+        const favRoute = baseUrl + '#fav';
+        const sampleNames = topFour
+          .slice(0, 3)
+          .map(function(o){ return (normalizeOffer(o).dish || normalizeOffer(o).title || '').trim(); })
+          .filter(function(name){ return !!name; });
+        const dishPreview = sampleNames.length ? sampleNames.join(', ') : '';
         let shareText;
         if(firstHasAbholnummer){
-          shareText = `🚀 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Ich hab mir schon die Abholnummer 🧾 gesichert, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
+          shareText = dishPreview
+            ? `Schau dir meine Favoriten an: ${dishPreview}. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`
+            : `Schau dir meine Favoriten an. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`;
         } else {
-          shareText = `😋 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir uns dort heute treffen & Mittag machen? ${linkToDish}`;
+          shareText = dishPreview
+            ? `Schau dir meine Favoriten an: ${dishPreview}. Vielleicht ist etwas fuer dich dabei. ${favRoute}`
+            : `Schau dir meine Favoriten an. Vielleicht ist etwas fuer dich dabei. ${favRoute}`;
         }
-        const shareTitle = dishName ? `${dishName} – ${providerName} | Mittagio` : 'Mein Mittag – Mittagio';
-        const doFallback = () => {
-          try {
-            if(navigator.clipboard && navigator.clipboard.writeText){
-              navigator.clipboard.writeText(shareText).then(() => {
-                if(typeof showToast === 'function') showToast('Link kopiert – zum Teilen einfügen');
-              }).catch(() => {
-                if(typeof showToast === 'function') showToast('Teilen: Link zum Einfügen bereit');
-              });
-            } else {
-              if(typeof showToast === 'function') showToast('Teilen: ' + shareTitle);
-            }
-          } catch(e2){
-            if(typeof showToast === 'function') showToast('Teilen vorbereitet');
-          }
-        };
-        if(navigator.share && typeof navigator.share === 'function'){
-          navigator.share({ title: shareTitle, text: shareText, url: linkToDish })
-            .then(() => { if(typeof showToast === 'function') showToast('Frage geteilt – jetzt können alle mitentscheiden'); })
-            .catch((err) => { if(err && err.name === 'AbortError') return; doFallback(); });
-        } else {
-          doFallback();
-        }
+        const shareTitle = 'Schau dir meine Favoriten an | Mittagio';
+        shareWithFallback({
+          title: shareTitle,
+          text: shareText,
+          url: favRoute,
+          successToast: 'Alle Favoriten geteilt',
+          copyToast: 'Link kopiert',
+          errorToast: 'Teilen nicht moeglich'
+        });
       } catch(e){
-        if(typeof showToast === 'function') showToast('Teilen nicht möglich – bitte Link manuell kopieren');
+        if(typeof showToast === 'function') showToast('Teilen nicht moeglich');
       }
     };
     const btnFavTeamVote = document.getElementById('btnFavTeamVote');
     if(btnFavTeamVote){
+      const setFavShareBtnIcon = function(iconName){
+        btnFavTeamVote.innerHTML = '<i data-lucide="' + iconName + '" style="width:16px;height:16px;"></i>';
+        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [btnFavTeamVote] }); }, 10);
+      };
       if(favoritesMode === 'team'){
         show(btnFavTeamVote, 'flex');
-        btnFavTeamVote.textContent = 'Ich entscheide heute allein';
+        btnFavTeamVote.setAttribute('aria-label', 'Solo-Modus aktivieren');
+        btnFavTeamVote.setAttribute('title', 'Solo-Modus aktivieren');
+        setFavShareBtnIcon('users');
         btnFavTeamVote.onclick = function(e){
           e.preventDefault();
           e.stopPropagation();
@@ -5326,19 +5398,27 @@
         };
       } else if(topFour.length > 0 || providerList.length > 0){
         show(btnFavTeamVote, 'flex');
-        btnFavTeamVote.textContent = 'Was essen wir heute?';
+        btnFavTeamVote.setAttribute('aria-label', 'Alle Favoriten teilen');
+        btnFavTeamVote.setAttribute('title', 'Alle Favoriten teilen');
+        setFavShareBtnIcon('share-2');
         btnFavTeamVote.onclick = function(e){
           e.preventDefault();
           e.stopPropagation();
           openFavShareChoiceSheet({
-            onQuickShare: function(){
-              shareFavAction();
+            onSingleShare: function(){
+              shareSingleSuggestionAction();
+            },
+            singleLabel: firstDish && (firstDish.dish || firstDish.title)
+              ? ('Vorschlag teilen: ' + String(firstDish.dish || firstDish.title))
+              : 'Dieses Gericht teilen',
+            onAllShare: function(){
+              shareAllFavoritesAction();
             },
             onTogether: function(){
               setFavoritesMode('team');
               renderFavorites();
-              if(typeof showToast === 'function') showToast('Gemeinsam entscheiden aktiviert');
-              shareFavAction();
+              if(typeof showToast === 'function') showToast('Gemeinsam entscheiden ist als Zusatz aktiv');
+              shareAllFavoritesAction();
             }
           });
         };
@@ -5347,7 +5427,7 @@
       }
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
-    if(btnShareMyLunch) btnShareMyLunch.onclick = shareFavAction;
+    if(btnShareMyLunch) btnShareMyLunch.onclick = shareAllFavoritesAction;
     
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');

@@ -431,10 +431,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
-        <div style="display:flex; flex-direction:column; align-items:flex-start; gap:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
           <h1>Deine Favoriten ⚡</h1>
-          <button type="button" id="btnFavTeamVote" class="btn-cust-primary is-hidden" aria-hidden="true" style="width:100%; min-height:52px; border-radius:14px; font-size:14px; font-weight:800;">
-            Was essen wir heute?
+          <button type="button" id="btnFavTeamVote" class="btn-cust-primary is-hidden" aria-hidden="true" aria-label="Favoriten teilen" title="Favoriten teilen" style="width:40px; min-width:40px; height:40px; min-height:40px; padding:0; border-radius:12px; background:#fff; color:#475569; border:1px solid #e2e8f0; box-shadow:none; display:flex; align-items:center; justify-content:center;">
+            <i data-lucide="share-2" style="width:16px;height:16px;"></i>
           </button>
         </div>
       </header>
@@ -461,7 +461,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="favContent" style="display:none;">
           <!-- 2x2 Grid für Gerichte -->
           <div id="sectionDishesWrapper" style="padding:20px 0;">
-            <h3 style="padding:0 20px; margin:0 0 16px; font-size:15px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Gerichte in deiner Box</h3>
             <div id="favDishes" class="fav-grid">
               <!-- Dynamisch befüllt (fav-card) -->
             </div>
@@ -498,15 +497,19 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div class="sheet" id="favShareChoiceSheet" aria-hidden="true">
       <div class="handle"></div>
       <div class="sheet-body" style="padding:20px 20px calc(20px + env(safe-area-inset-bottom, 0));">
-        <h3 style="margin:0 0 6px; font-size:20px; font-weight:900; color:#0f172a;">Was essen wir heute?</h3>
-        <p style="margin:0 0 16px; font-size:14px; font-weight:600; color:#64748b;">Du entscheidest: nur teilen oder gemeinsam auswählen.</p>
+        <h3 style="margin:0 0 6px; font-size:20px; font-weight:900; color:#0f172a;">Favoriten teilen</h3>
+        <p style="margin:0 0 16px; font-size:14px; font-weight:600; color:#64748b;">Teile ein Gericht oder deine komplette Favoritenliste.</p>
+        <button type="button" id="btnFavChoiceSingleShare" class="btn-cust-primary is-hidden" aria-hidden="true" style="width:100%; min-height:52px; border-radius:14px; margin-bottom:10px; background:#fff; border:1px solid #e2e8f0; color:#0f172a; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i data-lucide="utensils-crossed" style="width:18px;height:18px;"></i>
+          <span id="favChoiceSingleText">Dieses Gericht teilen</span>
+        </button>
         <button type="button" id="btnFavChoiceQuickShare" class="btn-cust-primary" style="width:100%; min-height:52px; border-radius:14px; margin-bottom:10px; background:#fff; border:1px solid #e2e8f0; color:#0f172a; display:flex; align-items:center; justify-content:center; gap:8px;">
           <i data-lucide="share-2" style="width:18px;height:18px;"></i>
-          <span>Schnell teilen</span>
+          <span>Alle Favoriten teilen</span>
         </button>
         <button type="button" id="btnFavChoiceTogether" class="btn-cust-primary" style="width:100%; min-height:52px; border-radius:14px; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;">
           <i data-lucide="users" style="width:18px;height:18px;"></i>
-          <span>Gemeinsam entscheiden</span>
+          <span>Optional: Gemeinsam entscheiden</span>
         </button>
         <button type="button" id="btnFavChoiceCancel" style="width:100%; min-height:48px; border:none; background:transparent; color:#64748b; font-size:14px; font-weight:800; cursor:pointer;">
           Abbrechen
