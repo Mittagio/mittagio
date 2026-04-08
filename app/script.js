@@ -24544,9 +24544,15 @@
   function initApp(){
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
-    if((window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn)){
-      document.body.classList.add('provider-mode');
-    }
+    // Reload-Policy: App startet immer im Kundenmodus auf Discover.
+    mode = 'customer';
+    try {
+      localStorage.setItem(LS.mode, 'customer');
+      localStorage.setItem('mittagio_last_view', 'v-discover');
+    } catch(_e){}
+    document.body.classList.remove('provider-mode');
+    var _providerNavWrap = document.getElementById('providerNavWrap');
+    if(_providerNavWrap) _providerNavWrap.style.setProperty('display', 'none', 'important');
     /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
     if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;

@@ -104,3 +104,8 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 
 - In Discover-Karten wird der Anbietername ohne Pfeil (`>`) angezeigt.
 - Der Anbietername ist als eigene tappbare Zeile umgesetzt und öffnet direkt die öffentliche Anbieter-Detailseite.
+
+## Update: Reload immer Kunde
+
+- Beim App-Reload wird der Startzustand konsequent auf Kundenseite gesetzt.
+- `provider-mode` wird beim Init entfernt und die App landet auf `Entdecken` statt im Anbieterbereich.
