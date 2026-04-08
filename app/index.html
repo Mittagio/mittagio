@@ -867,7 +867,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <section class="view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
         <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:10px; padding:14px 16px;">
-          <button type="button" class="pub-prov-back-btn" onclick="showView('v-discover')" aria-label="Zurück" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <button type="button" class="pub-prov-back-btn" onclick="goBackFromPublicProvider()" aria-label="Zurück" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
             <i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>
           </button>
           <div class="pub-prov-header-id" style="flex:1; min-width:0;">
@@ -886,7 +886,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </header>
 
       <div class="pub-prov-scroll">
-        <div style="display:flex; flex-direction:column; gap:24px; width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
+        <div style="display:flex; flex-direction:column; gap:24px; width:100%; max-width:100%; margin:0; box-sizing:border-box;">
           <!-- Tagesessen Sektion -->
           <div>
             <h3 class="pub-prov-section-title" style="display:flex; align-items:center; gap:8px;">
@@ -2947,7 +2947,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div class="sheet-detail-info sheet-detail-info--sync">
         <div class="sheet-detail-title-price-row">
           <h2 id="sDish" class="sheet-detail-title sheet-detail-title--sync">Gerichtsname</h2>
-          <div id="sInlinePrice" class="sheet-detail-inline-price">0,00 €</div>
         </div>
 
         <button id="sProviderNameBtn" type="button" class="sheet-detail-provider-btn">
@@ -2969,7 +2968,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <div id="sAllergensCodesWrap" class="sheet-detail-allergens-codes-wrap">
           </div>
-          <button type="button" id="btnAllergensLegend" aria-label="Legende" class="sheet-detail-allergens-legend-btn" onclick="event.stopPropagation(); if(typeof showAllergensOverlay==='function') showAllergensOverlay();">ⓘ</button>
         </div>
         <span id="sAllergensCodes" aria-hidden="true" style="display:none;"></span>
 
@@ -2998,7 +2996,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <span id="btnPrimaryCTAText">Zur Mittagsbox 🍱</span>
           </button>
         </div>
-        <p id="sArrivalHint" class="sheet-detail-arrival-hint is-hidden" aria-hidden="true"></p>
         <p id="sInfoHint" class="sheet-detail-info-hint is-hidden" aria-hidden="true"></p>
       </div>
     </div>

@@ -99,3 +99,8 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Action-Bar am Kartenfuß auf klare 48px-Höhe harmonisiert: zwei Icon-Buttons links, CTA rechts auf derselben Ebene.
 - CTA `In meine Box` nutzt in der Leiste `flex-grow`, damit der verfügbare Restplatz sauber genutzt wird.
 - Auf den Kernaktionen (`Favorit`, `Teilen`, `In meine Box`) wurde kurzes haptisches Feedback ergänzt (Vibration/Fallback).
+
+## Update: Anbieter-Name tappbar
+
+- In Discover-Karten wird der Anbietername ohne Pfeil (`>`) angezeigt.
+- Der Anbietername ist als eigene tappbare Zeile umgesetzt und öffnet direkt die öffentliche Anbieter-Detailseite.

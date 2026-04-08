@@ -4446,7 +4446,9 @@
           <h3 class="tgtg-list-item-title">${dishName}</h3>
           <span class="tgtg-list-item-price">${euro(data.price)}</span>
         </div>
-        <p class="tgtg-list-item-provider">${providerName} &gt;</p>
+        <button type="button" class="tgtg-list-item-provider-link" aria-label="Anbieter ansehen">
+          <span class="tgtg-list-item-provider">${providerName}</span>
+        </button>
         <p class="tgtg-list-item-facts">
           ${distanceLabel ? `📍 ${distanceLabel}` : ''} ${carMin ? ` · 🚗 ${carMin} Min` : ''}
           ${mehrweg ? ' · ♻️ Mehrweg' : ''} ${vorOrt ? ' · 🍽️ Vor Ort' : ''}
@@ -4466,6 +4468,15 @@
     
     const shareBtn = card.querySelector('.action-btn-share');
     if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); feedbackTap(); shareOffer(data); };
+    const providerBtn = card.querySelector('.tgtg-list-item-provider-link');
+    if(providerBtn){
+      providerBtn.onclick = function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        feedbackTap();
+        if(data.providerId) showProviderProfilePublic(data.providerId);
+      };
+    }
     const favBtn = card.querySelector('.action-btn-fav');
     if(favBtn){
       favBtn.onclick = function(e){
@@ -4498,7 +4509,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.tgtg-actions-left') || e.target.closest('.dish-card-cta')) return;
+      if(e.target.closest('.tgtg-actions-left') || e.target.closest('.dish-card-cta') || e.target.closest('.tgtg-list-item-provider-link')) return;
       openOffer(data.id);
     };
     
@@ -6287,7 +6298,6 @@
     const sDish = document.getElementById('sDish');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
     const sUspOverlay = document.getElementById('sUspOverlay');
-    const sInlinePrice = document.getElementById('sInlinePrice');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
     const sProviderAddress = document.getElementById('sProviderAddress');
@@ -6340,10 +6350,8 @@
     };
     const applyLivePrice = function(){
       var live = getLivePrice();
-      if(sInlinePrice) sInlinePrice.textContent = euro(live);
       if(primaryCTAText) primaryCTAText.textContent = 'Zur Mittagsbox • ' + euro(live);
     };
-    if(sInlinePrice) sInlinePrice.textContent = euro(basePrice);
 
     const sProviderNameEl = document.getElementById('sProviderName');
     if(sProviderNameEl) sProviderNameEl.textContent = o.providerName || 'Anbieter';
@@ -6410,16 +6418,7 @@
         });
       };
     }
-    if(sArrivalHint){
-      const eta = getEstimatedTravelTimes(o.distanceKm);
-      const arrival = formatArrivalClock(eta.walkMin);
-      if(arrival){
-        sArrivalHint.textContent = 'Wenn du jetzt losgehst, Ankunft ca. ' + arrival + ' Uhr (zu Fuß).';
-        show(sArrivalHint);
-      } else {
-        hide(sArrivalHint);
-      }
-    }
+    if(sArrivalHint) hide(sArrivalHint);
 
     // Distanz-Doppelinfo entfernt: Zeit steht bereits im USP-Overlay
     if(sDistanceInfo){
@@ -9487,13 +9486,46 @@
   let currentPublicProviderId = null;
   let currentPublicProviderCategory = 'Alle';
 
+  function goBackFromPublicProvider(){
+    const providerNavWrap = document.getElementById('providerNavWrap');
+    if(providerNavWrap) providerNavWrap.style.setProperty('display', 'none', 'important');
+    if(document.body && document.body.classList.contains('provider-mode')){
+      document.body.classList.remove('provider-mode');
+    }
+    if(typeof showView === 'function') showView('v-discover');
+  }
+  if(typeof window !== 'undefined') window.goBackFromPublicProvider = goBackFromPublicProvider;
+
+  function bindPublicProviderHeaderShrink(){
+    const view = document.getElementById('v-provider-detail-public');
+    if(!view) return;
+    const scrollEl = view.querySelector('.pub-prov-scroll');
+    const header = view.querySelector('.cust-header-sticky');
+    if(!scrollEl || !header) return;
+
+    const syncShrink = function(){
+      if(scrollEl.scrollTop > 8) header.classList.add('is-shrunk');
+      else header.classList.remove('is-shrunk');
+    };
+    syncShrink();
+    if(scrollEl._pubProvShrinkBound) return;
+    scrollEl._pubProvShrinkBound = true;
+    scrollEl.addEventListener('scroll', syncShrink, { passive:true });
+  }
+
   function showProviderProfilePublic(providerId){
+    const providerNavWrap = document.getElementById('providerNavWrap');
+    if(providerNavWrap) providerNavWrap.style.setProperty('display', 'none', 'important');
+    if(document.body && document.body.classList.contains('provider-mode')){
+      document.body.classList.remove('provider-mode');
+    }
     if(String(currentPublicProviderId || '') !== String(providerId || '')){
       currentPublicProviderCategory = 'Alle';
     }
     currentPublicProviderId = providerId;
     showView('v-provider-detail-public');
     renderPublicProviderProfile();
+    bindPublicProviderHeaderShrink();
   }
 
   function renderPublicProviderProfile(){
@@ -9512,7 +9544,7 @@
         backBtn.innerHTML = '<i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>';
         headerRow.insertBefore(backBtn, headerRow.firstChild || null);
       }
-      backBtn.onclick = function(){ showView('v-discover'); };
+      backBtn.onclick = function(){ goBackFromPublicProvider(); };
 
       let actionsWrap = headerRow.querySelector('.pub-prov-header-actions');
       if(!actionsWrap){
@@ -24704,6 +24736,13 @@
     const originalShowView = showView;
     showView = function(id){
       originalShowView(id);
+      try{
+        var providerNavWrap = document.getElementById('providerNavWrap');
+        if(providerNavWrap){
+          if(id === 'v-provider-detail-public') providerNavWrap.style.setProperty('display', 'none', 'important');
+          else if(!(document.body && document.body.classList.contains('provider-mode'))) providerNavWrap.style.setProperty('display', 'none', 'important');
+        }
+      }catch(_e){}
       try{
         if(typeof id === 'string' && id.indexOf('v-provider-') === 0){
           var state = history && history.state ? history.state : null;
