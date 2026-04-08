@@ -866,46 +866,34 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
     <section class="view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
-        <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:12px; padding:14px 16px;">
+        <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:10px; padding:14px 16px;">
           <button type="button" class="pub-prov-back-btn" onclick="showView('v-discover')" aria-label="Zurück" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
             <i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>
           </button>
-          <div style="flex:1; min-width:0;">
+          <div class="pub-prov-header-id" style="flex:1; min-width:0;">
             <h1 id="pubProvName" style="font-size:20px; font-weight:950; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-0.02em;">Anbieter</h1>
+            <p id="pubProvHeaderAddress" class="pub-prov-header-subline">Adresse nicht verfügbar</p>
           </div>
-          <button type="button" class="pub-prov-fav-btn" id="btnToggleFavProvider" aria-label="Favorit" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;"></i>
-          </button>
+          <div class="pub-prov-header-actions" style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+            <button type="button" class="pub-prov-share-btn" id="pubProvShare" aria-label="Teilen" style="width:44px; height:44px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+              <i data-lucide="share-2" style="width:20px;height:20px;color:#334155;"></i>
+            </button>
+            <button type="button" class="pub-prov-fav-btn" id="btnToggleFavProvider" aria-label="Favorit" style="width:44px; height:44px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+              <i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>
+            </button>
+          </div>
         </div>
       </header>
 
       <div class="pub-prov-scroll">
         <div style="display:flex; flex-direction:column; gap:24px; width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
-          <!-- Anbieter Info Card (App-like Hero) -->
-          <div class="cust-card pub-prov-hero" style="padding:28px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; background:#fff; border:none; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-radius:24px;">
-            <div id="pubProvLogoWrap" style="width:88px; height:88px; border-radius:24px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:40px; box-shadow:0 8px 24px rgba(0,0,0,0.06); overflow:hidden;">
-              <span id="pubProvLogoEmoji">🏢</span>
-            </div>
-            <div>
-              <h2 id="pubProvTitle" style="margin:0; font-size:24px; font-weight:950; color:#1a1a1a; letter-spacing:-0.03em;">Anbieter Name</h2>
-              <div id="pubProvAddress" style="font-size:15px; color:#64748b; font-weight:600; margin-top:6px; line-height:1.4;">Straße, PLZ Ort</div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:4px; flex-wrap:wrap; justify-content:center;">
-              <button type="button" onclick="openGoogleMapsRoute(currentPublicProviderId)" style="min-height:48px; padding:0 20px; border-radius:14px; border:none; background:#f1f3f5; font-size:14px; font-weight:700; color:#1a1a1a; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
-                <i data-lucide="map-pin" style="width:18px;height:18px;"></i> Route
-              </button>
-              <button type="button" id="pubProvShare" style="min-height:48px; padding:0 20px; border-radius:14px; border:none; background:#f1f3f5; font-size:14px; font-weight:700; color:#1a1a1a; display:inline-flex; align-items:center; gap:8px; cursor:pointer;">
-                <i data-lucide="share-2" style="width:18px;height:18px;"></i> Teilen
-              </button>
-            </div>
-          </div>
-
           <!-- Tagesessen Sektion -->
           <div>
             <h3 class="pub-prov-section-title" style="display:flex; align-items:center; gap:8px;">
               <span>Tagesessen heute</span>
               <span style="padding:3px 10px; background:var(--brand); border-radius:8px; font-size:11px; color:#1a1a1a; font-weight:800;">LIVE</span>
             </h3>
+            <div id="pubProvTodayCats" class="pub-prov-cats"></div>
             <div id="pubProvTodayOffers" style="display:flex; flex-direction:column; gap:12px;">
               <!-- Heute Angebote -->
             </div>
@@ -913,7 +901,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
           <!-- Wochenplan Sektion -->
           <div>
-            <h3 class="pub-prov-section-title">Wochenplan</h3>
+            <h3 id="pubProvWeekTitle" class="pub-prov-section-title">Nächste Tage</h3>
             <div id="pubProvWeekPlan" style="display:flex; flex-direction:column; gap:12px;">
               <!-- Wochenangebote -->
             </div>
@@ -2949,7 +2937,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i>
             <span class="tgtg-usp-time">– Min</span>
           </div>
-          <div id="sPriceSticker" class="sheet-detail-price-badge"></div>
         </div>
       </div>
 
@@ -2965,7 +2952,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <button id="sProviderNameBtn" type="button" class="sheet-detail-provider-btn">
           <span id="sProviderName" class="sheet-detail-provider-text">Anbieter</span>
-          <i data-lucide="chevron-right" style="width:16px;height:16px;color:#94a3b8;"></i>
+          <span class="sheet-detail-provider-hint"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i><span>Alle Gerichte</span></span>
         </button>
 
         <div id="sDistanceInfo" class="sheet-detail-logistics is-hidden" aria-hidden="true"></div>
@@ -3011,8 +2998,37 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <span id="btnPrimaryCTAText">Zur Mittagsbox 🍱</span>
           </button>
         </div>
+        <p id="sArrivalHint" class="sheet-detail-arrival-hint is-hidden" aria-hidden="true"></p>
         <p id="sInfoHint" class="sheet-detail-info-hint is-hidden" aria-hidden="true"></p>
       </div>
+    </div>
+  </div>
+
+  <div class="backdrop" id="detailDistanceBd"></div>
+  <div class="sheet" id="detailDistanceSheet" aria-hidden="true">
+    <div class="handle"></div>
+    <div class="sheet-body">
+      <h3 class="detail-distance-title">Weg zum Anbieter</h3>
+      <p id="detailDistanceAddress" class="detail-distance-address">Adresse</p>
+      <div class="detail-distance-status-row">
+        <span id="detailDistanceStatus" class="detail-distance-status-badge is-estimate">Ca.</span>
+        <span id="detailDistanceUpdated" class="detail-distance-updated">Zuletzt aktualisiert: gerade eben</span>
+      </div>
+      <div class="detail-distance-grid">
+        <button type="button" id="detailDistanceMetricWalk" class="detail-distance-metric is-active" aria-pressed="true">
+          <div class="detail-distance-label">Zu Fuß</div>
+          <div id="detailDistanceWalk" class="detail-distance-value">ca. – Min</div>
+        </button>
+        <button type="button" id="detailDistanceMetricDrive" class="detail-distance-metric" aria-pressed="false">
+          <div class="detail-distance-label">Auto</div>
+          <div id="detailDistanceDrive" class="detail-distance-value">ca. – Min</div>
+        </button>
+      </div>
+      <p id="detailDistanceMeta" class="detail-distance-meta">Ca.-Werte auf Basis der Distanz. Live-Routing folgt mit Google API.</p>
+      <button type="button" id="btnDetailDistanceRoute" class="btn-cust-primary detail-distance-route-btn">
+        Route starten
+      </button>
+      <button type="button" id="btnDetailDistanceClose" class="detail-distance-close-btn">Schließen</button>
     </div>
   </div>
 

@@ -5136,7 +5136,7 @@
       });
 
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
-    const hasAnyFavorites = providerList.length > 0 || dishList.length > 0;
+    const hasAnyFavorites = providerFavs.size > 0 || dishList.length > 0;
     
     if(favEmptyState){
       if(hasAnyFavorites) hide(favEmptyState);
@@ -5187,11 +5187,11 @@
     
     const sectionProviders = document.getElementById('sectionProviders');
     if(sectionProviders){
-      if(providerList.length > 0) show(sectionProviders);
+      if(providerFavs.size > 0) show(sectionProviders);
       else hide(sectionProviders);
     }
     if(provEmpty){
-      if(providerList.length) hide(provEmpty); else show(provEmpty);
+      if(providerFavs.size > 0) show(provEmpty); else hide(provEmpty);
     }
     
     // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
@@ -5235,6 +5235,11 @@
         }
       }
     });
+    if(provEmpty){
+      if(providerMap.size > 0) hide(provEmpty);
+      else if(providerFavs.size > 0) show(provEmpty);
+      else hide(provEmpty);
+    }
 
     // Zusammenfassung: Gesamtwert der Mahlzeiten heute
     const favSummaryBar = document.getElementById('favSummaryBar');
@@ -5906,6 +5911,18 @@
       status.textContent = 'Heute kein Angebot';
     }
     body.appendChild(status);
+    if(!hasOfferToday){
+      const cta = document.createElement('button');
+      cta.type = 'button';
+      cta.textContent = 'Anbieter ansehen';
+      cta.style.cssText = 'margin-top:8px; min-height:40px; border-radius:12px; border:1px solid #e2e8f0; background:#fff; color:#0f172a; font-size:13px; font-weight:800; padding:0 12px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;';
+      cta.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        showProviderProfilePublic(providerData.providerId);
+      };
+      body.appendChild(cta);
+    }
     card.appendChild(body);
     
     const pillars = document.createElement('div');
@@ -6106,6 +6123,149 @@
     document.getElementById('orderDetailSheet').classList.remove('active');
   }
 
+  let detailDistanceSheetToken = 0;
+  function getEstimatedTravelTimes(distanceKm){
+    const km = Number(distanceKm);
+    if(!Number.isFinite(km) || km < 0){
+      return { walkMin: null, driveMin: null, distanceKm: null, source: 'estimate' };
+    }
+    const walkMin = Math.max(1, Math.round(km * 12));
+    const driveMin = Math.max(1, Math.round(km * 1.5));
+    return { walkMin: walkMin, driveMin: driveMin, distanceKm: km, source: 'estimate' };
+  }
+  function formatTravelMinutes(mins){
+    if(!Number.isFinite(Number(mins)) || Number(mins) <= 0) return 'ca. –';
+    const n = Number(mins);
+    return n < 1 ? 'ca. < 1 Min' : ('ca. ' + Math.round(n) + ' Min');
+  }
+  function formatDistanceKm(km){
+    if(!Number.isFinite(Number(km)) || Number(km) < 0) return '– km';
+    const n = Number(km);
+    return n < 1 ? '< 1 km' : (String(n.toFixed(1)).replace('.', ',') + ' km');
+  }
+  function formatUpdatedAgo(ts){
+    const ms = Number(ts);
+    if(!Number.isFinite(ms) || ms <= 0) return 'gerade eben';
+    const diffMin = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    if(diffMin <= 0) return 'gerade eben';
+    if(diffMin === 1) return 'vor 1 Min';
+    if(diffMin < 60) return 'vor ' + diffMin + ' Min';
+    const diffH = Math.round(diffMin / 60);
+    return diffH <= 1 ? 'vor 1 Std' : ('vor ' + diffH + ' Std');
+  }
+  function formatArrivalClock(mins){
+    const n = Number(mins);
+    if(!Number.isFinite(n) || n <= 0) return null;
+    const eta = new Date(Date.now() + n * 60000);
+    const hh = String(eta.getHours()).padStart(2, '0');
+    const mm = String(eta.getMinutes()).padStart(2, '0');
+    return hh + ':' + mm;
+  }
+  function closeDetailDistanceSheet(){
+    const bd = document.getElementById('detailDistanceBd');
+    const sheet = document.getElementById('detailDistanceSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet){
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+  }
+  function openDetailDistanceSheet(ctx){
+    const bd = document.getElementById('detailDistanceBd');
+    const sheet = document.getElementById('detailDistanceSheet');
+    const addressEl = document.getElementById('detailDistanceAddress');
+    const walkEl = document.getElementById('detailDistanceWalk');
+    const driveEl = document.getElementById('detailDistanceDrive');
+    const metricWalkEl = document.getElementById('detailDistanceMetricWalk');
+    const metricDriveEl = document.getElementById('detailDistanceMetricDrive');
+    const metaEl = document.getElementById('detailDistanceMeta');
+    const statusEl = document.getElementById('detailDistanceStatus');
+    const updatedEl = document.getElementById('detailDistanceUpdated');
+    const routeBtn = document.getElementById('btnDetailDistanceRoute');
+    const closeBtn = document.getElementById('btnDetailDistanceClose');
+    if(!bd || !sheet || !addressEl || !walkEl || !driveEl || !metricWalkEl || !metricDriveEl || !metaEl || !statusEl || !updatedEl || !routeBtn || !closeBtn) return;
+    const sheetCtx = ctx || {};
+    const estimated = getEstimatedTravelTimes(sheetCtx.distanceKm);
+    const token = ++detailDistanceSheetToken;
+    let routeMode = 'walking';
+    let currentUpdatedAt = Date.now();
+    addressEl.textContent = sheetCtx.address || 'Adresse nicht verfügbar';
+    walkEl.textContent = formatTravelMinutes(estimated.walkMin);
+    driveEl.textContent = formatTravelMinutes(estimated.driveMin);
+    statusEl.textContent = 'Ca.';
+    statusEl.classList.remove('is-live');
+    statusEl.classList.add('is-estimate');
+    updatedEl.textContent = 'Zuletzt aktualisiert: ' + formatUpdatedAgo(currentUpdatedAt);
+    metaEl.textContent = estimated.distanceKm == null
+      ? 'Distanz aktuell nicht verfügbar.'
+      : ('Ca.-Werte auf Basis von ' + formatDistanceKm(estimated.distanceKm) + '. Live-Routing folgt mit Google API.');
+    const setMode = function(nextMode){
+      routeMode = nextMode === 'driving' ? 'driving' : 'walking';
+      if(routeMode === 'walking'){
+        metricWalkEl.classList.add('is-active');
+        metricDriveEl.classList.remove('is-active');
+        metricWalkEl.setAttribute('aria-pressed', 'true');
+        metricDriveEl.setAttribute('aria-pressed', 'false');
+        routeBtn.textContent = 'Route starten';
+      } else {
+        metricWalkEl.classList.remove('is-active');
+        metricDriveEl.classList.add('is-active');
+        metricWalkEl.setAttribute('aria-pressed', 'false');
+        metricDriveEl.setAttribute('aria-pressed', 'true');
+        routeBtn.textContent = 'Route starten';
+      }
+    };
+    setMode('walking');
+    const bindMetricTap = function(el, modeName){
+      const handler = function(ev){
+        if(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+        }
+        setMode(modeName);
+      };
+      el.onclick = handler;
+      el.onpointerup = handler;
+      el.ontouchstart = handler;
+    };
+    bindMetricTap(metricWalkEl, 'walking');
+    bindMetricTap(metricDriveEl, 'driving');
+    bd.onclick = function(){ closeDetailDistanceSheet(); };
+    closeBtn.onclick = function(){ closeDetailDistanceSheet(); };
+    routeBtn.onclick = function(){
+      const addr = sheetCtx.address || '';
+      if(!addr){
+        if(typeof showToast === 'function') showToast('Adresse nicht verfügbar');
+        return;
+      }
+      const routeUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr) + '&travelmode=' + encodeURIComponent(routeMode);
+      window.open(routeUrl, '_blank');
+    };
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([8]);
+    else if(typeof haptic === 'function') haptic(8);
+    else if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    sheet.setAttribute('aria-hidden', 'false');
+    if(typeof window.getGoogleTravelEstimates === 'function'){
+      Promise.resolve(window.getGoogleTravelEstimates({
+        providerId: sheetCtx.providerId,
+        address: sheetCtx.address,
+        distanceKm: sheetCtx.distanceKm
+      })).then(function(live){
+        if(token !== detailDistanceSheetToken || !live) return;
+        if(Number.isFinite(Number(live.walkMin))) walkEl.textContent = formatTravelMinutes(Number(live.walkMin));
+        if(Number.isFinite(Number(live.driveMin))) driveEl.textContent = formatTravelMinutes(Number(live.driveMin));
+        currentUpdatedAt = Number(live.updatedAt) || Date.now();
+        statusEl.textContent = 'Live';
+        statusEl.classList.remove('is-estimate');
+        statusEl.classList.add('is-live');
+        updatedEl.textContent = 'Zuletzt aktualisiert: ' + formatUpdatedAgo(currentUpdatedAt);
+        if(metaEl) metaEl.textContent = 'Live-Routing von Google.';
+      }).catch(function(){});
+    }
+  }
+
   // --- Offer sheet ---
   let activeOfferId=null;
   // Navigation History für Back-Button
@@ -6131,10 +6291,12 @@
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
     const sProviderAddress = document.getElementById('sProviderAddress');
+    const sProviderAddressRow = document.getElementById('sProviderAddressRow');
     const sDistanceInfo = document.getElementById('sDistanceInfo');
     const sAllergensCodes = document.getElementById('sAllergensCodes');
     const btnCTA = document.getElementById('btnPrimaryCTA');
     const primaryCTAText = document.getElementById('btnPrimaryCTAText');
+    const sArrivalHint = document.getElementById('sArrivalHint');
     const sInfoHint = document.getElementById('sInfoHint');
     const statusBadgeEl = document.getElementById('sStatusBadge');
     const badgesEl = document.getElementById('sBadges');
@@ -6158,7 +6320,6 @@
     }
     
     if(sDish) sDish.textContent = o.dish || '';
-    const sPriceSticker = document.getElementById('sPriceSticker');
     const basePrice = Number(o.price || 0);
     const selectedExtras = new Set();
     const toNumber = function(v){
@@ -6179,11 +6340,9 @@
     };
     const applyLivePrice = function(){
       var live = getLivePrice();
-      if(sPriceSticker) sPriceSticker.textContent = euro(live);
       if(sInlinePrice) sInlinePrice.textContent = euro(live);
       if(primaryCTAText) primaryCTAText.textContent = 'Zur Mittagsbox • ' + euro(live);
     };
-    if(sPriceSticker) sPriceSticker.textContent = euro(basePrice);
     if(sInlinePrice) sInlinePrice.textContent = euro(basePrice);
 
     const sProviderNameEl = document.getElementById('sProviderName');
@@ -6239,21 +6398,33 @@
 
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
-
-    // Logistik: 🚶 und 🚗 als zwei elegante klickbare Cards (Routenplanung)
-    if(sDistanceInfo){
-      if(o.distanceKm != null){
-        setVisible(sDistanceInfo, 'grid');
-        const walk = Math.round(o.distanceKm * 12);
-        const car = Math.round(o.distanceKm * 1.5);
-        const pid = (o.providerId || '').replace(/'/g, "\\'");
-        sDistanceInfo.innerHTML = `
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚶 ${walk < 1 ? '< 1' : walk} Min.</button>
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚗 ${car < 1 ? '< 1' : car} Min.</button>
-        `;
+    if(sProviderAddressRow){
+      sProviderAddressRow.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openDetailDistanceSheet({
+          providerId: o.providerId,
+          providerName: o.providerName || 'Anbieter',
+          address: addr,
+          distanceKm: o.distanceKm
+        });
+      };
+    }
+    if(sArrivalHint){
+      const eta = getEstimatedTravelTimes(o.distanceKm);
+      const arrival = formatArrivalClock(eta.walkMin);
+      if(arrival){
+        sArrivalHint.textContent = 'Wenn du jetzt losgehst, Ankunft ca. ' + arrival + ' Uhr (zu Fuß).';
+        show(sArrivalHint);
       } else {
-        hide(sDistanceInfo);
+        hide(sArrivalHint);
       }
+    }
+
+    // Distanz-Doppelinfo entfernt: Zeit steht bereits im USP-Overlay
+    if(sDistanceInfo){
+      sDistanceInfo.innerHTML = '';
+      hide(sDistanceInfo);
     }
 
     // Status Badge
@@ -6527,15 +6698,23 @@
       }
     }
 
-    // Allergene Overlay
+    // Allergene Overlay (mobile-safe, robuster Close)
     window.showAllergensOverlay = function(){
+      const closeExisting = document.getElementById('allergensDetailOverlay');
+      if(closeExisting) closeExisting.remove();
       const ov = document.createElement('div');
-      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
-      ov.onclick = (e) => { if(e.target === ov) ov.remove(); };
-      
+      ov.id = 'allergensDetailOverlay';
+      ov.className = 'detail-info-overlay';
+      const closeOverlay = function(){
+        if(ov && ov.parentNode) ov.parentNode.removeChild(ov);
+      };
+      ov.onclick = function(e){
+        if(e.target === ov) closeOverlay();
+      };
+
       const content = document.createElement('div');
-      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:90vh; overflow:hidden; display:flex; flex-direction:column;';
-      content.onclick = (e) => e.stopPropagation();
+      content.className = 'detail-info-overlay-card';
+      content.onclick = function(e){ e.stopPropagation(); };
       
       const codes = (o.allergens || []).map(a => {
         const u = String(a).toUpperCase();
@@ -6558,12 +6737,20 @@
       content.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
           <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene</h3>
-          <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
+          <button type="button" class="allergens-overlay-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
-        <div style="max-height:280px; overflow-y:auto; flex:1;">
+        <div style="max-height:280px; overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1;">
           ${listHtml || '<p style="color:rgba(255,255,255,0.5);">Keine Allergene hinterlegt.</p>'}
         </div>
       `;
+      const closeBtn = content.querySelector('.allergens-overlay-close');
+      if(closeBtn){
+        closeBtn.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          closeOverlay();
+        };
+      }
       ov.appendChild(content);
       document.body.appendChild(ov);
       if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -9298,8 +9485,12 @@
 
   // --- Profile View ("Mein Mittagio") - Zalando-Prinzip ---
   let currentPublicProviderId = null;
+  let currentPublicProviderCategory = 'Alle';
 
   function showProviderProfilePublic(providerId){
+    if(String(currentPublicProviderId || '') !== String(providerId || '')){
+      currentPublicProviderCategory = 'Alle';
+    }
     currentPublicProviderId = providerId;
     showView('v-provider-detail-public');
     renderPublicProviderProfile();
@@ -9309,6 +9500,48 @@
     const pid = currentPublicProviderId;
     if(!pid) return;
 
+    const pubProvView = document.getElementById('v-provider-detail-public');
+    const headerRow = pubProvView ? pubProvView.querySelector('.pub-prov-header-row') : null;
+    if(headerRow){
+      let backBtn = headerRow.querySelector('.pub-prov-back-btn');
+      if(!backBtn){
+        backBtn = document.createElement('button');
+        backBtn.type = 'button';
+        backBtn.className = 'pub-prov-back-btn';
+        backBtn.setAttribute('aria-label', 'Zurück');
+        backBtn.innerHTML = '<i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>';
+        headerRow.insertBefore(backBtn, headerRow.firstChild || null);
+      }
+      backBtn.onclick = function(){ showView('v-discover'); };
+
+      let actionsWrap = headerRow.querySelector('.pub-prov-header-actions');
+      if(!actionsWrap){
+        actionsWrap = document.createElement('div');
+        actionsWrap.className = 'pub-prov-header-actions';
+        headerRow.appendChild(actionsWrap);
+      }
+      let shareBtnEnsure = headerRow.querySelector('#pubProvShare');
+      if(!shareBtnEnsure){
+        shareBtnEnsure = document.createElement('button');
+        shareBtnEnsure.type = 'button';
+        shareBtnEnsure.className = 'pub-prov-share-btn';
+        shareBtnEnsure.id = 'pubProvShare';
+        shareBtnEnsure.setAttribute('aria-label', 'Teilen');
+        shareBtnEnsure.innerHTML = '<i data-lucide="share-2" style="width:20px;height:20px;color:#334155;"></i>';
+        actionsWrap.appendChild(shareBtnEnsure);
+      }
+      let favBtnEnsure = headerRow.querySelector('#btnToggleFavProvider');
+      if(!favBtnEnsure){
+        favBtnEnsure = document.createElement('button');
+        favBtnEnsure.type = 'button';
+        favBtnEnsure.className = 'pub-prov-fav-btn';
+        favBtnEnsure.id = 'btnToggleFavProvider';
+        favBtnEnsure.setAttribute('aria-label', 'Favorit');
+        favBtnEnsure.innerHTML = '<i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>';
+        actionsWrap.appendChild(favBtnEnsure);
+      }
+    }
+
     // Finde Anbieter-Daten (aus erstem verfügbarem Angebot)
     const allOffers = load(LS.offers, []);
     const provOffers = allOffers.filter(o => o.providerId === pid);
@@ -9316,22 +9549,10 @@
     const norm = normalizeOffer(first);
 
     const pubProvName = document.getElementById('pubProvName');
-    const pubProvTitle = document.getElementById('pubProvTitle');
-    const pubProvAddress = document.getElementById('pubProvAddress');
+    const pubProvHeaderAddress = document.getElementById('pubProvHeaderAddress');
     
     if(pubProvName) pubProvName.textContent = norm.providerName || 'Anbieter';
-    if(pubProvTitle) pubProvTitle.textContent = norm.providerName || 'Anbieter';
-    if(pubProvAddress) pubProvAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
-    var logoWrap = document.getElementById('pubProvLogoWrap');
-    var logoEmoji = document.getElementById('pubProvLogoEmoji');
-    if(logoWrap){
-      if(norm.providerLogoData || first.providerLogoData){
-        var src = norm.providerLogoData || first.providerLogoData;
-        logoWrap.innerHTML = '<img src="' + esc(src) + '" alt="" style="width:100%; height:100%; object-fit:cover;" />';
-      } else if(logoEmoji) {
-        logoWrap.innerHTML = '<span id="pubProvLogoEmoji">🏢</span>';
-      }
-    }
+    if(pubProvHeaderAddress) pubProvHeaderAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
 
     // Favorite Status
     const favBtn = document.getElementById('btnToggleFavProvider');
@@ -9352,46 +9573,109 @@
       };
     }
 
-    // Heute Angebote
+    const getOfferCategory = function(offer){
+      const n = normalizeOffer(offer);
+      const raw = String((n.category || n.diet || n.tag || '')).trim();
+      const mapped = CAT_MAP[raw] || raw;
+      return mapped || 'Weitere';
+    };
+
+    // Heute Angebote + Kategorie-Chips
     const today = isoDate(new Date());
     const todayOffers = provOffers.filter(o => o.day === today && o.active !== false);
+    const todayCatsWrap = document.getElementById('pubProvTodayCats');
+    const preferredCats = ['Fleisch', 'Veggie', 'Vegan'];
+    const dynamicCats = Array.from(new Set(todayOffers.map(getOfferCategory)));
+    const orderedCats = preferredCats.filter(function(cat){ return dynamicCats.indexOf(cat) >= 0; });
+    const extraCats = dynamicCats.filter(function(cat){ return preferredCats.indexOf(cat) < 0; });
+    const cats = ['Alle'].concat(orderedCats.concat(extraCats));
+    if(cats.indexOf(currentPublicProviderCategory) < 0) currentPublicProviderCategory = 'Alle';
+    if(todayCatsWrap){
+      if(todayOffers.length <= 1){
+        todayCatsWrap.innerHTML = '';
+        hide(todayCatsWrap);
+      } else {
+        todayCatsWrap.innerHTML = cats.map(function(cat){
+          const icon = cat === 'Alle' ? '✨' : (CAT_EMOJI[cat] || '');
+          const iconHtml = icon ? '<span class="pub-prov-cat-emoji">' + esc(icon) + '</span>' : '';
+          return '<button type="button" class="pub-prov-cat' + (cat === currentPublicProviderCategory ? ' is-active' : '') + '" data-cat="' + esc(cat) + '">' + iconHtml + '<span>' + esc(cat) + '</span></button>';
+        }).join('');
+        show(todayCatsWrap, 'flex');
+        Array.from(todayCatsWrap.querySelectorAll('.pub-prov-cat')).forEach(function(btn){
+          btn.onclick = function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            currentPublicProviderCategory = String(btn.getAttribute('data-cat') || 'Alle');
+            renderPublicProviderProfile();
+          };
+        });
+      }
+    }
     const todayList = document.getElementById('pubProvTodayOffers');
     if(todayList){
-      if(todayOffers.length === 0){
+      const filteredToday = todayOffers.filter(function(o){
+        return currentPublicProviderCategory === 'Alle' ? true : getOfferCategory(o) === currentPublicProviderCategory;
+      });
+      if(filteredToday.length === 0){
         todayList.innerHTML = '<div class="pub-prov-empty">Heute keine Angebote verfügbar.</div>';
       } else {
-        todayList.innerHTML = todayOffers.map(o => createPublicOfferRow(o)).join('');
+        todayList.innerHTML = filteredToday.map(o => createPublicOfferRow(o)).join('');
       }
     }
 
-    // Wochenplan
+    // Nächste Tage (Wochentag + Datum)
+    const weekTitle = document.getElementById('pubProvWeekTitle');
+    if(weekTitle) weekTitle.textContent = 'Nächste Tage';
     const weekList = document.getElementById('pubProvWeekPlan');
     if(weekList){
-      const futureOffers = provOffers.filter(o => o.day > today && o.active !== false).sort((a,b) => a.day.localeCompare(b.day));
+      const futureOffers = provOffers
+        .filter(o => o.day > today && o.active !== false)
+        .sort((a,b) => String(a.day || '').localeCompare(String(b.day || '')));
       if(futureOffers.length === 0){
         weekList.innerHTML = '<div class="pub-prov-empty">Keine weiteren Angebote geplant.</div>';
       } else {
-        weekList.innerHTML = futureOffers.map(o => createPublicOfferRow(o, true)).join('');
+        const grouped = new Map();
+        futureOffers.forEach(function(offer){
+          const key = String(offer.day || '');
+          if(!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key).push(offer);
+        });
+        let html = '';
+        Array.from(grouped.keys()).slice(0, 7).forEach(function(dayKey){
+          html += '<div class="pub-prov-day-label">' + esc(fmtDayShort(dayKey)) + '</div>';
+          html += grouped.get(dayKey).slice(0, 4).map(function(offer){ return createPublicOfferRow(offer); }).join('');
+        });
+        weekList.innerHTML = html || '<div class="pub-prov-empty">Keine weiteren Angebote geplant.</div>';
       }
     }
 
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
 
-  function createPublicOfferRow(o, showDate = false){
+  function createPublicOfferRow(o){
     const norm = normalizeOffer(o);
-    const dateLabel = showDate ? `<div style="font-size:11px; font-weight:800; color:var(--brand); text-transform:uppercase; margin-bottom:4px;">${fmtDayShort(o.day)}</div>` : '';
+    const img = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=80';
+    const title = norm.dish || 'Gericht';
+    const price = euro(o.price);
+    const rawCategory = String((norm.category || norm.diet || norm.tag || '')).trim();
+    const category = CAT_MAP[rawCategory] || rawCategory;
+    const categoryEmoji = CAT_EMOJI[category] || '';
+    const categoryPill = category
+      ? `<span class="pub-prov-offer-tag">${categoryEmoji ? `<span class="pub-prov-offer-tag-emoji">${esc(categoryEmoji)}</span>` : ''}<span>${esc(category)}</span></span>`
+      : '';
     return `
-      <div class="cust-card pub-prov-offer-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:18px;">
-        <div style="width:64px; height:64px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
-          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" alt="" style="width:100%; height:100%; object-fit:cover;">
+      <div class="cust-card pub-prov-offer-card" onclick="openOffer('${o.id}')">
+        <div class="pub-prov-offer-thumb">
+          <img src="${img}" alt="">
         </div>
-        <div style="flex:1; min-width:0;">
-          ${dateLabel}
-          <div style="font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dish)}</div>
-          <div style="font-size:13px; color:#64748b; font-weight:600;">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
+        <div class="pub-prov-offer-main">
+          <div class="pub-prov-offer-title-row">
+            <div class="pub-prov-offer-title">${esc(title)}</div>
+            <div class="pub-prov-offer-price">${esc(price)}</div>
+          </div>
+          ${categoryPill}
         </div>
-        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0;"></i>
+        <i data-lucide="chevron-right" class="pub-prov-offer-chevron"></i>
       </div>
     `;
   }
@@ -9410,8 +9694,10 @@
 
   function fmtDayShort(dateStr){
     const d = new Date(dateStr);
-    const days = ['SO', 'MO', 'DI', 'MI', 'DO', 'FR', 'SA'];
-    return days[d.getDay()] + ' ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+    const days = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    return days[d.getDay()] + ' ' + dd + '.' + mm + '.';
   }
 
   function updateProfileView(){
@@ -16150,29 +16436,37 @@
   }
   
   // Speisekarte teilen (Provider-Menü)
-  function shareProviderMenu(){
-    const profile = normalizeProviderProfile(provider.profile || {});
-    const providerName = profile.name || provider.email || 'Anbieter';
-    const providerIdVal = providerId();
-    
-    // Alle aktiven Gerichte des Providers sammeln
-    const providerOffers = offers.filter(o => o.providerId === providerIdVal && o.active !== false);
+  function shareProviderMenu(providerIdOverride, dayOverride){
+    const providerIdVal = String(providerIdOverride || providerId() || '');
+    const providerState = (typeof provider !== 'undefined' && provider) ? provider : {};
+    const profile = normalizeProviderProfile(providerState.profile || {});
+    const providerOffers = offers
+      .filter(o => String(o.providerId || '') === providerIdVal && o.active !== false)
+      .sort((a,b) => String(a.day || '').localeCompare(String(b.day || '')));
     
     if(providerOffers.length === 0){
       showToast('Keine Gerichte zum Teilen');
       return;
     }
     
+    const firstNorm = normalizeOffer(providerOffers[0] || {});
+    const providerName = firstNorm.providerName || profile.name || providerState.email || 'Anbieter';
+    const providerAddress = [firstNorm.providerStreet, firstNorm.providerZip, firstNorm.providerCity].filter(Boolean).join(', ');
+    const todayKey = isoDate(new Date());
+    const selectedDay = dayOverride || ((providerOffers.find(o => String(o.day || '') >= todayKey) || providerOffers[0] || {}).day || '');
+    const dayOffers = selectedDay ? providerOffers.filter(o => String(o.day || '') === String(selectedDay)) : providerOffers;
+    const teaser = dayOffers.slice(0, 3).map(o => `${o.dish || o.title || 'Gericht'} (${euro(o.price || 0)})`).join(', ');
+    const dayIntro = selectedDay ? `Hast du am ${fmtDayShort(selectedDay)} Mittag Zeit?` : 'Hast du diese Woche Mittag Zeit?';
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerIdVal}`;
-    const shareText = `😋 Lust auf was Richtiges? Entdecke unsere aktuelle Speisekarte!\n\n📍 ${providerName}\n\n${providerOffers.slice(0, 5).map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}${providerOffers.length > 5 ? `\n... und viele weitere Highlights!` : ''}\n\nDirekt online bestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #speisekarte #foodie #lunchtime`;
+    const shareText = `${dayIntro}\nBei ${providerName} gibt es z. B.: ${teaser || 'leckere Tagesgerichte'}.\n${providerAddress ? `📍 ${providerAddress}\n` : ''}\nSchau dir die Angebote an:\n👉 ${shareUrl}`;
     
     if(navigator.share){
       navigator.share({
-        title: `Speisekarte ${providerName}`,
+        title: `${providerName} vorschlagen`,
         text: shareText,
         url: shareUrl
       }).then(() => {
-        showToast('Speisekarte geteilt!');
+        showToast('Anbieter geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
           copyToClipboard(shareText);

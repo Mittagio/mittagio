@@ -900,18 +900,32 @@
     #sheet.sheet-detail-gericht .sheet-detail-provider-btn{
       display:inline-flex;
       align-items:center;
-      gap:4px;
+      justify-content:space-between;
+      gap:10px;
       background:none;
       border:none;
       padding:0 0 10px;
       cursor:pointer;
       text-align:left;
-      width:auto;
+      width:100%;
     }
     #sheet.sheet-detail-gericht .sheet-detail-provider-text{
       font-weight:600;
       font-size:14px;
       color:#6b7280;
+      white-space:nowrap;
+    }
+    #sheet.sheet-detail-gericht .sheet-detail-provider-hint{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:11px;
+      font-weight:800;
+      color:#64748b;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:999px;
+      padding:4px 8px;
       white-space:nowrap;
     }
     #sheet.sheet-detail-gericht .sheet-detail-provider-address-row{
@@ -1092,6 +1106,14 @@
       font-weight:600;
       color:#94a3b8;
       line-height:1.4;
+    }
+    #sheet.sheet-detail-gericht .sheet-detail-arrival-hint{
+      margin:8px 0 0;
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+      color:#475569;
+      line-height:1.35;
     }
     
     .card.polaroid .img img{
@@ -1458,6 +1480,32 @@
     /* Sheets / modals – Safe-Area für moderne Handys (S25, iPhone, Pixel) */
     .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .2s; z-index:2000}
     .backdrop.active{opacity:1; pointer-events:auto}
+    .detail-info-overlay{
+      position:fixed;
+      inset:0;
+      z-index:2200;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:rgba(15,23,42,0.48);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      touch-action:manipulation;
+    }
+    .detail-info-overlay-card{
+      background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);
+      border-radius:24px;
+      padding:24px;
+      max-width:420px;
+      width:100%;
+      border:2px solid rgba(255,255,255,0.12);
+      box-shadow:0 8px 32px rgba(0,0,0,0.45);
+      max-height:90vh;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
     /* Modals: nur sichtbar wenn .active – verhindert leeren Screen / blockierte Klicks (z. B. Kochbuch tapbar) */
     #quickPostBd:not(.active),
     #publishFeeBd:not(.active),
@@ -10198,7 +10246,20 @@
       flex-shrink: 0;
       background: #fff;
     }
+    #v-provider-detail-public .pub-prov-header-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:space-between;
+    }
+    #v-provider-detail-public .pub-prov-header-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
+    }
     #v-provider-detail-public .pub-prov-back-btn,
+    #v-provider-detail-public .pub-prov-share-btn,
     #v-provider-detail-public .pub-prov-fav-btn {
       min-width: 48px;
       min-height: 48px;
@@ -10208,11 +10269,24 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     #v-provider-detail-public .pub-prov-back-btn:active,
+    #v-provider-detail-public .pub-prov-share-btn:active,
     #v-provider-detail-public .pub-prov-fav-btn:active {
       transform: scale(0.96);
     }
-    #v-provider-detail-public .pub-prov-hero {
-      border: 1px solid rgba(0,0,0,0.04);
+    #v-provider-detail-public .pub-prov-header-id{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    #v-provider-detail-public .pub-prov-header-subline{
+      margin:2px 0 0;
+      font-size:12px;
+      font-weight:700;
+      color:#64748b;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      line-height:1.25;
     }
     #v-provider-detail-public .pub-prov-section-title {
       font-size: 13px;
@@ -10231,24 +10305,159 @@
       line-height: 1.5;
     }
     #v-provider-detail-public .pub-prov-offer-card {
-      min-height: 56px;
-      transition: transform 0.2s ease;
+      min-height: 108px;
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      gap:14px;
+      padding:12px;
+      border:1px solid rgba(15, 23, 42, 0.06);
+      border-radius:20px;
+      box-shadow:0 10px 24px rgba(15, 23, 42, 0.06);
+      background:linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      cursor:pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     #v-provider-detail-public .pub-prov-offer-card:active {
       transform: scale(0.98);
+      box-shadow:0 6px 16px rgba(15, 23, 42, 0.08);
+    }
+    #v-provider-detail-public .pub-prov-offer-thumb{
+      width:92px;
+      height:92px;
+      border-radius:16px;
+      overflow:hidden;
+      background:#e2e8f0;
+      flex:0 0 auto;
+    }
+    #v-provider-detail-public .pub-prov-offer-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    #v-provider-detail-public .pub-prov-offer-main{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    #v-provider-detail-public .pub-prov-offer-title-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    #v-provider-detail-public .pub-prov-offer-title{
+      font-family: var(--font-serif);
+      font-size:17px;
+      font-weight:800;
+      color:#0f172a;
+      line-height:1.15;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    #v-provider-detail-public .pub-prov-offer-price{
+      font-size:16px;
+      font-weight:900;
+      color:#0f172a;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    #v-provider-detail-public .pub-prov-offer-tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      min-height:28px;
+      width:fit-content;
+      max-width:100%;
+      border-radius:999px;
+      border:1px solid #dbeafe;
+      background:#eff6ff;
+      color:#1e3a8a;
+      font-size:12px;
+      font-weight:800;
+      padding:0 10px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    #v-provider-detail-public .pub-prov-offer-tag-emoji{
+      font-size:13px;
+      line-height:1;
+      flex:0 0 auto;
+    }
+    #v-provider-detail-public .pub-prov-offer-meta{
+      font-size:13px;
+      font-weight:700;
+      color:#64748b;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    #v-provider-detail-public .pub-prov-offer-chevron{
+      width:20px;
+      height:20px;
+      color:#94a3b8;
+      flex:0 0 auto;
     }
     #v-provider-detail-public .pub-prov-hero button:active {
       transform: scale(0.98);
+    }
+    #v-provider-detail-public .pub-prov-cats{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding:0 0 10px;
+      margin:0;
+      scrollbar-width:none;
+    }
+    #v-provider-detail-public .pub-prov-cats::-webkit-scrollbar{ display:none; }
+    #v-provider-detail-public .pub-prov-cat{
+      border:1px solid #e2e8f0;
+      background:#fff;
+      color:#64748b;
+      min-height:32px;
+      border-radius:999px;
+      padding:0 12px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+      flex:0 0 auto;
+      transition:all .18s ease;
+    }
+    #v-provider-detail-public .pub-prov-cat-emoji{
+      font-size:13px;
+      line-height:1;
+      flex:0 0 auto;
+    }
+    #v-provider-detail-public .pub-prov-cat.is-active{
+      background:#0f172a;
+      border-color:#0f172a;
+      color:#fff;
+    }
+    #v-provider-detail-public .pub-prov-day-label{
+      margin:10px 2px 8px;
+      font-size:13px;
+      font-weight:800;
+      color:#64748b;
+      letter-spacing:0.01em;
     }
     @media (max-width: 430px) and (min-height: 700px) {
       #v-provider-detail-public .pub-prov-header-row { padding: 16px 16px !important; }
       #v-provider-detail-public .pub-prov-back-btn,
       #v-provider-detail-public .pub-prov-fav-btn { min-width: 52px; min-height: 52px; }
+      #v-provider-detail-public .pub-prov-share-btn{ min-width: 52px; min-height: 52px; }
       #v-provider-detail-public #pubProvName { font-size: var(--size-h2) !important; }
-      #v-provider-detail-public .pub-prov-hero { padding: 28px 20px !important; }
       #v-provider-detail-public .pub-prov-scroll { padding: 20px 16px calc(28px + env(safe-area-inset-bottom, 0)) !important; }
-      #v-provider-detail-public #pubProvTitle { font-size: 22px !important; }
-      #v-provider-detail-public #pubProvAddress { font-size: 14px !important; }
+      #v-provider-detail-public .pub-prov-header-subline { font-size: 13px !important; }
     }
 
     /* Airbnb-Style Cards: 28px Radius, hauchzarter Schatten [cite: 2026-02-20] */
@@ -10628,6 +10837,140 @@
     }
     #favShareChoiceSheet .sheet-body .btn-cust-primary:active{
       transform: scale(0.98);
+    }
+    #detailDistanceBd{
+      z-index: 2306;
+    }
+    #detailDistanceSheet{
+      z-index: 2307;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 24px 24px 0 0;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    #detailDistanceSheet .sheet-body{
+      padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0));
+    }
+    .detail-distance-title{
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .detail-distance-address{
+      margin: 0 0 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.45;
+    }
+    .detail-distance-status-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .detail-distance-status-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:24px;
+      padding:0 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:0.02em;
+      text-transform:uppercase;
+      border:1px solid transparent;
+    }
+    .detail-distance-status-badge.is-estimate{
+      background:#f8fafc;
+      color:#475569;
+      border-color:#cbd5e1;
+    }
+    .detail-distance-status-badge.is-live{
+      background:rgba(16,185,129,0.12);
+      color:#047857;
+      border-color:rgba(16,185,129,0.28);
+    }
+    .detail-distance-updated{
+      font-size:12px;
+      font-weight:700;
+      color:#94a3b8;
+      white-space:nowrap;
+    }
+    .detail-distance-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .detail-distance-metric{
+      appearance:none;
+      -webkit-appearance:none;
+      text-align:left;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      width:100%;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .12s ease;
+    }
+    .detail-distance-metric:active{
+      transform: scale(0.98);
+    }
+    .detail-distance-metric.is-active{
+      background: #0f172a;
+      border-color: #0f172a;
+      box-shadow: 0 6px 14px rgba(15,23,42,0.18);
+    }
+    .detail-distance-metric.is-active .detail-distance-label,
+    .detail-distance-metric.is-active .detail-distance-value{
+      color:#ffffff;
+    }
+    .detail-distance-label{
+      font-size: 12px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .detail-distance-value{
+      font-size: 18px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .detail-distance-meta{
+      margin: 0 0 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .detail-distance-route-btn{
+      width: 100%;
+      min-height: 52px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      box-shadow: none;
+    }
+    .detail-distance-close-btn{
+      width: 100%;
+      min-height: 48px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    #sheet.sheet-detail-gericht .sheet-detail-provider-address-row{
+      cursor: pointer;
     }
 
     /* Segmented Control / Chips */

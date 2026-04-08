@@ -39,6 +39,10 @@ Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
   - Haptik-Feedback.
   - Undo-Banner (3 Sekunden): „Gericht entfernt – Rückgängig?“.
 
+- Anbieter-Favoriten:
+  - Werden auch ohne heutiges aktives Angebot in „Meine Lieblinge“ geführt.
+  - Wenn heute kein Angebot aktiv ist, zeigt die Anbieter-Karte einen klaren CTA: **„Anbieter ansehen“**.
+
 - Header-Aktion (dezent):
   - Im Solo-Modus: kleines Share-Icon im Header oeffnet ein Bottom-Sheet mit:
     - **Dieses Gericht teilen** (ein Vorschlag)
