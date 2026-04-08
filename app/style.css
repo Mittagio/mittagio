@@ -6469,6 +6469,11 @@
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
+    #v-discover .tgtg-list-item .action-btn-fav.is-favorited{
+      background: rgba(227,77,77,0.12);
+      border-color: rgba(227,77,77,0.45);
+      box-shadow: 0 2px 10px rgba(227,77,77,0.18);
+    }
     #v-discover .tgtg-list-item .tgtg-btn-floating:active{ transform: scale(0.92); }
     @keyframes heart-blink { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
     /* Pure-Clean: Discover auf warmem Hintergrund [cite: 2.2] */
@@ -6880,6 +6885,26 @@
     }
     .fav-icon-bounce {
       animation: favBounce 0.5s ease-out;
+    }
+    .heart-just-clicked{
+      animation: heartTapPop 0.42s ease-out;
+    }
+    @keyframes heartTapPop{
+      0% { transform: scale(1); }
+      35% { transform: scale(1.2); }
+      65% { transform: scale(0.92); }
+      100% { transform: scale(1); }
+    }
+    .favorite-fly-ghost{
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 10px 24px rgba(15,23,42,0.28);
+      will-change: transform, opacity;
+      overflow: hidden;
+      background: #fff;
     }
     @keyframes cartIconGlow {
       0%, 100% { filter: brightness(1); transform: scale(1); }

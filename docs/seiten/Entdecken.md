@@ -109,3 +109,10 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 
 - Beim App-Reload wird der Startzustand konsequent auf Kundenseite gesetzt.
 - `provider-mode` wird beim Init entfernt und die App landet auf `Entdecken` statt im Anbieterbereich.
+
+## Update: Herz-Interaktion stabil
+
+- Herz-Tap in Discover-Kacheln erzeugt kein störendes Match-Overlay mehr.
+- Bei Favorisieren gibt es Haptik + Herz-Pop-Animation.
+- Zusätzlich fliegt ein visuelles Element Richtung Favoriten-Tab (Bottom-Nav), damit der Transfer in Favoriten klar wahrnehmbar ist.
+- Der Herz-Button zeigt im aktiven Zustand eine rote Optik (Icon + rote Tönung der Button-Fläche).

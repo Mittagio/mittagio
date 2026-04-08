@@ -928,21 +928,46 @@
     normalizeDishFavoritesStore();
     const sid = String(id);
     const isRemoving = dishFavs.has(sid);
+    const activeView = document.querySelector('.view.active');
+    const activeViewId = activeView ? activeView.id : '';
+    const cardEl = btn && btn.closest ? btn.closest('.tgtg-list-item, .discover-card-silent, .swipe-card, .dish-card') : null;
+    const tapEl = btn && btn.closest ? (btn.closest('button') || btn.closest('.swipe-card-heart-icon') || btn) : btn;
+    const staleMatchOverlay = document.getElementById('matchOverlayTinder');
+    if(staleMatchOverlay) staleMatchOverlay.remove();
+    const syncFavButtonVisual = function(active){
+      if(btn && btn.classList){
+        btn.classList.toggle('is-favorited', !!active);
+        if(btn.setAttribute) btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      }
+      const iconEl = btn && btn.querySelector ? btn.querySelector('i') : null;
+      if(iconEl){
+        iconEl.style.fill = active ? '#E34D4D' : 'none';
+        iconEl.style.color = active ? '#E34D4D' : '#6b7280';
+        iconEl.style.stroke = active ? '#E34D4D' : '#6b7280';
+      }
+    };
     if(isRemoving){
       dishFavs.delete(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
+      syncFavButtonVisual(false);
       showToast('Aus Favoriten entfernt');
+      if(typeof haptic==='function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(8);
     } else {
       dishFavs.add(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
+      syncFavButtonVisual(true);
       showToast('Zu Favoriten hinzugefügt! ❤️');
       if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+      if(tapEl && tapEl.classList){
+        tapEl.classList.add('heart-just-clicked');
+        setTimeout(function(){ tapEl.classList.remove('heart-just-clicked'); }, 420);
+      }
+      triggerFavoriteFlyToNav(cardEl, sid);
+      triggerFavoritesIconBounce();
     }
     const packed = Array.from(dishFavs);
     save(LS.dishFavs, packed);
     localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     if(typeof renderFavorites === 'function') renderFavorites();
-    if(typeof renderDiscover === 'function') renderDiscover();
+    if(typeof renderDiscover === 'function' && activeViewId !== 'v-discover') renderDiscover();
   }
 
   function shareOffer(data){
@@ -3551,9 +3576,8 @@
     }
     
     triggerHapticFeedback([20, 10, 30]);
-    
-    // "Lecker!" Match-Overlay anzeigen
-    showMatchOverlay(data);
+    triggerFavoriteFlyToNav(null, sid);
+    showToast('Zu Favoriten hinzugefügt! ❤️', 1400);
     
     // Favoriten-Icon in Nav bouncen lassen
     triggerFavoritesIconBounce();
@@ -3599,6 +3623,52 @@
       icon.classList.add('fav-icon-bounce');
       setTimeout(() => icon.classList.remove('fav-icon-bounce'), 600);
     }
+  }
+
+  function triggerFavoriteFlyToNav(cardEl, offerId){
+    const favNavBtn = document.querySelector('#customerNav button[data-go="fav"]');
+    if(!favNavBtn) return;
+    let sourceEl = null;
+    if(cardEl && cardEl.querySelector){
+      sourceEl = cardEl.querySelector('.tgtg-list-item-img-wrap img, .discover-card-img-inner img, .swipe-card-image img, img');
+    }
+    if(!sourceEl && offerId){
+      const fallbackCard = document.querySelector('.swipe-card[data-offer-id="' + offerId + '"]');
+      if(fallbackCard) sourceEl = fallbackCard.querySelector('.swipe-card-image img');
+    }
+    const sourceRect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+    const targetRect = favNavBtn.getBoundingClientRect();
+    if(!targetRect) return;
+
+    const flyEl = sourceEl ? sourceEl.cloneNode(true) : document.createElement('div');
+    if(!sourceEl){
+      flyEl.textContent = '❤️';
+      flyEl.style.cssText = 'display:flex; align-items:center; justify-content:center; font-size:22px; background:#fff;';
+    }
+    const startWidth = sourceRect ? Math.max(44, Math.min(84, Math.round(sourceRect.width * 0.5))) : 52;
+    const startHeight = sourceRect ? Math.max(44, Math.min(84, Math.round(sourceRect.height * 0.5))) : 52;
+    const startLeft = sourceRect ? (sourceRect.left + sourceRect.width / 2 - startWidth / 2) : (window.innerWidth / 2 - startWidth / 2);
+    const startTop = sourceRect ? (sourceRect.top + sourceRect.height / 2 - startHeight / 2) : (window.innerHeight * 0.45 - startHeight / 2);
+    const endLeft = targetRect.left + targetRect.width / 2 - startWidth / 2;
+    const endTop = targetRect.top + targetRect.height / 2 - startHeight / 2;
+
+    flyEl.classList.add('favorite-fly-ghost');
+    flyEl.style.left = Math.round(startLeft) + 'px';
+    flyEl.style.top = Math.round(startTop) + 'px';
+    flyEl.style.width = startWidth + 'px';
+    flyEl.style.height = startHeight + 'px';
+    document.body.appendChild(flyEl);
+
+    const dx = Math.round(endLeft - startLeft);
+    const dy = Math.round(endTop - startTop);
+    const anim = flyEl.animate([
+      { transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
+      { transform: 'translate3d(' + Math.round(dx * 0.65) + 'px,' + Math.round(dy * 0.65) + 'px,0) scale(0.72)', opacity: 0.92, offset: 0.7 },
+      { transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(0.28)', opacity: 0.15, offset: 1 }
+    ], { duration: 620, easing: 'cubic-bezier(0.2, 0.9, 0.2, 1)', fill: 'forwards' });
+    anim.onfinish = function(){
+      if(flyEl && flyEl.parentNode) flyEl.parentNode.removeChild(flyEl);
+    };
   }
   
   // === MITTAGESSEN-TINDER: Erst Filtern, dann Swipen ===
@@ -4456,7 +4526,7 @@
       </div>
       <div class="tgtg-list-item-action-bar dish-card-actions">
         <div class="tgtg-actions-left">
-          <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#6b7280;'}"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn${isFavorited ? ' is-favorited' : ''}" aria-label="Favorit" title="Favorit" aria-pressed="${isFavorited ? 'true' : 'false'}"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;stroke:#e74c3c;' : 'color:#6b7280;stroke:#6b7280;'}"></i></button>
           <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
         </div>
         <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">Zur Mittagsbox 🍱</button>
@@ -8542,15 +8612,71 @@
       return;
     }
 
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     if(btn){
       show(btn, 'flex');
       btn.onclick = () => {
-        if(!cart.pickupTime){ showToast('Bitte wähle eine Abholzeit'); return; }
+        const providerIds = Array.from(new Set((cart.items || []).map(function(it){
+          const offer = offers.find(function(o){ return o.id === it.offerId; });
+          return offer ? String(offer.providerId || '') : '';
+        }).filter(Boolean)));
+        const missingProviderTime = providerIds.find(function(pid){ return !cart.pickupTimes[pid]; });
+        if(missingProviderTime){
+          showToast('Bitte wähle für jeden Anbieter eine Abholzeit');
+          return;
+        }
         showCheckout();
       };
     }
     const cartVerzehrart = document.getElementById('cartVerzehrart');
     if(cartVerzehrart) show(cartVerzehrart);
+    const cartBtnVorOrt = document.getElementById('cartBtnVorOrt');
+    const cartBtnMitnehmen = document.getElementById('cartBtnMitnehmen');
+    const cartHasAnyDineIn = (cart.items || []).some(function(it){
+      const offer = offers.find(function(o){ return o.id === it.offerId; });
+      return !!(offer && normalizeOffer(offer).dineInPossible);
+    });
+    if(!cartHasAnyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
+      cart.verzehrmodus = 'mitnehmen';
+      save(LS.cart, cart);
+    }
+    const updateCartVerzehrButtons = () => {
+      const mode = cart.verzehrmodus || 'mitnehmen';
+      const isVorOrt = mode === 'vor_ort';
+      const isMitnehmen = mode === 'mitnehmen';
+      if(cartBtnVorOrt){
+        cartBtnVorOrt.disabled = !cartHasAnyDineIn;
+        cartBtnVorOrt.classList.toggle('is-faded', !cartHasAnyDineIn);
+        cartBtnVorOrt.style.cursor = cartHasAnyDineIn ? 'pointer' : 'not-allowed';
+        cartBtnVorOrt.style.borderColor = isVorOrt ? '#FFD700' : '#e7e1d5';
+        cartBtnVorOrt.style.background = isVorOrt ? '#FFD700' : '#fff';
+        cartBtnVorOrt.style.color = isVorOrt ? '#2D3436' : '#666';
+        cartBtnVorOrt.style.fontWeight = isVorOrt ? '900' : '600';
+      }
+      if(cartBtnMitnehmen){
+        cartBtnMitnehmen.style.borderColor = isMitnehmen ? '#FFD700' : '#e7e1d5';
+        cartBtnMitnehmen.style.background = isMitnehmen ? '#FFD700' : '#fff';
+        cartBtnMitnehmen.style.color = isMitnehmen ? '#2D3436' : '#666';
+        cartBtnMitnehmen.style.fontWeight = isMitnehmen ? '900' : '600';
+      }
+    };
+    updateCartVerzehrButtons();
+    if(cartBtnVorOrt){
+      cartBtnVorOrt.onclick = () => {
+        if(!cartHasAnyDineIn) return;
+        cart.verzehrmodus = 'vor_ort';
+        save(LS.cart, cart);
+        updateCartVerzehrButtons();
+      };
+    }
+    if(cartBtnMitnehmen){
+      cartBtnMitnehmen.onclick = () => {
+        cart.verzehrmodus = 'mitnehmen';
+        if(!cart.verpackung) cart.verpackung = 'mehrweg';
+        save(LS.cart, cart);
+        updateCartVerzehrButtons();
+      };
+    }
 
     let total=0;
     const TIME_SLOTS = getTimeSlots();
@@ -8572,6 +8698,7 @@
     
     let groupedHtml = '';
     itemsByProvider.forEach((group, pid) => {
+      const selectedProviderTime = cart.pickupTimes[pid] || '';
       groupedHtml += `
         <div style="margin-bottom:20px;">
           <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
@@ -8595,19 +8722,19 @@
               </div>
             `;
           }).join('')}
+          <div style="margin-top:10px;">
+            <label style="display:block; font-weight:800; font-size:12px; margin-bottom:8px; color:#64748b; text-transform:uppercase;">Abholzeit</label>
+            <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;">
+              ${slotsToShow.map(t => `
+                <button class="cust-chip ${selectedProviderTime === t ? 'active' : ''}" onclick="selectCartTimeForProvider('${pid}','${t}')">${t}</button>
+              `).join('')}
+            </div>
+          </div>
         </div>
       `;
     });
 
     box.innerHTML = groupedHtml + `
-      <div style="margin-top:20px;">
-        <label style="display:block; font-weight:800; font-size:14px; margin-bottom:12px; color:#64748b; text-transform:uppercase;">Abholzeit</label>
-        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none;">
-          ${slotsToShow.map(t => `
-            <button class="cust-chip ${cart.pickupTime === t ? 'active' : ''}" onclick="selectCartTime('${t}')">${t}</button>
-          `).join('')}
-        </div>
-      </div>
       <div style="margin-top:24px; padding-top:20px; border-top:2px solid #1a1a1a; display:flex; align-items:center; justify-content:space-between;">
         <span style="font-weight:850; font-size:18px;">Gesamt</span>
         <span style="font-weight:950; font-size:22px; color:#1a1a1a;">${euro(total)}</span>
@@ -8629,7 +8756,20 @@
   };
 
   window.selectCartTime = (t) => {
-    cart.pickupTime = t;
+    const firstProvider = (cart && cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).find(Boolean);
+    if(!firstProvider) return;
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    cart.pickupTimes[firstProvider] = t;
+    save(LS.cart, cart);
+    renderCart();
+  };
+  window.selectCartTimeForProvider = (providerId, t) => {
+    if(!cart) return;
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    cart.pickupTimes[String(providerId || '')] = t;
     save(LS.cart, cart);
     renderCart();
   };
@@ -8644,16 +8784,35 @@
   };
 
   const btnCheckout = document.getElementById('btnCheckout');
+  let checkoutPaymentInFlight = false;
+  function setCheckoutPaymentButtonState(isBusy){
+    const btn = document.getElementById('btnStandardPayment');
+    if(!btn) return;
+    const label = btn.querySelector('span');
+    btn.disabled = !!isBusy;
+    btn.classList.toggle('is-faded', !!isBusy);
+    btn.style.cursor = isBusy ? 'not-allowed' : 'pointer';
+    if(label) label.textContent = isBusy ? 'Zahlung wird gestartet...' : 'JETZT BEZAHLEN';
+  }
   /* showCheckout → js/ui-navigation.js */
   function renderCheckout(total){
     if(!cart) cart = { items: [] };
     if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     save(LS.cart, cart);
     
     // Zeitauswahl im 15-Minuten-Takt rendern (11:00–14:30)
     const TIME_SLOTS = getTimeSlots();
     const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
+    const checkoutProviderIds = Array.from(new Set((cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).filter(Boolean)));
+    const isMultiProviderCheckout = checkoutProviderIds.length > 1;
     let selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
+    if(!selectedTime && checkoutProviderIds.length === 1){
+      selectedTime = cart.pickupTimes[checkoutProviderIds[0]] || '';
+    }
     
     // Auto-Auswahl: Nächster verfügbarer Slot (wenn noch keine Zeit gewählt)
     if(!selectedTime){
@@ -8671,6 +8830,20 @@
     
     const checkoutTimeSlots = document.getElementById('checkoutTimeSlots');
     if(checkoutTimeSlots){
+      const customInputWrapper = document.getElementById('customTimeInputWrapper');
+      const btnOtherTime = document.getElementById('btnOtherTime');
+      if(isMultiProviderCheckout){
+        checkoutTimeSlots.innerHTML = '';
+        if(customInputWrapper) hide(customInputWrapper);
+        if(btnOtherTime) hide(btnOtherTime);
+        const summary = checkoutProviderIds.map(function(pid){
+          const firstOffer = offers.find(function(o){ return String(o.providerId || '') === pid; });
+          const norm = firstOffer ? normalizeOffer(firstOffer) : { providerName: 'Anbieter' };
+          const t = cart.pickupTimes[pid] || 'nicht gewählt';
+          return '<div style="padding:8px 0; border-bottom:1px solid #f1f3f5; font-size:14px; color:#334155;"><strong>' + esc(norm.providerName || 'Anbieter') + ':</strong> ' + esc(t) + '</div>';
+        }).join('');
+        checkoutTimeSlots.innerHTML = '<div style="width:100%; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px;">' + summary + '</div>';
+      } else {
       checkoutTimeSlots.innerHTML = TIME_SLOTS.map(t => {
         const [h, m] = t.split(':').map(Number);
         const slotMinutes = h * 60 + m;
@@ -8709,6 +8882,8 @@
           if(hiddenInput) hiddenInput.value = time;
         };
       });
+      if(btnOtherTime) show(btnOtherTime, 'flex');
+      }
     }
     
     // "Andere Uhrzeit wählen" Button Handler
@@ -8945,7 +9120,9 @@
     // Standard Payment Button Handler
     const btnStandardPayment = document.getElementById('btnStandardPayment');
     if(btnStandardPayment){
+      setCheckoutPaymentButtonState(checkoutPaymentInFlight);
       btnStandardPayment.onclick = () => {
+        if(checkoutPaymentInFlight) return;
         processCheckoutPayment(total);
       };
     }
@@ -8965,26 +9142,56 @@
   }
   
   function processCheckoutPayment(total){
+    if(checkoutPaymentInFlight) return;
+    checkoutPaymentInFlight = true;
+    setCheckoutPaymentButtonState(true);
     // Name validieren
     const nameInput = document.getElementById('checkoutName');
     const name = nameInput ? nameInput.value.trim() : '';
     if(!name){
       alert('Bitte gib deinen Namen für die Abholung ein.');
       if(nameInput) nameInput.focus();
+      checkoutPaymentInFlight = false;
+      setCheckoutPaymentButtonState(false);
       return;
     }
     
-    // Abholzeit auslesen
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    const providerIds = Array.from(new Set((cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).filter(Boolean)));
+    const isMultiProvider = providerIds.length > 1;
+    // Abholzeit auslesen (Single-Provider aus Checkout, Multi-Provider aus Cart-Gruppenzeiten)
     const pickupTimeSelect = document.getElementById('checkoutPickupTime');
-    const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : 'asap';
-    const pickupTimeText = pickupTime === 'asap' ? 'So schnell wie möglich' : `${pickupTime} Uhr`;
+    const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : '';
+    const pickupTimeText = pickupTime ? (String(pickupTime).indexOf('Uhr') >= 0 ? pickupTime : `${pickupTime} Uhr`) : '';
+    if(isMultiProvider){
+      const missingProviderTime = providerIds.find(function(pid){ return !cart.pickupTimes[pid]; });
+      if(missingProviderTime){
+        showToast('Bitte wähle für jeden Anbieter eine Abholzeit in der Mittagsbox.');
+        showCart();
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+        return;
+      }
+    } else {
+      if(!pickupTimeText){
+        showToast('Bitte wähle eine Abholzeit.');
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+        return;
+      }
+      const singleProviderId = providerIds[0];
+      if(singleProviderId) cart.pickupTimes[singleProviderId] = pickupTimeText.replace(' Uhr', '');
+    }
     
     // E-Mail (optional)
     const emailInput = document.getElementById('checkoutEmail');
     const email = emailInput ? emailInput.value.trim() : '';
     
     // Cart mit neuen Daten aktualisieren
-    cart.pickupTime = pickupTimeText;
+    cart.pickupTime = pickupTimeText || cart.pickupTime || '';
     cart.customerName = name;
     cart.customerEmail = email;
     save(LS.cart, cart);
@@ -8993,10 +9200,22 @@
     const ordersCreated = createOrdersFromCartByProvider(cart, 'CREATED');
     if(!ordersCreated || ordersCreated.length === 0){
       alert('Fehler beim Erstellen der Bestellung.');
+      checkoutPaymentInFlight = false;
+      setCheckoutPaymentButtonState(false);
       return;
     }
     ordersCreated.forEach(o => updateOrder(o.id, { status: 'PAYMENT_PENDING' }));
-    startStripeCheckout(total, cart, ordersCreated);
+    startStripeCheckout(total, cart, ordersCreated)
+      .then(function(result){
+        if(result && result.redirected) return;
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+      })
+      .catch(function(err){
+        console.error('Checkout Start fehlgeschlagen:', err);
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+      });
   }
   
   if(btnCheckout){
@@ -9128,8 +9347,8 @@
         unitPrice: items[0]?.unitPriceCents || 0,
         total: totalCents,
         fulfillType: cartData.verzehrmodus === 'vor_ort' ? 'DINE_IN' : 'PICKUP',
-        etaTime: cartData.pickupTime || '',
-        abholzeit: cartData.pickupTime || '',
+        etaTime: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
+        abholzeit: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
         status: initialStatus,
         currency: 'EUR',
         stripeCheckoutSessionId: undefined,
@@ -9145,7 +9364,7 @@
         isGuest: true,
         summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
         code: null,
-        pickupTime: cartData.pickupTime || '',
+        pickupTime: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
         unitPriceCents: items[0]?.unitPriceCents || 0,
         totalCents: totalCents,
         paymentIntentId: null,
@@ -9173,14 +9392,18 @@
 
     if (publishableKey && apiBase !== false) {
       var endpoint = (apiBase || window.location.origin) + '/.netlify/functions/create-checkout-session';
-      var basePath = (window.location.pathname || '/').replace(/\/?$/, '') || '';
-      var successUrl = window.location.origin + basePath + '/';
-      var cancelUrl = window.location.origin + basePath + '/';
+      var baseUrl = window.location.origin + window.location.pathname;
+      var successUrl = baseUrl + '?success=1&session_id={CHECKOUT_SESSION_ID}&orderId=' + encodeURIComponent(mainOrderId);
+      var cancelUrl = baseUrl + '?cancel=1&orderId=' + encodeURIComponent(mainOrderId);
       var lineItems = (cartData && cartData.items && cartData.items.length) ? cartData.items.map(function(item){
         var offer = typeof offers !== 'undefined' && offers.find ? offers.find(function(o){ return o.id === item.offerId; }) : null;
-        var name = (offer && offer.dish) ? offer.dish : (item.dish || 'Gericht');
-        var price = (item.total != null) ? item.total : (item.price != null ? item.price * (item.quantity || 1) : total);
-        return { name: name, amount: price, quantity: 1 };
+        var normalized = offer && typeof normalizeOffer === 'function' ? normalizeOffer(offer) : null;
+        var name = (normalized && normalized.dish) ? normalized.dish : (offer && offer.dish ? offer.dish : (item.dish || 'Gericht'));
+        var unitPrice = (normalized && Number.isFinite(Number(normalized.price))) ? Number(normalized.price) : Number(item.price || 0);
+        var quantity = Math.max(1, Number(item.qty || item.quantity || 1));
+        return { name: name, amount: unitPrice, quantity: quantity };
+      }).filter(function(li){
+        return Number.isFinite(Number(li.amount)) && Number(li.amount) > 0;
       }) : null;
       var payload = {
         orderId: mainOrderId,
@@ -9191,7 +9414,7 @@
         lineItems: lineItems && lineItems.length ? lineItems : null
       };
 
-      fetch(endpoint, {
+      return fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -9203,6 +9426,7 @@
             var sessionId = data.sessionId || data.url;
             orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
             window.location.href = data.url;
+            return { redirected: true };
           } else {
             throw new Error('Keine Checkout-URL erhalten');
           }
@@ -9211,8 +9435,8 @@
           console.error('Stripe Checkout:', err);
           if (typeof showToast === 'function') showToast('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
           else alert('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
+          throw err;
         });
-      return;
     }
 
     // Demo: Kein Stripe konfiguriert – Simuliere Checkout
@@ -9220,8 +9444,10 @@
     orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
     if (confirm('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?')) {
       handleCheckoutSuccess(sessionId, mainOrderId);
+      return Promise.resolve({ simulated: 'success' });
     } else {
       handleCheckoutCancel(mainOrderId);
+      return Promise.resolve({ simulated: 'cancel' });
     }
   }
   
@@ -9232,6 +9458,8 @@
    * @param {string} [orderId] - Order ID (optional, if sessionId not available)
    */
   function handleCheckoutSuccess(sessionId, orderId){
+    checkoutPaymentInFlight = false;
+    setCheckoutPaymentButtonState(false);
     // TODO: In Production, verify payment via Webhook
     const ordersList = loadOrders();
     let orders = [];
@@ -9284,25 +9512,27 @@
    * @param {string} [sessionId] - Stripe session ID (optional)
    */
   function handleCheckoutCancel(orderId, sessionId){
-    let order = null;
-    
-    // Find order: priority: orderId > sessionId
-    if(orderId){
-      order = getOrderById(orderId);
-    } else if(sessionId){
-      const ordersList = loadOrders();
-      order = ordersList.find(o => o.stripeCheckoutSessionId === sessionId);
+    checkoutPaymentInFlight = false;
+    setCheckoutPaymentButtonState(false);
+    const ordersList = loadOrders();
+    let targetOrders = [];
+    if(sessionId){
+      targetOrders = ordersList.filter(function(o){ return o.stripeCheckoutSessionId === sessionId; });
     }
-    
-    if(!order){
+    if(targetOrders.length === 0 && orderId){
+      const one = getOrderById(orderId);
+      if(one) targetOrders = [one];
+    }
+    if(targetOrders.length === 0){
       // Fallback: direkt zum Warenkorb
       showCart();
       return;
     }
     
-    // Set status to CANCELLED
-    updateOrder(order.id, {
-      status: 'CANCELLED'
+    // Set status to CANCELLED (nur offene Zahlungen)
+    targetOrders.forEach(function(o){
+      if(o.status === 'PAID') return;
+      updateOrder(o.id, { status: 'CANCELLED' });
     });
     
     // UI: "Zahlung abgebrochen" + Button "Zurück zum Warenkorb"
