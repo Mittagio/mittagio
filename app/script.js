@@ -9492,7 +9492,10 @@
     if(document.body && document.body.classList.contains('provider-mode')){
       document.body.classList.remove('provider-mode');
     }
-    if(typeof showView === 'function') showView('v-discover');
+    try { if(typeof setMode === 'function') setMode('customer'); } catch(_e){}
+    if(typeof showDiscover === 'function') showDiscover();
+    else if(typeof showView === 'function') showView('v-discover');
+    else if(typeof location !== 'undefined') location.hash = '';
   }
   if(typeof window !== 'undefined') window.goBackFromPublicProvider = goBackFromPublicProvider;
 
@@ -9504,13 +9507,20 @@
     if(!scrollEl || !header) return;
 
     const syncShrink = function(){
-      if(scrollEl.scrollTop > 8) header.classList.add('is-shrunk');
+      const localScroll = Number(scrollEl.scrollTop || 0);
+      const pageScroll = Number(window.scrollY || window.pageYOffset || 0);
+      if(localScroll > 8 || pageScroll > 8) header.classList.add('is-shrunk');
       else header.classList.remove('is-shrunk');
     };
     syncShrink();
-    if(scrollEl._pubProvShrinkBound) return;
-    scrollEl._pubProvShrinkBound = true;
-    scrollEl.addEventListener('scroll', syncShrink, { passive:true });
+    if(!scrollEl._pubProvShrinkBound){
+      scrollEl._pubProvShrinkBound = true;
+      scrollEl.addEventListener('scroll', syncShrink, { passive:true });
+    }
+    if(!window._pubProvShrinkBound){
+      window._pubProvShrinkBound = true;
+      window.addEventListener('scroll', syncShrink, { passive:true });
+    }
   }
 
   function showProviderProfilePublic(providerId){

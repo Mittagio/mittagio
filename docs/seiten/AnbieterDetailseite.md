@@ -25,6 +25,8 @@ Diese Seite ist der Ort für **weitere Gerichte des Anbieters** (nicht die Geric
 - Share-Aktion oben rechts im Header (app-like, ohne separate Hero-Kachel) mit neutralem Einladungstext (z. B. "Hast du am Fr Mittag Zeit?").
 - Header mit leichtem **Shrink-Verhalten** beim Scrollen (kompakter, bleibt oben sticky).
 - Back-Button im Header ist robust und führt immer zurück zu Discover.
+- Shrink-Trigger ist robust über Container-Scroll **und** Window-Scroll abgesichert (iPhone/Samsung konsistent).
+- Back-Flow hat Fallback-Reihenfolge (`setMode('customer')` -> `showDiscover()` -> `showView('v-discover')`), damit der Rückweg auch bei Edge-Cases funktioniert.
 - Android/Samsung-Feinschliff: kompaktere Spacings und Card-Maße bei sehr schmalen Viewports (`<=390px`), damit Inhalte nicht eingeengt wirken.
 - Schutz gegen Nav-Leak: `#providerNavWrap` bleibt im Kundenkontext (`body:not(.provider-mode)`) immer ausgeblendet.
 - Zusätzlich auf JS-Ebene abgesichert: Beim Öffnen von `v-provider-detail-public` wird `provider-mode` entfernt und die Anbieter-Navigation inline versteckt, damit kein Footer-Leak nach Kundenseitenwechsel sichtbar bleibt.
