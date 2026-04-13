@@ -107,6 +107,11 @@
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const cleanProviderDisplayName = function(name){
+    const raw = String(name || 'Anbieter');
+    const cleaned = raw.replace(/\s*[>›»]+\s*$/g, '').trim();
+    return cleaned || 'Anbieter';
+  };
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
 
   const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
@@ -657,6 +662,24 @@
     }
     return slots;
   }
+  function parseTimeToMinutes(timeText){
+    const m = String(timeText || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if(!m) return null;
+    const h = Number(m[1]);
+    const mm = Number(m[2]);
+    if(!Number.isFinite(h) || !Number.isFinite(mm)) return null;
+    return h * 60 + mm;
+  }
+  function parsePickupWindowRange(windowText){
+    const raw = String(windowText || '').trim();
+    if(!raw) return null;
+    const m = raw.match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/);
+    if(!m) return null;
+    const start = parseTimeToMinutes(m[1]);
+    const end = parseTimeToMinutes(m[2]);
+    if(start == null || end == null || end < start) return null;
+    return { start, end };
+  }
   window.TIME_SLOTS = window.TIME_SLOTS || getTimeSlots();
 
   // Cookie-Helfer für Single-Session (Session-ID im Cookie + DB)
@@ -969,20 +992,6 @@
     if(typeof renderFavorites === 'function') renderFavorites();
     if(typeof renderDiscover === 'function' && activeViewId !== 'v-discover') renderDiscover();
   }
-
-  function shareOffer(data){
-    const shareUrl = location.origin + location.pathname + '#offer/' + data.id;
-    const text = `Schau mal, das gibt es heute bei ${data.providerName}: ${data.dish}. Sollen wir hin?`;
-    if(navigator.share){
-      navigator.share({ title: data.dish, text: text, url: shareUrl });
-    } else {
-      navigator.clipboard.writeText(text + ' ' + shareUrl);
-      showToast('Link kopiert!');
-    }
-  }
-
-  
-
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
   /**
@@ -2379,6 +2388,25 @@
   let discoverRadiusM = 50000; // Testmodus: groß genug, um alle Anbieter durchzuklicken
   save('mittagio_discover_radius', discoverRadiusM);
   const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], 'Mit Fleisch': ['Fleisch','Mit Fleisch'], Veggie: ['Veggie'], Vegan: ['Vegan'], Fisch: ['Fisch'] };
+  function getPreferredDiscoverCategoryFromFoodProfile(){
+    const prefs = (customer && customer.dietaryPreferences) ? customer.dietaryPreferences : {};
+    if(prefs.vegan) return 'Vegan';
+    if(prefs.vegetarian) return 'Veggie';
+    return 'near';
+  }
+  function applyDiscoverDefaultsFromFoodProfile(opts){
+    const force = !!(opts && opts.force);
+    const preferred = getPreferredDiscoverCategoryFromFoodProfile();
+    if(preferred === 'near'){
+      if(force && (activeDiscoverFilter === 'Veggie' || activeDiscoverFilter === 'Vegan')){
+        activeDiscoverFilter = 'near';
+      }
+      return;
+    }
+    if(force || !activeDiscoverFilter || activeDiscoverFilter === 'near'){
+      activeDiscoverFilter = preferred;
+    }
+  }
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo)
   const locationSuggestions = [
@@ -2398,6 +2426,7 @@
   
   function renderDiscover(){
     syncOffersFromStorage();
+    applyDiscoverDefaultsFromFoodProfile();
     // Date Bar rendern (neu)
     renderDiscoverDays();
     
@@ -4492,7 +4521,9 @@
       distanceLabel = dist < 1 ? '< 1 km' : (String(dist.toFixed(1)).replace('.', ',') + ' km');
     }
     const dishName = esc(data.dish || 'Gericht');
-    const providerName = esc(data.providerName || 'Anbieter');
+    const providerName = esc(cleanProviderDisplayName(data.providerName));
+    const todayKey = isoDate(new Date());
+    const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
     const uspOverlayHtml = abholnummer
       ? `<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
       : `<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`;
@@ -4529,7 +4560,7 @@
           <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn${isFavorited ? ' is-favorited' : ''}" aria-label="Favorit" title="Favorit" aria-pressed="${isFavorited ? 'true' : 'false'}"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;stroke:#e74c3c;' : 'color:#6b7280;stroke:#6b7280;'}"></i></button>
           <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
         </div>
-        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">Zur Mittagsbox 🍱</button>
+        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">${isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox 🍱'}</button>
       </div>
     `;
     
@@ -4980,6 +5011,7 @@
     renderDiscover();
     renderStart();
     renderFavorites();
+    if(typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
     updateSheetFavs();
   }
 
@@ -5814,6 +5846,8 @@
     imgWrap.appendChild(img);
     const walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
     const walkLabel = walkMin != null ? (walkMin < 1 ? '< 1' : walkMin) + ' Min' : '– Min';
+    const todayKey = isoDate(new Date());
+    const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
     const usp = document.createElement('div');
     usp.className = 'fav-card-usp';
     if(abholnummer){
@@ -5839,7 +5873,7 @@
     body.appendChild(titleRow);
     const meta = document.createElement('p');
     meta.className = 'fav-card-provider';
-    meta.textContent = (data.providerName || 'Anbieter') + ' >';
+    meta.textContent = cleanProviderDisplayName(data.providerName);
     body.appendChild(meta);
     if(mode === 'team'){
       const vote = document.createElement('div');
@@ -5878,7 +5912,7 @@
     const boxBtn = document.createElement('button');
     boxBtn.type = 'button';
     boxBtn.className = 'fav-box-btn';
-    boxBtn.innerHTML = 'Zur Mittagsbox';
+    boxBtn.innerHTML = isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox';
     if(!abholnummer){
       boxBtn.classList.add('is-disabled');
       boxBtn.disabled = true;
@@ -5897,7 +5931,7 @@
           if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([20]);
           if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
           if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
-          if(typeof showToast === 'function') showToast('In der Box! 🥗', 1500);
+          if(typeof showToast === 'function') showToast(isFutureOffer ? 'Vorbestellung in der Box! 🥗' : 'In der Box! 🥗', 1500);
         });
       };
     }
@@ -5960,6 +5994,56 @@
       });
     });
   }
+
+  function renderFavoriteProvidersPage(){
+    syncOffersFromStorage();
+    const listEl = document.getElementById('favProvidersPageList');
+    const emptyEl = document.getElementById('favProvidersPageEmpty');
+    if(!listEl || !emptyEl) return;
+    listEl.innerHTML = '';
+    const activeDayKey = isoDate(new Date());
+    const allFavoritedProviders = Array.from(providerFavs || []);
+    if(!allFavoritedProviders.length){
+      hide(listEl);
+      show(emptyEl, 'flex');
+      return;
+    }
+    hide(emptyEl);
+    setVisible(listEl, 'flex');
+    const providerMap = new Map();
+    allFavoritedProviders.forEach(function(providerId){
+      const providerOffers = offers.filter(function(o){
+        return o.providerId === providerId && o.active !== false && o.day === activeDayKey;
+      });
+      const firstOffer = offers.find(function(p){ return p.providerId === providerId; });
+      if(!firstOffer) return;
+      const providerData = {
+        providerId: providerId,
+        providerName: normalizeOffer(firstOffer).providerName || 'Anbieter',
+        orderingEnabled: firstOffer.hasPickupCode !== false,
+        dineInPossible: firstOffer.dineInPossible !== false,
+        reuse: firstOffer.reuse || { enabled: false }
+      };
+      providerMap.set(providerId, {
+        provider: providerData,
+        offers: providerOffers,
+        hasOfferToday: providerOffers.length > 0
+      });
+    });
+    const entries = Array.from(providerMap.values()).sort(function(a, b){
+      if(a.hasOfferToday !== b.hasOfferToday) return a.hasOfferToday ? -1 : 1;
+      return String((a.provider && a.provider.providerName) || '').localeCompare(String((b.provider && b.provider.providerName) || ''), 'de');
+    });
+    entries.forEach(function(entry){
+      if(!entry || !entry.provider) return;
+      listEl.appendChild(createFavoriteProviderCard(entry.provider, entry.offers || [], !!entry.hasOfferToday));
+    });
+    if(!entries.length){
+      hide(listEl);
+      show(emptyEl, 'flex');
+    }
+  }
+  if(typeof window !== 'undefined') window.renderFavoriteProvidersPage = renderFavoriteProvidersPage;
 
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
   function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
@@ -6424,7 +6508,7 @@
     };
 
     const sProviderNameEl = document.getElementById('sProviderName');
-    if(sProviderNameEl) sProviderNameEl.textContent = o.providerName || 'Anbieter';
+    if(sProviderNameEl) sProviderNameEl.textContent = cleanProviderDisplayName(o.providerName);
 
     // Klick auf Anbieter-Name -> Öffnet öffentliches Profil
     const sProviderNameBtn = document.getElementById('sProviderNameBtn');
@@ -6534,14 +6618,19 @@
     // Info Row
     if(infoRowEl){
       infoRowEl.innerHTML = '';
-      if(o.pickupWindow){
-        const day = o.day ? new Date(o.day) : new Date();
-        const dateStr = fmtDateWithTime(day, o.pickupWindow);
+      const detailPickupWindow = String(
+        o.pickupWindow ||
+        (offerProvider && offerProvider.pickupWindow) ||
+        (offerProvider && offerProvider.mealWindow) ||
+        (offerProvider && offerProvider.providerProfile && offerProvider.providerProfile.mealWindow) ||
+        DEFAULT_MEAL_WINDOW
+      ).trim();
+      if(detailPickupWindow){
         const timeEl = document.createElement('div');
         setVisible(timeEl, 'flex');
         timeEl.style.alignItems = 'center';
         timeEl.style.gap = '6px';
-        timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
+        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>${iconMarkup('clock')}`;
         infoRowEl.appendChild(timeEl);
       }
       const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
@@ -6683,20 +6772,25 @@
       btnCTA.classList.remove('loading', 'success');
       
       const isActive = o.active !== false;
-      const isToday = o.day === isoDate(new Date());
+      const todayKey = isoDate(new Date());
+      const offerDay = String(o.day || '');
+      const isToday = offerDay === todayKey;
+      const isFutureOffer = !!(offerDay && offerDay > todayKey);
+      const isPreorderable = isActive && isFutureOffer;
       const isAvailable = isActive && isToday;
       
-      if(!isAvailable){
+      if(!isAvailable && !isPreorderable){
         btnCTA.disabled = true;
         primaryCTAText.textContent = !isActive ? 'Angebot nicht verfügbar' : 'Angebot nicht mehr verfügbar';
         btnCTA.onclick = null;
       } else if(orderingEnabled){
-        applyLivePrice();
+        if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+        else applyLivePrice();
         if(sInfoHint) hide(sInfoHint);
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
           btnCTA.classList.add('loading');
-          primaryCTAText.textContent = 'Wird hinzugefügt...';
+          primaryCTAText.textContent = isPreorderable ? 'Wird vorbestellt...' : 'Wird hinzugefügt...';
           
           // Auto-Favorite
           const oid = String(o.id);
@@ -6718,21 +6812,23 @@
               btnCTA.classList.remove('loading');
               btnCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
-              showToast('Gericht hinzugefügt!');
+              showToast(isPreorderable ? 'Vorbestellung gespeichert!' : 'Gericht hinzugefügt!');
               updateHeaderBasket();
               setTimeout(() => {
                 showCart();
                 setTimeout(() => {
                   btnCTA.disabled = false;
                   btnCTA.classList.remove('success');
-                  applyLivePrice();
+                  if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+                  else applyLivePrice();
                 }, 500);
               }, 300);
             } else {
               btnCTA.disabled = false;
               btnCTA.classList.remove('loading');
-              applyLivePrice();
-              showToast('Fehler beim Hinzufügen.');
+              if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+              else applyLivePrice();
+              showToast(isPreorderable ? 'Fehler bei der Vorbestellung.' : 'Fehler beim Hinzufügen.');
             }
           });
         };
@@ -7195,6 +7291,14 @@
       const viewId = currentView.id;
       if(viewId === 'v-fav'){
         showDiscover();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-provider-detail-public'){
+        goBackFromPublicProvider();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-fav-providers'){
+        showProfile();
         e.preventDefault();
         return;
       } else if(viewId === 'v-cart'){
@@ -7719,7 +7823,6 @@
   }
 
   /* Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] */
-  function vibrate(arr){ try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(arr) ? arr : [arr]); } catch(e){} }
   function getDishesFromPast(days){
     var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
     var out = [];
@@ -8680,13 +8783,49 @@
 
     let total=0;
     const TIME_SLOTS = getTimeSlots();
+    const parsePickupStartTime = function(windowText){
+      const raw = String(windowText || '').trim();
+      if(!raw) return '';
+      const match = raw.match(/(\d{1,2}:\d{2})/);
+      return match ? match[1] : '';
+    };
+    const inferProviderDefaultPickupTime = function(group){
+      if(!group || !Array.isArray(group.items)) return '';
+      for(let i = 0; i < group.items.length; i++){
+        const item = group.items[i];
+        const offer = item && item.offer ? item.offer : null;
+        if(!offer) continue;
+        const fromWindow = parsePickupStartTime(offer.pickupWindow || offer.mealWindow || '');
+        if(fromWindow) return fromWindow;
+        if(offer.timeStart) return String(offer.timeStart);
+        if(offer.pickupTimeStart) return String(offer.pickupTimeStart);
+      }
+      const normalizedGroup = group.provider || {};
+      const fromGroupWindow = parsePickupStartTime(normalizedGroup.pickupWindow || normalizedGroup.mealWindow || '');
+      if(fromGroupWindow) return fromGroupWindow;
+      if(normalizedGroup.timeStart) return String(normalizedGroup.timeStart);
+      if(normalizedGroup.pickupTimeStart) return String(normalizedGroup.pickupTimeStart);
+      return '';
+    };
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const availableSlots = TIME_SLOTS.filter(slot => {
-      const [h, m] = slot.split(':').map(Number);
-      return (h * 60 + m) >= currentMinutes + 10;
-    });
-    const slotsToShow = availableSlots.length > 0 ? availableSlots : TIME_SLOTS.slice(0, 6);
+    const getWindowSlots = function(windowText){
+      const range = parsePickupWindowRange(windowText);
+      let scoped = TIME_SLOTS;
+      if(range){
+        scoped = TIME_SLOTS.filter(function(slot){
+          const mins = parseTimeToMinutes(slot);
+          return mins != null && mins >= range.start && mins <= range.end;
+        });
+      }
+      if(!scoped.length) scoped = TIME_SLOTS;
+      let futureScoped = scoped.filter(function(slot){
+        const mins = parseTimeToMinutes(slot);
+        return mins != null && mins >= currentMinutes + 10;
+      });
+      if(!futureScoped.length) futureScoped = scoped;
+      return futureScoped;
+    };
     
     const itemsByProvider = new Map();
     cart.items.forEach(it => {
@@ -8695,9 +8834,25 @@
       if(!itemsByProvider.has(o.providerId)) itemsByProvider.set(o.providerId, { provider: normalizeOffer(o), items: [] });
       itemsByProvider.get(o.providerId).items.push({offer: o, qty: it.qty});
     });
+    const providerSlotsById = {};
+    let pickupTimesAutoFilled = false;
+    itemsByProvider.forEach((group, pid) => {
+      const firstOffer = group && Array.isArray(group.items) && group.items[0] ? group.items[0].offer : null;
+      const providerWindow = (firstOffer && firstOffer.pickupWindow) || (group.provider && group.provider.pickupWindow) || '';
+      const providerSlots = getWindowSlots(providerWindow);
+      providerSlotsById[pid] = providerSlots;
+      if(!providerSlots.length) return;
+      if(cart.pickupTimes[pid] && providerSlots.indexOf(cart.pickupTimes[pid]) >= 0) return;
+      const inferred = inferProviderDefaultPickupTime(group);
+      const fallback = providerSlots[0] || '11:30';
+      cart.pickupTimes[pid] = (inferred && providerSlots.indexOf(inferred) >= 0) ? inferred : fallback;
+      pickupTimesAutoFilled = true;
+    });
+    if(pickupTimesAutoFilled) save(LS.cart, cart);
     
     let groupedHtml = '';
     itemsByProvider.forEach((group, pid) => {
+      const providerSlots = providerSlotsById[pid] || TIME_SLOTS;
       const selectedProviderTime = cart.pickupTimes[pid] || '';
       groupedHtml += `
         <div style="margin-bottom:20px;">
@@ -8725,7 +8880,7 @@
           <div style="margin-top:10px;">
             <label style="display:block; font-weight:800; font-size:12px; margin-bottom:8px; color:#64748b; text-transform:uppercase;">Abholzeit</label>
             <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;">
-              ${slotsToShow.map(t => `
+              ${providerSlots.map(t => `
                 <button class="cust-chip ${selectedProviderTime === t ? 'active' : ''}" onclick="selectCartTimeForProvider('${pid}','${t}')">${t}</button>
               `).join('')}
             </div>
@@ -8809,14 +8964,35 @@
       return o ? String(o.providerId || '') : '';
     }).filter(Boolean)));
     const isMultiProviderCheckout = checkoutProviderIds.length > 1;
+    const singleProviderId = (!isMultiProviderCheckout && checkoutProviderIds.length === 1) ? checkoutProviderIds[0] : '';
+    let singleProviderWindowRange = null;
+    let singleProviderSlots = TIME_SLOTS.slice();
+    if(singleProviderId){
+      const singleProviderOffer = (cart.items || []).map(function(it){
+        return offers.find(function(x){ return x.id === it.offerId; });
+      }).find(function(o){ return o && String(o.providerId || '') === singleProviderId; }) || null;
+      const singleProviderWindowText = singleProviderOffer ? String(singleProviderOffer.pickupWindow || '') : '';
+      singleProviderWindowRange = parsePickupWindowRange(singleProviderWindowText);
+      if(singleProviderWindowRange){
+        singleProviderSlots = TIME_SLOTS.filter(function(t){
+          const mins = parseTimeToMinutes(t);
+          return mins != null && mins >= singleProviderWindowRange.start && mins <= singleProviderWindowRange.end;
+        });
+        if(!singleProviderSlots.length) singleProviderSlots = TIME_SLOTS.slice();
+      }
+    }
     let selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
     if(!selectedTime && checkoutProviderIds.length === 1){
       selectedTime = cart.pickupTimes[checkoutProviderIds[0]] || '';
     }
+    if(singleProviderId && selectedTime && singleProviderSlots.indexOf(selectedTime) === -1){
+      selectedTime = '';
+    }
     
     // Auto-Auswahl: Nächster verfügbarer Slot (wenn noch keine Zeit gewählt)
     if(!selectedTime){
-      const availableSlots = TIME_SLOTS.filter(t => {
+      const sourceSlots = singleProviderId ? singleProviderSlots : TIME_SLOTS;
+      const availableSlots = sourceSlots.filter(t => {
         const [h, m] = t.split(':').map(Number);
         return (h * 60 + m) >= currentMinutes + 15;
       });
@@ -8832,10 +9008,10 @@
     if(checkoutTimeSlots){
       const customInputWrapper = document.getElementById('customTimeInputWrapper');
       const btnOtherTime = document.getElementById('btnOtherTime');
+      if(customInputWrapper) hide(customInputWrapper);
+      if(btnOtherTime) hide(btnOtherTime);
       if(isMultiProviderCheckout){
         checkoutTimeSlots.innerHTML = '';
-        if(customInputWrapper) hide(customInputWrapper);
-        if(btnOtherTime) hide(btnOtherTime);
         const summary = checkoutProviderIds.map(function(pid){
           const firstOffer = offers.find(function(o){ return String(o.providerId || '') === pid; });
           const norm = firstOffer ? normalizeOffer(firstOffer) : { providerName: 'Anbieter' };
@@ -8844,12 +9020,13 @@
         }).join('');
         checkoutTimeSlots.innerHTML = '<div style="width:100%; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px;">' + summary + '</div>';
       } else {
-      checkoutTimeSlots.innerHTML = TIME_SLOTS.map(t => {
+      const renderSlots = singleProviderSlots;
+      checkoutTimeSlots.innerHTML = renderSlots.map(t => {
         const [h, m] = t.split(':').map(Number);
         const slotMinutes = h * 60 + m;
         const isAvailable = slotMinutes >= currentMinutes + 15;
         const isSelected = selectedTime === t;
-        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:72px; padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
+        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:76px; padding:12px 14px; border-radius:14px; border:2px solid ${isSelected ? '#facc15' : '#e2e8f0'}; background:${isSelected ? 'linear-gradient(180deg,#fde047 0%,#facc15 100%)' : '#fff'}; color:${isSelected ? '#111827' : isAvailable ? '#475569' : '#94a3b8'}; font-weight:${isSelected ? '900' : '700'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.18s ease; opacity:${isAvailable ? '1' : '0.5'}; box-shadow:${isSelected ? '0 6px 14px rgba(250,204,21,0.35)' : '0 1px 2px rgba(15,23,42,0.06)'}; transform:${isSelected ? 'translateY(-1px)' : 'translateY(0)'};">
           ${t}
         </button>`;
       }).join('');
@@ -8872,17 +9049,17 @@
           checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
             const isSelected = b.getAttribute('data-time') === time;
             b.classList.toggle('selected', isSelected);
-            b.style.borderColor = isSelected ? '#FFD700' : '#e7e1d5';
-            b.style.background = isSelected ? '#FFD700' : '#fff';
-            b.style.color = isSelected ? '#2D3436' : '#666';
-            b.style.fontWeight = isSelected ? '900' : '600';
+            b.style.borderColor = isSelected ? '#facc15' : '#e2e8f0';
+            b.style.background = isSelected ? 'linear-gradient(180deg,#fde047 0%,#facc15 100%)' : '#fff';
+            b.style.color = isSelected ? '#111827' : '#475569';
+            b.style.fontWeight = isSelected ? '900' : '700';
+            b.style.boxShadow = isSelected ? '0 6px 14px rgba(250,204,21,0.35)' : '0 1px 2px rgba(15,23,42,0.06)';
           });
           
           const hiddenInput = document.getElementById('checkoutPickupTime');
           if(hiddenInput) hiddenInput.value = time;
         };
       });
-      if(btnOtherTime) show(btnOtherTime, 'flex');
       }
     }
     
@@ -8891,6 +9068,15 @@
     const customTimeInputWrapper = document.getElementById('customTimeInputWrapper');
     const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
     if(btnOtherTime && customTimeInputWrapper && customTimeInput){
+      const minMinutes = singleProviderWindowRange ? singleProviderWindowRange.start : (11 * 60);
+      const maxMinutes = singleProviderWindowRange ? singleProviderWindowRange.end : (14 * 60 + 30);
+      const toHHMM = function(mins){
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+      };
+      customTimeInput.min = toHHMM(minMinutes);
+      customTimeInput.max = toHHMM(maxMinutes);
       btnOtherTime.onclick = () => {
         const isVisible = window.getComputedStyle(customTimeInputWrapper).display !== 'none';
         if(isVisible) hide(customTimeInputWrapper);
@@ -8923,8 +9109,6 @@
         if(customTime){
           const [h, m] = customTime.split(':').map(Number);
           const timeMinutes = h * 60 + m;
-          const minMinutes = 11 * 60; // 11:00
-          const maxMinutes = 14 * 60 + 30; // 14:30
           if(timeMinutes >= minMinutes && timeMinutes <= maxMinutes){
             const formattedTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
             if(!cart) cart = {items: []};
@@ -8934,7 +9118,7 @@
             if(hiddenInput) hiddenInput.value = formattedTime;
             showToast('Zeit gespeichert ✓', 1500);
           } else {
-            showToast('Bitte wähle eine Zeit zwischen 11:00 und 14:30 Uhr', 3000);
+            showToast('Bitte wähle eine Zeit zwischen ' + toHHMM(minMinutes) + ' und ' + toHHMM(maxMinutes) + ' Uhr', 3000);
             customTimeInput.value = '';
           }
         }
@@ -9752,6 +9936,18 @@
       window.addEventListener('scroll', syncShrink, { passive:true });
     }
   }
+  function paintPublicProviderHeaderIcon(btn, lucideName, fallbackChar, color, fill){
+    if(!btn) return;
+    var iconColor = color || '#334155';
+    var iconFill = fill || 'none';
+    var svg = '';
+    if(lucideName === 'share-2'){
+      svg = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="display:block"><circle cx="18" cy="5" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><circle cx="6" cy="12" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><circle cx="18" cy="19" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49" fill="none" stroke="' + iconColor + '" stroke-width="2" stroke-linecap="round"></path></svg>';
+    } else if(lucideName === 'heart'){
+      svg = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="display:block"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="' + iconFill + '" stroke="' + iconColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    }
+    btn.innerHTML = svg || ('<span class="pub-prov-icon-fallback" aria-hidden="true" style="color:' + iconColor + ';">' + fallbackChar + '</span>');
+  }
 
   function showProviderProfilePublic(providerId){
     const providerNavWrap = document.getElementById('providerNavWrap');
@@ -9759,11 +9955,13 @@
     if(document.body && document.body.classList.contains('provider-mode')){
       document.body.classList.remove('provider-mode');
     }
+    if(document.body) document.body.classList.remove('provider-mode');
     if(String(currentPublicProviderId || '') !== String(providerId || '')){
       currentPublicProviderCategory = 'Alle';
     }
     currentPublicProviderId = providerId;
-    showView('v-provider-detail-public');
+    if(typeof window.showView === 'function') window.showView('v-provider-detail-public');
+    else if(typeof showView === 'function') showView('v-provider-detail-public');
     renderPublicProviderProfile();
     bindPublicProviderHeaderShrink();
   }
@@ -9775,17 +9973,6 @@
     const pubProvView = document.getElementById('v-provider-detail-public');
     const headerRow = pubProvView ? pubProvView.querySelector('.pub-prov-header-row') : null;
     if(headerRow){
-      let backBtn = headerRow.querySelector('.pub-prov-back-btn');
-      if(!backBtn){
-        backBtn = document.createElement('button');
-        backBtn.type = 'button';
-        backBtn.className = 'pub-prov-back-btn';
-        backBtn.setAttribute('aria-label', 'Zurück');
-        backBtn.innerHTML = '<i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>';
-        headerRow.insertBefore(backBtn, headerRow.firstChild || null);
-      }
-      backBtn.onclick = function(){ goBackFromPublicProvider(); };
-
       let actionsWrap = headerRow.querySelector('.pub-prov-header-actions');
       if(!actionsWrap){
         actionsWrap = document.createElement('div');
@@ -9802,6 +9989,7 @@
         shareBtnEnsure.innerHTML = '<i data-lucide="share-2" style="width:20px;height:20px;color:#334155;"></i>';
         actionsWrap.appendChild(shareBtnEnsure);
       }
+      paintPublicProviderHeaderIcon(shareBtnEnsure, 'share-2', '↗', '#334155', 'none');
       let favBtnEnsure = headerRow.querySelector('#btnToggleFavProvider');
       if(!favBtnEnsure){
         favBtnEnsure = document.createElement('button');
@@ -9812,6 +10000,7 @@
         favBtnEnsure.innerHTML = '<i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>';
         actionsWrap.appendChild(favBtnEnsure);
       }
+      paintPublicProviderHeaderIcon(favBtnEnsure, 'heart', '❤', '#E34D4D', 'none');
     }
 
     // Finde Anbieter-Daten (aus erstem verfügbarem Angebot)
@@ -9830,7 +10019,7 @@
     const favBtn = document.getElementById('btnToggleFavProvider');
     if(favBtn){
       const isFav = providerFavs.has(pid);
-      favBtn.innerHTML = `<i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
+      paintPublicProviderHeaderIcon(favBtn, 'heart', '❤', '#E34D4D', isFav ? '#E34D4D' : 'none');
       favBtn.onclick = () => {
         toggleProviderFavorite(pid);
         renderPublicProviderProfile();
@@ -9840,6 +10029,7 @@
     // Teilen
     const shareBtn = document.getElementById('pubProvShare');
     if(shareBtn){
+      paintPublicProviderHeaderIcon(shareBtn, 'share-2', '↗', '#334155', 'none');
       shareBtn.onclick = () => {
         shareProviderMenu(pid);
       };
@@ -9962,6 +10152,8 @@
     }
     save(LS.providerFavs, Array.from(providerFavs));
     updateProfileView(); // Profil aktualisieren
+    if(typeof renderFavorites === 'function') renderFavorites();
+    if(typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
   }
 
   function fmtDayShort(dateStr){
@@ -9991,12 +10183,13 @@
     if(headerCard){
       if(isLoggedIn){
         headerCard.innerHTML = `
-          <div style="width:64px; height:64px; border-radius:24px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(255,215,0,0.3); flex-shrink:0;">
+          <div style="width:64px; height:64px; border-radius:20px; background:linear-gradient(135deg,#FDE047 0%,#FACC15 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(250,204,21,0.32); flex-shrink:0;">
             ${initials}
           </div>
           <div style="flex:1; min-width:0;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">Persönlicher Bereich</div>
+            <div style="font-weight:950; font-size:21px; color:#0f172a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+            <div style="font-size:13px; font-weight:700; color:#64748b; margin-top:4px;">Dein Konto ist aktiv</div>
+            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#ecfdf5; border:1px solid #bbf7d0; color:#166534; font-size:11px; font-weight:800;">🟢 Bereit für Vorbestellungen</div>
           </div>
         `;
         // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
@@ -10006,10 +10199,15 @@
         if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
-          <div style="flex:1;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;">Willkommen 👋</div>
-            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und die Mittagsbox zu speichern.</p>
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px;">
+          <div style="flex:1; display:flex; align-items:center; gap:12px;">
+            <div style="width:54px; height:54px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">👋</div>
+            <div style="min-width:0;">
+              <div style="font-weight:950; font-size:21px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Willkommen</div>
+              <p style="font-size:13px; color:#64748b; line-height:1.45; margin:4px 0 0;">Melde dich an, um Bestellungen und Mittagsbox dauerhaft zu speichern.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px; width:100%;">
               Profil anlegen
             </button>
           </div>
@@ -10059,13 +10257,16 @@
       } else {
         const firstTwo = sorted.slice(0, 2);
         orderHistoryEl.innerHTML = firstTwo.map(o => `
-          <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:12px 0; border-bottom:1px solid #f1f3f5; display:flex; align-items:center; gap:12px; cursor:pointer;">
-            <div style="width:40px; height:40px; border-radius:10px; background:#f8f9fa; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
+          <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:10px; border:1px solid #eef2f7; border-radius:14px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff;">
+            <div style="width:42px; height:42px; border-radius:12px; background:#f8fafc; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
             <div style="flex:1; min-width:0;">
               <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
-              <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} • ${o.pickupDate || ''}</div>
+              <div style="font-size:12px; color:#64748b;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
             </div>
-            <div style="font-weight:800; font-size:14px; color:var(--brand);">${euro(Number(o.total||0)/100)}</div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+              <div style="font-weight:900; font-size:14px; color:#f59e0b;">${euro(Number(o.total||0)/100)}</div>
+              <div style="font-size:10px; font-weight:800; color:#64748b; background:#f1f5f9; border-radius:999px; padding:2px 6px;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
+            </div>
           </div>
         `).join('');
       }
@@ -10189,6 +10390,22 @@
     if(bd){ hide(bd); bd.style.setProperty('opacity', '0'); }
     if(sheet){ hide(sheet); }
   }
+  function openProfileSettingsSection(sectionId){
+    const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
+    if(valid.indexOf(sectionId) < 0) return;
+    openProfileSettingsSheet();
+    valid.forEach(function(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(id === sectionId) show(el);
+      else hide(el);
+      const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + id + '"]');
+      chevrons.forEach(function(c){ c.style.setProperty('transform', id === sectionId ? 'rotate(180deg)' : 'rotate(0deg)'); });
+    });
+    var scrollEl = document.getElementById('profileSettingsSheetScroll');
+    if(scrollEl) scrollEl.scrollTop = 0;
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
   function toggleProfileSettingsSection(sectionId){
     const el = document.getElementById(sectionId);
     if(!el) return;
@@ -10201,6 +10418,7 @@
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
+  if(typeof window !== 'undefined') window.openProfileSettingsSection = openProfileSettingsSection;
   function openProfilePwaTipSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
@@ -10246,6 +10464,7 @@
     customer.dietaryPreferences[key] = value;
     save(LS.customer, customer);
     updateProfileView();
+    applyDiscoverDefaultsFromFoodProfile({ force: true });
     
     // Feed sofort neu rendern mit Filter
     if(typeof renderDiscover === 'function'){
@@ -17429,6 +17648,10 @@
 
   // Legal Pages Navigation (statische Seiten)
   function showLegalPage(page){
+    try{
+      var ae = document.activeElement;
+      if(ae && typeof ae.blur === 'function') ae.blur();
+    }catch(_e){}
     // Separate Impressen und AGBs für Kunden und Anbieter
     const isProvider = mode === 'provider';
     const pageMap = {
@@ -17446,7 +17669,48 @@
     const viewId = pageMap[page];
     if(viewId){
       showView(viewId);
-      window.scrollTo({top:0, behavior:'smooth'});
+      const viewEl = document.getElementById(viewId);
+      const appEl = document.getElementById('app');
+      const mainEl = document.querySelector('#app > main');
+      const lockLegalTop = function(){
+        try{
+          var active = document.activeElement;
+          if(active && typeof active.blur === 'function') active.blur();
+        }catch(_e){}
+        [appEl, mainEl, viewEl].forEach(function(el){
+          if(!el || !el.style) return;
+          el.style.setProperty('transform', 'none', 'important');
+          el.style.setProperty('top', '0px', 'important');
+          el.style.setProperty('margin-top', '0px', 'important');
+        });
+        try{ window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); }catch(_e){ try{ window.scrollTo(0, 0); }catch(_x){} }
+        if(document.body) document.body.scrollTop = 0;
+        if(document.documentElement) document.documentElement.scrollTop = 0;
+        if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+        if(appEl && typeof appEl.scrollTop === 'number') appEl.scrollTop = 0;
+        if(mainEl && typeof mainEl.scrollTop === 'number') mainEl.scrollTop = 0;
+        if(viewEl){
+          try{ viewEl.style.setProperty('scroll-behavior', 'auto'); }catch(_e){}
+          viewEl.scrollTop = 0;
+          if(typeof viewEl.scrollIntoView === 'function'){
+            try{ viewEl.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' }); }catch(_e){}
+          }
+          const innerScrollEls = viewEl.querySelectorAll('.provider-support-scroll, .pub-prov-scroll, .customer-main-wrap, .sheet-body');
+          innerScrollEls.forEach(function(el){
+            if(!el) return;
+            try{ el.style.setProperty('scroll-behavior', 'auto'); }catch(_e){}
+            if(typeof el.scrollTop === 'number') el.scrollTop = 0;
+          });
+        }
+      };
+      lockLegalTop();
+      requestAnimationFrame(function(){
+        lockLegalTop();
+        requestAnimationFrame(lockLegalTop);
+      });
+      setTimeout(lockLegalTop, 60);
+      setTimeout(lockLegalTop, 180);
+      setTimeout(lockLegalTop, 360);
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
       if(viewId === 'v-legal-faq' && isProvider){
         setTimeout(() => switchFaqTab('provider'), 100);
@@ -21392,20 +21656,6 @@
       selectionOverlay.appendChild(selectionOverlayInner);
       photoTile.appendChild(selectionOverlay);
       function closeHeaderSelection(){ hapticLight(); photoTile.classList.remove('is-selecting'); }
-      function updatePowerBarFromBox(){
-        var bar=box.querySelector('.inserat-power-bar');
-        if(!bar) return;
-        var allergenItem=bar.querySelector('.power-item[data-type="allergene"]');
-        if(allergenItem){
-          var labelEl=allergenItem.querySelector('.power-item-label');
-          if(labelEl) labelEl.textContent=(w.data.allergens&&w.data.allergens.length)?(w.data.allergens||[]).join(', '):'Allergene';
-          allergenItem.classList.toggle('active',!!(w.data.allergens&&w.data.allergens.length));
-        }
-        var extrasItem=bar.querySelector('.power-item[data-type="extras"]');
-        if(extrasItem) extrasItem.classList.toggle('active',!!(w.data.extras&&w.data.extras.length));
-        var zeitItem=bar.querySelector('.power-item[data-type="zeit"]');
-        if(zeitItem){ var hasTime=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd); zeitItem.classList.toggle('active',!!hasTime); }
-      }
       function renderSelectionContent(type){
         selectionOverlayInner.innerHTML='';
         selectionOverlayInner.classList.remove('selection-overlay-inner--time');
@@ -24979,35 +25229,96 @@
     // Hinweis: Service Worker ist deaktiviert, daher keine Offline-Funktionalität
   });
 
-  let customerHeaderScrollFxBound = false;
+  var customerHeaderScrollFxBound = false;
+  function getActiveCustomerScrollEl(){
+    const activeView = document.querySelector('.customer-view.active');
+    if(!activeView) return null;
+    return activeView;
+  }
   function syncCustomerHeaderScrollFx(){
     if(document.body && document.body.classList.contains('provider-mode')) return;
-    const stickyViews = ['v-discover', 'v-fav', 'v-cart', 'v-profile'];
+    const stickyViews = ['v-discover', 'v-fav', 'v-fav-providers', 'v-cart', 'v-profile'];
     const activeView = document.querySelector('.customer-view.active');
     const activeId = activeView ? activeView.id : '';
     const shouldApply = stickyViews.indexOf(activeId) >= 0;
-    const scrolled = (window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0) > 8;
+    const scrollEl = getActiveCustomerScrollEl();
+    const scrolled = ((scrollEl && scrollEl.scrollTop) || window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0) > 8;
     stickyViews.forEach(function(viewId){
       const viewEl = document.getElementById(viewId);
       if(!viewEl) return;
       const header = viewEl.querySelector(':scope > .cust-header-sticky');
       if(!header) return;
-      header.classList.toggle('is-scrolled', shouldApply && viewId === activeId && scrolled);
+      const activeScrolled = shouldApply && viewId === activeId && scrolled;
+      header.classList.toggle('is-scrolled', activeScrolled);
+      header.classList.toggle('scrolled', activeScrolled); // Legacy-Styles in Discover weiter unterstützen
     });
   }
   function ensureCustomerHeaderScrollFx(){
-    if(customerHeaderScrollFxBound) return;
+    if(window.__customerHeaderScrollFxBound || customerHeaderScrollFxBound) return;
+    window.__customerHeaderScrollFxBound = true;
     customerHeaderScrollFxBound = true;
     window.addEventListener('scroll', syncCustomerHeaderScrollFx, { passive: true });
     window.addEventListener('resize', syncCustomerHeaderScrollFx, { passive: true });
+    ['#v-discover', '#v-fav', '#v-fav-providers', '#v-cart', '#v-profile'].forEach(function(sel){
+      const el = document.querySelector(sel);
+      if(el) el.addEventListener('scroll', syncCustomerHeaderScrollFx, { passive: true });
+    });
     setTimeout(syncCustomerHeaderScrollFx, 0);
   }
+  function refreshActiveHeaderView(){
+    const activeView = document.querySelector('.view.active');
+    const viewId = activeView ? activeView.id : '';
+    if(viewId === 'v-discover' && typeof renderDiscover === 'function') renderDiscover();
+    else if(viewId === 'v-fav' && typeof renderFavorites === 'function') renderFavorites();
+    else if(viewId === 'v-fav-providers' && typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
+    else if(viewId === 'v-cart' && typeof renderCart === 'function') renderCart();
+    else if(viewId === 'v-profile' && typeof updateProfileView === 'function') updateProfileView();
+    else if(viewId === 'v-orders' && typeof renderOrders === 'function') renderOrders();
+    else if(viewId === 'v-provider-detail-public' && typeof renderPublicProviderProfile === 'function') renderPublicProviderProfile();
+  }
+  document.addEventListener('click', function(e){
+    const title = e.target && e.target.closest ? e.target.closest('.customer-view .cust-header-sticky h1, #pubProvName') : null;
+    if(!title) return;
+    const discoverHeader = title.closest ? title.closest('#v-discover') : null;
+    if(discoverHeader) return;
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(6);
+    refreshActiveHeaderView();
+  });
 
-  // Icons nach jedem View-Wechsel aktualisieren
-  if(typeof showView !== 'undefined'){
-    const originalShowView = showView;
-    showView = function(id){
+  // Icons/Scroll nach jedem View-Wechsel aktualisieren (auch wenn showView erst spaeter geladen wird)
+  function enhanceShowViewOnce(){
+    if(typeof window === 'undefined') return false;
+    if(window.__mittagioShowViewEnhanced) return true;
+    if(typeof window.showView !== 'function') return false;
+    var originalShowView = window.showView;
+    window.showView = function(id){
+      var nativeScrollTo = window.scrollTo;
+      try{
+        // Erzwinge "auto" innerhalb von showView (kein initiales Nach-unten-Rutschen bei Legal/Support)
+        window.scrollTo = function(arg1, arg2){
+          if(typeof arg1 === 'object' && arg1){
+            var opts = Object.assign({}, arg1, { behavior: 'auto' });
+            nativeScrollTo.call(window, opts);
+          } else {
+            nativeScrollTo.call(window, arg1, arg2);
+          }
+        };
+      }catch(_e){}
       originalShowView(id);
+      try{ window.scrollTo = nativeScrollTo; }catch(_e){}
+      try{
+        var activeView = document.getElementById(id);
+        window.scrollTo(0, 0);
+        if(document.documentElement) document.documentElement.scrollTop = 0;
+        if(document.body) document.body.scrollTop = 0;
+        if(activeView && typeof activeView.scrollTop === 'number') activeView.scrollTop = 0;
+        var mainEl = document.querySelector('main');
+        if(mainEl && typeof mainEl.scrollTop === 'number') mainEl.scrollTop = 0;
+        requestAnimationFrame(function(){
+          window.scrollTo(0, 0);
+          if(activeView && typeof activeView.scrollTop === 'number') activeView.scrollTop = 0;
+        });
+      }catch(_e){}
       try{
         var providerNavWrap = document.getElementById('providerNavWrap');
         if(providerNavWrap){
@@ -25024,11 +25335,24 @@
         }
       }catch(_e){}
       try{
+        if(id === 'v-fav-providers' && typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
         ensureCustomerHeaderScrollFx();
         syncCustomerHeaderScrollFx();
       }catch(_e){}
-      setTimeout(()=> initIcons(), 50);
+      setTimeout(function(){ initIcons(); }, 50);
     };
+    window.__mittagioShowViewEnhanced = true;
+    return true;
+  }
+  if(!enhanceShowViewOnce()){
+    var enhanceAttempts = 0;
+    var enhanceTimer = setInterval(function(){
+      enhanceAttempts++;
+      if(enhanceShowViewOnce() || enhanceAttempts > 80){
+        clearInterval(enhanceTimer);
+      }
+    }, 50);
+    window.addEventListener('load', function(){ enhanceShowViewOnce(); }, { once: true });
   }
   // LIVE SYNC & OFFLINE HANDLING
   function setupLiveSync(){
@@ -25083,9 +25407,21 @@
     if(Array.isArray(_pend) && _pend.length){ while(_pend.length){ var _c = _pend.shift(); startListingFlow(_c); } }
   }
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', function(){
+      try{
+        initApp();
+      }catch(err){
+        try{ console.error('initApp failed', err); }catch(_e){}
+        if(document.body) document.body.style.visibility = 'visible';
+      }
+    });
   } else {
-    initApp();
+    try{
+      initApp();
+    }catch(err){
+      try{ console.error('initApp failed', err); }catch(_e){}
+      if(document.body) document.body.style.visibility = 'visible';
+    }
   }
   /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
   setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 500);

@@ -123,6 +123,16 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Umsetzung ist nur im Customer-Scope gesetzt (`body:not(.provider-mode)`), damit der Anbieterbereich unverändert bleibt.
 - Header bleiben mit weißem Hintergrund und feiner Trennlinie app-like und stabil beim Scrollen.
 
+## Update: Header-Konsistenz (Kunde)
+
+- Customer-Header wurden für `Favoriten`, `Lieblingsanbieter`, `Mittagsbox` und `Meins` auf ein gemeinsames Muster vereinheitlicht.
+- Einheitliche Struktur: `customer-header-row` mit klarer Titelzone und optionalen Action-Buttons.
+- Einheitliche Action-Buttons: gleiche Größe (`44x44`), Radius (`12px`), Border/Farbe und gleiches Touch-Feedback.
+- Einheitliche Typografie und vertikale Abstände für ruhige, konsistente Wahrnehmung über alle Customer-Seiten.
+- Kein Back-Button in Customer-Headern; Navigation zurück läuft über den Hardware-Back-Button.
+- Header-Regel: Titel steht links, Aktionen stehen rechts.
+- Tap auf den Header-Titel löst ein Refresh der aktiven Seite aus (Discover/Favoriten/Lieblingsanbieter/Mittagsbox/Meins/Orders/Anbieter-Detail).
+
 ## Update: Scroll-Effekt fuer Customer-Header
 
 - In `Entdecken`, `Favoriten`, `Mittagsbox` und `Meins` reagiert der Header nun auf Scroll:
@@ -130,3 +140,12 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
   - leicht komprimierte Vertikal-Abstaende (Shrink)
   - sanfter Shadow fuer klare Trennung vom Content
 - Der Effekt wird nur auf der aktiven Customer-View gesetzt und beim View-Wechsel sauber synchronisiert.
+- Kompatibilitaet: Discover-Styles reagieren auf `is-scrolled` und `scrolled`, damit der Effekt auf allen geraeten konsistent greift.
+- Scroll-Basis: Der Header-Effekt wertet den aktiven Customer-Scroll-Container aus (`discover-main` bzw. `customer-main-wrap`) und nicht nur `window.scrollY`.
+- Header-Lock: Customer-Header werden in den vier Kunden-Views als oberer Hard-Lock gerendert (fixiert), Content startet darunter mit dynamischem Offset pro View.
+
+## Update: Anbietername und Vorbestellung
+
+- Der Betriebsname wird in Kundenkarten ohne nachgestelltes `>` gerendert.
+- Wenn ein Angebot aktiv ist, aber erst in der Zukunft liegt (z. B. morgen/übermorgen), zeigt der CTA `Jetzt vorbestellen!`.
+- Das gilt in Discover-Karten und Favoriten-Karten konsistent.

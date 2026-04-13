@@ -1,7 +1,7 @@
 # Gericht-Detail
 
 **Sheet** (Tap auf Discovery-Kachel) · Kundenseite  
-**Stand:** 07.04.2026
+**Stand:** 08.04.2026
 
 ---
 
@@ -20,6 +20,7 @@ Die Detailansicht folgt exakt der visuellen Sprache der Discovery-Kachel (Market
 - Tap auf die Adresse öffnet ein Distanz-Sheet mit `Zu Fuß` / `Auto` (ca.-Werte) und CTA `Route starten`.
 - Distanz-Sheet zeigt Status (`Ca.` / `Live`) plus `Zuletzt aktualisiert`.
 - Unter dem CTA steht kein zusätzlicher Ankunftshinweis mehr.
+- Abholzeit wird im Info-Bereich nur angezeigt (Anbieter-Zeitfenster), ohne Auswahl im Detail-Sheet.
 
 ## Regeln
 
@@ -35,3 +36,8 @@ Die Detailansicht folgt exakt der visuellen Sprache der Discovery-Kachel (Market
 - Distanz-Sheet nutzt die oberen Kacheln (`Zu Fuß` / `Auto`) direkt als Moduswahl (Default: `Zu Fuß`) und startet Google Maps mit passendem `travelmode`.
 - Kachel-Auswahl ist app-like umgesetzt (klarer Active-State, keine Browser-Button-Optik, direkte Auswahl ohne extra Schalter unterhalb).
 - Öffnen des Distanz-Sheets triggert leichtes Haptic-Feedback.
+- Der Anbietername wird ohne nachgestelltes `>` angezeigt.
+- Bei aktiven Angeboten in der Zukunft (morgen/übermorgen) lautet der Haupt-CTA `Jetzt vorbestellen!` statt `Angebot nicht mehr verfügbar`.
+- Zeit-Auswahl erfolgt ausschließlich in der Mittagsbox/Checkout; im Gericht-Detail ist sie bewusst read-only.
+- Zeitanzeige ist robust: bevorzugt `pickupWindow` des Angebots, sonst Anbieter-Zeitfenster, sonst Fallback `11:30 – 14:00`.
+- Position der Zeitanzeige: direkt unter der Adresszeile in der Meta-Info (`#sInfoRow`) mit Uhr-Icon.

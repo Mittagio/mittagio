@@ -1,7 +1,7 @@
 # Anbieter-Detailseite
 
 **View-ID:** `v-provider-detail-public` · Kundenseite  
-**Stand:** 07.04.2026
+**Stand:** 08.04.2026
 
 ---
 
@@ -22,6 +22,11 @@ Diese Seite ist der Ort für **weitere Gerichte des Anbieters** (nicht die Geric
 ## Inhalt
 
 - Kopfbereich im Header mit Anbietername + Adresse als Subline.
+- `v-provider-detail-public` läuft als Kundenseite (`customer-view`) mit sticky Header am oberen Rand.
+- Header-Actions sind visuell harmonisiert: Zurück, Teilen und Favorit haben gleiche Größe/Radius/Abstände.
+- Actions im Header sind fest oben rechts verankert (`Teilen`, `Favorit`) und bleiben beim Scrollen sichtbar.
+- Header-Icons nutzen wieder das gleiche App-Icon-Design (stroke-basierte Share/Heart-Icons), ohne Emoji-Fallback.
+- Icon-Fallback im Header: Wenn Lucide auf einem Gerät nicht rendert, bleiben Zurück/Teilen/Herz trotzdem sichtbar.
 - Share-Aktion oben rechts im Header (app-like, ohne separate Hero-Kachel) mit neutralem Einladungstext (z. B. "Hast du am Fr Mittag Zeit?").
 - Header mit leichtem **Shrink-Verhalten** beim Scrollen (kompakter, bleibt oben sticky).
 - Back-Button im Header ist robust und führt immer zurück zu Discover.

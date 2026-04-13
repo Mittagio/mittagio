@@ -939,6 +939,22 @@
       font-weight:600;
       color:#64748b;
     }
+    #sheet.sheet-detail-gericht .sheet-detail-meta-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:0 0 10px;
+      font-size:12px;
+      font-weight:700;
+      color:#64748b;
+      min-height:18px;
+    }
+    #sheet.sheet-detail-gericht .sheet-detail-meta-row > div{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:2px 0;
+    }
     #sheet.sheet-detail-gericht .sheet-detail-allergens--sync{
       display:flex;
       align-items:center;
@@ -5789,14 +5805,17 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
-    /* Customer Header (Discover/Favoriten/Mittagsbox/Meins) – einheitlich sticky wie moderne Apps */
+    /* Customer Header (Discover/Favoriten/Mittagsbox/Meins) – Hard-Lock oben */
     body:not(.provider-mode) #v-discover > .cust-header-sticky,
     body:not(.provider-mode) #v-fav > .cust-header-sticky,
+    body:not(.provider-mode) #v-fav-providers > .cust-header-sticky,
     body:not(.provider-mode) #v-cart > .cust-header-sticky,
     body:not(.provider-mode) #v-profile > .cust-header-sticky{
-      position: sticky;
-      top: 0;
-      z-index: 1500;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0;
+      right: 0;
+      z-index: 2600 !important;
       width: 100%;
       background: #fff;
       border-bottom: 1px solid #ebebeb;
@@ -5804,13 +5823,64 @@
       box-sizing: border-box;
       transition: background-color 180ms ease, backdrop-filter 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
     }
+    /* Robuste Customer-Scroll-Bühne: Header bleibt oben, Content scrollt intern */
+    body:not(.provider-mode) #v-discover.view.active,
+    body:not(.provider-mode) #v-fav.view.active,
+    body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-cart.view.active,
+    body:not(.provider-mode) #v-profile.view.active{
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 100vh;
+      min-height: 100dvh;
+      height: 100vh;
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    body:not(.provider-mode) #v-discover.view.active{ --customer-header-offset: 96px; }
+    body:not(.provider-mode) #v-fav.view.active,
+    body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-cart.view.active,
+    body:not(.provider-mode) #v-profile.view.active{ --customer-header-offset: 72px; }
+    /* WICHTIG: Keine transform-Animation auf aktiver Customer-View, sonst scrollt fixed Header mit */
+    body:not(.provider-mode) #v-discover.view.active,
+    body:not(.provider-mode) #v-fav.view.active,
+    body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-cart.view.active,
+    body:not(.provider-mode) #v-profile.view.active{
+      animation: none !important;
+      transform: none !important;
+    }
+    body:not(.provider-mode) #v-discover .discover-main{
+      flex: 1;
+      min-height: 0;
+      overflow: visible;
+      margin-top: var(--customer-header-offset, 96px);
+    }
+    body:not(.provider-mode) #v-fav .customer-main-wrap,
+    body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
+    body:not(.provider-mode) #v-cart .customer-main-wrap,
+    body:not(.provider-mode) #v-profile .customer-main-wrap{
+      flex: 1;
+      min-height: 0;
+      overflow: visible;
+      margin-top: var(--customer-header-offset, 72px);
+    }
+    /* Globales Safe-Area-Padding auf .view darf Sticky nicht verschieben */
+    body:not(.provider-mode) #app .customer-view{
+      padding-top: 0 !important;
+    }
     body:not(.provider-mode) #v-fav > .cust-header-sticky > div,
+    body:not(.provider-mode) #v-fav-providers > .cust-header-sticky > div,
     body:not(.provider-mode) #v-cart > .cust-header-sticky > div,
     body:not(.provider-mode) #v-profile > .cust-header-sticky > div{
       transition: padding 180ms ease, min-height 180ms ease;
     }
     body:not(.provider-mode) #v-discover > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled,
+    body:not(.provider-mode) #v-fav-providers > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled{
       background: rgba(255, 255, 255, 0.9);
@@ -5820,6 +5890,7 @@
       border-bottom-color: rgba(15, 23, 42, 0.08);
     }
     body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled > div,
+    body:not(.provider-mode) #v-fav-providers > .cust-header-sticky.is-scrolled > div,
     body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled > div,
     body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled > div{
       padding-top: 10px !important;
@@ -5902,7 +5973,8 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
     #v-discover .discover-header-top-row.discover-header-minimal .discover-logo{ color: #0f172a; }
-    #v-discover .discover-header-sticky.scrolled .discover-logo {
+    #v-discover .discover-header-sticky.scrolled .discover-logo,
+    #v-discover .discover-header-sticky.is-scrolled .discover-logo {
       transform: translate(-50%, -50%);
       opacity: 1;
     }
@@ -6000,7 +6072,8 @@
       width: 100%;
     }
     /* Scroll-Fade: Standort-Text ausblenden ab 50px Scroll – mehr Platz für Filter-Pills */
-    #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation{
+    #v-discover .discover-header-sticky.scrolled #discoverCurrentLocation,
+    #v-discover .discover-header-sticky.is-scrolled #discoverCurrentLocation{
       opacity: 1;
       pointer-events: auto;
       transition: opacity 0.25s ease;
@@ -10231,6 +10304,15 @@
       opacity: 1;
       animation: viewIn 0.2s ease-out forwards;
     }
+    #v-support.view.active,
+    #v-legal-impressum.view.active,
+    #v-legal-agb-kurz.view.active,
+    #v-legal-datenschutz.view.active,
+    #v-legal-faq.view.active{
+      animation: none !important;
+      transform: none !important;
+      padding-top: 0 !important;
+    }
     .view.active#v-pickup-code {
       display: flex !important;
     }
@@ -10258,6 +10340,7 @@
     #v-profile .customer-main-wrap,
     #v-cart .customer-main-wrap,
     #v-fav .customer-main-wrap,
+    #v-fav-providers .customer-main-wrap,
     #v-orders .customer-main-wrap {
       min-height: calc(100vh - 60px);
       padding: 0 16px;
@@ -10303,6 +10386,63 @@
       color: var(--color-title);
       margin: 0;
     }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-height:60px;
+      padding:10px 16px;
+      box-sizing:border-box;
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-leading{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      flex:1;
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-title{
+      margin:0;
+      font-size:20px;
+      font-weight:900;
+      color:#1a1a1a;
+      letter-spacing:-0.01em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-icon-btn{
+      width:44px;
+      min-width:44px;
+      height:44px;
+      min-height:44px;
+      border-radius:12px;
+      border:1px solid #e2e8f0;
+      background:#f8fafc;
+      color:#334155;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:none;
+      padding:0;
+      transition:transform .16s ease, background-color .16s ease, border-color .16s ease;
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-icon-btn:active{
+      transform:scale(0.97);
+    }
+    body:not(.provider-mode) .customer-view:not(#v-discover):not(#v-provider-detail-public) .customer-header-icon-btn--brand{
+      background:rgba(255,215,0,0.2);
+      border-color:rgba(250,204,21,0.5);
+      color:#1a1a1a;
+    }
     #v-checkout .panel h3 {
       font-family: var(--font-main) !important;
       font-size: var(--size-h1) !important;
@@ -10331,10 +10471,12 @@
     #v-provider-detail-public .cust-header-sticky {
       flex-shrink: 0;
       background: #fff;
-      position: sticky;
-      top: 0;
+      position: sticky !important;
+      top: 0 !important;
       z-index: 60;
       pointer-events: auto;
+      border-bottom: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 1px 0 rgba(15,23,42,0.04);
     }
     #v-provider-detail-public .pub-prov-header-row{
       display:flex;
@@ -10349,8 +10491,8 @@
       align-items:center;
       gap:8px;
       flex:0 0 auto;
+      margin-left:auto;
     }
-    #v-provider-detail-public .pub-prov-back-btn,
     #v-provider-detail-public .pub-prov-share-btn,
     #v-provider-detail-public .pub-prov-fav-btn {
       min-width: 48px;
@@ -10360,7 +10502,6 @@
       justify-content: center;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    #v-provider-detail-public .pub-prov-back-btn:active,
     #v-provider-detail-public .pub-prov-share-btn:active,
     #v-provider-detail-public .pub-prov-fav-btn:active {
       transform: scale(0.96);
@@ -10424,11 +10565,18 @@
       cursor:pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    #v-provider-detail-public .pub-prov-back-btn,
     #v-provider-detail-public .pub-prov-share-btn,
     #v-provider-detail-public .pub-prov-fav-btn{
       pointer-events:auto;
       z-index:2;
+    }
+    #v-provider-detail-public .pub-prov-icon-fallback{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      font-weight:800;
+      line-height:1;
     }
     #v-provider-detail-public .pub-prov-offer-card:active {
       transform: scale(0.98);
@@ -10564,7 +10712,6 @@
     }
     @media (max-width: 430px) and (min-height: 700px) {
       #v-provider-detail-public .pub-prov-header-row { padding: 16px 16px !important; }
-      #v-provider-detail-public .pub-prov-back-btn,
       #v-provider-detail-public .pub-prov-fav-btn { min-width: 52px; min-height: 52px; }
       #v-provider-detail-public .pub-prov-share-btn{ min-width: 52px; min-height: 52px; }
       #v-provider-detail-public #pubProvName { font-size: var(--size-h2) !important; }
@@ -10581,7 +10728,6 @@
       #v-provider-detail-public .pub-prov-header-actions{
         gap:6px;
       }
-      #v-provider-detail-public .pub-prov-back-btn,
       #v-provider-detail-public .pub-prov-share-btn,
       #v-provider-detail-public .pub-prov-fav-btn{
         min-width:44px;
@@ -12044,6 +12190,43 @@ html, body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
+}
+body:not(.provider-mode) #v-support,
+body:not(.provider-mode) #v-legal-impressum,
+body:not(.provider-mode) #v-legal-agb-kurz,
+body:not(.provider-mode) #v-legal-datenschutz,
+body:not(.provider-mode) #v-legal-faq{
+  padding: 0 max(20px, env(safe-area-inset-right, 0px)) calc(var(--content-padding-bottom-compact) + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)) !important;
+  margin-top: 0 !important;
+}
+body:not(.provider-mode) #app,
+body:not(.provider-mode) #app > main{
+  transform: none !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+body:not(.provider-mode) #v-support.view.active,
+body:not(.provider-mode) #v-legal-impressum.view.active,
+body:not(.provider-mode) #v-legal-agb-kurz.view.active,
+body:not(.provider-mode) #v-legal-datenschutz.view.active,
+body:not(.provider-mode) #v-legal-faq.view.active{
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 25 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  transform: none !important;
+}
+body:not(.provider-mode) #v-support > .panel,
+body:not(.provider-mode) #v-legal-impressum > .panel,
+body:not(.provider-mode) #v-legal-agb-kurz > .panel,
+body:not(.provider-mode) #v-legal-datenschutz > .panel,
+body:not(.provider-mode) #v-legal-faq > .panel{
+  margin-top: 0 !important;
 }
 
 #wizard[data-flow="listing"] {

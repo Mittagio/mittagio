@@ -29,7 +29,7 @@
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js" crossorigin="anonymous" async></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <link rel="stylesheet" href="style.css?v=20260401e">
+  <link rel="stylesheet" href="style.css?v=20260408y">
 </head>
 <body>
 <!-- Flow-Stub: startListingFlow + forceOpenMastercard sofort verfügbar [cite: Flow-Fix 2026-03-02, Renner-Fix 2026-03-05, Weisser-Screen-Fix 2026-03-10] -->
@@ -431,9 +431,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
     <section class="view customer-view" id="v-fav">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <h1>Deine Favoriten ⚡</h1>
-          <button type="button" id="btnFavTeamVote" class="btn-cust-primary is-hidden" aria-hidden="true" aria-label="Favoriten teilen" title="Favoriten teilen" style="width:40px; min-width:40px; height:40px; min-height:40px; padding:0; border-radius:12px; background:#fff; color:#475569; border:1px solid #e2e8f0; box-shadow:none; display:flex; align-items:center; justify-content:center;">
+        <div class="customer-header-row">
+          <h1 class="customer-header-title">Deine Favoriten</h1>
+          <button type="button" id="btnFavTeamVote" class="customer-header-icon-btn is-hidden" aria-hidden="true" aria-label="Favoriten teilen" title="Favoriten teilen">
             <i data-lucide="share-2" style="width:16px;height:16px;"></i>
           </button>
         </div>
@@ -517,6 +517,30 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </div>
 
+    <!-- CUSTOMER: Lieblingsanbieter -->
+    <section class="view customer-view" id="v-fav-providers">
+      <header class="cust-header-sticky">
+        <div class="customer-header-row">
+          <h1 class="customer-header-title">Meine Lieblingsanbieter</h1>
+          <div class="customer-header-actions"></div>
+        </div>
+      </header>
+      <div class="customer-main-wrap" style="padding:16px; display:flex; flex-direction:column; gap:12px;">
+        <div id="favProvidersPageEmpty" class="fav-empty-social is-hidden" aria-hidden="true" style="margin-top:6px;">
+          <div class="fav-empty-social-icon-wrap">
+            <span class="fav-empty-social-icon" aria-hidden="true">🏢</span>
+          </div>
+          <h2 class="ds-empty-title" style="max-width:320px;">Noch keine Lieblingsanbieter</h2>
+          <p class="ds-body" style="line-height:1.6; margin-bottom:16px; max-width:340px;">Markiere Anbieter mit ❤️ auf den Karten. Hier findest du sie gesammelt wieder.</p>
+          <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:300px; margin:8px auto 0; background:var(--brand); color:#1a1a1a; min-height:52px;">
+            <i data-lucide="compass" style="width:20px;height:20px;"></i>
+            <span>Anbieter entdecken</span>
+          </button>
+        </div>
+        <div id="favProvidersPageList" style="display:flex; flex-direction:column; gap:12px;"></div>
+      </div>
+    </section>
+
     <!-- CUSTOMER: Orders (Applike: Sticky Header + Karten wie v-fav/v-cart) -->
     <section class="view customer-view" id="v-orders">
       <header class="cust-header-sticky">
@@ -549,9 +573,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- CUSTOMER: Cart -->
     <section class="view customer-view" id="v-cart">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#1a1a1a;flex-shrink:0;"></i>
-          <h1>Mittagsbox heute</h1>
+        <div class="customer-header-row">
+          <div class="customer-header-leading">
+          <h1 class="customer-header-title">Deine Mittagsbox</h1>
+          </div>
         </div>
       </header>
 
@@ -733,26 +758,33 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- CUSTOMER: Profile "Meins" – App-like: Abholnummer groß oben, dann Historie, Rest im Zahnrad-Menü -->
     <section class="view customer-view" id="v-profile">
       <header class="cust-header-sticky">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <h1>Meins</h1>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <button type="button" id="btnProfileProviderPortal" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();" style="width:40px; height:40px; border-radius:12px; background:rgba(255,215,0,0.25); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <div class="customer-header-row">
+          <h1 class="customer-header-title">Meins</h1>
+          <div class="customer-header-actions">
+            <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--brand" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
             </button>
-            <button type="button" id="btnProfileSettings" aria-label="Einstellungen" onclick="openProfileSettingsSheet()" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <button type="button" id="btnProfileSettings" class="customer-header-icon-btn" aria-label="Einstellungen" onclick="openProfileSettingsSheet()">
               <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
-            <button type="button" onclick="showView('v-discover')" style="width:40px; height:40px; border-radius:12px; background:#f1f3f5; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <button type="button" class="customer-header-icon-btn" onclick="showView('v-discover')">
               <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
           </div>
         </div>
       </header>
 
-      <div class="customer-main-wrap" style="padding-top:40px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:20px;">
+      <div class="customer-main-wrap" style="padding-top:14px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:16px;">
         <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
-        <div class="cust-card" id="profileHeaderCard" style="padding:16px 20px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; background:none; border:none; box-shadow:none;">
+        <div class="cust-card" id="profileHeaderCard" style="padding:16px 18px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; border:1px solid #eef2f7; box-shadow:0 8px 20px rgba(15,23,42,0.06); border-radius:18px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);">
           <!-- Wird dynamisch befüllt -->
+        </div>
+
+        <!-- Quick Actions -->
+        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;">
+          <button type="button" class="cust-chip" onclick="showView('v-fav-providers')" style="min-height:54px; border-radius:14px; font-weight:700;">🏢 Meine Lieblingsanbieter</button>
+          <button type="button" class="cust-chip" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:54px; border-radius:14px; font-weight:700;">🥗 Mein Food-Profil</button>
+          <button type="button" class="cust-chip" onclick="showLegalPage('support')" style="min-height:54px; border-radius:14px; font-weight:700;">💬 Support</button>
         </div>
 
         <!-- Abholnummer GROSS oben (app-like) -->
@@ -765,11 +797,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div style="font-size:40px; margin-bottom:12px;">🧾</div>
           <div style="font-size:15px; font-weight:700; color:#64748b;">Heute keine Abholnummer</div>
           <div style="font-size:13px; color:#94a3b8; margin-top:4px;">Bestellungen erscheinen hier</div>
+          <button type="button" class="btn-cust-primary" onclick="showView('v-discover')" style="margin-top:14px; min-height:44px; border-radius:12px; font-size:14px; font-weight:800;">Jetzt vorbestellen</button>
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
-        <div class="cust-card" style="padding:20px; margin-bottom:0;">
-          <h3 style="margin:0 0 16px; font-size:16px; font-weight:900; color:#1a1a1a;">Bestellungen</h3>
+        <div class="cust-card" style="padding:18px; margin-bottom:0; border:1px solid #eef2f7; border-radius:18px; box-shadow:0 10px 24px rgba(15,23,42,0.05);">
+          <h3 style="margin:0 0 12px; font-size:16px; font-weight:900; color:#1a1a1a;">Bestellungen</h3>
           <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
             <!-- Dynamisch befüllt -->
           </div>
@@ -836,7 +869,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <i data-lucide="utensils" style="width:20px;height:20px;color:#64748b;"></i><span>Mein Food-Profil</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetDiet" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
           </button>
           <button onclick="toggleProfileSettingsSection('profileSettingsSheetFavs')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i><span>Meine Lieblinge</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFavs" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+            <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i><span>Meine Lieblingsanbieter</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFavs" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
           </button>
           <button onclick="toggleProfileSettingsSection('profileSettingsSheetFaq')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i><span>FAQ & Support</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFaq" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
@@ -864,21 +897,18 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </div>
 
-    <section class="view" id="v-provider-detail-public">
+    <section class="view customer-view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
         <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:10px; padding:14px 16px;">
-          <button type="button" class="pub-prov-back-btn" onclick="goBackFromPublicProvider()" aria-label="Zurück" style="width:48px; height:48px; border-radius:14px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <i data-lucide="chevron-left" style="width:24px;height:24px;color:#1a1a1a;"></i>
-          </button>
           <div class="pub-prov-header-id" style="flex:1; min-width:0;">
             <h1 id="pubProvName" style="font-size:20px; font-weight:950; color:#1a1a1a; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-0.02em;">Anbieter</h1>
             <p id="pubProvHeaderAddress" class="pub-prov-header-subline">Adresse nicht verfügbar</p>
           </div>
           <div class="pub-prov-header-actions" style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
-            <button type="button" class="pub-prov-share-btn" id="pubProvShare" aria-label="Teilen" style="width:44px; height:44px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <button type="button" class="pub-prov-share-btn" id="pubProvShare" aria-label="Teilen" style="width:44px; height:44px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
               <i data-lucide="share-2" style="width:20px;height:20px;color:#334155;"></i>
             </button>
-            <button type="button" class="pub-prov-fav-btn" id="btnToggleFavProvider" aria-label="Favorit" style="width:44px; height:44px; border-radius:12px; background:#fff; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <button type="button" class="pub-prov-fav-btn" id="btnToggleFavProvider" aria-label="Favorit" style="width:44px; height:44px; border-radius:12px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
               <i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>
             </button>
           </div>
@@ -2960,6 +2990,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <i data-lucide="map-pin" style="width:18px;height:18px;color:#94a3b8; flex-shrink:0;"></i>
           <span id="sProviderAddress" class="sheet-detail-provider-address-text">Adresse</span>
         </div>
+        <div id="sInfoRow" class="sheet-detail-meta-row"></div>
 
         <div id="sAllergensWrap" class="sheet-detail-allergens sheet-detail-allergens--sync" onclick="if(typeof showAllergensOverlay==='function') showAllergensOverlay();">
           <div class="sheet-detail-allergens-head">
@@ -3561,9 +3592,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
 <script src="js/utils.js"></script>
 <script src="js/ui-views.js"></script>
-<script src="script.js?v=20260401f"></script>
-<script src="js/app-logic.js"></script>
-<script src="js/ui-navigation.js"></script>
+<script src="script.js?v=20260408y"></script>
+<script src="js/app-logic.js?v=20260408y"></script>
+<script src="js/ui-navigation.js?v=20260408y"></script>
   <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js" async></script>
   <!-- Mittagio: Pure Food Magazin – Ideenküche [cite: 2026-02-18, 2026-02-25] -->
   <div id="cookbookMittagioLayer" class="magazine-overlay cookbook-mittagio-layer" style="display:none; position:fixed; inset:0; z-index:99998; background:#fff; overflow-y:auto; -webkit-overflow-scrolling:touch;">
