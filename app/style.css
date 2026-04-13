@@ -5789,6 +5789,48 @@
     body.provider-mode [id^="v-provider-"] { padding-top: 0 !important; margin-top: 0 !important; }
     body.provider-mode [id^="v-provider-"].view.active { padding-top: 0 !important; }
     
+    /* Customer Header (Discover/Favoriten/Mittagsbox/Meins) – einheitlich sticky wie moderne Apps */
+    body:not(.provider-mode) #v-discover > .cust-header-sticky,
+    body:not(.provider-mode) #v-fav > .cust-header-sticky,
+    body:not(.provider-mode) #v-cart > .cust-header-sticky,
+    body:not(.provider-mode) #v-profile > .cust-header-sticky{
+      position: sticky;
+      top: 0;
+      z-index: 1500;
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid #ebebeb;
+      padding-top: env(safe-area-inset-top, 0px);
+      box-sizing: border-box;
+      transition: background-color 180ms ease, backdrop-filter 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+    body:not(.provider-mode) #v-fav > .cust-header-sticky > div,
+    body:not(.provider-mode) #v-cart > .cust-header-sticky > div,
+    body:not(.provider-mode) #v-profile > .cust-header-sticky > div{
+      transition: padding 180ms ease, min-height 180ms ease;
+    }
+    body:not(.provider-mode) #v-discover > .cust-header-sticky.is-scrolled,
+    body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled,
+    body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled,
+    body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled{
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: saturate(150%) blur(10px);
+      -webkit-backdrop-filter: saturate(150%) blur(10px);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+      border-bottom-color: rgba(15, 23, 42, 0.08);
+    }
+    body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled > div,
+    body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled > div,
+    body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled > div{
+      padding-top: 10px !important;
+      padding-bottom: 10px !important;
+    }
+    body:not(.provider-mode) #v-discover > .cust-header-sticky.is-scrolled .discover-header-top-row.discover-header-minimal{
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      min-height: 40px !important;
+    }
+
     /* Discover Header – Pure-Clean Airbnb: Frei über volle Breite, nur feine Trennlinie [cite: 2026-02-20 Schritt 2.2] */
     .discover-header-sticky{
       position: sticky !important;

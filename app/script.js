@@ -24800,6 +24800,8 @@
     }
     if(typeof openDishFlow === 'function' && typeof window !== 'undefined'){ window.openDishFlow = openDishFlow; }
     renderChips();
+    ensureCustomerHeaderScrollFx();
+    setTimeout(syncCustomerHeaderScrollFx, 0);
 
   // init nav bindings – window.provider.loggedIn als Fallback (V47/V48 Bypass) [cite: 2026-03-17]
   var _effectiveLoggedIn = (provider && provider.loggedIn) || (window.provider && window.provider.loggedIn) || !!(document.body && document.body.classList.contains('provider-mode'));
@@ -24977,6 +24979,30 @@
     // Hinweis: Service Worker ist deaktiviert, daher keine Offline-Funktionalität
   });
 
+  let customerHeaderScrollFxBound = false;
+  function syncCustomerHeaderScrollFx(){
+    if(document.body && document.body.classList.contains('provider-mode')) return;
+    const stickyViews = ['v-discover', 'v-fav', 'v-cart', 'v-profile'];
+    const activeView = document.querySelector('.customer-view.active');
+    const activeId = activeView ? activeView.id : '';
+    const shouldApply = stickyViews.indexOf(activeId) >= 0;
+    const scrolled = (window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0) > 8;
+    stickyViews.forEach(function(viewId){
+      const viewEl = document.getElementById(viewId);
+      if(!viewEl) return;
+      const header = viewEl.querySelector(':scope > .cust-header-sticky');
+      if(!header) return;
+      header.classList.toggle('is-scrolled', shouldApply && viewId === activeId && scrolled);
+    });
+  }
+  function ensureCustomerHeaderScrollFx(){
+    if(customerHeaderScrollFxBound) return;
+    customerHeaderScrollFxBound = true;
+    window.addEventListener('scroll', syncCustomerHeaderScrollFx, { passive: true });
+    window.addEventListener('resize', syncCustomerHeaderScrollFx, { passive: true });
+    setTimeout(syncCustomerHeaderScrollFx, 0);
+  }
+
   // Icons nach jedem View-Wechsel aktualisieren
   if(typeof showView !== 'undefined'){
     const originalShowView = showView;
@@ -24996,6 +25022,10 @@
             history.pushState({ __inAppProviderGuard: id }, '', location.pathname + (location.search || ''));
           }
         }
+      }catch(_e){}
+      try{
+        ensureCustomerHeaderScrollFx();
+        syncCustomerHeaderScrollFx();
       }catch(_e){}
       setTimeout(()=> initIcons(), 50);
     };

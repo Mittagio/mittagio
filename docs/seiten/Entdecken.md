@@ -116,3 +116,17 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Bei Favorisieren gibt es Haptik + Herz-Pop-Animation.
 - Zusätzlich fliegt ein visuelles Element Richtung Favoriten-Tab (Bottom-Nav), damit der Transfer in Favoriten klar wahrnehmbar ist.
 - Der Herz-Button zeigt im aktiven Zustand eine rote Optik (Icon + rote Tönung der Button-Fläche).
+
+## Update: Sticky Header in Customer-Views
+
+- Die Header in `Entdecken`, `Favoriten`, `Mittagsbox` und `Meins` sind einheitlich sticky (oben angeheftet).
+- Umsetzung ist nur im Customer-Scope gesetzt (`body:not(.provider-mode)`), damit der Anbieterbereich unverändert bleibt.
+- Header bleiben mit weißem Hintergrund und feiner Trennlinie app-like und stabil beim Scrollen.
+
+## Update: Scroll-Effekt fuer Customer-Header
+
+- In `Entdecken`, `Favoriten`, `Mittagsbox` und `Meins` reagiert der Header nun auf Scroll:
+  - dezenter Blur/Glass-Effekt
+  - leicht komprimierte Vertikal-Abstaende (Shrink)
+  - sanfter Shadow fuer klare Trennung vom Content
+- Der Effekt wird nur auf der aktiven Customer-View gesetzt und beim View-Wechsel sauber synchronisiert.
