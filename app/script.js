@@ -643,6 +643,70 @@
   function setVisible(el, mode){ show(el, mode); }
   if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; window.setVisible = setVisible; }
 
+  /**
+   * Customer-Nav-Höhe dynamisch messen (alle Handys):
+   * Discover-Map nutzt diese Variable als Bottom-Offset statt S25-fixem Wert.
+   */
+  function syncCustomerNavHeightVar(){
+    if(typeof document === 'undefined') return;
+    var root = document.documentElement;
+    if(!root) return;
+    var fallbackPx = 64;
+    var vvHeight = 0;
+    try{
+      vvHeight = window.visualViewport && Number(window.visualViewport.height)
+        ? Math.round(Number(window.visualViewport.height))
+        : Math.round(Number(window.innerHeight) || 0);
+    }catch(_e){}
+    if(!Number.isFinite(vvHeight) || vvHeight <= 0) vvHeight = 800;
+    var nav = document.getElementById('customerNav');
+    var navHeight = 0;
+    if(nav){
+      try{
+        var cs = window.getComputedStyle(nav);
+        var hidden = cs.display === 'none' || cs.visibility === 'hidden' || nav.classList.contains('is-hidden');
+        if(!hidden){
+          var rect = nav.getBoundingClientRect();
+          navHeight = Math.round(rect && rect.height ? rect.height : 0);
+        }
+      }catch(_e){}
+    }
+    if(!Number.isFinite(navHeight) || navHeight <= 0) navHeight = fallbackPx;
+    root.style.setProperty('--viewport-height-px', vvHeight + 'px');
+    root.style.setProperty('--customer-nav-total-height', navHeight + 'px');
+  }
+  function syncDiscoverMapTopInsetVar(){
+    if(typeof document === 'undefined') return;
+    var root = document.documentElement;
+    if(!root) return;
+    var inset = 0;
+    var view = document.getElementById('v-discover');
+    var header = view ? view.querySelector('.discover-header-sticky') : null;
+    var main = view ? view.querySelector('.discover-main') : null;
+    if(header && main){
+      try{
+        var headerRect = header.getBoundingClientRect();
+        var mainRect = main.getBoundingClientRect();
+        inset = Math.max(0, Math.round((headerRect && headerRect.bottom ? headerRect.bottom : 0) - (mainRect && mainRect.top ? mainRect.top : 0)));
+      }catch(_e){}
+    }
+    root.style.setProperty('--discover-map-top-inset', inset + 'px');
+  }
+  if(typeof window !== 'undefined'){
+    window.syncCustomerNavHeightVar = syncCustomerNavHeightVar;
+    window.syncDiscoverMapTopInsetVar = syncDiscoverMapTopInsetVar;
+    window.addEventListener('resize', syncCustomerNavHeightVar, { passive: true });
+    window.addEventListener('resize', syncDiscoverMapTopInsetVar, { passive: true });
+    window.addEventListener('orientationchange', syncCustomerNavHeightVar, { passive: true });
+    window.addEventListener('orientationchange', syncDiscoverMapTopInsetVar, { passive: true });
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', syncCustomerNavHeightVar, { passive: true });
+      window.visualViewport.addEventListener('resize', syncDiscoverMapTopInsetVar, { passive: true });
+    }
+    setTimeout(syncCustomerNavHeightVar, 0);
+    setTimeout(syncDiscoverMapTopInsetVar, 0);
+  }
+
   /* openWizard-Stub entfernt – echte Funktion übernimmt (weiter unten, ~L16294) */
 
   /** Provider-ID (stabil pro E-Mail) – früh definiert, auf window exponiert, verhindert ReferenceErrors [cite: Bereinigung 2026-03-04] */
@@ -2791,8 +2855,7 @@
         offersEl.appendChild(createSlimCardSkeleton());
       }
       
-      // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
-      setTimeout(() => {
+      // Direkt rendern: kein künstlicher Delay beim Öffnen der Kartenansicht.
       offersEl.innerHTML = '';
       if(emptyEl) hide(emptyEl);
 
@@ -2837,7 +2900,6 @@
       if(typeof lucide !== 'undefined'){
         setTimeout(function(){ lucide.createIcons(); }, 50);
       }
-      }, 300); // 300ms Delay für realistische Ladezeit
     }
     
     // Demo: Match-Screen Test (kann später durch Swipe-System ersetzt werden)
@@ -2898,6 +2960,7 @@
     
     const listEl = document.getElementById('discoverOffers');
     const mapWrap = document.getElementById('discoverMap');
+    const discoverViewEl = document.getElementById('v-discover');
     const swipeEl = document.getElementById('discoverSwipe');
     const emptyEl = document.getElementById('discoverEmpty');
     const switchBtn = document.getElementById('discoverViewSwitchBtn');
@@ -2905,6 +2968,9 @@
     const switchLabel = document.getElementById('discoverViewSwitchLabel');
     
     if(discoverViewMode === 'map'){
+      if(typeof syncCustomerNavHeightVar === 'function') syncCustomerNavHeightVar();
+      if(typeof syncDiscoverMapTopInsetVar === 'function') syncDiscoverMapTopInsetVar();
+      if(discoverViewEl) discoverViewEl.classList.add('is-map-mode');
       if(listEl) hide(listEl);
       if(emptyEl) hide(emptyEl);
       if(mapWrap) { show(mapWrap); renderDiscoverMap(); }
@@ -2917,6 +2983,9 @@
         else hide(routeEl);
       }
     } else {
+      if(discoverViewEl) discoverViewEl.classList.remove('is-map-mode');
+      if(discoverViewEl) discoverViewEl.classList.remove('map-drawer-open');
+      if(typeof closeDiscoverPinDrawer === 'function') closeDiscoverPinDrawer();
       if(listEl) show(listEl, 'flex');
       if(mapWrap) hide(mapWrap);
       if(swipeEl) hide(swipeEl);
@@ -3011,7 +3080,10 @@
       var color = hasAbholnummer ? '#FFD700' : '#22c55e';
       var icon = L.divIcon({ className: 'discover-leaflet-pin', html: '<div style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>', iconSize: [28, 28], iconAnchor: [14, 14] });
       var marker = L.marker(latlng, { icon: icon }).addTo(discoverLeafletMap);
-      marker.on('click', function(){ openDiscoverPinDrawer(o); });
+      marker.on('click', function(){
+        if(typeof closeDiscoverPinDrawer === 'function') closeDiscoverPinDrawer();
+        openOffer(o.id);
+      });
       discoverLeafletMarkers.push(marker);
     });
     discoverLeafletMap.fitBounds(bounds.pad(0.15), { maxZoom: 16 });
@@ -3021,43 +3093,17 @@
   
   window.openDiscoverPinDrawer = function(offer){
     var data = normalizeOffer(offer);
-    var drawer = document.getElementById('discoverPinDrawer');
-    var imgEl = document.getElementById('discoverPinDrawerImage');
-    var titleEl = document.getElementById('discoverPinDrawerTitle');
-    var priceEl = document.getElementById('discoverPinDrawerPrice');
-    var pillarsEl = document.getElementById('discoverPinDrawerPillars');
-    var minutesEl = document.getElementById('discoverPinDrawerMinutes');
-    var routeEl = document.getElementById('discoverPinDrawerRoute');
-    var btnEl = document.getElementById('discoverPinDrawerBtn');
-    var backdrop = document.getElementById('discoverPinDrawerBackdrop');
-    if(!drawer || !titleEl || !pillarsEl || !btnEl) return;
-    if(imgEl) imgEl.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
-    titleEl.textContent = data.dish || 'Gericht';
-    if(priceEl) priceEl.textContent = euro(data.price);
-    var p = offers.find(function(x){ return x.providerId === data.providerId; });
-    var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
-    var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    pillarsEl.innerHTML = '<div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active pickup' : '') + '" title="Abholnummer aktiv"><i data-lucide="receipt" style="width:16px;height:16px;"></i></div><div class="pillar-mini ' + (mehrweg ? 'active petrol' : '') + '" title="Mehrweg verfügbar">🔄</div>';
-    var walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
-    var carMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 1.5) : null;
-    if(minutesEl) minutesEl.textContent = (walkMin != null ? '🚶 ' + (walkMin < 1 ? '< 1' : walkMin) + ' Min. zu Fuß' : '') + (walkMin != null && carMin != null ? ' · ' : '') + (carMin != null ? '🚗 ' + (carMin < 1 ? '< 1' : carMin) + ' Min. mit dem Auto' : '') || '';
-    var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
-    if(routeEl){
-      routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
-      if(discoverViewMode === 'map' && addr) setVisible(routeEl, 'inline-flex');
-      else hide(routeEl);
-    }
-    btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
-    if(backdrop) backdrop.classList.add('open');
-    drawer.classList.add('open');
-    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 40);
+    if(!data || !data.id) return;
+    openOffer(data.id);
   };
   
   window.closeDiscoverPinDrawer = function(){
     var drawer = document.getElementById('discoverPinDrawer');
     var b = document.getElementById('discoverPinDrawerBackdrop');
+    var discoverViewEl = document.getElementById('v-discover');
     if(drawer) drawer.classList.remove('open');
     if(b) b.classList.remove('open');
+    if(discoverViewEl) discoverViewEl.classList.remove('map-drawer-open');
   };
   
   var discoverViewSwitchBtn = document.getElementById('discoverViewSwitchBtn');
@@ -6334,6 +6380,7 @@
       sheet.classList.remove('active');
       sheet.setAttribute('aria-hidden', 'true');
     }
+    if(document.body) document.body.classList.remove('detail-distance-open');
   }
   function openDetailDistanceSheet(ctx){
     const bd = document.getElementById('detailDistanceBd');
@@ -6409,6 +6456,7 @@
     if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([8]);
     else if(typeof haptic === 'function') haptic(8);
     else if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
+    if(document.body) document.body.classList.add('detail-distance-open');
     bd.classList.add('active');
     sheet.classList.add('active');
     sheet.setAttribute('aria-hidden', 'false');
@@ -6951,6 +6999,7 @@
     }
 
     updateSheetFavs();
+    if(document.body) document.body.classList.add('discover-detail-open');
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -6979,6 +7028,8 @@
   }
 
   function closeSheet(){
+    if(document.body) document.body.classList.remove('discover-detail-open');
+    if(document.body) document.body.classList.remove('detail-distance-open');
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
     
@@ -10438,11 +10489,8 @@
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     pwaDeferredPrompt = e;
-    // Einmal pro Session unser Sheet zeigen, damit Nutzer „Zum Startbildschirm hinzufügen“ tippen kann (dann wird prompt() aufgerufen).
-    if(!pwaBannerShownThisSession && typeof openProfilePwaTipSheet === 'function'){
-      pwaBannerShownThisSession = true;
-      setTimeout(function(){ openProfilePwaTipSheet(); }, 1500);
-    }
+    // Nicht mehr automatisch im Frontend einblenden; nur noch manuell über Profil-Hinweis öffnen.
+    pwaBannerShownThisSession = true;
   });
   var pwaSheetInstallBtn = document.getElementById('pwaSheetInstallBtn');
   if(pwaSheetInstallBtn){
@@ -13762,8 +13810,143 @@
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
+  function syncWeekFooterVisibility(){
+    var weekFooter = document.getElementById('weekViewFooter');
+    if(!weekFooter) return;
+    var bodyEl = document.body;
+    var providerWeekView = document.getElementById('v-provider-week');
+    var activeCustomerView = document.querySelector('.customer-view.active');
+    var providerWeekVisible = false;
+    if(providerWeekView){
+      providerWeekVisible = providerWeekView.classList.contains('active') && !providerWeekView.classList.contains('is-hidden');
+      try{
+        var cs = window.getComputedStyle(providerWeekView);
+        if(cs && (cs.display === 'none' || cs.visibility === 'hidden')) providerWeekVisible = false;
+      }catch(_e){}
+    }
+    var isProviderWeekActive = !!(
+      bodyEl &&
+      bodyEl.classList.contains('provider-mode') &&
+      !activeCustomerView &&
+      providerWeekVisible &&
+      !bodyEl.classList.contains('week-preview-mode') &&
+      !bodyEl.classList.contains('wizard-inserat-open')
+    );
+    if(bodyEl){
+      if(activeCustomerView){
+        bodyEl.classList.remove('provider-mode');
+        bodyEl.classList.remove('provider-week-active');
+        bodyEl.classList.remove('week-footer-visible');
+      } else {
+        bodyEl.classList.toggle('provider-week-active', providerWeekVisible);
+        bodyEl.classList.toggle('week-footer-visible', isProviderWeekActive);
+      }
+      bodyEl.classList.toggle('week-footer-force-hidden', !isProviderWeekActive);
+    }
+    if(activeCustomerView){
+      var providerNavWrap = document.getElementById('providerNavWrap');
+      var providerNav = document.getElementById('providerNav');
+      var customerNav = document.getElementById('customerNav');
+      if(providerNavWrap){
+        providerNavWrap.style.setProperty('display', 'none', 'important');
+        providerNavWrap.style.setProperty('visibility', 'hidden', 'important');
+        providerNavWrap.style.setProperty('pointer-events', 'none', 'important');
+      }
+      if(providerNav){
+        providerNav.style.setProperty('display', 'none', 'important');
+        providerNav.style.setProperty('visibility', 'hidden', 'important');
+      }
+      if(customerNav){
+        customerNav.style.setProperty('display', 'flex', 'important');
+        customerNav.style.setProperty('visibility', 'visible', 'important');
+      }
+    }
+    weekFooter.classList.toggle('week-footer-hidden', !isProviderWeekActive);
+    if(isProviderWeekActive){
+      weekFooter.style.setProperty('display', 'flex', 'important');
+      weekFooter.style.setProperty('visibility', 'visible', 'important');
+      weekFooter.style.setProperty('pointer-events', 'auto', 'important');
+    } else {
+      weekFooter.style.setProperty('display', 'none', 'important');
+      weekFooter.style.setProperty('visibility', 'hidden', 'important');
+      weekFooter.style.setProperty('pointer-events', 'none', 'important');
+    }
+  }
+  function applyCustomerBottomGapFix(){
+    if(typeof document === 'undefined') return;
+    var bodyEl = document.body;
+    if(!bodyEl) return;
+    var targetIds = ['v-fav', 'v-fav-providers', 'v-cart', 'v-profile', 'v-orders'];
+    var activeTargetView = document.querySelector('#v-fav.view.active, #v-fav-providers.view.active, #v-cart.view.active, #v-profile.view.active, #v-orders.view.active');
+    if(activeTargetView && bodyEl.classList.contains('provider-mode')){
+      bodyEl.classList.remove('provider-mode');
+    }
+    if(bodyEl.classList.contains('provider-mode')) return;
+    bodyEl.classList.remove('customer-nav-inline');
+    var nav = document.getElementById('customerNav');
+    var navHeight = 0;
+    if(nav){
+      try{
+        var navCs = window.getComputedStyle(nav);
+        if(navCs && navCs.display !== 'none' && navCs.visibility !== 'hidden'){
+          var navRect = nav.getBoundingClientRect();
+          navHeight = Math.round(navRect && navRect.height ? navRect.height : 0);
+        }
+      }catch(_e){}
+    }
+    if(!Number.isFinite(navHeight) || navHeight <= 0) navHeight = 78;
+    if(nav){
+      nav.style.setProperty('position', 'fixed', 'important');
+      nav.style.setProperty('left', '0', 'important');
+      nav.style.setProperty('right', '0', 'important');
+      nav.style.setProperty('bottom', '0', 'important');
+      nav.style.setProperty('top', 'auto', 'important');
+      nav.style.setProperty('margin-top', '0', 'important');
+      nav.style.setProperty('z-index', '2000', 'important');
+    }
+    targetIds.forEach(function(id){
+      var view = document.getElementById(id);
+      if(!view) return;
+      view.style.setProperty('padding-bottom', '0px', 'important');
+      view.style.setProperty('min-height', 'auto', 'important');
+      view.style.setProperty('height', 'auto', 'important');
+      view.style.setProperty('overflow-y', 'visible', 'important');
+      var wrap = view.querySelector('.customer-main-wrap');
+      if(!wrap) return;
+      wrap.style.setProperty('padding-bottom', navHeight + 'px', 'important');
+      wrap.style.setProperty('min-height', 'auto', 'important');
+      wrap.style.setProperty('height', 'auto', 'important');
+      wrap.style.setProperty('margin-bottom', '0px', 'important');
+      wrap.style.setProperty('flex', '0 0 auto', 'important');
+    });
+  }
+  if(typeof window !== 'undefined'){
+    window.applyCustomerBottomGapFix = applyCustomerBottomGapFix;
+  }
+  if(typeof window !== 'undefined'){
+    window.debugWeekFooterState = function(){
+      var weekFooter = document.getElementById('weekViewFooter');
+      var providerWeekView = document.getElementById('v-provider-week');
+      var activeView = document.querySelector('.view.active');
+      var activeCustomer = document.querySelector('.customer-view.active');
+      var footerStyle = weekFooter ? window.getComputedStyle(weekFooter) : null;
+      return {
+        mode: window.mode || null,
+        activeViewId: activeView ? activeView.id : null,
+        activeCustomerViewId: activeCustomer ? activeCustomer.id : null,
+        bodyClasses: document.body ? Array.from(document.body.classList) : [],
+        providerWeekActiveClass: !!(document.body && document.body.classList.contains('provider-week-active')),
+        providerWeekViewActive: !!(providerWeekView && providerWeekView.classList.contains('active')),
+        providerWeekViewHiddenClass: !!(providerWeekView && providerWeekView.classList.contains('is-hidden')),
+        weekFooterInlineDisplay: weekFooter ? weekFooter.style.display : null,
+        weekFooterComputedDisplay: footerStyle ? footerStyle.display : null,
+        weekFooterComputedVisibility: footerStyle ? footerStyle.visibility : null
+      };
+    };
+  }
   /** Aktualisiert den Wochenplan-Footer (Counter links, Button rechts). [cite: 2026-03-02] */
   function updateWeekViewFooter(weekIndex){
+    syncWeekFooterVisibility();
     var kwIdx = (weekIndex !== undefined && weekIndex !== null) ? weekIndex : ((typeof weekPlanDay !== 'undefined' && weekPlanDay && typeof getWeekIndexForDate === 'function') ? getWeekIndexForDate(weekPlanDay) : (typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0));
     var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(kwIdx) : [];
     var draftKeysInKW = keys.filter(function(key){
@@ -13778,6 +13961,7 @@
     var btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
     var weekFooterCounter = document.getElementById('weekFooterCounter');
     if (!weekFooter || !btnWeekViewFooter) return;
+    if(weekFooter.classList.contains('week-footer-hidden')) return;
     var count = totalDraftDishes;
     if (weekFooterCounter) weekFooterCounter.textContent = count + ' Gericht' + (count !== 1 ? 'e' : '') + ' inserieren';
     btnWeekViewFooter.textContent = 'Woche jetzt inserieren';
@@ -25195,8 +25379,37 @@
   if(typeof testPickupCodeLogic !== 'undefined'){
     window.testPickupCodeLogic = testPickupCodeLogic;
   }
+  function bindDiscoverLogoRefresh(){
+    var discoverLogoTap = document.getElementById('discoverLogoTap');
+    if(!discoverLogoTap || discoverLogoTap.__refreshBound) return;
+    var lastRefreshTs = 0;
+    var onLogoRefresh = function(e){
+      if(e){
+        if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+        if(e.type === 'keydown') e.preventDefault();
+      }
+      var now = Date.now();
+      if(now - lastRefreshTs < 250) return;
+      lastRefreshTs = now;
+      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(8);
+      if(typeof renderDiscover === 'function') renderDiscover();
+      if(typeof syncDiscoverMapTopInsetVar === 'function') setTimeout(syncDiscoverMapTopInsetVar, 0);
+      if(typeof showToast === 'function') showToast('Aktualisiert', 900);
+    };
+    discoverLogoTap.addEventListener('click', onLogoRefresh);
+    discoverLogoTap.addEventListener('pointerup', onLogoRefresh);
+    discoverLogoTap.addEventListener('keydown', onLogoRefresh);
+    discoverLogoTap.__refreshBound = true;
+  }
+  if(typeof window !== 'undefined') setTimeout(bindDiscoverLogoRefresh, 0);
 
   window.addEventListener('load', ()=>{
+    if(typeof syncCustomerNavHeightVar === 'function') syncCustomerNavHeightVar();
+    if(typeof syncDiscoverMapTopInsetVar === 'function') syncDiscoverMapTopInsetVar();
+    if(typeof closePwaStartScreenSheet === 'function') closePwaStartScreenSheet();
+    bindDiscoverLogoRefresh();
+    syncWeekFooterVisibility();
+    applyCustomerBottomGapFix();
     initIcons();
     const activeView = document.querySelector('.view.active');
     const topbar = document.querySelector('.topbar');
@@ -25208,6 +25421,16 @@
       setTimeout(()=>{ renderStart(); initIcons(); }, 100);
     }
   });
+  if(typeof window !== 'undefined'){
+    window.addEventListener('hashchange', syncWeekFooterVisibility, { passive: true });
+    window.addEventListener('popstate', syncWeekFooterVisibility, { passive: true });
+    window.addEventListener('hashchange', applyCustomerBottomGapFix, { passive: true });
+    window.addEventListener('popstate', applyCustomerBottomGapFix, { passive: true });
+    setInterval(function(){
+      syncWeekFooterVisibility();
+      applyCustomerBottomGapFix();
+    }, 500);
+  }
   
   // Offline/Online Event-Handler (Fallback-Verhalten)
   window.addEventListener('online', () => {
@@ -25284,7 +25507,6 @@
     if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(6);
     refreshActiveHeaderView();
   });
-
   // Icons/Scroll nach jedem View-Wechsel aktualisieren (auch wenn showView erst spaeter geladen wird)
   function enhanceShowViewOnce(){
     if(typeof window === 'undefined') return false;
@@ -25338,6 +25560,8 @@
         if(id === 'v-fav-providers' && typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
         ensureCustomerHeaderScrollFx();
         syncCustomerHeaderScrollFx();
+        syncWeekFooterVisibility();
+        applyCustomerBottomGapFix();
       }catch(_e){}
       setTimeout(function(){ initIcons(); }, 50);
     };

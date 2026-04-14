@@ -337,6 +337,23 @@
 
     /* ========== NUR KUNDE (body:not(.provider-mode)) – keine Regel hier darf Anbieter betreffen ========== */
     body:not(.provider-mode) .app, body:not(.provider-mode) #app{ min-height:100%; min-height:var(--app-height); margin-top:0; padding-top:0; }
+    body:not(.provider-mode) .app,
+    body:not(.provider-mode) #app{
+      padding-bottom:0 !important;
+    }
+    body:not(.provider-mode) .customer-view{
+      padding-bottom:0 !important;
+    }
+    body:not(.provider-mode) #providerNavWrap{
+      display:none !important;
+      height:0 !important;
+      min-height:0 !important;
+      padding:0 !important;
+      margin:0 !important;
+      border:0 !important;
+      overflow:hidden !important;
+      pointer-events:none !important;
+    }
     body:not(.provider-mode) .app main, body:not(.provider-mode) #app main{ min-height:auto; overflow-y:visible; -webkit-overflow-scrolling:touch; margin-top:0; }
     body:not(.provider-mode) #v-discover.view.active{ margin-top:0; padding-top:0; min-height:var(--app-height); display:block !important; background:#fcfcfc !important; }
     .topbar{
@@ -5839,7 +5856,7 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
     }
-    body:not(.provider-mode) #v-discover.view.active{ --customer-header-offset: 96px; }
+    body:not(.provider-mode) #v-discover.view.active{ --customer-header-offset: 56px; }
     body:not(.provider-mode) #v-fav.view.active,
     body:not(.provider-mode) #v-fav-providers.view.active,
     body:not(.provider-mode) #v-cart.view.active,
@@ -5857,16 +5874,44 @@
       flex: 1;
       min-height: 0;
       overflow: visible;
-      margin-top: var(--customer-header-offset, 96px);
+      margin-top: var(--customer-header-offset, 56px);
+    }
+    /* Variante A: Im Gerichtsdetail Discover-Header inklusive Pills komplett ausblenden. */
+    body:not(.provider-mode).discover-detail-open #v-discover > .discover-header-sticky,
+    body:not(.provider-mode).detail-distance-open #v-discover > .discover-header-sticky,
+    body:not(.provider-mode) #v-discover.map-drawer-open > .discover-header-sticky{
+      display: none !important;
+    }
+    body:not(.provider-mode).discover-detail-open #v-discover .discover-main,
+    body:not(.provider-mode).detail-distance-open #v-discover .discover-main,
+    body:not(.provider-mode) #v-discover.map-drawer-open .discover-main{
+      margin-top: 0 !important;
+    }
+    /* Variante A im Kartenmodus: auch Karten-Controls ausblenden, damit Detail wie in Liste wirkt. */
+    body:not(.provider-mode).discover-detail-open #v-discover #discoverMapToolbar,
+    body:not(.provider-mode).detail-distance-open #v-discover #discoverMapToolbar,
+    body:not(.provider-mode) #v-discover.map-drawer-open #discoverMapToolbar,
+    body:not(.provider-mode).discover-detail-open #v-discover #discoverViewSwitchBtn,
+    body:not(.provider-mode).detail-distance-open #v-discover #discoverViewSwitchBtn,
+    body:not(.provider-mode) #v-discover.map-drawer-open #discoverViewSwitchBtn{
+      display: none !important;
     }
     body:not(.provider-mode) #v-fav .customer-main-wrap,
     body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
     body:not(.provider-mode) #v-cart .customer-main-wrap,
     body:not(.provider-mode) #v-profile .customer-main-wrap{
-      flex: 1;
-      min-height: 0;
+      flex: 0 0 auto;
+      min-height: auto;
       overflow: visible;
       margin-top: var(--customer-header-offset, 72px);
+    }
+    body:not(.provider-mode) #v-fav.view.active,
+    body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-cart.view.active,
+    body:not(.provider-mode) #v-profile.view.active{
+      min-height: auto !important;
+      height: auto !important;
+      overflow-y: visible !important;
     }
     /* Globales Safe-Area-Padding auf .view darf Sticky nicht verschieben */
     body:not(.provider-mode) #app .customer-view{
@@ -5897,9 +5942,9 @@
       padding-bottom: 10px !important;
     }
     body:not(.provider-mode) #v-discover > .cust-header-sticky.is-scrolled .discover-header-top-row.discover-header-minimal{
-      padding-top: 6px !important;
-      padding-bottom: 6px !important;
-      min-height: 40px !important;
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+      min-height: 30px !important;
     }
 
     /* Discover Header – Pure-Clean Airbnb: Frei über volle Breite, nur feine Trennlinie [cite: 2026-02-20 Schritt 2.2] */
@@ -5910,7 +5955,7 @@
       right: 0;
       width: 100%;
       z-index: 1500 !important;
-      min-height: 60px;
+      min-height: 44px;
       padding: 0 !important;
       margin: 0 !important;
       padding-top: env(safe-area-inset-top, 0) !important;
@@ -5921,6 +5966,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      transition: opacity 0.24s ease, transform 0.24s ease, visibility 0.24s ease;
     }
     /* Perfect Alignment & Symmetry: Flex + Logo absolut mittig [cite: 2026-02-18] */
     /* Minimalist Header: Reinweiß, zentriert [cite: 2026-02-20 Schritt 1.4] */
@@ -5933,9 +5979,9 @@
       min-height: 56px;
       padding: 12px 20px;
       background: transparent;
-      min-height: 44px;
-      padding: 8px 16px;
-      padding-top: 8px;
+      min-height: 30px;
+      padding: 2px 14px;
+      padding-top: 2px;
       padding-left: max(16px, env(safe-area-inset-left, 0));
       padding-right: max(16px, env(safe-area-inset-right, 0));
       z-index: 10;
@@ -5968,9 +6014,18 @@
       max-height: 24px;
       color: #fff;
       letter-spacing: -0.03em;
-      z-index: 1;
-      pointer-events: none;
+      z-index: 3;
+      pointer-events: auto;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    }
+    #v-discover #discoverLogoTap:active{
+      transform: translate(-50%, -50%) scale(0.96);
+    }
+    #v-discover #discoverLogoTap{
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
     #v-discover .discover-header-top-row.discover-header-minimal .discover-logo{ color: #0f172a; }
     #v-discover .discover-header-sticky.scrolled .discover-logo,
@@ -6294,7 +6349,7 @@
       overflow-x: visible;
       overflow-y: visible;
       scroll-snap-type: none;
-      padding: 12px 0 14px;
+      padding: 0 0 1px;
       scrollbar-width: none;
       min-width: 0;
       max-width: 100%;
@@ -6305,8 +6360,9 @@
     #v-discover #discoverCategoriesBar .discover-category-chip{
       flex: 1;
       min-width: 0;
-      min-height: 44px;
-      padding: 8px 4px;
+      min-height: 30px;
+      padding: 2px 4px;
+      font-size: 12px;
       border-radius: 0;
       font-size: 13px;
       font-weight: 600;
@@ -6371,6 +6427,30 @@
       max-width: 100%;
       margin: 0;
       box-sizing: border-box;
+    }
+    #v-discover .discover-offers-list.is-hidden{
+      display: none !important;
+    }
+    /* Guard: Im Kartenmodus ist die Liste immer verborgen und die Karte nutzt volle Fläche bis zur Bottom-Nav. */
+    #v-discover.is-map-mode #discoverOffers{
+      display: none !important;
+    }
+    #v-discover.is-map-mode #discoverMap.discover-map-wrap{
+      display: flex !important;
+      top: var(--discover-map-top-inset, 0px) !important;
+      bottom: var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) !important;
+    }
+    body:not(.provider-mode).discover-detail-open #v-discover.is-map-mode #discoverMap.discover-map-wrap,
+    body:not(.provider-mode).detail-distance-open #v-discover.is-map-mode #discoverMap.discover-map-wrap{
+      top: 0 !important;
+    }
+    #v-discover.is-map-mode #discoverMapToolbar{
+      top: var(--discover-map-toolbar-gap, 8px) !important;
+      left: 12px !important;
+      right: 12px !important;
+    }
+    #v-discover.is-map-mode #discoverMapBtnHierSuchen{
+      margin-top: 0 !important;
     }
     #v-discover .tgtg-list-item{
       position: relative !important;
@@ -6722,10 +6802,15 @@
       min-height:56px; padding:14px 24px; display:flex; align-items:center; justify-content:center; gap:10px;
       background:#fff; border:2px solid #e5e7eb; border-radius:28px;
       font-size:16px; font-weight:800; color:#1a1a1a; cursor:pointer;
-      box-shadow:0 6px 24px rgba(0,0,0,0.12); z-index:90;
-      transition:transform 0.15s, box-shadow 0.2s; -webkit-tap-highlight-color:transparent;
+      box-shadow:0 6px 24px rgba(0,0,0,0.12); z-index:1201;
+      transition:transform 0.15s, box-shadow 0.2s, top 0.2s, bottom 0.2s; -webkit-tap-highlight-color:transparent;
     }
     .discover-view-switch:active{ transform:translateX(-50%) scale(0.97); box-shadow:0 2px 12px rgba(0,0,0,0.1); }
+    /* Wenn der Pin-Drawer offen ist, bleibt der Listen-Umschalter oben sichtbar. */
+    #v-discover.is-map-mode.map-drawer-open .discover-view-switch{
+      top: calc(var(--discover-map-top-inset, 0px) + var(--discover-map-toolbar-gap, 8px) + 56px);
+      bottom: auto;
+    }
     /* Karte: Pins mit großem Touch-Ziel (S25), mind. 56px */
     .discover-map-canvas .discover-pin{
       position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -6743,6 +6828,146 @@
       z-index: 1100 !important;
       transition:transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
       will-change:transform;
+      /* Dynamisch für alle Handys: nicht zu klein, nicht zu hoch, nie hinter der Bottom-Nav abgeschnitten. */
+      min-height: min(
+        320px,
+        calc(var(--viewport-height-px, 100vh) - var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) - 12px)
+      ) !important;
+      max-height: min(
+        72vh,
+        calc(var(--viewport-height-px, 100vh) - var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) - 12px)
+      ) !important;
+    }
+    /* Discover Karte: Pin-Drawer ist deaktiviert, Karte oeffnet direkt volles Detail. */
+    #discoverPinDrawer,
+    #discoverPinDrawerBackdrop{
+      display: none !important;
+    }
+    @media (max-height: 700px){
+      #discoverPinDrawer.discover-pin-drawer{
+        padding: 12px 14px calc(12px + var(--safe-area-bottom)) !important;
+        border-radius: 20px 20px 0 0 !important;
+      }
+      #discoverPinDrawer .discover-pin-drawer-handle{
+        margin-bottom: 10px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerImageWrap{
+        height: 132px !important;
+        border-radius: 12px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerTitle{
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPrice{
+        font-size: 16px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPillars{
+        gap: 10px !important;
+        margin-bottom: 8px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerNavRow{
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerRoute{
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerBtn{
+        min-height: 50px !important;
+        border-radius: 14px !important;
+        font-size: 15px !important;
+      }
+    }
+    @media (max-height: 620px){
+      #discoverPinDrawer.discover-pin-drawer{
+        padding: 10px 12px calc(10px + var(--safe-area-bottom)) !important;
+        border-radius: 18px 18px 0 0 !important;
+      }
+      #discoverPinDrawer .discover-pin-drawer-handle{
+        width: 40px !important;
+        height: 4px !important;
+        margin-bottom: 8px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerImageWrap{
+        height: 112px !important;
+        border-radius: 10px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerTitle{
+        font-size: 16px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPrice{
+        font-size: 15px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPillars{
+        gap: 8px !important;
+        margin-bottom: 6px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerNavRow{
+        gap: 6px !important;
+        margin-bottom: 8px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerMinutes{
+        font-size: 13px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerRoute{
+        padding: 7px 10px !important;
+        border-radius: 12px !important;
+        font-size: 12px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerBtn{
+        min-height: 46px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+      }
+    }
+    @media (max-height: 560px){
+      #discoverPinDrawer.discover-pin-drawer{
+        padding: 8px 10px calc(8px + var(--safe-area-bottom)) !important;
+        border-radius: 16px 16px 0 0 !important;
+        min-height: min(
+          260px,
+          calc(var(--viewport-height-px, 100vh) - var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) - 8px)
+        ) !important;
+      }
+      #discoverPinDrawer .discover-pin-drawer-handle{
+        width: 34px !important;
+        height: 4px !important;
+        margin-bottom: 6px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerImageWrap{
+        height: 92px !important;
+        border-radius: 9px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerTitle{
+        font-size: 15px !important;
+        line-height: 1.2 !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPrice{
+        font-size: 14px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerPillars{
+        gap: 6px !important;
+        margin-bottom: 4px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerNavRow{
+        gap: 5px !important;
+        margin-bottom: 6px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerMinutes{
+        font-size: 12px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerRoute{
+        padding: 6px 9px !important;
+        border-radius: 11px !important;
+        font-size: 11px !important;
+      }
+      #discoverPinDrawer #discoverPinDrawerBtn{
+        min-height: 42px !important;
+        border-radius: 11px !important;
+        font-size: 13px !important;
+      }
     }
     .discover-pin-drawer:not(.open){ transform:translateY(100%); pointer-events:none; visibility:hidden; }
     .discover-pin-drawer.open{ transform:translateY(0); pointer-events:auto; visibility:visible; }
@@ -9495,8 +9720,32 @@
       /* Tab-Nav: im Wochenplan sichtbar [cite: provider-bottom-nav-fest, Footer unten 2026-02-25] */
       /* Wochenplan-Footer: nur bei provider-week-active sichtbar, Body-Level [cite: 2026-02-25] */
       #weekViewFooter{ display:none !important; }
-      body.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
+      body.provider-mode.provider-week-active #weekViewFooter{ display:flex !important; flex-direction:column; }
       #weekViewFooter.week-footer-hidden{ display:none !important; }
+      body:not(.provider-mode) #weekViewFooter{
+        display:none !important;
+        visibility:hidden !important;
+        pointer-events:none !important;
+      }
+      /* Hard Gatekeeper: Footer nur wenn JS explizit freigibt */
+      #weekViewFooter{
+        display:none !important;
+        visibility:hidden !important;
+        pointer-events:none !important;
+      }
+      body.week-footer-visible #weekViewFooter{
+        display:flex !important;
+        visibility:visible !important;
+        pointer-events:auto !important;
+        flex-direction:column;
+      }
+      body.week-footer-force-hidden #weekViewFooter,
+      body.week-footer-force-hidden #weekViewFooter.week-view-footer-fixed{
+        display:none !important;
+        visibility:hidden !important;
+        opacity:0 !important;
+        pointer-events:none !important;
+      }
       /* Wochenplan-Footer: Airbnb-Style – Links Counter, Rechts schwarzer Button [cite: 2026-03-02] */
       .week-view-footer-fixed{ position:fixed !important; bottom:0; left:0; right:0; width:100%; z-index:10000; background:#ffffff !important; border-top:1px solid #ebebeb; padding:12px 24px calc(12px + env(safe-area-inset-bottom, 0)); box-sizing:border-box; }
       /* Fix für den unteren Bereich (Airbnb-Regel) */
@@ -10337,16 +10586,16 @@
       min-height: 100vh;
     }
     /* Meins, Mittagsbox, Favoriten, Orders: Inhaltsbereich, seitliches Padding 16px [cite: Tabula Rasa] */
-    #v-profile .customer-main-wrap,
-    #v-cart .customer-main-wrap,
-    #v-fav .customer-main-wrap,
-    #v-fav-providers .customer-main-wrap,
-    #v-orders .customer-main-wrap {
-      min-height: calc(100vh - 60px);
-      padding: 0 16px;
-      padding-bottom: calc(var(--content-padding-bottom) + env(safe-area-inset-bottom, 0));
-      padding-left: max(16px, env(safe-area-inset-left, 0));
-      padding-right: max(16px, env(safe-area-inset-right, 0));
+    body:not(.provider-mode) #v-profile .customer-main-wrap,
+    body:not(.provider-mode) #v-cart .customer-main-wrap,
+    body:not(.provider-mode) #v-fav .customer-main-wrap,
+    body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
+    body:not(.provider-mode) #v-orders .customer-main-wrap {
+      min-height: auto !important;
+      padding: 0 16px !important;
+      padding-bottom: var(--customer-nav-total-height, calc(78px + env(safe-area-inset-bottom, 0px))) !important;
+      padding-left: max(16px, env(safe-area-inset-left, 0)) !important;
+      padding-right: max(16px, env(safe-area-inset-right, 0)) !important;
       box-sizing: border-box;
     }
 
@@ -15324,6 +15573,22 @@ body.provider-mode.provider-week-active #providerNavWrap.provider-nav-wrap-pill{
 body.provider-mode.provider-week-active #weekViewFooter.week-view-footer-fixed{
   bottom: calc(86px + env(safe-area-inset-bottom, 0px)) !important;
   z-index: 1040 !important;
+}
+
+/* Customer Hotfix: Kein künstlicher Bottom-Gap auf Favoriten/Mittagsbox/Meins */
+body:not(.provider-mode) #v-fav.customer-view,
+body:not(.provider-mode) #v-fav-providers.customer-view,
+body:not(.provider-mode) #v-cart.customer-view,
+body:not(.provider-mode) #v-profile.customer-view,
+body:not(.provider-mode) #v-orders.customer-view{
+  padding-bottom: 0 !important;
+}
+body:not(.provider-mode) #v-fav .customer-main-wrap,
+body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
+body:not(.provider-mode) #v-cart .customer-main-wrap,
+body:not(.provider-mode) #v-profile .customer-main-wrap,
+body:not(.provider-mode) #v-orders .customer-main-wrap{
+  padding-bottom: 0 !important;
 }
 
 #v-admin .admin-provider-base-card{

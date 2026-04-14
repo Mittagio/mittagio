@@ -149,3 +149,244 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Der Betriebsname wird in Kundenkarten ohne nachgestelltes `>` gerendert.
 - Wenn ein Angebot aktiv ist, aber erst in der Zukunft liegt (z. B. morgen/übermorgen), zeigt der CTA `Jetzt vorbestellen!`.
 - Das gilt in Discover-Karten und Favoriten-Karten konsistent.
+
+## Update: Kartenmodus Ladezeit + Vollflaeche
+
+- Der kuenstliche `300ms`-Delay in `renderDiscover()` wurde entfernt, damit Karten/Listen ohne spuerbare Wartezeit rendern.
+- In der Discover-Kartenansicht wird die Liste jetzt zuverlaessig ausgeblendet (`.discover-offers-list.is-hidden { display:none !important; }`), damit unten nichts durchscheint.
+- Die Kartenansicht nutzt den verfuegbaren Bereich nun vollflaechig bis zur Bottom-Nav (`bottom: var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom)))`), sodass kein abgeschnittener Eindruck mehr entsteht.
+
+## Update: Kartenmodus Groesse + Guard
+
+- Fuer den Kartenmodus wird auf `#v-discover` jetzt zusaetzlich die Klasse `is-map-mode` gesetzt, damit der Zustand Liste/Karte robust gesteuert ist.
+- Guard-Regel: `#v-discover.is-map-mode #discoverOffers { display:none !important; }` verhindert, dass die Liste bei Spaeteren CSS-Aenderungen wieder durchscheint.
+- Groessenanpassung: Die Karte endet im Kartenmodus exakt ueber der Kunden-Bottom-Nav (`bottom: var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom)))`), damit sie den nutzbaren Bereich sauber ausfuellt.
+
+## Neue Regel: JEDES HANDY (nicht nur S25)
+
+- Die Kartenhoehe im Discover-Kartenmodus ist jetzt geraeteunabhaengig: statt fixer S25-Werte wird die echte Hoehe von `#customerNav` live gemessen.
+- Neue CSS-Variable: `--customer-nav-total-height` (wird per JS gesetzt) und im Kartenmodus als Bottom-Offset verwendet.
+- Regel: `#v-discover.is-map-mode #discoverMap.discover-map-wrap { bottom: var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))); }`
+- Re-Sync bei `load`, `resize`, `orientationchange` und `visualViewport.resize`, damit es auf kleinen/grossen Androids und iPhones konsistent bleibt.
+
+## Update: Pin-Drawer dynamisch (alle Handys)
+
+- Der `discoverPinDrawer` nutzt keine starre Geraete-Annahme mehr, sondern eine dynamische Max-Hoehe fuer kleine und grosse Displays.
+- Neue Viewport-Variable: `--viewport-height-px` (aus `visualViewport.height` bzw. `innerHeight`) wird zusammen mit `--customer-nav-total-height` gesetzt.
+- Regel fuer den Drawer: `max-height: min(72vh, calc(var(--viewport-height-px, 100vh) - var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) - 12px))`.
+- Ergebnis: Der Drawer bleibt auf jedem Handy gut bedienbar, ohne unten hinter der Navigation zu verschwinden oder auf kleinen Displays zu dominant zu werden.
+
+## Update: Small-Display Fine-Tune
+
+- Fuer sehr kleine Displays bekommt der Drawer eine dynamische Mindesthoehe, damit Inhalte nicht zu stark zusammengedrueckt werden.
+- Regel: `min-height: min(320px, calc(var(--viewport-height-px, 100vh) - var(--customer-nav-total-height, calc(64px + var(--safe-area-bottom))) - 12px))`.
+- Damit bleibt das Verhalten geraeteunabhaengig: genug sichtbarer Inhalt auf kleinen Handys, ohne die verfuegbare Hoehe zu ueberschreiten.
+
+## Update: Drawer-Inhalt unter 700px Hoehe
+
+- Fuer kleine Viewport-Hoehen (`@media (max-height: 700px)`) wird nur der Discover-Pin-Drawer kompakter gerendert.
+- Anpassungen: geringeres Padding, kleineres Hero-Bild (`132px`), reduzierte Typografie fuer Titel/Preis, engere Abstaende bei Pillars und Navigationszeile.
+- CTA und Route-Button bleiben thumb-friendly, werden aber leicht verdichtet (`min-height: 50px`, kleinere Innenabstaende), damit mehr Inhalt sichtbar bleibt.
+- Scope bleibt strikt auf `#discoverPinDrawer` beschraenkt, andere Views/Layouts werden nicht beeinflusst.
+
+## Update: Extreme Small-Height unter 620px
+
+- Zusaetzliche zweite Kompakt-Stufe fuer sehr kleine Display-Hoehen (`@media (max-height: 620px)`), weiterhin nur fuer `#discoverPinDrawer`.
+- Weitere Verdichtung: Bildhoehe auf `112px`, kleinere Typografie fuer Titel/Preis sowie noch engere Abstaende fuer Pillars/Nav-Row.
+- Aktionen bleiben nutzbar: Route-Button und CTA werden nochmals reduziert, behalten aber klare Touchflaechen (`CTA min-height: 46px`).
+- Damit bleibt der Kerninhalt auch auf sehr niedrigen Viewports sichtbar, ohne Layout-Brueche in anderen Bereichen.
+
+## Update: Ultra-Compact unter 560px
+
+- Dritte Stufe fuer extrem niedrige Display-Hoehen (`@media (max-height: 560px)`), weiterhin strikt auf `#discoverPinDrawer` begrenzt.
+- Zuschnitt fuer Minimal-Height: Hero-Bild auf `92px`, feinere Typografie/Abstaende und nochmals kompaktere Controls.
+- CTA bleibt funktional bedienbar (`min-height: 42px`), Route-Button ebenfalls weiter erreichbar.
+- Zusatzregel fuer den Container: dynamische Mindesthoehe in dieser Stufe (`min-height: min(260px, calc(...))`), damit der Drawer nicht kollabiert.
+
+## Test-Checkliste: JEDES HANDY
+
+### Android klein (z. B. 360x640)
+
+- [ ] Discover auf Kartenmodus wechseln: Karte fuellt den Bereich bis exakt ueber der Bottom-Nav.
+- [ ] Unten scheint keine Liste durch.
+- [ ] Pin tippen: Drawer oeffnet voll sichtbar, CTA und Route sind erreichbar.
+
+### Android mittel/gross (z. B. 393x852, 412x915)
+
+- [ ] Kartenmodus hat keine abgeschnittene Hoehe, kein Leerstreifen unten.
+- [ ] Drawer-Hoehe wirkt ausgewogen (nicht zu klein, nicht zu dominant).
+- [ ] Rotation Portrait/Landscape: Hoehen passen sich nach kurzer Reflow-Zeit korrekt an.
+
+### iPhone klein (z. B. SE-Klasse)
+
+- [ ] Kartenmodus bleibt ueber der Bottom-Nav, trotz Safe-Area korrekt.
+- [ ] Drawer bleibt bedienbar bei kleiner Hoehe (Bild, Titel, CTA sichtbar).
+- [ ] Beim Oeffnen/Schliessen des Drawers kein Springen des Layouts.
+
+### iPhone normal/pro/max
+
+- [ ] Karte + Drawer nutzen den verfuegbaren Viewport konsistent.
+- [ ] Keine Ueberlagerung mit Home-Indicator/Bottom-Nav.
+- [ ] Button-Touchflaechen bleiben gut bedienbar.
+
+### Funktionsregression (alle Geraete)
+
+- [ ] Kartenwechsel Liste <-> Karte ist ohne spuerbaren Lade-Delay.
+- [ ] Pin-Drawer-Button `Gericht ansehen` oeffnet weiterhin die Detailansicht korrekt.
+- [ ] Discover-Filter (Kategorie/Tag/Standort) funktionieren unveraendert.
+
+## Update: Oberer Kartenbereich immer sichtbar
+
+- Der obere Kartenbereich im Discover-Kartenmodus wird jetzt ueber ein dynamisches Top-Inset stabilisiert.
+- Neue Variable: `--discover-map-top-inset` (wird aus dem realen Ueberlapp zwischen `.discover-header-sticky` und `.discover-main` berechnet).
+- Regel: `#v-discover.is-map-mode #discoverMap.discover-map-wrap { top: var(--discover-map-top-inset, 0px); }`
+- Re-Sync erfolgt bei `load`, `resize`, `orientationchange`, `visualViewport.resize` und beim Umschalten auf Kartenmodus.
+
+## Update: Map-Toolbar direkt unter Header
+
+- Die Map-Toolbar (`#discoverMapToolbar`) hat im Kartenmodus jetzt einen festen, konsistenten Abstand unterhalb des Headers.
+- Regel: `#v-discover.is-map-mode #discoverMapToolbar { top: var(--discover-map-toolbar-gap, 8px); left/right: 12px; }`
+- Der Button `In diesem Bereich suchen` behält dadurch auf allen Handys eine stabile Position direkt unter dem Header, ohne zu verrutschen.
+
+## Update: Zurueck-zur-Liste immer sichtbar
+
+- Problemfall behoben: Der Karten/Liste-Umschalter war bei offenem Pin-Drawer verdeckt.
+- Der Umschalter hat jetzt einen hohen Layer (`z-index: 1201`) und bleibt damit nicht hinter Drawer/Map-Overlays.
+- Wenn der Pin-Drawer offen ist, wird der Umschalter automatisch nach oben unter den Header verschoben (`#v-discover.is-map-mode.map-drawer-open .discover-view-switch`).
+- Beim Wechsel zur Liste wird der Drawer sauber geschlossen und der Drawer-Status (`map-drawer-open`) entfernt.
+
+## Update: Discover-Header kompakter + Logo-Refresh
+
+- Der Discover-Header wurde vertikal verdichtet (weniger Weißfläche zwischen Top-Row und Kategorien-Pills).
+- Anpassungen: geringerer Header-Offset, kleinere Top-Row-Paddings sowie kompaktere Kategorien-Leiste.
+- Das mittige `MITTAGIO` ist jetzt als tappbarer Button umgesetzt (`#discoverLogoTap`) und triggert ein Refresh von `renderDiscover()`.
+- Beim Tap auf das Logo wird leichtes Haptic-Feedback ausgeloest; danach wird das Map-Top-Inset erneut synchronisiert.
+
+## Update: Logo optisch unveraendert + Header noch kompakter
+
+- `MITTAGIO` ist wieder als normales Logo-Element umgesetzt (kein Button-Look), aber bleibt technisch tappbar (`#discoverLogoTap`).
+- Der Refresh bleibt gleich: Tap auf Logo triggert `renderDiscover()` plus Re-Sync vom Map-Top-Inset.
+- Header-White-Space wurde nochmals reduziert: kleinerer Discover-Offset, kompaktere Top-Row, dichteres Kategorien-Band und leicht reduzierte Chip-Hoehe.
+
+## Update: Logo-Tap robust + Header weiter verdichtet
+
+- Logo-Tap ist jetzt direkt am Element gebunden (`click` + `keydown`) statt delegiert, damit der Tap auch bei Layer-Overlaps stabil ausloest.
+- Beim erfolgreichen Logo-Tap gibt es kurzes Feedback (`showToast('Aktualisiert')`) plus Haptik.
+- Discover-Header wurde ein weiteres Mal verdichtet: geringerer Header-Offset, kleinere Top-Row-Hoehe und kompaktere Kategorien-Pills.
+
+## Update: Header Ultra-Compact + Tap-Hardening
+
+- Header erneut gestrafft: Discover-Offset weiter reduziert, Top-Row und Kategorienbereich nochmals komprimiert.
+- Ziel: sichtbar weniger Weißflaeche zwischen Standort/Logo-Zeile und den Kategorie-Pills.
+- Logo-Refresh robuster gemacht: direkte Bindung auf `click`, `pointerup` und `keydown` mit kurzem Anti-Doppeltrigger.
+- Ergebnis: `MITTAGIO` bleibt optisch unveraendert, reagiert aber zuverlaessiger auf Tap.
+
+## Update: Variante A final umgesetzt (Detail = eigener Raum)
+
+- Beim Oeffnen der Gerichtsdetailansicht (`openOffer`) wird auf `body` die Klasse `discover-detail-open` gesetzt.
+- Solange diese Klasse aktiv ist, wird der Discover-Header inkl. Pills vollstaendig ausgeblendet (`opacity:0`, `visibility:hidden`, `pointer-events:none`, `translateY(-100%)`).
+- Beim Schliessen der Detailansicht (`closeSheet`) wird `discover-detail-open` wieder entfernt und der Discover-Header sofort normal angezeigt.
+- Effekt: Die Detailansicht hat einen ruhigeren, eigenen Fokus ohne konkurrierende Filterleiste.
+
+## Update: Variante A auch bei Standort-Tap im Detail
+
+- Beim Oeffnen des Distanz-/Routen-Sheets ueber den Standort-Tap im Gerichtsdetail (`openDetailDistanceSheet`) wird zusaetzlich `detail-distance-open` auf `body` gesetzt.
+- Solange dieses Sheet offen ist, bleibt der Discover-Header ebenfalls ausgeblendet (gleiche A-Logik wie im Detail).
+- Beim Schliessen des Distanz-Sheets (`closeDetailDistanceSheet`) wird `detail-distance-open` wieder entfernt.
+- Beim Schliessen der Haupt-Detailansicht (`closeSheet`) werden beide Klassen aufgeraumt (`discover-detail-open`, `detail-distance-open`).
+
+## Update: Variante A mit weicher Transition
+
+- Das Aus-/Einblenden des Discover-Headers in Variante A laeuft nun ueber eine zentrale, weichere Transition am Header selbst.
+- Transition-Werte: `opacity`, `transform`, `visibility` mit `0.24s ease`.
+- Effekt: Beim Oeffnen/Schliessen von Detail und Distanzsheet wirkt der Wechsel ruhiger und weniger abrupt.
+
+## Update: Variante A auch im Kartenmodus konsequent
+
+- Im Kartenmodus werden bei offenem Gerichtsdetail bzw. Distanzsheet nun zusaetzlich die Karten-Controls ausgeblendet.
+- Betroffen: `#discoverMapToolbar` und `#discoverViewSwitchBtn`.
+- Dadurch ist die Wirkung im Kartenmodus jetzt gleich zur Liste: Detailansicht ohne konkurrierende Header-/Map-Controls.
+
+## Update: Variante A auch bei offenem Pin-Drawer
+
+- Im Kartenmodus mit offenem Pin-Drawer (`#v-discover.map-drawer-open`) wird der Discover-Header jetzt ebenfalls komplett ausgeblendet.
+- Zusaetzlich bleiben `#discoverMapToolbar` und `#discoverViewSwitchBtn` in diesem Zustand verborgen.
+- Effekt: Kein „halb umgesetzter“ Zustand mehr; die Fokuslogik ist in Karte und Liste konsistent.
+
+## Update: Pin-Drawer Fokus jetzt ueber Body-State
+
+- Fuer maximale Robustheit setzt der Pin-Drawer jetzt zusaetzlich einen globalen Zustand auf `body`: `discover-map-drawer-open`.
+- Header und Karten-Controls reagieren auf diesen Body-State; dadurch greift das Ausblenden sicher auch dann, wenn View-Klassen nicht rechtzeitig synchron sind.
+- Der Body-State wird beim Schliessen des Drawers, beim Wechsel zur Liste und beim Schliessen des Details wieder entfernt.
+
+## Hotfix: Variante A nicht mehr "halb" im Kartenmodus
+
+- Fokus-Stati (`discover-detail-open`, `detail-distance-open`, `discover-map-drawer-open`) blenden den Discover-Header jetzt hart per `display:none` aus.
+- Gleichzeitig wird im Fokuszustand `discover-main` auf `margin-top: 0` gesetzt, damit kein Header-Restabstand bleibt.
+- Karten-Controls (`#discoverMapToolbar`, `#discoverViewSwitchBtn`) werden im Fokuszustand ebenfalls per `display:none` entfernt.
+- Die Map erzwingt im Fokuszustand `top:0`, damit kein alter Top-Inset-Wert die Ansicht "halb" wirken laesst.
+
+## Hotfix: Karten-Pin oeffnet jetzt direkt volles Gerichtsdetail
+
+- Im Kartenmodus fuehrt ein Tap auf den Pin jetzt direkt in `openOffer(...)` statt in die halbe Pin-Preview.
+- Dadurch verhaelt sich Karte wie Liste: Der Nutzer landet sofort in der vollen Gerichtsdetailansicht.
+- Vor dem Oeffnen wird ein eventuell offener Pin-Drawer geschlossen, damit keine Zwischenzustand-UI sichtbar bleibt.
+
+## Update: Pin-Drawer vollstaendig deaktiviert
+
+- Der Discover-Pin-Drawer (`#discoverPinDrawer`) und sein Backdrop sind nun per CSS deaktiviert (`display:none`).
+- `openDiscoverPinDrawer(...)` ist als Direkt-Weiterleitung auf `openOffer(...)` umgestellt.
+- Ergebnis: Im Kartenmodus gibt es nur noch einen klaren Pfad - Pin-Tap oeffnet direkt das volle Gerichtsdetail.
+
+## Hotfix: Wochenplan-Footer nicht mehr in Kunden-Views
+
+- `#weekViewFooter` wird nur noch bei `body.provider-mode.provider-week-active` angezeigt.
+- In allen Kunden-Views (`body:not(.provider-mode)`) wird der Footer hart unterdrueckt (`display:none`, `visibility:hidden`, `pointer-events:none`).
+- Effekt: Der Text `0 Gerichte inserieren / Woche jetzt inserieren` erscheint nicht mehr in `Meins`, `Favoriten` oder `Mittagsbox`.
+
+## Hotfix: Wochenplan-Footer an aktive View gebunden
+
+- `#weekViewFooter` startet jetzt mit `week-footer-hidden` als Default versteckt.
+- Neue JS-Guard `syncWeekFooterVisibility()` blendet den Footer nur ein, wenn wirklich `provider-mode` aktiv ist und die aktive View `v-provider-week` ist.
+- Beim View-Wechsel (`showView`) und beim App-Load wird die Sichtbarkeit erneut synchronisiert.
+- `updateWeekViewFooter()` beendet frueh, wenn der Footer nicht im gueltigen Anbieter-Wochenplan-Kontext ist.
+
+## Hotfix: Hard-Gate gegen Footer-Leaks
+
+- `#weekViewFooter` ist per CSS standardmaessig immer versteckt.
+- Sichtbar wird er nur ueber die explizite Body-Freigabe `week-footer-visible`, die von `syncWeekFooterVisibility()` gesetzt wird.
+- Die Freigabe gilt nur bei `provider-mode` + aktiver View `v-provider-week` und wird in Preview/Wizard-Zustaenden blockiert.
+- Zusatztaktung fuer robuste Korrektur bei Legacy-States: Synchronisierung auch ueber `hashchange`, `popstate` und einen kurzen Poll-Intervall.
+
+## Hotfix: Finale JS-Hartsperre fuer Wochenplan-Footer
+
+- `syncWeekFooterVisibility()` setzt die Sichtbarkeit jetzt zusaetzlich direkt per Inline-Style mit `!important`.
+- Bei ungueltigem Kontext erzwingt JS: `display:none`, `visibility:hidden`, `pointer-events:none` direkt auf `#weekViewFooter`.
+- Nur im gueltigen Anbieter-Wochenplan-Kontext setzt JS aktiv auf sichtbar (`display:flex`, `visibility:visible`, `pointer-events:auto`).
+- Damit bleibt der Footer auch dann sicher weg, wenn spaetere CSS-Regeln oder Legacy-Klassen versehentlich gegensteuern.
+
+## Update: Variante A fuer Bottom-Nav in Favoriten/Mittagsbox/Meins
+
+- Fuer `v-fav`, `v-cart` und `v-profile` wird die Customer-Bottom-Nav nicht mehr als fixed Overlay genutzt, sondern im Runtime-Guard auf inline (`position: relative`) umgestellt.
+- Die Umschaltung ist zustandsbasiert: nur in diesen drei Views inline, in allen anderen Customer-Views weiterhin fixed wie bisher.
+- Der Content-Wrap der drei Views bekommt dabei nur einen kleinen unteren Sicherheitsabstand (`8px`), damit kein kuenstlicher Leerraum mehr unterhalb des Inhalts entsteht.
+- Umsetzung in `app/script.js` ueber `applyCustomerBottomGapFix()` inklusive Body-Flag `customer-nav-inline`.
+
+## Hotfix: Customer-Nav wieder fixiert (Regression-Fix)
+
+- Die zuvor eingefuehrte Inline-Navigation wurde rueckgaengig gemacht, da die Bottom-Nav beim Scrollen mitlief.
+- `#customerNav` wird in Customer-Views wieder hart auf `position: fixed` am unteren Rand gesetzt.
+- Der Inhaltsbereich in `v-fav`, `v-cart`, `v-profile`, `v-fav-providers`, `v-orders` behaelt stattdessen nur einen nav-hohen Bottom-Abstand, damit nichts von der fixed Nav ueberdeckt wird.
+
+## Update: Hybrid fuer kurze vs. lange Seiten (Favoriten/Mittagsbox/Meins)
+
+- Runtime-Logik in `applyCustomerBottomGapFix()` unterscheidet jetzt zwischen kurzem und langem Content.
+- **Kurzer Content** (`v-fav`, `v-cart`, `v-profile`): Nav wird inline (`position: relative`) direkt unter dem Inhalt gesetzt, damit kein großer Leerraum sichtbar bleibt.
+- **Langer Content**: Nav bleibt `fixed` am unteren Rand, damit sie beim Scrollen nicht mitwandert.
+- Der untere Content-Abstand wird entsprechend dynamisch gesetzt (`8px` bei inline, sonst Nav-Höhe).
+
+## Hotfix: Hybrid zurückgenommen (Footer darf nie mitscrollen)
+
+- Die Hybrid-Umschaltung wurde entfernt, weil die Bottom-Nav in kurzen Seiten wieder mitscrollte.
+- `#customerNav` bleibt nun in Customer-Views strikt `fixed` mit `bottom: 0`.
+- Der Inhaltsbereich in `v-fav`, `v-cart`, `v-profile`, `v-fav-providers`, `v-orders` erhält wieder einen nav-hohen Bottom-Abstand, um Überlagerung zu vermeiden.
