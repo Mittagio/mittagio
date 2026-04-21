@@ -56,14 +56,45 @@
   }
 
   function showView(id){
+    try{
+      if(typeof history !== 'undefined' && history.scrollRestoration !== undefined){
+        history.scrollRestoration = 'manual';
+      }
+    }catch(_e){}
+    try{
+      var activeEl = document.activeElement;
+      if(activeEl && typeof activeEl.blur === 'function') activeEl.blur();
+    }catch(_e){}
     const view = document.getElementById(id);
     if(!view){
       console.error('View not found:', id);
       const fallbackView = document.getElementById(views.discover || 'v-discover');
       if(fallbackView) fallbackView.classList.add('active');
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({top:0,behavior:'auto'});
       return;
     }
+    const resetViewScrollToTop = function(){
+      try{
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        if(document.documentElement) document.documentElement.scrollTop = 0;
+        if(document.body) document.body.scrollTop = 0;
+        if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+        var appEl = document.getElementById('app');
+        if(appEl && typeof appEl.scrollTop === 'number') appEl.scrollTop = 0;
+        if(view && typeof view.scrollTop === 'number') view.scrollTop = 0;
+        const mainEl = document.querySelector('main');
+        if(mainEl && typeof mainEl.scrollTop === 'number') mainEl.scrollTop = 0;
+        const innerScrollEls = view ? view.querySelectorAll('.customer-main-wrap, .provider-support-scroll, .tgtg-list-wrap, .provider-sub-scroll, .pub-prov-scroll') : [];
+        innerScrollEls.forEach(function(el){
+          if(el && typeof el.scrollTop === 'number') el.scrollTop = 0;
+        });
+        if(view){
+          view.querySelectorAll('*').forEach(function(el){
+            if(el && typeof el.scrollTop === 'number' && el.scrollTop > 0) el.scrollTop = 0;
+          });
+        }
+      }catch(_e){}
+    };
     var isProviderView = (id && id.indexOf('v-provider-') === 0);
     var customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
     if(!isProviderView && customerViewIds.indexOf(id) !== -1){
@@ -97,9 +128,7 @@
     if (id !== 'v-provider-cookbook') document.body.classList.remove('cookbook-from-dashboard');
     if (id === 'v-provider-week') document.body.classList.add('provider-week-active');
     else if (id === 'v-provider-cookbook') { document.body.classList.add('provider-cookbook-active', 'cookbook-active'); }
-    window.scrollTo({ top: 0, behavior: isProviderView ? 'auto' : 'smooth' });
-    if (document.documentElement) document.documentElement.scrollTop = 0;
-    if (document.body) document.body.scrollTop = 0;
+    resetViewScrollToTop();
     if (isProviderView) {
       var activeEl = document.getElementById(id);
       if (activeEl && activeEl.scrollIntoView) activeEl.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
@@ -119,6 +148,12 @@
     } else if (id === 'v-provider-login') {
       requestAnimationFrame(function(){ requestAnimationFrame(function(){ window.scrollTo({ top: 0, behavior: 'auto' }); }); });
     }
+    requestAnimationFrame(function(){
+      resetViewScrollToTop();
+      requestAnimationFrame(resetViewScrollToTop);
+    });
+    setTimeout(resetViewScrollToTop, 50);
+    setTimeout(resetViewScrollToTop, 140);
     try {
       localStorage.setItem('mittagio_last_view', id);
       localStorage.setItem('mittagio_last_mode', window.mode);

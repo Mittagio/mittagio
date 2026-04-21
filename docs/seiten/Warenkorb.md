@@ -15,12 +15,19 @@ Jeder Anbieter hat seine eigene Abholzeit, der Checkout bleibt ein einziger Zahl
 - Header-Titel: `Deine Mittagsbox` (ohne vorangestelltes Icon)
 - Gruppierung nach Anbieter in `v-cart`
 - Pro Anbieter:
-  - Gerichte mit Mengensteuerung
+  - Gerichte mit kleinem Thumbnail links (44–52px) für schnellere Erfassung
+  - Gerichte mit Mengensteuerung als kompakte Pill-Control (`- qty +`)
   - eigene Abholzeit-Chips im Anbieter-Fenster (`von–bis`, 15-Minuten-Takt), z. B. bei `11:30 – 13:30` nur Slots zwischen `11:30` und `13:30`
 - Globale Verzehrart für den Checkout:
   - 🍴 Vor Ort
   - 🔄 Mitnehmen
 - CTA: „Jetzt bezahlen“
+
+## UI-Feinschliff (Stand 20.04.2026)
+
+- Die Zeilen innerhalb eines Anbieter-Blocks nutzen eine Card-Row mit mehr vertikalem Abstand statt harter Tabellenoptik.
+- Der Name bleibt primär, darunter wird der Einzelpreis als sekundäre Info angezeigt; der Gesamtpreis pro Zeile bleibt klar hervorgehoben.
+- Mengensteuerung und Thumbnail sind touchfreundlich ausgerichtet, damit die Mittagsbox auf mobilen Geräten weniger kahl wirkt und schneller scannbar ist.
 
 ## Checkout-Logik
 

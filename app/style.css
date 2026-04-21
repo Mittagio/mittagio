@@ -443,13 +443,14 @@
       display:flex; gap:8px; overflow:auto; -webkit-overflow-scrolling:touch;
     }
     
-    /* Verzehrart-Buttons: Active-State mit gelber Hintergrundfarbe */
+    /* Verzehrart-Buttons: Active-State als klare Outline */
     .verzehrmodus-checkout-btn.active,
     .verzehrmodus-cart-btn.active{
-      background:#FFD700 !important;
+      background:#fff !important;
       border-color:#FFD700 !important;
       color:#2D3436 !important;
       font-weight:900 !important;
+      box-shadow:0 0 0 2px rgba(255,215,0,0.22) !important;
     }
     .verzehrmodus-checkout-btn:not(.active),
     .verzehrmodus-cart-btn:not(.active){
@@ -461,7 +462,7 @@
     .verzehrmodus-checkout-btn:hover:not(.active),
     .verzehrmodus-cart-btn:hover:not(.active){
       border-color:#FFD700 !important;
-      background:#fffbf0 !important;
+      background:#fff !important;
     }
     
     /* Pickup Card Styles – TGTG Tabula Rasa [cite: Plan Phase 3] */
@@ -1794,6 +1795,136 @@
     .qty-btn{border:1px solid var(--border); background:#fff; border-radius:999px; width:28px; height:28px; cursor:pointer; font-weight:900; transition:all .15s}
     .qty-btn:active{transform:scale(.95); background:#f5f5f5}
     .cart-price{font-weight:900; min-width:60px; text-align:right}
+    .cart-provider-group{margin-bottom:20px}
+    .cart-provider-label{
+      font-size:12px;
+      font-weight:800;
+      color:#94a3b8;
+      text-transform:uppercase;
+      margin-bottom:10px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      letter-spacing:.02em;
+    }
+    .cart-item-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid #f1f3f5;
+    }
+    .cart-item-thumb{
+      width:48px;
+      height:48px;
+      border-radius:12px;
+      flex-shrink:0;
+      background:#eef2f7;
+      box-shadow:0 4px 10px rgba(15,23,42,0.10);
+      border:1px solid rgba(15,23,42,0.08);
+    }
+    img.cart-item-thumb{
+      object-fit:cover;
+    }
+    .cart-item-thumb-fallback{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+    }
+    .cart-item-main{
+      flex:1;
+      min-width:0;
+    }
+    .cart-item-dish{
+      font-weight:800;
+      font-size:14px;
+      color:#0f172a;
+      line-height:1.25;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .cart-item-unit{
+      font-weight:700;
+      color:#64748b;
+      font-size:12px;
+      margin-top:3px;
+    }
+    .cart-item-total{
+      font-weight:900;
+      color:var(--brand);
+      font-size:13px;
+      margin-top:3px;
+    }
+    .cart-qty-control{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#f8fafc;
+      border-radius:14px;
+      padding:6px;
+      border:1px solid #e2e8f0;
+      box-shadow:0 2px 8px rgba(15,23,42,0.06);
+      flex-shrink:0;
+    }
+    .cart-qty-btn{
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      border:1px solid #e2e8f0;
+      background:#fff;
+      color:#0f172a;
+      font-weight:900;
+      cursor:pointer;
+      transition:background .15s ease, transform .12s ease;
+    }
+    .cart-qty-btn:active{
+      transform:scale(.96);
+      background:#f1f5f9;
+    }
+    .cart-qty-value{
+      min-width:18px;
+      text-align:center;
+      font-weight:900;
+      color:#0f172a;
+      font-size:14px;
+    }
+    .cart-time-label{
+      display:block;
+      font-weight:800;
+      font-size:12px;
+      margin-bottom:8px;
+      color:#64748b;
+      text-transform:uppercase;
+    }
+    .cart-time-row{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+    }
+    .cart-time-row::-webkit-scrollbar{display:none}
+    .cart-total-row{
+      margin-top:24px;
+      padding-top:20px;
+      border-top:2px solid #1a1a1a;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .cart-total-label{
+      font-weight:850;
+      font-size:18px;
+      color:#1a1a1a;
+    }
+    .cart-total-value{
+      font-weight:950;
+      font-size:22px;
+      color:#1a1a1a;
+    }
     /* Essenszeit Badge */
     .cart-window-badge{
       display:inline-flex; align-items:center; gap:6px;
@@ -5900,18 +6031,11 @@
     body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
     body:not(.provider-mode) #v-cart .customer-main-wrap,
     body:not(.provider-mode) #v-profile .customer-main-wrap{
-      flex: 0 0 auto;
-      min-height: auto;
-      overflow: visible;
-      margin-top: var(--customer-header-offset, 72px);
-    }
-    body:not(.provider-mode) #v-fav.view.active,
-    body:not(.provider-mode) #v-fav-providers.view.active,
-    body:not(.provider-mode) #v-cart.view.active,
-    body:not(.provider-mode) #v-profile.view.active{
-      min-height: auto !important;
-      height: auto !important;
-      overflow-y: visible !important;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 8px;
     }
     /* Globales Safe-Area-Padding auf .view darf Sticky nicht verschieben */
     body:not(.provider-mode) #app .customer-view{
@@ -10598,7 +10722,6 @@
       padding-right: max(16px, env(safe-area-inset-right, 0)) !important;
       box-sizing: border-box;
     }
-
     /* Modern Sticky Header – Design-System Kundenseiten: 60px, Native App [cite: 2026-03-11 Top-Rand-Fix] */
     .cust-header-sticky {
       position: sticky;
@@ -10698,6 +10821,180 @@
       font-weight: var(--weight-heavy) !important;
       letter-spacing: -0.03em;
       color: var(--color-title);
+    }
+    #v-checkout{
+      background:#f8fafc !important;
+    }
+    body:not(.provider-mode) #v-checkout.view.active{
+      display:block !important;
+      height:var(--app-height) !important;
+      min-height:var(--app-height) !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch;
+    }
+    #v-checkout .checkout-main-wrap{
+      padding:8px max(16px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left));
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:0;
+      height:auto;
+      max-height:none;
+      overflow:visible;
+      padding-bottom:calc(var(--customer-nav-total-height, calc(78px + env(safe-area-inset-bottom, 0px))) + 12px);
+    }
+    #v-checkout .checkout-card{
+      padding:16px;
+      border-radius:20px;
+      border:1px solid #e2e8f0;
+      box-shadow:0 10px 24px rgba(15,23,42,0.06);
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    #v-checkout .checkout-summary-card{
+      margin:0;
+      padding:14px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+    }
+    #v-checkout .checkout-block{
+      margin:0;
+      padding-top:12px;
+      border-top:1px solid #eef2f7;
+    }
+    #v-checkout .checkout-label{
+      display:block;
+      font-weight:800;
+      font-size:14px;
+      margin-bottom:10px;
+      color:#334155;
+      letter-spacing:0.01em;
+    }
+    #v-checkout .checkout-grid-two{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    #v-checkout .verzehrmodus-checkout-btn,
+    #v-checkout .verpackung-btn{
+      min-height:52px;
+      border-radius:12px;
+      border:1.5px solid #e2e8f0;
+      background:#fff;
+      color:#475569;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      transition:border-color .2s ease, box-shadow .2s ease, transform .12s ease;
+      text-align:center;
+      padding:10px 12px;
+    }
+    #v-checkout .verzehrmodus-checkout-btn:active,
+    #v-checkout .verpackung-btn:active{
+      transform:scale(0.98);
+    }
+    #v-checkout .checkout-time-slots{
+      display:flex;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      gap:8px;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    #v-checkout .checkout-time-slots::-webkit-scrollbar{ display:none; }
+    #v-checkout .time-chip-alternative{
+      width:100%;
+      min-height:46px;
+      margin-top:6px;
+      border-radius:12px;
+      border:1.5px dashed #cbd5e1;
+      background:#fff;
+      color:#475569;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    #v-checkout .time-chip-alternative:hover{
+      border-color:#94a3b8;
+    }
+    #v-checkout .checkout-custom-time-wrap{
+      margin-top:10px;
+      padding:12px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      text-align:center;
+    }
+    #v-checkout .checkout-time-input{
+      font-size:17px;
+      font-weight:800;
+      text-align:center;
+    }
+    #v-checkout .checkout-time-hint{
+      font-size:12px;
+      color:#64748b;
+      margin:8px 0 0;
+      line-height:1.4;
+    }
+    #v-checkout .checkout-input{
+      width:100%;
+      min-height:52px;
+      padding:12px 14px;
+      border:1.5px solid #e2e8f0;
+      border-radius:12px;
+      font-size:16px;
+      background:#fff;
+      color:#0f172a;
+    }
+    #v-checkout .checkout-input:focus{
+      outline:none;
+      border-color:#94a3b8;
+      box-shadow:0 0 0 2px rgba(148,163,184,0.2);
+    }
+    #v-checkout .checkout-payment-methods{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    #v-checkout #btnStandardPayment{
+      min-height:56px;
+      border-radius:14px;
+    }
+    #v-checkout .checkout-info-note{
+      text-align:center;
+      padding:8px 0 0;
+      font-size:13px;
+      font-weight:700;
+      color:#64748b;
+    }
+    #v-checkout .checkout-guest-note{
+      padding:12px 14px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      font-size:13px;
+      color:#64748b;
+      line-height:1.45;
+      text-align:center;
+    }
+    #v-checkout .checkout-meta-success{
+      font-size:12px;
+      font-weight:700;
+      color:#16a34a;
+    }
+    #v-checkout .checkout-meta-muted{
+      font-size:12px;
+      font-weight:700;
+      color:#64748b;
     }
     /* Kunde: Anbieter-Profil (Restaurant-Seite) – app-like, nicht gequetscht, S25-tauglich */
     #v-provider-detail-public {
@@ -11105,7 +11402,8 @@
     }
 
     /* Favoriten 2026-04: Discovery-Marketplace Sync */
-    #v-fav .fav-empty-social{
+    #v-fav .fav-empty-social,
+    #v-fav-providers .fav-empty-social{
       min-height: calc(100dvh - 220px);
       display: flex;
       flex-direction: column;
@@ -11114,7 +11412,8 @@
       text-align: center;
       padding: 28px 20px 40px;
     }
-    #v-fav .fav-empty-social-icon-wrap{
+    #v-fav .fav-empty-social-icon-wrap,
+    #v-fav-providers .fav-empty-social-icon-wrap{
       width: 112px;
       height: 112px;
       margin-bottom: 20px;
@@ -11124,8 +11423,10 @@
       align-items: center;
       justify-content: center;
     }
-    #v-fav .fav-empty-social-icon{ font-size: 52px; line-height: 1; }
-    #v-fav .fav-empty-social-list{
+    #v-fav .fav-empty-social-icon,
+    #v-fav-providers .fav-empty-social-icon{ font-size: 52px; line-height: 1; }
+    #v-fav .fav-empty-social-list,
+    #v-fav-providers .fav-empty-social-list{
       margin: 0 0 18px;
       padding: 0;
       list-style: none;
@@ -15598,6 +15899,51 @@ body:not(.provider-mode) #v-orders .customer-main-wrap{
   margin-bottom:24px;
   box-shadow:0 2px 12px rgba(0,0,0,0.06);
   border:1px solid rgba(0,0,0,0.04);
+}
+
+/* Customer Final Scroll Lock (Favoriten, Mittagsbox, Meins)
+   - kein leerer Bottom-Scroll auf der ganzen View
+   - nur der Inhaltsbereich scrollt bei Bedarf */
+body:not(.provider-mode) #v-fav.view.active,
+body:not(.provider-mode) #v-cart.view.active,
+body:not(.provider-mode) #v-profile.view.active{
+  display:flex !important;
+  flex-direction:column !important;
+  height:var(--app-height) !important;
+  min-height:var(--app-height) !important;
+  overflow:hidden !important;
+}
+body:not(.provider-mode) #v-fav .customer-main-wrap,
+body:not(.provider-mode) #v-cart .customer-main-wrap,
+body:not(.provider-mode) #v-profile .customer-main-wrap{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  margin-top:var(--customer-header-offset, 72px) !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
+body:not(.provider-mode).customer-no-empty-scroll,
+body:not(.provider-mode).customer-no-empty-scroll #app,
+body:not(.provider-mode).customer-no-empty-scroll #app main{
+  height:var(--app-height) !important;
+  min-height:var(--app-height) !important;
+  overflow:hidden !important;
+}
+
+/* Final Outer-Scroll Guard (Kundenmodus):
+   Verhindert leeres Scrollen auf body/html-Ebene. */
+body:not(.provider-mode){
+  height: var(--app-height) !important;
+  min-height: var(--app-height) !important;
+  overflow: hidden !important;
+}
+body:not(.provider-mode) #app,
+body:not(.provider-mode) #app main{
+  height: var(--app-height) !important;
+  min-height: var(--app-height) !important;
+  overflow: hidden !important;
 }
 #v-admin .admin-provider-base-head{
   display:flex;

@@ -99,11 +99,534 @@
     transactions: 'mittagio_transactions_v1', // Transaktionen pro Inserat
     weekTemplates: 'mittagio_week_templates_v1', // Wochen-Vorlagen: [{ id, name, createdAt, days: { 0..6: [{ cookbookId, dish, price }] } }]
     inseratQuickbook: 'mittagio_inserat_quickbook_v1', // Zuletzt verwendete Inserate für Quick-Select: [{ id, dish, price, image, objectPosition }]
-    weekVeggieReminder: 'mittagio_week_veggie_reminder_v1'
+    weekVeggieReminder: 'mittagio_week_veggie_reminder_v1',
+    providerDirectory: 'mittagio_provider_directory_v1',
+    providerDirectoryVersion: 'mittagio_provider_directory_version_v1',
+    massProviderWeekSeedVersion: 'mittagio_mass_provider_week_seed_version_v1',
+    massTestCustomers: 'mittagio_mass_test_customers_v1'
   };
   const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
   const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+  const cleanProviderDisplayName = function(name){
+    const raw = String(name || 'Anbieter');
+    const cleaned = raw.replace(/\s*[>›»]+\s*$/g, '').trim();
+    return cleaned || 'Anbieter';
+  };
   if(typeof window !== 'undefined'){ window.LS = LS; window.load = load; window.save = save; }
+
+  const REAL_PROVIDER_DIRECTORY_VERSION = '2026-04-01-live-base-fixed-200';
+  const MASS_PROVIDER_WEEK_SEED_VERSION = '2026-04-01-all-provider-7days-3meals-v3-real-addresses';
+  const PROVIDER_DIRECTORY_SOURCE_URL = 'data/provider-directory.csv';
+  function normalizeEmailAddress(value){
+    return String(value || '').trim().toLowerCase();
+  }
+
+  function slugifyEmailPart(value){
+    var base = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return base || 'anbieter';
+  }
+
+  function isGeneratedProviderTestEmail(email){
+    var norm = normalizeEmailAddress(email);
+    return /@mittagio-test\.de$/.test(norm);
+  }
+
+  function generateProviderTestEmail(name, city, usedLocalParts){
+    var localBase = slugifyEmailPart(name) + '.' + slugifyEmailPart(city || 'stadt');
+    var localPart = localBase;
+    var n = 2;
+    while(usedLocalParts.has(localPart)){
+      localPart = localBase + '-' + n;
+      n += 1;
+    }
+    usedLocalParts.add(localPart);
+    return localPart + '@mittagio-test.de';
+  }
+
+  function parseProviderDirectoryCsv(csv){
+    var lines = String(csv || '').split(/\r?\n/).map(function(line){ return line.trim(); }).filter(Boolean);
+    if(!lines.length) return [];
+    var out = [];
+    var seen = new Set();
+    var usedEmailLocalParts = new Set();
+    for(var i = 0; i < lines.length; i++){
+      var line = lines[i];
+      if(!line) continue;
+      var lineLower = line.toLowerCase();
+      if(lineLower.indexOf('firma;strasse;plz;ort;land') === 0) continue;
+      var cols = line.split(';');
+      if(cols.length < 5) continue;
+      var name = String(cols[0] || '').trim();
+      var street = String(cols[1] || '').trim();
+      var zip = String(cols[2] || '').trim();
+      var city = String(cols[3] || '').trim();
+      var country = String(cols[4] || '').trim() || 'Deutschland';
+      var loginEmail = normalizeEmailAddress(cols[5] || '');
+      if(!name || name.toLowerCase() === 'firma' || name.length <= 1) continue;
+      if(!street && !(zip && city)) continue;
+      var key = [name, street, zip, city].join('|').toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      if(loginEmail){
+        usedEmailLocalParts.add(loginEmail.split('@')[0] || '');
+      } else {
+        loginEmail = generateProviderTestEmail(name, city, usedEmailLocalParts);
+      }
+      out.push({
+        id: 'dir_' + cryptoId(),
+        name: name,
+        street: street,
+        zip: zip,
+        city: city,
+        country: country,
+        loginEmail: loginEmail,
+        address: buildAddress({ street: street, zip: zip, city: city }),
+        source: 'live-provider-base',
+        importedAt: Date.now()
+      });
+    }
+    return out;
+  }
+
+  function setProviderDirectoryWindow(entries){
+    if(typeof window === 'undefined') return;
+    var list = Array.isArray(entries) ? entries : [];
+    window.providerDirectory = list;
+    window.getProviderDirectory = function(){ return load(LS.providerDirectory, []); };
+  }
+
+  function mergeProviderDirectoryEntries(existing, incoming){
+    var base = Array.isArray(existing) ? existing : [];
+    var add = Array.isArray(incoming) ? incoming : [];
+    var map = new Map();
+    base.forEach(function(entry){
+      if(!entry) return;
+      var key = [entry.name, entry.street, entry.zip, entry.city].map(function(v){ return String(v || '').trim().toLowerCase(); }).join('|');
+      if(!key || key === '|||') return;
+      map.set(key, entry);
+    });
+    add.forEach(function(entry){
+      if(!entry) return;
+      var key = [entry.name, entry.street, entry.zip, entry.city].map(function(v){ return String(v || '').trim().toLowerCase(); }).join('|');
+      if(!key || key === '|||') return;
+      if(!map.has(key)) map.set(key, entry);
+      else {
+        var prev = map.get(key) || {};
+        if(!prev.loginEmail && entry.loginEmail){
+          prev.loginEmail = entry.loginEmail;
+          map.set(key, prev);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }
+
+  function providerDirectoryKey(entry){
+    if(!entry) return '';
+    return [
+      String(entry.name || '').trim().toLowerCase(),
+      String(entry.street || '').trim().toLowerCase(),
+      String(entry.zip || '').trim().toLowerCase(),
+      String(entry.city || '').trim().toLowerCase()
+    ].join('|');
+  }
+
+  function stableProviderIdFromDirectoryEntry(entry){
+    var key = providerDirectoryKey(entry);
+    if(!key) return 'prov_dir_unknown';
+    var h = 0;
+    for(var i = 0; i < key.length; i++){
+      h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    }
+    return 'prov_dir_' + h.toString(16);
+  }
+
+  const TEST_CITY_COORDS = {
+    stuttgart: { lat: 48.7784, lng: 9.1800 },
+    ludwigsburg: { lat: 48.8973, lng: 9.1916 },
+    'bietigheim-bissingen': { lat: 48.9528, lng: 9.1297 },
+    schorndorf: { lat: 48.8014, lng: 9.5282 },
+    waiblingen: { lat: 48.8324, lng: 9.3164 },
+    esslingen: { lat: 48.7396, lng: 9.3047 },
+    fellbach: { lat: 48.8091, lng: 9.2748 },
+    korntal: { lat: 48.8266, lng: 9.1163 },
+    leonberg: { lat: 48.8015, lng: 9.0158 },
+    boeblingen: { lat: 48.6840, lng: 9.0113 }
+  };
+
+  function cityCenter(city){
+    var key = slugifyEmailPart(city || '');
+    return TEST_CITY_COORDS[key] || TEST_CITY_COORDS.stuttgart;
+  }
+
+  function haversineKm(aLat, aLng, bLat, bLng){
+    var toRad = Math.PI / 180;
+    var dLat = (bLat - aLat) * toRad;
+    var dLng = (bLng - aLng) * toRad;
+    var lat1 = aLat * toRad;
+    var lat2 = bLat * toRad;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+
+  function buildMassTestCustomers(providerRows){
+    var rows = Array.isArray(providerRows) ? providerRows.filter(Boolean) : [];
+    var cityMap = new Map();
+    rows.forEach(function(row){
+      var city = String((row && row.city) || '').trim();
+      if(!city) return;
+      var key = city.toLowerCase();
+      if(cityMap.has(key)) return;
+      cityMap.set(key, {
+        id: 'cust_test_' + slugifyEmailPart(city),
+        name: 'Testkunde ' + city,
+        email: 'kunde.' + slugifyEmailPart(city) + '@mittagio-test.de',
+        city: city,
+        locationLabel: city,
+        lat: cityCenter(city).lat,
+        lng: cityCenter(city).lng,
+        discoverRadiusM: 3000
+      });
+    });
+    var list = Array.from(cityMap.values());
+    if(!list.length){
+      list.push({
+        id: 'cust_test_stuttgart',
+        name: 'Testkunde Stuttgart',
+        email: 'kunde.stuttgart@mittagio-test.de',
+        city: 'Stuttgart',
+        locationLabel: 'Stuttgart',
+        lat: TEST_CITY_COORDS.stuttgart.lat,
+        lng: TEST_CITY_COORDS.stuttgart.lng,
+        discoverRadiusM: 3000
+      });
+    }
+    return list.slice(0, 12);
+  }
+
+  function seedMassProviderWeekTestData(providerRows){
+    var rows = Array.isArray(providerRows) ? providerRows.filter(Boolean) : [];
+    if(!rows.length) return { providers: 0, offers: 0, days: 0 };
+    var mealTemplates = [
+      { dish: 'Pasta Napoli', category: 'Veggie', price: 8.40 },
+      { dish: 'Hähnchen mit Reis', category: 'Mit Fleisch', price: 9.80 },
+      { dish: 'Gemüse-Curry', category: 'Vegan', price: 8.90 },
+      { dish: 'Käsespätzle', category: 'Veggie', price: 8.20 },
+      { dish: 'Rindergulasch mit Spätzle', category: 'Mit Fleisch', price: 10.90 },
+      { dish: 'Linseneintopf', category: 'Vegan', price: 7.90 },
+      { dish: 'Ofenkartoffel mit Quark', category: 'Veggie', price: 8.10 },
+      { dish: 'Fischfilet mit Gemüse', category: 'Fisch', price: 11.20 },
+      { dish: 'Falafel Bowl', category: 'Vegan', price: 8.70 }
+    ];
+    var existingOffers = load(LS.offers, []);
+    if(!Array.isArray(existingOffers)) existingOffers = [];
+    var existingWeek = load(LS.week, {});
+    if(!existingWeek || typeof existingWeek !== 'object' || Array.isArray(existingWeek)) existingWeek = {};
+
+    var today = new Date();
+    today.setHours(12, 0, 0, 0);
+    var dayKeys = [];
+    for(var di = 0; di < 7; di++){
+      var d = new Date(today);
+      d.setDate(today.getDate() + di);
+      dayKeys.push(isoDate(d));
+    }
+
+    var keepOffers = existingOffers.filter(function(o){
+      return String((o && (o.source || o.seedSource)) || '') !== MASS_PROVIDER_WEEK_SEED_VERSION;
+    });
+    var nextWeek = Object.assign({}, existingWeek);
+    dayKeys.forEach(function(dayKey){
+      var dayEntries = Array.isArray(existingWeek[dayKey]) ? existingWeek[dayKey] : [];
+      nextWeek[dayKey] = dayEntries.filter(function(entry){
+        return String((entry && (entry.source || entry.seedSource)) || '') !== MASS_PROVIDER_WEEK_SEED_VERSION;
+      });
+    });
+
+    var createdAtBase = Date.now();
+    var generatedOffers = [];
+    var testCustomers = buildMassTestCustomers(rows);
+    var distanceAnchor = testCustomers[0] || { lat: TEST_CITY_COORDS.stuttgart.lat, lng: TEST_CITY_COORDS.stuttgart.lng };
+    rows.forEach(function(entry, providerIdx){
+      var providerName = String((entry && entry.name) || 'Anbieter').trim() || 'Anbieter';
+      var providerStreet = String((entry && entry.street) || '').trim();
+      var providerZip = String((entry && entry.zip) || '').trim();
+      var providerCity = String((entry && entry.city) || '').trim() || 'Stuttgart';
+      var providerAddress = buildAddress({ street: providerStreet, zip: providerZip, city: providerCity });
+      var providerPid = normalizeEmailAddress(entry && entry.loginEmail) || stableProviderIdFromDirectoryEntry(entry);
+      var center = cityCenter(providerCity);
+      dayKeys.forEach(function(dayKey, dayIdx){
+        for(var mealIdx = 0; mealIdx < 3; mealIdx++){
+          var tpl = mealTemplates[(providerIdx * 3 + dayIdx + mealIdx) % mealTemplates.length];
+          var offerId = 'mass_seed_' + cryptoId();
+          var priceOffset = ((providerIdx + dayIdx + mealIdx) % 3) * 0.4;
+          var price = Number((Number(tpl.price || 8.5) + priceOffset).toFixed(2));
+          generatedOffers.push({
+            id: offerId,
+            providerId: providerPid,
+            providerName: providerName,
+            providerStreet: providerStreet,
+            providerZip: providerZip,
+            providerCity: providerCity,
+            address: providerAddress,
+            dish: tpl.dish,
+            category: tpl.category,
+            price: price,
+            pickupWindow: '11:30 – 14:00',
+            day: dayKey,
+            distanceKm: Number(haversineKm(distanceAnchor.lat, distanceAnchor.lng, center.lat, center.lng).toFixed(1)),
+            lat: Number((center.lat + (((providerIdx % 7) - 3) * 0.0025) + (mealIdx * 0.00035)).toFixed(6)),
+            lng: Number((center.lng + (((dayIdx % 7) - 3) * 0.0025) + (mealIdx * 0.00035)).toFixed(6)),
+            hasPickupCode: true,
+            dineInPossible: true,
+            reuse: { enabled: false, deposit: 0 },
+            active: true,
+            source: MASS_PROVIDER_WEEK_SEED_VERSION,
+            seedSource: MASS_PROVIDER_WEEK_SEED_VERSION,
+            createdAt: createdAtBase - (providerIdx * 3000 + dayIdx * 500 + mealIdx * 50)
+          });
+          nextWeek[dayKey].push({
+            providerId: providerPid,
+            cookbookId: '',
+            dish: tpl.dish,
+            price: price,
+            active: true,
+            source: MASS_PROVIDER_WEEK_SEED_VERSION,
+            seedSource: MASS_PROVIDER_WEEK_SEED_VERSION
+          });
+        }
+      });
+    });
+
+    var nextOffers = keepOffers.concat(generatedOffers);
+    save(LS.offers, nextOffers);
+    save(LS.week, nextWeek);
+    save(LS.massTestCustomers, testCustomers);
+    if(typeof window !== 'undefined'){
+      window.offers = nextOffers;
+      window.massTestCustomers = testCustomers;
+    }
+    return { providers: rows.length, offers: generatedOffers.length, days: dayKeys.length, customers: testCustomers.length };
+  }
+
+  function ensureMassProviderWeekTestSeed(force){
+    var currentVersion = load(LS.massProviderWeekSeedVersion, null);
+    if(currentVersion === MASS_PROVIDER_WEEK_SEED_VERSION && !force){
+      return { skipped: true, reason: 'already-seeded' };
+    }
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows) || !rows.length){
+      return { skipped: true, reason: 'no-provider-directory' };
+    }
+    var result = seedMassProviderWeekTestData(rows);
+    save(LS.massProviderWeekSeedVersion, MASS_PROVIDER_WEEK_SEED_VERSION);
+    return result;
+  }
+
+  function findProviderDirectoryByLoginEmail(email){
+    var normEmail = normalizeEmailAddress(email);
+    if(!normEmail) return null;
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows)) return null;
+    for(var i = 0; i < rows.length; i++){
+      var row = rows[i] || {};
+      var rowEmail = normalizeEmailAddress(row.loginEmail || row.email);
+      if(rowEmail && rowEmail === normEmail) return row;
+    }
+    return null;
+  }
+
+  function resolveProviderDirectoryEntryForCurrentProvider(){
+    var p = (typeof provider !== 'undefined' && provider) ? provider : null;
+    if(!p) return null;
+    var rows = load(LS.providerDirectory, []);
+    if(!Array.isArray(rows) || !rows.length) return null;
+    var linkedId = p.linkedProviderDirectoryId ? String(p.linkedProviderDirectoryId) : '';
+    if(linkedId){
+      var byId = rows.find(function(row){ return String(row && row.id) === linkedId; });
+      if(byId) return byId;
+    }
+    return findProviderDirectoryByLoginEmail(p.email || (p.profile && p.profile.email) || '');
+  }
+
+  function applyProviderDirectoryEntryToProfile(providerObj, entry){
+    if(!providerObj || !entry) return providerObj;
+    if(!providerObj.profile) providerObj.profile = {};
+    providerObj.linkedProviderDirectoryId = entry.id || providerObj.linkedProviderDirectoryId || '';
+    providerObj.profile.name = entry.name || providerObj.profile.name || '';
+    providerObj.profile.street = entry.street || providerObj.profile.street || '';
+    providerObj.profile.zip = entry.zip || providerObj.profile.zip || '';
+    providerObj.profile.city = entry.city || providerObj.profile.city || '';
+    providerObj.profile.address = buildAddress(providerObj.profile);
+    providerObj.profile.lockedAddress = true;
+    if(entry.loginEmail) providerObj.profile.email = entry.loginEmail;
+    return providerObj;
+  }
+
+  function upsertRealProviderDirectory(incoming){
+    var existing = load(LS.providerDirectory, []);
+    if(!Array.isArray(existing)) existing = [];
+    var parsed = Array.isArray(incoming) ? incoming : [];
+    if(!parsed.length){
+      setProviderDirectoryWindow(existing);
+      return { imported: 0, total: existing.length };
+    }
+    /* Harte Live-Basis: Testadressen entfernen, nur CSV-Bestand behalten.
+       Bereits gesetzte Login-E-Mails werden pro Schlüssel übernommen. */
+    var existingByKey = new Map();
+    existing.forEach(function(row){
+      var key = providerDirectoryKey(row);
+      if(!key) return;
+      var login = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(login) existingByKey.set(key, login);
+    });
+    var liveOnly = parsed.map(function(row){
+      var next = Object.assign({}, row || {});
+      var key = providerDirectoryKey(next);
+      var persistedLogin = key ? existingByKey.get(key) : '';
+      if(persistedLogin && (!normalizeEmailAddress(next.loginEmail) || isGeneratedProviderTestEmail(next.loginEmail))){
+        next.loginEmail = persistedLogin;
+      }
+      return next;
+    });
+    save(LS.providerDirectory, liveOnly);
+    save(LS.providerDirectoryVersion, REAL_PROVIDER_DIRECTORY_VERSION);
+    setProviderDirectoryWindow(liveOnly);
+    return { imported: parsed.length, total: liveOnly.length };
+  }
+
+  function fetchProviderDirectoryCsv(){
+    if(typeof fetch !== 'function') return Promise.resolve([]);
+    return fetch(PROVIDER_DIRECTORY_SOURCE_URL, { cache: 'no-store' })
+      .then(function(response){
+        if(!response || !response.ok) throw new Error('provider-directory-csv-load-failed');
+        return response.text();
+      })
+      .then(function(csvText){
+        return parseProviderDirectoryCsv(csvText);
+      });
+  }
+
+  (function ensureRealProviderDirectory(){
+    var currentVersion = load(LS.providerDirectoryVersion, null);
+    var existing = load(LS.providerDirectory, []);
+    if(Array.isArray(existing) && existing.length){
+      setProviderDirectoryWindow(existing);
+    } else {
+      setProviderDirectoryWindow([]);
+    }
+    var shouldRefresh = currentVersion !== REAL_PROVIDER_DIRECTORY_VERSION || !Array.isArray(existing) || existing.length === 0;
+    if(!shouldRefresh){
+      ensureMassProviderWeekTestSeed(false);
+      return;
+    }
+    fetchProviderDirectoryCsv()
+      .then(function(parsed){
+        var result = upsertRealProviderDirectory(parsed);
+        var seedResult = ensureMassProviderWeekTestSeed(false);
+        if(typeof console !== 'undefined' && console.log){
+          console.log('[provider-directory] live base imported:', result.imported, 'entries, total:', result.total);
+          if(seedResult && !seedResult.skipped){
+            console.log('[provider-week-seed] generated:', seedResult.offers, 'offers for', seedResult.providers, 'providers');
+          }
+        }
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
+        if(typeof document !== 'undefined'){
+          var activeProfile = document.querySelector('#v-provider-profile.view.active');
+          var activeAdmin = document.querySelector('#v-admin.view.active');
+          if(activeProfile && typeof renderProviderProfile === 'function') renderProviderProfile();
+          if(activeAdmin && typeof renderAdmin === 'function') renderAdmin();
+        }
+      })
+      .catch(function(err){
+        if(typeof console !== 'undefined' && console.warn){
+          console.warn('[provider-directory] csv load failed', err);
+        }
+        ensureMassProviderWeekTestSeed(false);
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
+      });
+  })();
+
+  if(typeof window !== 'undefined'){
+    window.refreshProviderDirectory = function(){
+      return fetchProviderDirectoryCsv().then(function(parsed){
+        var result = upsertRealProviderDirectory(parsed);
+        ensureMassProviderWeekTestSeed(false);
+        if(typeof offers !== 'undefined'){
+          try{
+            offers = load(LS.offers, []);
+            if(typeof window !== 'undefined') window.offers = offers;
+          }catch(_e){}
+        }
+        if(typeof document !== 'undefined'){
+          var activeProfile = document.querySelector('#v-provider-profile.view.active');
+          var activeAdmin = document.querySelector('#v-admin.view.active');
+          if(activeProfile && typeof renderProviderProfile === 'function') renderProviderProfile();
+          if(activeAdmin && typeof renderAdmin === 'function') renderAdmin();
+        }
+        return result;
+      });
+    };
+    window.seedAllProvidersTestWeek = function(){
+      var result = ensureMassProviderWeekTestSeed(true);
+      if(typeof offers !== 'undefined'){
+        try{
+          offers = load(LS.offers, []);
+          if(typeof window !== 'undefined') window.offers = offers;
+        }catch(_e){}
+      }
+      if(typeof console !== 'undefined' && console.log){
+        console.log('[provider-week-seed] manual run', result);
+      }
+      return result;
+    };
+    window.getMassTestCustomers = function(){
+      return load(LS.massTestCustomers, []);
+    };
+    window.activateMassTestCustomer = function(customerId){
+      var list = load(LS.massTestCustomers, []);
+      if(!Array.isArray(list) || !list.length) return null;
+      var target = list.find(function(item){ return String(item.id) === String(customerId || ''); }) || list[0];
+      if(!target) return null;
+      if(typeof customer !== 'undefined' && customer){
+        customer.loggedIn = true;
+        customer.name = target.name || customer.name;
+        customer.email = target.email || customer.email;
+        save(LS.customer, customer);
+      }
+      locationQuery = target.locationLabel || target.city || 'Stuttgart';
+      userLat = Number(target.lat);
+      userLng = Number(target.lng);
+      discoverRadiusM = Number(target.discoverRadiusM || 3000);
+      save('mittagio_discover_radius', discoverRadiusM);
+      if(typeof renderDiscover === 'function') renderDiscover();
+      return target;
+    };
+    window.findProviderDirectoryByLoginEmail = findProviderDirectoryByLoginEmail;
+    window.resolveProviderDirectoryEntryForCurrentProvider = resolveProviderDirectoryEntryForCurrentProvider;
+    window.applyProviderDirectoryEntryToProfile = function(entry){
+      if(typeof provider === 'undefined' || !provider) return null;
+      applyProviderDirectoryEntryToProfile(provider, entry);
+      save(LS.provider, provider);
+      return provider;
+    };
+  }
   /* V47: ABSOLUTE IDENTITÄTS-GARANTIE [cite: 2026-03-04] */
   if(typeof window !== 'undefined'){
     var lsKey = (typeof LS !== 'undefined' && LS.provider) ? LS.provider : 'mittagio_provider_v1';
@@ -115,9 +638,74 @@
     } catch(e){ window.provider = window.provider || { loggedIn: true, id: 'p1', profile: { name: 'Mein Betrieb' } }; window.provider.loggedIn = true; }
   }
   /** UI-State-Helper (Sprint 5b31): show/hide statt style.display [cite: 2026-03-02] */
-  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex'); el.setAttribute('aria-hidden','true'); } }
-  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex'); } } }
-  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; }
+  function hide(el){ if(el){ el.classList.add('is-hidden'); el.classList.remove('is-visible','is-visible-flex','is-visible-inline-flex'); el.setAttribute('aria-hidden','true'); } }
+  function show(el,mode){ if(el){ el.classList.remove('is-hidden'); el.removeAttribute('aria-hidden'); if(mode==='flex'){ el.classList.add('is-visible-flex'); el.classList.remove('is-visible','is-visible-inline-flex'); } else if(mode==='inline-flex'){ el.classList.add('is-visible-inline-flex'); el.classList.remove('is-visible','is-visible-flex'); } else { el.classList.add('is-visible'); el.classList.remove('is-visible-flex','is-visible-inline-flex'); } } }
+  function setVisible(el, mode){ show(el, mode); }
+  if(typeof window !== 'undefined'){ window.hide = hide; window.show = show; window.setVisible = setVisible; }
+
+  /**
+   * Customer-Nav-Höhe dynamisch messen (alle Handys):
+   * Discover-Map nutzt diese Variable als Bottom-Offset statt S25-fixem Wert.
+   */
+  function syncCustomerNavHeightVar(){
+    if(typeof document === 'undefined') return;
+    var root = document.documentElement;
+    if(!root) return;
+    var fallbackPx = 64;
+    var vvHeight = 0;
+    try{
+      vvHeight = window.visualViewport && Number(window.visualViewport.height)
+        ? Math.round(Number(window.visualViewport.height))
+        : Math.round(Number(window.innerHeight) || 0);
+    }catch(_e){}
+    if(!Number.isFinite(vvHeight) || vvHeight <= 0) vvHeight = 800;
+    var nav = document.getElementById('customerNav');
+    var navHeight = 0;
+    if(nav){
+      try{
+        var cs = window.getComputedStyle(nav);
+        var hidden = cs.display === 'none' || cs.visibility === 'hidden' || nav.classList.contains('is-hidden');
+        if(!hidden){
+          var rect = nav.getBoundingClientRect();
+          navHeight = Math.round(rect && rect.height ? rect.height : 0);
+        }
+      }catch(_e){}
+    }
+    if(!Number.isFinite(navHeight) || navHeight <= 0) navHeight = fallbackPx;
+    root.style.setProperty('--viewport-height-px', vvHeight + 'px');
+    root.style.setProperty('--customer-nav-total-height', navHeight + 'px');
+  }
+  function syncDiscoverMapTopInsetVar(){
+    if(typeof document === 'undefined') return;
+    var root = document.documentElement;
+    if(!root) return;
+    var inset = 0;
+    var view = document.getElementById('v-discover');
+    var header = view ? view.querySelector('.discover-header-sticky') : null;
+    var main = view ? view.querySelector('.discover-main') : null;
+    if(header && main){
+      try{
+        var headerRect = header.getBoundingClientRect();
+        var mainRect = main.getBoundingClientRect();
+        inset = Math.max(0, Math.round((headerRect && headerRect.bottom ? headerRect.bottom : 0) - (mainRect && mainRect.top ? mainRect.top : 0)));
+      }catch(_e){}
+    }
+    root.style.setProperty('--discover-map-top-inset', inset + 'px');
+  }
+  if(typeof window !== 'undefined'){
+    window.syncCustomerNavHeightVar = syncCustomerNavHeightVar;
+    window.syncDiscoverMapTopInsetVar = syncDiscoverMapTopInsetVar;
+    window.addEventListener('resize', syncCustomerNavHeightVar, { passive: true });
+    window.addEventListener('resize', syncDiscoverMapTopInsetVar, { passive: true });
+    window.addEventListener('orientationchange', syncCustomerNavHeightVar, { passive: true });
+    window.addEventListener('orientationchange', syncDiscoverMapTopInsetVar, { passive: true });
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', syncCustomerNavHeightVar, { passive: true });
+      window.visualViewport.addEventListener('resize', syncDiscoverMapTopInsetVar, { passive: true });
+    }
+    setTimeout(syncCustomerNavHeightVar, 0);
+    setTimeout(syncDiscoverMapTopInsetVar, 0);
+  }
 
   /* openWizard-Stub entfernt – echte Funktion übernimmt (weiter unten, ~L16294) */
 
@@ -137,6 +725,24 @@
       slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
     }
     return slots;
+  }
+  function parseTimeToMinutes(timeText){
+    const m = String(timeText || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if(!m) return null;
+    const h = Number(m[1]);
+    const mm = Number(m[2]);
+    if(!Number.isFinite(h) || !Number.isFinite(mm)) return null;
+    return h * 60 + mm;
+  }
+  function parsePickupWindowRange(windowText){
+    const raw = String(windowText || '').trim();
+    if(!raw) return null;
+    const m = raw.match(/(\d{1,2}:\d{2})\s*[–—-]\s*(\d{1,2}:\d{2})/);
+    if(!m) return null;
+    const start = parseTimeToMinutes(m[1]);
+    const end = parseTimeToMinutes(m[2]);
+    if(start == null || end == null || end < start) return null;
+    return { start, end };
   }
   window.TIME_SLOTS = window.TIME_SLOTS || getTimeSlots();
 
@@ -329,9 +935,9 @@
     pillarsRow.className = 'discover-card-pillars card-pillars';
     pillarsRow.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 16px 8px; font-size:18px; line-height:1;';
     pillarsRow.innerHTML = [
-      '<span class="pillar-icon" title="Vor Ort" style="' + (vorOrt ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🍴</span>',
-      '<span class="pillar-icon" title="Abholnummer" style="' + (abholnummer ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🧾</span>',
-      '<span class="pillar-icon" title="Mehrweg" style="' + (mehrweg ? '' : 'opacity:0.4; filter:grayscale(100%);') + '">🔄</span>',
+      '<span class="pillar-icon' + (vorOrt ? '' : ' pillar-icon--dim') + '" title="Vor Ort">🍴</span>',
+      '<span class="pillar-icon pillar-abholnummer-icon' + (abholnummer ? '' : ' pillar-icon--dim') + '" title="Abholnummer"><i data-lucide="receipt" style="width:18px;height:18px;"></i></span>',
+      '<span class="pillar-icon' + (mehrweg ? '' : ' pillar-icon--dim') + '" title="Mehrweg">🔄</span>',
     ].join('');
     card.appendChild(pillarsRow);
     
@@ -365,7 +971,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn btn-mittagsbox-cta';
     ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>';
+    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.setProperty('transform', 'scale(1.02)'); ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.setProperty('transform', 'scale(1)'); ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -406,36 +1012,50 @@
 
   function toggleFavorite(id, btn){
     if(!id) return;
+    normalizeDishFavoritesStore();
     const sid = String(id);
     const isRemoving = dishFavs.has(sid);
+    const activeView = document.querySelector('.view.active');
+    const activeViewId = activeView ? activeView.id : '';
+    const cardEl = btn && btn.closest ? btn.closest('.tgtg-list-item, .discover-card-silent, .swipe-card, .dish-card') : null;
+    const tapEl = btn && btn.closest ? (btn.closest('button') || btn.closest('.swipe-card-heart-icon') || btn) : btn;
+    const staleMatchOverlay = document.getElementById('matchOverlayTinder');
+    if(staleMatchOverlay) staleMatchOverlay.remove();
+    const syncFavButtonVisual = function(active){
+      if(btn && btn.classList){
+        btn.classList.toggle('is-favorited', !!active);
+        if(btn.setAttribute) btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      }
+      const iconEl = btn && btn.querySelector ? btn.querySelector('i') : null;
+      if(iconEl){
+        iconEl.style.fill = active ? '#E34D4D' : 'none';
+        iconEl.style.color = active ? '#E34D4D' : '#6b7280';
+        iconEl.style.stroke = active ? '#E34D4D' : '#6b7280';
+      }
+    };
     if(isRemoving){
       dishFavs.delete(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = 'none';
+      syncFavButtonVisual(false);
       showToast('Aus Favoriten entfernt');
+      if(typeof haptic==='function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(8);
     } else {
       dishFavs.add(sid);
-      if(btn && btn.querySelector('i')) btn.querySelector('i').style.fill = '#E34D4D';
+      syncFavButtonVisual(true);
       showToast('Zu Favoriten hinzugefügt! ❤️');
       if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+      if(tapEl && tapEl.classList){
+        tapEl.classList.add('heart-just-clicked');
+        setTimeout(function(){ tapEl.classList.remove('heart-just-clicked'); }, 420);
+      }
+      triggerFavoriteFlyToNav(cardEl, sid);
+      triggerFavoritesIconBounce();
     }
-    save(LS.dishFavs, Array.from(dishFavs));
+    const packed = Array.from(dishFavs);
+    save(LS.dishFavs, packed);
+    localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     if(typeof renderFavorites === 'function') renderFavorites();
-    if(typeof renderDiscover === 'function') renderDiscover();
+    if(typeof renderDiscover === 'function' && activeViewId !== 'v-discover') renderDiscover();
   }
-
-  function shareOffer(data){
-    const shareUrl = location.origin + location.pathname + '#offer/' + data.id;
-    const text = `Schau mal, das gibt es heute bei ${data.providerName}: ${data.dish}. Sollen wir hin?`;
-    if(navigator.share){
-      navigator.share({ title: data.dish, text: text, url: shareUrl });
-    } else {
-      navigator.clipboard.writeText(text + ' ' + shareUrl);
-      showToast('Link kopiert!');
-    }
-  }
-
-  
-
 
   // --- Order Store (localStorage MVP) - MUSS VOR VERWENDUNG DEFINIERT SEIN ---
   /**
@@ -511,7 +1131,7 @@
   if(typeof window !== 'undefined'){ window.loadOrders = loadOrders; window.saveOrders = saveOrders; }
 
   // --- State ---
-  let mode = load(LS.mode, 'customer'); // 'start' | 'customer' | 'provider' (Standard: 'customer' für Discover-Seite)
+  let mode = 'customer'; // Immer auf Kundenseite starten (Discover)
   if(typeof window !== 'undefined') window.mode = mode; // Für js/ui-navigation.js
   // Angebote werden später durch seedExampleData() oder seed() geladen
   // Zuerst aus localStorage laden, falls vorhanden
@@ -520,7 +1140,45 @@
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
+  function normalizeDishFavoritesStore(){
+    try{
+      const modern = load(LS.dishFavs, []);
+      const legacyRaw = localStorage.getItem('mittagio_favorites');
+      const legacy = legacyRaw ? JSON.parse(legacyRaw) : [];
+      const merged = new Set();
+      (Array.isArray(modern) ? modern : []).forEach(function(fid){
+        if(fid == null || fid === '') return;
+        merged.add(String(fid));
+      });
+      (Array.isArray(legacy) ? legacy : []).forEach(function(fid){
+        if(fid == null || fid === '') return;
+        merged.add(String(fid));
+      });
+      dishFavs = merged;
+      const packed = Array.from(merged);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+      return merged;
+    } catch(_e){
+      return dishFavs;
+    }
+  }
+  normalizeDishFavoritesStore();
+  /** In-Memory-`offers` mit localStorage (und async Seed nach CSV-Load) abgleichen – sonst leere Favoriten trotz gespeicherter IDs. */
+  function syncOffersFromStorage(){
+    try{
+      const lo = load(LS.offers, []);
+      if(Array.isArray(lo)){
+        offers = lo;
+        if(typeof window !== 'undefined') window.offers = lo;
+      }
+    }catch(_e){}
+  }
   let cart = load(LS.cart, null); // {providerId, items:[{offerId, qty}]} or null
+  if(typeof window !== 'undefined'){
+    window.cart = cart;
+    if(typeof normalizeOffer === 'function') window.normalizeOffer = normalizeOffer;
+  }
   let orders = loadOrders(); // Load via Order Store
   let customer = load(LS.customer, {
     current_session_id: null, 
@@ -536,29 +1194,14 @@
     reuseEnabled: false
   });
   let provider = load(LS.provider, { loggedIn:false, email:null, current_session_id:null, profile:{ name:'', address:'', street:'', zip:'', city:'', mealWindow:'11:30 – 14:00', mealStart:'11:30', mealEnd:'14:00', lunchWeekdays:[1,2,3,4,5], phone:'', email:'', website:'', logoData:'', reuseEnabledByDefault:false, abholnummerEnabledByDefault:false, wantsAllergensByDefault:false } });
-  /* V47-Garantie: loggedIn=true auf Live + localhost [cite: 2026-03-06] */
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
-    provider.loggedIn = true;
-    provider.onboardingCompleted = provider.onboardingCompleted !== false;
-    provider.id = provider.id || 'p1';
-    provider.email = provider.email || 'demo@mittagio.de';
-    if(!provider.profile) provider.profile = { name: 'Mein Betrieb' };
-  }
   if(typeof window !== 'undefined') window.provider = provider;
-  // V50: ABSOLUTE ENTRIEGELUNG (VIP-Bypass) – Live-Seite + localhost ohne localStorage [cite: 2026-03-05]
-  if(typeof provider !== 'undefined' && typeof location !== 'undefined' && (location.hostname.includes('mittagio') || location.hostname.includes('github') || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
-    mode = 'provider';
-    if(typeof window !== 'undefined') window.mode = mode;
-    if(document.body) document.body.classList.add('provider-mode');
-    if(typeof console !== 'undefined' && console.log) console.log('🔓 V50: System-Zugriff erzwungen (host=', location.hostname, ')');
-  }
-  /* HOISTING-FIX v2: Zuweisung im GLEICHEN Scope wie startListingFlow – direkt nach V50 [cite: Weisser-Screen-Fix 2026-03-11] */
+  /* HOISTING-FIX v2: Zuweisung im GLEICHEN Scope wie startListingFlow */
   if(typeof startListingFlow === 'function'){
     window.startListingFlow = startListingFlow;
     if(typeof startWizard === 'function') window.startWizard = startWizard;
-    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] ✅ startListingFlow via Hoisting auf window (nach V50)');
+    if(typeof console !== 'undefined' && console.log) console.log('[FLOW] ✅ startListingFlow via Hoisting auf window');
   } else {
-    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] ⚠️ startListingFlow NICHT gehoisted bei V50 – typeof:', typeof startListingFlow);
+    if(typeof console !== 'undefined' && console.warn) console.warn('[FLOW] ⚠️ startListingFlow NICHT gehoisted – typeof:', typeof startListingFlow);
   }
   let cookbook = load(LS.cookbook, []); // [{id, dish, category, price, allergens[], extras?, reuse? , photoData?}]
   let week = load(LS.week, {}); // { 'YYYY-MM-DD': [{ providerId, cookbookId, dish, price, timeStart?, timeEnd? }, ...] }
@@ -566,8 +1209,8 @@
 
   var GOOGLE_PLACES_API_KEY = '';  // Optional: Für Adress-Autocomplete bei Betriebsdaten eintragen
   const CATEGORIES = ['🥩 Fleisch','🥦 Veggie','🌿 Vegan'];
-  /** Kochbuch: Fleisch, Veggie, Vegan [CLEAN CODE 2026-02-23] */
-  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Eintopf','Snack','Veggie'];
+  /** Kochbuch-Pills synchron zu Step 1 */
+  const COOKBOOK_CATEGORIES = ['Alle','Fleisch','Veggie','Vegan'];
   const CAT_MAP = {
     '🥩 Fleisch':'Fleisch','🥦 Veggie':'Veggie','🌿 Vegan':'Vegan',
     'Vegan':'Vegan',
@@ -621,7 +1264,7 @@
   let providerWeekDay = isoDate(new Date());
   let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
-  let cookbookCategory = 'Alle'; // Konzept: Alle | Fleisch | Eintopf | Snack | Veggie (docs/KOCHBUCH_KONZEPT.md)
+  let cookbookCategory = 'Alle'; // Alle | Fleisch | Veggie | Vegan
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
   let selectedCookbookId = null; // wird auf aktuelle Magazin-Karte gesetzt (für BEARBEITEN/WOCHENPLAN/AUSWÄHLEN)
   let cookbookSortBy = 'date'; // 'date' | 'quantity' | 'price' | 'name'
@@ -636,12 +1279,12 @@
   let weekUndoTimer = null;
   let weekJustSwiped = false;
   let weekPlanSortMode = false;
-  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt; Fallback: Schorndorf (73614)
+  let locationQuery = ''; // Wird durch Auto-GPS oder manuelle Eingabe gesetzt; Fallback: Stuttgart
   let userLat = null;
   let userLng = null;
-  const SCHORNDORF_LAT = 48.8014;
-  const SCHORNDORF_LNG = 9.5282;
-  const DEFAULT_LOCATION_FALLBACK = 'Schorndorf';
+  const SCHORNDORF_LAT = 48.7784;
+  const SCHORNDORF_LNG = 9.1800;
+  const DEFAULT_LOCATION_FALLBACK = 'Stuttgart';
   let pickupDone = new Set(load(LS.pickupDone, []));
   let activeOrderId = null;
   let ordersFilter = 'offen';
@@ -1501,8 +2144,9 @@
     title.textContent = 'Betriebsdaten';
     wrap.appendChild(title);
     var subtitle = document.createElement('p');
+    subtitle.id = 'providerBusinessDataSubtitle';
     subtitle.setAttribute('style', 'margin:0 0 20px; font-size:14px; color:#64748b; line-height:1.4;');
-    subtitle.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
+    subtitle.textContent = 'Betriebsname tippen – wir übernehmen Adresse automatisch aus deiner Anbieterbasis.';
     wrap.appendChild(subtitle);
     wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[0]));
     wrap.appendChild(createProviderBusinessInputGroup(PROVIDER_BUSINESS_FIELDS[1]));
@@ -1809,14 +2453,34 @@
   // --- Discover render (App-like UX, PWA, Light Mode) ---
   let activeDiscoverFilter = 'near'; // 'near', 'Fleisch', 'Veggie', 'Vegan', 'provider' [SYNC MASTER-CARD]
   let currentProviderFilter = null;
-  let discoverRadiusM = parseInt(load('mittagio_discover_radius', '1000'), 10) || 1000; // 500, 1000, 3000
+  let discoverRadiusM = 50000; // Testmodus: groß genug, um alle Anbieter durchzuklicken
+  save('mittagio_discover_radius', discoverRadiusM);
   const DISCOVER_CAT_MULTI = { Fleisch: ['Fleisch','Mit Fleisch'], 'Mit Fleisch': ['Fleisch','Mit Fleisch'], Veggie: ['Veggie'], Vegan: ['Vegan'], Fisch: ['Fisch'] };
+  function getPreferredDiscoverCategoryFromFoodProfile(){
+    const prefs = (customer && customer.dietaryPreferences) ? customer.dietaryPreferences : {};
+    if(prefs.vegan) return 'Vegan';
+    if(prefs.vegetarian) return 'Veggie';
+    return 'near';
+  }
+  function applyDiscoverDefaultsFromFoodProfile(opts){
+    const force = !!(opts && opts.force);
+    const preferred = getPreferredDiscoverCategoryFromFoodProfile();
+    if(preferred === 'near'){
+      if(force && (activeDiscoverFilter === 'Veggie' || activeDiscoverFilter === 'Vegan')){
+        activeDiscoverFilter = 'near';
+      }
+      return;
+    }
+    if(force || !activeDiscoverFilter || activeDiscoverFilter === 'near'){
+      activeDiscoverFilter = preferred;
+    }
+  }
   
   // Location-Autofill: Nur Schorndorf-Umgebung (Demo)
   const locationSuggestions = [
-    'Schorndorf', '73614', '73614 Schorndorf',
-    'Schorndorf-Weiler', 'Winterbach', 'Remshalden', 'Urbach', 'Plüderhausen',
-    '73614', '73617', '73630', '73634', '73642', '73660'
+    'Stuttgart', '70173', '70174', '70178', '70182',
+    'Ludwigsburg', '71634', 'Bietigheim-Bissingen', '74321',
+    'Schorndorf', '73614'
   ];
   
   function filterLocationSuggestions(query){
@@ -1829,6 +2493,8 @@
   }
   
   function renderDiscover(){
+    syncOffersFromStorage();
+    applyDiscoverDefaultsFromFoodProfile();
     // Date Bar rendern (neu)
     renderDiscoverDays();
     
@@ -1974,7 +2640,7 @@
     // Globale Funktion für Location-Auswahl (Schorndorf setzt Koordinaten für Filter)
     window.selectLocation = function(loc){
       locationQuery = loc;
-      if(/schorndorf|73614/i.test(String(loc))){
+      if(/stuttgart|701|schorndorf|73614/i.test(String(loc))){
         userLat = SCHORNDORF_LAT;
         userLng = SCHORNDORF_LNG;
       }
@@ -2170,7 +2836,8 @@
     
     // Standort-Filter
     const q = String(locationQuery||'').trim().toLowerCase();
-    if(q){
+    const isDefaultCityQuery = q === String(DEFAULT_LOCATION_FALLBACK).toLowerCase();
+    if(q && !isDefaultCityQuery){
       list = list.filter(o=>{
         const data = normalizeOffer(o);
         const addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
@@ -2192,8 +2859,7 @@
         offersEl.appendChild(createSlimCardSkeleton());
       }
       
-      // Kurze Verzögerung für bessere UX (simuliert Ladezeit)
-      setTimeout(() => {
+      // Direkt rendern: kein künstlicher Delay beim Öffnen der Kartenansicht.
       offersEl.innerHTML = '';
       if(emptyEl) hide(emptyEl);
 
@@ -2238,7 +2904,6 @@
       if(typeof lucide !== 'undefined'){
         setTimeout(function(){ lucide.createIcons(); }, 50);
       }
-      }, 300); // 300ms Delay für realistische Ladezeit
     }
     
     // Demo: Match-Screen Test (kann später durch Swipe-System ersetzt werden)
@@ -2249,7 +2914,8 @@
   let discoverViewMode = load(LS.discoverView, 'list'); // 'list' oder 'swipe'
   
   // Zeit-Filter State (Standard: 10 Min Gehzeit)
-  let activeTimeFilter = load('mittagio_timeFilter', 'walking'); // 'walking' (10 min) oder 'driving' (15 min)
+  let activeTimeFilter = 'all'; // Testmodus: kein Zeit-Limit
+  save('mittagio_timeFilter', activeTimeFilter);
   
   // Swipe-Location-Info aktualisieren
   function updateSwipeLocationInfo(){
@@ -2298,6 +2964,7 @@
     
     const listEl = document.getElementById('discoverOffers');
     const mapWrap = document.getElementById('discoverMap');
+    const discoverViewEl = document.getElementById('v-discover');
     const swipeEl = document.getElementById('discoverSwipe');
     const emptyEl = document.getElementById('discoverEmpty');
     const switchBtn = document.getElementById('discoverViewSwitchBtn');
@@ -2305,6 +2972,9 @@
     const switchLabel = document.getElementById('discoverViewSwitchLabel');
     
     if(discoverViewMode === 'map'){
+      if(typeof syncCustomerNavHeightVar === 'function') syncCustomerNavHeightVar();
+      if(typeof syncDiscoverMapTopInsetVar === 'function') syncDiscoverMapTopInsetVar();
+      if(discoverViewEl) discoverViewEl.classList.add('is-map-mode');
       if(listEl) hide(listEl);
       if(emptyEl) hide(emptyEl);
       if(mapWrap) { show(mapWrap); renderDiscoverMap(); }
@@ -2317,6 +2987,9 @@
         else hide(routeEl);
       }
     } else {
+      if(discoverViewEl) discoverViewEl.classList.remove('is-map-mode');
+      if(discoverViewEl) discoverViewEl.classList.remove('map-drawer-open');
+      if(typeof closeDiscoverPinDrawer === 'function') closeDiscoverPinDrawer();
       if(listEl) show(listEl, 'flex');
       if(mapWrap) hide(mapWrap);
       if(swipeEl) hide(swipeEl);
@@ -2333,7 +3006,7 @@
   
   var discoverLeafletMap = null;
   var discoverLeafletMarkers = [];
-  var SCHORNDORF_CENTER = [48.8054, 9.5272];
+  var SCHORNDORF_CENTER = [48.7784, 9.1800];
   function offerToLatLng(o){
     var data = normalizeOffer(o);
     if(o.lat != null && o.lng != null) return [Number(o.lat), Number(o.lng)];
@@ -2358,7 +3031,8 @@
       return d <= radiusKm;
     });
     var q = String(locationQuery||'').trim().toLowerCase();
-    if(q){
+    var isDefaultCityQuery = q === String(DEFAULT_LOCATION_FALLBACK).toLowerCase();
+    if(q && !isDefaultCityQuery){
       list = list.filter(function(o){
         var data = normalizeOffer(o);
         var addr = buildAddress({address:data.address, street:data.providerStreet, zip:data.providerZip, city:data.providerCity});
@@ -2410,7 +3084,10 @@
       var color = hasAbholnummer ? '#FFD700' : '#22c55e';
       var icon = L.divIcon({ className: 'discover-leaflet-pin', html: '<div style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.25);"></div>', iconSize: [28, 28], iconAnchor: [14, 14] });
       var marker = L.marker(latlng, { icon: icon }).addTo(discoverLeafletMap);
-      marker.on('click', function(){ openDiscoverPinDrawer(o); });
+      marker.on('click', function(){
+        if(typeof closeDiscoverPinDrawer === 'function') closeDiscoverPinDrawer();
+        openOffer(o.id);
+      });
       discoverLeafletMarkers.push(marker);
     });
     discoverLeafletMap.fitBounds(bounds.pad(0.15), { maxZoom: 16 });
@@ -2420,42 +3097,17 @@
   
   window.openDiscoverPinDrawer = function(offer){
     var data = normalizeOffer(offer);
-    var drawer = document.getElementById('discoverPinDrawer');
-    var imgEl = document.getElementById('discoverPinDrawerImage');
-    var titleEl = document.getElementById('discoverPinDrawerTitle');
-    var priceEl = document.getElementById('discoverPinDrawerPrice');
-    var pillarsEl = document.getElementById('discoverPinDrawerPillars');
-    var minutesEl = document.getElementById('discoverPinDrawerMinutes');
-    var routeEl = document.getElementById('discoverPinDrawerRoute');
-    var btnEl = document.getElementById('discoverPinDrawerBtn');
-    var backdrop = document.getElementById('discoverPinDrawerBackdrop');
-    if(!drawer || !titleEl || !pillarsEl || !btnEl) return;
-    if(imgEl) imgEl.src = data.imageUrl || 'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=800&q=80';
-    titleEl.textContent = data.dish || 'Gericht';
-    if(priceEl) priceEl.textContent = euro(data.price);
-    var p = offers.find(function(x){ return x.providerId === data.providerId; });
-    var abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
-    var mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    pillarsEl.innerHTML = '<div class="pillar-mini active green" title="Vor Ort möglich">🍴</div><div class="pillar-mini ' + (abholnummer ? 'active yellow' : '') + '" title="Abholnummer aktiv">🧾</div><div class="pillar-mini ' + (mehrweg ? 'active petrol' : '') + '" title="Mehrweg verfügbar">🔄</div>';
-    var walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
-    var carMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 1.5) : null;
-    if(minutesEl) minutesEl.textContent = (walkMin != null ? '🚶 ' + (walkMin < 1 ? '< 1' : walkMin) + ' Min. zu Fuß' : '') + (walkMin != null && carMin != null ? ' · ' : '') + (carMin != null ? '🚗 ' + (carMin < 1 ? '< 1' : carMin) + ' Min. mit dem Auto' : '') || '';
-    var addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
-    if(routeEl){
-      routeEl.href = addr ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr)) : '#';
-      if(discoverViewMode === 'map' && addr) setVisible(routeEl, 'inline-flex');
-      else hide(routeEl);
-    }
-    btnEl.onclick = function(){ closeDiscoverPinDrawer(); openOffer(data.id); };
-    if(backdrop) backdrop.classList.add('open');
-    drawer.classList.add('open');
+    if(!data || !data.id) return;
+    openOffer(data.id);
   };
   
   window.closeDiscoverPinDrawer = function(){
     var drawer = document.getElementById('discoverPinDrawer');
     var b = document.getElementById('discoverPinDrawerBackdrop');
+    var discoverViewEl = document.getElementById('v-discover');
     if(drawer) drawer.classList.remove('open');
     if(b) b.classList.remove('open');
+    if(discoverViewEl) discoverViewEl.classList.remove('map-drawer-open');
   };
   
   var discoverViewSwitchBtn = document.getElementById('discoverViewSwitchBtn');
@@ -2592,15 +3244,13 @@
       });
     }
     
-    // Filter: Entferne bereits gelikte oder abgelehnte Gerichte
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
+    // Filter: Entferne bereits favorisierte (Quelle: dishFavs) oder abgelehnte Gerichte
     const disliked = JSON.parse(sessionStorage.getItem('mittagio_disliked') || '[]');
     
     list = list.filter(o => {
       const data = normalizeOffer(o);
-      const dishKey = data.id;
-      // Zeige nur Gerichte, die weder geliked noch abgelehnt wurden
-      return !favorites.includes(dishKey) && !disliked.includes(dishKey);
+      const dishKey = String(data.id);
+      return !dishFavs.has(dishKey) && !disliked.includes(dishKey) && !disliked.includes(data.id);
     });
     
     swipeCards = list;
@@ -2994,23 +3644,19 @@
     const abholnummer = !!(offerProvider && (offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode)));
     const mehrweg = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
     
+    const sid = String(dishKey);
     // 3-Säulen einfrieren: Status beim Favorisieren speichern
-    setFavPillars(dishKey, { vorOrt, abholnummer, mehrweg });
-    
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    if(!favorites.includes(dishKey)){
-      favorites.push(dishKey);
-      localStorage.setItem('mittagio_favorites', JSON.stringify(favorites));
-    }
-    if(!dishFavs.has(dishKey)){
-      dishFavs.add(dishKey);
-      save(LS.dishFavs, Array.from(dishFavs));
+    setFavPillars(sid, { vorOrt, abholnummer, mehrweg });
+    if(!dishFavs.has(sid)){
+      dishFavs.add(sid);
+      const packed = Array.from(dishFavs);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     }
     
     triggerHapticFeedback([20, 10, 30]);
-    
-    // "Lecker!" Match-Overlay anzeigen
-    showMatchOverlay(data);
+    triggerFavoriteFlyToNav(null, sid);
+    showToast('Zu Favoriten hinzugefügt! ❤️', 1400);
     
     // Favoriten-Icon in Nav bouncen lassen
     triggerFavoritesIconBounce();
@@ -3034,7 +3680,7 @@
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">In meine Box 🍱</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zur Mittagsbox 🍱</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
@@ -3056,6 +3702,52 @@
       icon.classList.add('fav-icon-bounce');
       setTimeout(() => icon.classList.remove('fav-icon-bounce'), 600);
     }
+  }
+
+  function triggerFavoriteFlyToNav(cardEl, offerId){
+    const favNavBtn = document.querySelector('#customerNav button[data-go="fav"]');
+    if(!favNavBtn) return;
+    let sourceEl = null;
+    if(cardEl && cardEl.querySelector){
+      sourceEl = cardEl.querySelector('.tgtg-list-item-img-wrap img, .discover-card-img-inner img, .swipe-card-image img, img');
+    }
+    if(!sourceEl && offerId){
+      const fallbackCard = document.querySelector('.swipe-card[data-offer-id="' + offerId + '"]');
+      if(fallbackCard) sourceEl = fallbackCard.querySelector('.swipe-card-image img');
+    }
+    const sourceRect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+    const targetRect = favNavBtn.getBoundingClientRect();
+    if(!targetRect) return;
+
+    const flyEl = sourceEl ? sourceEl.cloneNode(true) : document.createElement('div');
+    if(!sourceEl){
+      flyEl.textContent = '❤️';
+      flyEl.style.cssText = 'display:flex; align-items:center; justify-content:center; font-size:22px; background:#fff;';
+    }
+    const startWidth = sourceRect ? Math.max(44, Math.min(84, Math.round(sourceRect.width * 0.5))) : 52;
+    const startHeight = sourceRect ? Math.max(44, Math.min(84, Math.round(sourceRect.height * 0.5))) : 52;
+    const startLeft = sourceRect ? (sourceRect.left + sourceRect.width / 2 - startWidth / 2) : (window.innerWidth / 2 - startWidth / 2);
+    const startTop = sourceRect ? (sourceRect.top + sourceRect.height / 2 - startHeight / 2) : (window.innerHeight * 0.45 - startHeight / 2);
+    const endLeft = targetRect.left + targetRect.width / 2 - startWidth / 2;
+    const endTop = targetRect.top + targetRect.height / 2 - startHeight / 2;
+
+    flyEl.classList.add('favorite-fly-ghost');
+    flyEl.style.left = Math.round(startLeft) + 'px';
+    flyEl.style.top = Math.round(startTop) + 'px';
+    flyEl.style.width = startWidth + 'px';
+    flyEl.style.height = startHeight + 'px';
+    document.body.appendChild(flyEl);
+
+    const dx = Math.round(endLeft - startLeft);
+    const dy = Math.round(endTop - startTop);
+    const anim = flyEl.animate([
+      { transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
+      { transform: 'translate3d(' + Math.round(dx * 0.65) + 'px,' + Math.round(dy * 0.65) + 'px,0) scale(0.72)', opacity: 0.92, offset: 0.7 },
+      { transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(0.28)', opacity: 0.15, offset: 1 }
+    ], { duration: 620, easing: 'cubic-bezier(0.2, 0.9, 0.2, 1)', fill: 'forwards' });
+    anim.onfinish = function(){
+      if(flyEl && flyEl.parentNode) flyEl.parentNode.removeChild(flyEl);
+    };
   }
   
   // === MITTAGESSEN-TINDER: Erst Filtern, dann Swipen ===
@@ -3871,50 +4563,76 @@
     const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
     let walkingMin = '';
     let carMin = '';
+    let distanceLabel = '';
     if(data.distanceKm != null){
       walkingMin = Math.round(Number(data.distanceKm) * 12) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 12));
       carMin = Math.round(Number(data.distanceKm) * 1.5) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 1.5));
+      var dist = Number(data.distanceKm);
+      distanceLabel = dist < 1 ? '< 1 km' : (String(dist.toFixed(1)).replace('.', ',') + ' km');
     }
-    const providerName = esc(data.providerName || 'Anbieter');
     const dishName = esc(data.dish || 'Gericht');
+    const providerName = esc(cleanProviderDisplayName(data.providerName));
+    const todayKey = isoDate(new Date());
+    const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
+    const uspOverlayHtml = abholnummer
+      ? `<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
+      : `<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`;
+    const feedbackTap = () => {
+      try{
+        if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+        else if(typeof haptic === 'function') haptic(8);
+        else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+      } catch(_e){}
+    };
     
     card.innerHTML = `
-      <div class="tgtg-list-item-img-wrap tgtg-list-item-img-compact">
+      <div class="tgtg-list-item-img-wrap">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="tgtg-actions-top">
-          <button type="button" class="tgtg-btn-floating action-btn-fav" aria-label="Favorit" title="Favorit"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;' : 'color:#666;'}"></i></button>
-          <button type="button" class="tgtg-btn-floating" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#1a1a1a;"></i></button>
+        <div class="tgtg-usp-overlay ${abholnummer ? 'is-active' : ''}">
+          ${uspOverlayHtml}
         </div>
-        <div class="tgtg-price-badge">${euro(data.price)}</div>
       </div>
-      <div class="tgtg-list-item-body">
-        <div class="tgtg-list-item-pillars">
-          <span class="tgtg-list-item-pill ${vorOrt ? 'active' : ''}">🍴</span>
-          <span class="tgtg-list-item-pill ${mehrweg ? 'active' : ''}">🔄</span>
-          <span class="tgtg-list-item-pill ${abholnummer ? 'active' : ''}">🧾</span>
-        </div>
-        <h3 class="tgtg-list-item-title">${dishName}</h3>
-        <p class="tgtg-list-item-meta">${providerName} &gt;</p>
-        <div class="tgtg-list-item-row tgtg-list-item-meta-row">
-          ${walkingMin ? `<span class="tgtg-meta-chip">🏃 ${walkingMin} Min.</span>` : ''}
-          ${carMin ? `<span class="tgtg-meta-chip">🚗 ${carMin} Min.</span>` : ''}
-        </div>
-        <div class="tgtg-list-item-row tgtg-list-item-cta-row">
+      <div class="tgtg-list-item-content">
+        <div class="tgtg-list-item-head-row">
+          <h3 class="tgtg-list-item-title">${dishName}</h3>
           <span class="tgtg-list-item-price">${euro(data.price)}</span>
-          <button type="button" class="btn-cust-primary dish-card-cta">In meine Box 🍱</button>
         </div>
+        <button type="button" class="tgtg-list-item-provider-link" aria-label="Anbieter ansehen">
+          <span class="tgtg-list-item-provider">${providerName}</span>
+        </button>
+        <p class="tgtg-list-item-facts">
+          ${distanceLabel ? `📍 ${distanceLabel}` : ''} ${carMin ? ` · 🚗 ${carMin} Min` : ''}
+          ${mehrweg ? ' · ♻️ Mehrweg' : ''} ${vorOrt ? ' · 🍽️ Vor Ort' : ''}
+        </p>
+      </div>
+      <div class="tgtg-list-item-action-bar dish-card-actions">
+        <div class="tgtg-actions-left">
+          <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn${isFavorited ? ' is-favorited' : ''}" aria-label="Favorit" title="Favorit" aria-pressed="${isFavorited ? 'true' : 'false'}"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;stroke:#e74c3c;' : 'color:#6b7280;stroke:#6b7280;'}"></i></button>
+          <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
+        </div>
+        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">${isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox 🍱'}</button>
       </div>
     `;
     
     const imgEl = card.querySelector('.tgtg-list-item-img-wrap img');
     if(imgEl){ imgEl.onload = function(){ imgEl.classList.add('img-loaded'); }; if(imgEl.complete) imgEl.classList.add('img-loaded'); }
     
-    const shareBtn = card.querySelector('.tgtg-actions-top .tgtg-btn-floating[aria-label="Teilen"]');
-    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); shareOffer(data); };
+    const shareBtn = card.querySelector('.action-btn-share');
+    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); feedbackTap(); shareOffer(data); };
+    const providerBtn = card.querySelector('.tgtg-list-item-provider-link');
+    if(providerBtn){
+      providerBtn.onclick = function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        feedbackTap();
+        if(data.providerId) showProviderProfilePublic(data.providerId);
+      };
+    }
     const favBtn = card.querySelector('.action-btn-fav');
     if(favBtn){
       favBtn.onclick = function(e){
         e.stopPropagation(); e.preventDefault();
+        feedbackTap();
         toggleFavorite(data.id, favBtn);
         if(typeof lucide !== 'undefined') lucide.createIcons();
         favBtn.classList.add('heart-just-clicked');
@@ -3928,6 +4646,7 @@
       else {
         ctaBtn.onclick = function(e){
           e.stopPropagation(); e.preventDefault();
+          feedbackTap();
           const thumb = card.querySelector('.tgtg-list-item-img-wrap img');
           flyThumbnailToMittagsbox(thumb, function(){
             if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
@@ -3941,7 +4660,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.tgtg-actions-top') || e.target.closest('.tgtg-price-badge') || e.target.closest('.dish-card-cta')) return;
+      if(e.target.closest('.tgtg-actions-left') || e.target.closest('.dish-card-cta') || e.target.closest('.tgtg-list-item-provider-link')) return;
       openOffer(data.id);
     };
     
@@ -4191,7 +4910,7 @@
       }
     }
     
-    // Actions: Primary CTA "In meine Box" (gelber Button ohne graue Box)
+    // Actions: Primary CTA "Zur Mittagsbox" (gelber Button ohne graue Box)
     if(interactive){
       if(isPolaroid){
         // Polaroid: Gelber Button direkt auf weißem Rand (ohne graue Box)
@@ -4206,7 +4925,7 @@
           orderBtn.style.setProperty('transform', 'translateY(0)');
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
-        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>In meine Box</span>`;
+        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
           orderBtn.style.setProperty('opacity', '0.5');
@@ -4227,7 +4946,7 @@
         const orderBtn=document.createElement('button');
         orderBtn.type='button';
         orderBtn.className='card-action primary';
-        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>In meine Box</span>`;
+        orderBtn.innerHTML = `${iconMarkup('shopping-basket')} <span>Zur Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         orderBtn.onclick=(e)=>{ e.stopPropagation(); const thumb = card.querySelector('img'); flyThumbnailToMittagsbox(thumb, () => handleOrderClick(data)); };
         
@@ -4342,11 +5061,13 @@
     renderDiscover();
     renderStart();
     renderFavorites();
+    if(typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
     updateSheetFavs();
   }
 
   function toggleDishFav(offerId){
     if(!offerId) return;
+    normalizeDishFavoritesStore();
     const sid = String(offerId);
     triggerHapticFeedback([15]);
     if(dishFavs.has(sid)){
@@ -4364,7 +5085,9 @@
         setFavPillars(sid, { vorOrt, abholnummer, mehrweg });
       }
     }
-    save(LS.dishFavs, Array.from(dishFavs));
+    const packed = Array.from(dishFavs);
+    save(LS.dishFavs, packed);
+    localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
     renderDiscover();
     renderStart();
     renderFavorites();
@@ -4461,15 +5184,91 @@
 
   // Heute-Fokus: Immer nur heute anzeigen (kein Day-Switcher mehr)
   let activeFavDay = isoDate(new Date()); // Immer heute
+  const LS_FAVORITES_MODE = 'mittagio_favorites_mode_v1';
+  function getFavoritesMode(){
+    const raw = load(LS_FAVORITES_MODE, 'solo');
+    return raw === 'team' ? 'team' : 'solo';
+  }
+  function setFavoritesMode(nextMode){
+    const safe = nextMode === 'team' ? 'team' : 'solo';
+    save(LS_FAVORITES_MODE, safe);
+    return safe;
+  }
+  let favShareChoiceActions = null;
+  function closeFavShareChoiceSheet(){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet){
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+    favShareChoiceActions = null;
+  }
+  function openFavShareChoiceSheet(actions){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    const btnSingle = document.getElementById('btnFavChoiceSingleShare');
+    const singleText = document.getElementById('favChoiceSingleText');
+    if(!bd || !sheet){
+      if(actions && typeof actions.onAllShare === 'function') actions.onAllShare();
+      return;
+    }
+    favShareChoiceActions = actions || {};
+    if(btnSingle){
+      if(actions && typeof actions.onSingleShare === 'function'){
+        show(btnSingle, 'flex');
+        const label = (actions.singleLabel && String(actions.singleLabel).trim()) ? String(actions.singleLabel).trim() : 'Dieses Gericht teilen';
+        if(singleText) singleText.textContent = label;
+      } else {
+        hide(btnSingle);
+      }
+    }
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    sheet.setAttribute('aria-hidden', 'false');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [sheet] }); }, 20);
+  }
+  (function initFavShareChoiceSheet(){
+    const bd = document.getElementById('favShareChoiceBd');
+    const sheet = document.getElementById('favShareChoiceSheet');
+    const btnSingle = document.getElementById('btnFavChoiceSingleShare');
+    const btnQuick = document.getElementById('btnFavChoiceQuickShare');
+    const btnTogether = document.getElementById('btnFavChoiceTogether');
+    const btnCancel = document.getElementById('btnFavChoiceCancel');
+    if(!bd || !sheet || !btnQuick || !btnTogether || !btnCancel || !btnSingle) return;
+    if(sheet.dataset.bound === '1') return;
+    sheet.dataset.bound = '1';
+    bd.onclick = function(){ closeFavShareChoiceSheet(); };
+    btnCancel.onclick = function(){ closeFavShareChoiceSheet(); };
+    btnSingle.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onSingleShare === 'function') actions.onSingleShare();
+    };
+    btnQuick.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onAllShare === 'function') actions.onAllShare();
+    };
+    btnTogether.onclick = function(){
+      const actions = favShareChoiceActions || {};
+      closeFavShareChoiceSheet();
+      if(typeof actions.onTogether === 'function') actions.onTogether();
+    };
+  })();
   
   function renderFavorites(){
+    syncOffersFromStorage();
+    normalizeDishFavoritesStore();
+    const favoritesMode = getFavoritesMode();
     const provGrid=document.getElementById('favProviders');
     const provEmpty=document.getElementById('emptyFavProviders');
     const dishGrid=document.getElementById('favDishes');
     const dishEmpty=document.getElementById('emptyFavDishes');
     const favEmptyState = document.getElementById('favEmptyState');
     const favContent = document.getElementById('favContent');
-    if(!provGrid || !dishGrid || !provEmpty || !dishEmpty) return;
+    if(!provGrid || !dishGrid || !dishEmpty) return;
     
     // Day-Switcher ENTFERNT: Fokus zu 100% auf dem aktuellen Tag
     // activeFavDay wird immer auf heute gesetzt
@@ -4500,7 +5299,7 @@
       });
 
     // Empty State: Wenn beide Listen leer sind, zeige zentrierten Empty State
-    const hasAnyFavorites = providerList.length > 0 || dishList.length > 0;
+    const hasAnyFavorites = providerFavs.size > 0 || dishList.length > 0;
     
     if(favEmptyState){
       if(hasAnyFavorites) hide(favEmptyState);
@@ -4515,6 +5314,23 @@
     if(favContent){
       if(hasAnyFavorites) show(favContent);
       else hide(favContent);
+    }
+    const favEmptyIcon = document.getElementById('favEmptyIcon');
+    const favEmptyTitle = document.getElementById('favEmptyTitle');
+    const favEmptyText = document.getElementById('favEmptyText');
+    const favEmptySteps = document.getElementById('favEmptySteps');
+    if(favEmptyTitle && favEmptyText && favEmptySteps){
+      if(favoritesMode === 'team'){
+        if(favEmptyIcon) favEmptyIcon.textContent = '🗳️';
+        favEmptyTitle.textContent = 'Allein essen ist doof?';
+        favEmptyText.textContent = 'Markiere deine Favoriten und teile sie mit deinem Team. Gemeinsam entscheiden, schneller genießen!';
+        favEmptySteps.innerHTML = '<li>❤️ Herz drücken</li><li>🔗 Link teilen</li><li>🗳️ Abstimmen</li>';
+      } else {
+        if(favEmptyIcon) favEmptyIcon.textContent = '🍱';
+        favEmptyTitle.textContent = 'Deine Favoriten warten auf dich';
+        favEmptyText.textContent = 'Speichere Gerichte mit ❤️ und entscheide später in Ruhe, was in deine Mittagsbox kommt.';
+        favEmptySteps.innerHTML = '<li>❤️ Favorit markieren</li><li>📌 Später wiederfinden</li><li>🍱 Zur Mittagsbox legen</li>';
+      }
     }
     
     // Provider Section - "Deine Lieblings-Anbieter heute"
@@ -4534,10 +5350,12 @@
     
     const sectionProviders = document.getElementById('sectionProviders');
     if(sectionProviders){
-      if(providerList.length > 0) show(sectionProviders);
+      if(providerFavs.size > 0) show(sectionProviders);
       else hide(sectionProviders);
     }
-    if(providerList.length) hide(provEmpty); else show(provEmpty);
+    if(provEmpty){
+      if(providerFavs.size > 0) show(provEmpty); else hide(provEmpty);
+    }
     
     // Alle favorisierten Anbieter durchgehen (nicht nur die mit Angeboten für heute)
     const allFavoritedProviders = Array.from(providerFavs);
@@ -4580,6 +5398,11 @@
         }
       }
     });
+    if(provEmpty){
+      if(providerMap.size > 0) hide(provEmpty);
+      else if(providerFavs.size > 0) show(provEmpty);
+      else hide(provEmpty);
+    }
 
     // Zusammenfassung: Gesamtwert der Mahlzeiten heute
     const favSummaryBar = document.getElementById('favSummaryBar');
@@ -4613,7 +5436,7 @@
     topFour.forEach(o=>{
       if(o?.id){
         try {
-          const favCard = createFavoriteGridCard(o);
+          const favCard = createFavoriteGridCard(o, { mode: favoritesMode });
           dishGrid.appendChild(favCard);
         } catch(err){
           console.error('Error rendering dish favorite:', err, o);
@@ -4621,10 +5444,7 @@
       }
     });
     
-    // Share (Web Share API) – Logik-Weiche:
-    // IF User wählt 'Team-Bestellung': Variante 2 (Direkt-Warenkorb-Link) – zukünftig
-    // ELSE IF Abholnummer 🧾 vorhanden: Variante 1 (Fokus Zeitersparnis / Skip-the-line)
-    // ELSE (Keine Abholnummer): Variante 3 (Fokus Gericht & Treffen – „Lockerer Lunch“)
+    // Share (Web Share API): ein Gericht oder komplette Favoritenliste
     const favShareWrap = document.getElementById('favShareWrap');
     if(favShareWrap) hide(favShareWrap);
     const baseUrl = window.location.href.split('#')[0] || window.location.origin || '';
@@ -4635,57 +5455,151 @@
       const p = offers.find(x => x.providerId === (o && o.providerId));
       return !!(p && (p.orderingEnabled !== false && ((o && (o.hasPickupCode || o.orderingEnabled)) || (p.hasPickupCode))));
     })();
-    // Smart-Share: Anbietername aus Favoriten-Kachel; abholnummer → „skippen“ vs. „Mittag machen“
-    const shareFavAction = () => {
-      try {
-        const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : (firstProviderName || 'Mittagio');
-        const dishName = (firstDish && (firstDish.dish || firstDish.title)) ? (firstDish.dish || firstDish.title) : '';
-        const linkToDish = (firstDish && firstDish.id) ? (baseUrl + '#offer=' + firstDish.id) : baseUrl;
-        let shareText;
-        if(firstHasAbholnummer){
-          shareText = `🚀 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Ich hab mir schon die Abholnummer 🧾 gesichert, dann können wir die Schlange einfach skippen. Kommst du mit? ${linkToDish}`;
-        } else {
-          shareText = `😋 Schau mal! Meine Mittagsbox heute bei ${providerName}! 🍴 Sieht richtig gut aus, oder? Sollen wir uns dort heute treffen & Mittag machen? ${linkToDish}`;
-        }
-        const shareTitle = dishName ? `${dishName} – ${providerName} | Mittagio` : 'Mein Mittag – Mittagio';
-        const doFallback = () => {
-          try {
-            if(navigator.clipboard && navigator.clipboard.writeText){
-              navigator.clipboard.writeText(shareText).then(() => {
-                if(typeof showToast === 'function') showToast('Link kopiert – zum Teilen einfügen');
-              }).catch(() => {
-                if(typeof showToast === 'function') showToast('Teilen: Link zum Einfügen bereit');
-              });
-            } else {
-              if(typeof showToast === 'function') showToast('Teilen: ' + shareTitle);
-            }
-          } catch(e2){
-            if(typeof showToast === 'function') showToast('Teilen vorbereitet');
+    const shareWithFallback = function(payload){
+      if(!payload) return;
+      const title = payload.title || 'Mittagio';
+      const text = payload.text || '';
+      const url = payload.url || baseUrl;
+      const successToast = payload.successToast || 'Geteilt';
+      const copyToast = payload.copyToast || 'Link kopiert';
+      const errorToast = payload.errorToast || 'Teilen nicht moeglich';
+      const fallbackCopy = function(){
+        try{
+          if(navigator.clipboard && navigator.clipboard.writeText){
+            navigator.clipboard.writeText(text).then(function(){
+              if(typeof showToast === 'function') showToast(copyToast);
+            }).catch(function(){
+              if(typeof showToast === 'function') showToast(copyToast);
+            });
+          } else {
+            if(typeof copyToClipboard === 'function') copyToClipboard(text);
+            if(typeof showToast === 'function') showToast(copyToast);
           }
-        };
-        if(navigator.share && typeof navigator.share === 'function'){
-          navigator.share({ title: shareTitle, text: shareText, url: linkToDish })
-            .then(() => { if(typeof showToast === 'function') showToast('Geteilt'); })
-            .catch((err) => { if(err && err.name === 'AbortError') return; doFallback(); });
-        } else {
-          doFallback();
+        } catch(_e){
+          if(typeof showToast === 'function') showToast(errorToast);
         }
-      } catch(e){
-        if(typeof showToast === 'function') showToast('Teilen nicht möglich – bitte Link manuell kopieren');
+      };
+      if(navigator.share && typeof navigator.share === 'function'){
+        navigator.share({ title: title, text: text, url: url })
+          .then(function(){
+            if(typeof showToast === 'function') showToast(successToast);
+          })
+          .catch(function(err){
+            if(err && err.name === 'AbortError') return;
+            fallbackCopy();
+          });
+      } else {
+        fallbackCopy();
       }
     };
-    const btnFavShareHeader = document.getElementById('btnFavShareHeader');
-    if(btnFavShareHeader){
-      if(topFour.length > 0 || providerList.length > 0) show(btnFavShareHeader, 'flex');
-      else hide(btnFavShareHeader);
-      btnFavShareHeader.onclick = function(e){ e.preventDefault(); e.stopPropagation(); shareFavAction(); };
+    const shareSingleSuggestionAction = () => {
+      if(firstDish && firstDish.id){
+        const dishName = (firstDish.dish || firstDish.title || 'Gericht').trim();
+        const providerName = (firstDish.providerName || firstProviderName || 'Mittagio').trim();
+        const singleUrl = (typeof buildOfferShareUrl === 'function')
+          ? buildOfferShareUrl(firstDish)
+          : (baseUrl + '#offer=' + firstDish.id);
+        const singleText = firstHasAbholnummer
+          ? `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Mit Abholnummer geht es besonders schnell. ${singleUrl}`
+          : `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Vielleicht ist das auch was fuer dich. ${singleUrl}`;
+        shareWithFallback({
+          title: `Vorschlag: ${dishName} | Mittagio`,
+          text: singleText,
+          url: singleUrl,
+          successToast: 'Gericht geteilt',
+          copyToast: 'Link kopiert',
+          errorToast: 'Teilen nicht moeglich'
+        });
+        return;
+      }
+      shareAllFavoritesAction();
+    };
+    const shareAllFavoritesAction = () => {
+      try {
+        const providerName = (firstDish && firstDish.providerName) ? firstDish.providerName : (firstProviderName || 'Mittagio');
+        const favRoute = baseUrl + '#fav';
+        const sampleNames = topFour
+          .slice(0, 3)
+          .map(function(o){ return (normalizeOffer(o).dish || normalizeOffer(o).title || '').trim(); })
+          .filter(function(name){ return !!name; });
+        const dishPreview = sampleNames.length ? sampleNames.join(', ') : '';
+        let shareText;
+        if(firstHasAbholnummer){
+          shareText = dishPreview
+            ? `Schau dir meine Favoriten an: ${dishPreview}. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`
+            : `Schau dir meine Favoriten an. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`;
+        } else {
+          shareText = dishPreview
+            ? `Schau dir meine Favoriten an: ${dishPreview}. Vielleicht ist etwas fuer dich dabei. ${favRoute}`
+            : `Schau dir meine Favoriten an. Vielleicht ist etwas fuer dich dabei. ${favRoute}`;
+        }
+        const shareTitle = 'Schau dir meine Favoriten an | Mittagio';
+        shareWithFallback({
+          title: shareTitle,
+          text: shareText,
+          url: favRoute,
+          successToast: 'Alle Favoriten geteilt',
+          copyToast: 'Link kopiert',
+          errorToast: 'Teilen nicht moeglich'
+        });
+      } catch(e){
+        if(typeof showToast === 'function') showToast('Teilen nicht moeglich');
+      }
+    };
+    const btnFavTeamVote = document.getElementById('btnFavTeamVote');
+    if(btnFavTeamVote){
+      const setFavShareBtnIcon = function(iconName){
+        btnFavTeamVote.innerHTML = '<i data-lucide="' + iconName + '" style="width:16px;height:16px;"></i>';
+        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [btnFavTeamVote] }); }, 10);
+      };
+      if(favoritesMode === 'team'){
+        show(btnFavTeamVote, 'flex');
+        btnFavTeamVote.setAttribute('aria-label', 'Solo-Modus aktivieren');
+        btnFavTeamVote.setAttribute('title', 'Solo-Modus aktivieren');
+        setFavShareBtnIcon('users');
+        btnFavTeamVote.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          setFavoritesMode('solo');
+          if(typeof showToast === 'function') showToast('Zurück zu deinen Favoriten');
+          renderFavorites();
+        };
+      } else if(topFour.length > 0 || providerList.length > 0){
+        show(btnFavTeamVote, 'flex');
+        btnFavTeamVote.setAttribute('aria-label', 'Alle Favoriten teilen');
+        btnFavTeamVote.setAttribute('title', 'Alle Favoriten teilen');
+        setFavShareBtnIcon('share-2');
+        btnFavTeamVote.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          openFavShareChoiceSheet({
+            onSingleShare: function(){
+              shareSingleSuggestionAction();
+            },
+            singleLabel: firstDish && (firstDish.dish || firstDish.title)
+              ? ('Vorschlag teilen: ' + String(firstDish.dish || firstDish.title))
+              : 'Dieses Gericht teilen',
+            onAllShare: function(){
+              shareAllFavoritesAction();
+            },
+            onTogether: function(){
+              setFavoritesMode('team');
+              renderFavorites();
+              if(typeof showToast === 'function') showToast('Gemeinsam entscheiden ist als Zusatz aktiv');
+              shareAllFavoritesAction();
+            }
+          });
+        };
+      } else {
+        hide(btnFavTeamVote);
+      }
     }
     const btnShareMyLunch = document.getElementById('btnShareMyLunch');
-    if(btnShareMyLunch) btnShareMyLunch.onclick = shareFavAction;
+    if(btnShareMyLunch) btnShareMyLunch.onclick = shareAllFavoritesAction;
     
     // Pull-Hinweis: anzeigen wenn es Favoriten für Morgen/Übermorgen gibt
     const favPullHint = document.getElementById('favPullHint');
-    const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(o.id) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
+    const hasUpcoming = offers.some(o => o.active !== false && (dishFavs.has(String(o.id)) || providerFavs.has(o.providerId)) && o.day !== activeFavDay);
     if(favPullHint){
       if(hasUpcoming) show(favPullHint);
       else hide(favPullHint);
@@ -4724,7 +5638,7 @@
       // Favoriten für diesen Tag finden
       const dayDishes = offers.filter(o => 
         o.active !== false && 
-        dishFavs.has(o.id) && 
+        dishFavs.has(String(o.id)) && 
         o.day === dayKey
       );
       
@@ -4884,25 +5798,93 @@
     try { sessionStorage.setItem('mittagio_favAbgeholt', JSON.stringify(Array.from(set))); } catch(e){}
   }
   function isFavAbgeholt(id){ return getFavAbgeholtIds().has(String(id)); }
+  function getFavoriteVoteCount(offerId){
+    const sid = String(offerId || '');
+    if(!sid) return 0;
+    const key = 'mittagio_fav_votes_v1';
+    try{
+      const raw = localStorage.getItem(key);
+      const map = raw ? JSON.parse(raw) : {};
+      if(map && Number.isFinite(Number(map[sid])) && Number(map[sid]) > 0) return Number(map[sid]);
+      let hash = 0;
+      for(let i = 0; i < sid.length; i++) hash = ((hash << 5) - hash + sid.charCodeAt(i)) | 0;
+      const votes = Math.abs(hash % 17) + 1;
+      map[sid] = votes;
+      localStorage.setItem(key, JSON.stringify(map));
+      return votes;
+    } catch(_e){
+      return 1;
+    }
+  }
+  let favoritesUndoState = null;
+  function clearFavoritesUndoToast(){
+    const old = document.getElementById('favUndoToast');
+    if(old) old.remove();
+    if(favoritesUndoState && favoritesUndoState.timer){
+      clearTimeout(favoritesUndoState.timer);
+    }
+    favoritesUndoState = null;
+  }
+  function removeFavoriteWithUndo(data, cardEl){
+    if(!data || !data.id) return;
+    normalizeDishFavoritesStore();
+    const sid = String(data.id);
+    if(!dishFavs.has(sid)) return;
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+    if(cardEl){
+      cardEl.classList.add('fav-card-removing');
+    }
+    const finalizeRemoval = function(){
+      dishFavs.delete(sid);
+      clearFavPillars(sid);
+      const packed = Array.from(dishFavs);
+      save(LS.dishFavs, packed);
+      localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+      renderDiscover();
+      renderStart();
+      renderFavorites();
+      updateSheetFavs();
+    };
+    setTimeout(finalizeRemoval, cardEl ? 220 : 0);
+    clearFavoritesUndoToast();
+    const toast = document.createElement('div');
+    toast.id = 'favUndoToast';
+    toast.className = 'fav-undo-toast';
+    toast.innerHTML = '<span>Gericht entfernt - Rückgängig?</span><button type="button">Rückgängig</button>';
+    const undoBtn = toast.querySelector('button');
+    if(undoBtn){
+      undoBtn.onclick = function(){
+        if(favoritesUndoState && favoritesUndoState.offerId === sid){
+          if(favoritesUndoState.timer) clearTimeout(favoritesUndoState.timer);
+          dishFavs.add(sid);
+          const packed = Array.from(dishFavs);
+          save(LS.dishFavs, packed);
+          localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+          renderFavorites();
+          renderDiscover();
+        }
+        clearFavoritesUndoToast();
+      };
+    }
+    const favView = document.getElementById('v-fav');
+    if(favView) favView.appendChild(toast);
+    favoritesUndoState = {
+      offerId: sid,
+      timer: setTimeout(function(){ clearFavoritesUndoToast(); }, 3000)
+    };
+  }
 
-  // Favoriten-Karte: 95% breit, Slim-Pills (🍴 🧾 🔄), Aktionen „Jetzt Abholnummer ziehen“ / „Route starten“, Abgeholt Grayscale
-  function createFavoriteGridCard(o){
+  // Favoriten-Karte: Marketplace-Style (Bild+USP, Titel/Preis, Voting, 52px Action-Bar)
+  function createFavoriteGridCard(o, opts){
+    opts = opts || {};
+    const mode = opts.mode === 'team' ? 'team' : 'solo';
     const data = normalizeOffer(o);
     const p = offers.find(x => x.providerId === data.providerId);
     const abholnummer = !!(p && p.orderingEnabled !== false && (data.hasPickupCode || p.hasPickupCode));
-    const mehrweg = !!(p && (p.reuse && p.reuse.enabled));
-    const abgeholt = isFavAbgeholt(data.id);
-
     const card = document.createElement('div');
-    card.className = 'fav-card' + (abgeholt ? ' fav-card-abgeholt' : '');
+    card.className = 'fav-card';
     card.setAttribute('data-fav-id', data.id);
     card.onclick = () => openOffer(data.id);
-
-    const removeBtn = document.createElement('button');
-    removeBtn.style.cssText = 'position:absolute; top:8px; right:8px; z-index:20; width:28px; height:28px; border-radius:10px; background:rgba(255,255,255,0.9); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);';
-    removeBtn.innerHTML = '<i data-lucide="x" style="width:16px; height:16px; color:#E34D4D;"></i>';
-    removeBtn.onclick = (e) => { e.stopPropagation(); toggleDishFav(data.id); renderFavorites(); };
-    card.appendChild(removeBtn);
 
     const imgWrap = document.createElement('div');
     imgWrap.className = 'fav-card-img-wrap';
@@ -4912,76 +5894,102 @@
     img.loading = 'lazy';
     img.alt = esc(data.dish || 'Gericht');
     imgWrap.appendChild(img);
-    const priceSticker = document.createElement('span');
-    priceSticker.className = 'fav-card-price-sticker';
-    priceSticker.textContent = euro(data.price);
-    imgWrap.appendChild(priceSticker);
+    const walkMin = data.distanceKm != null ? Math.round(Number(data.distanceKm) * 12) : null;
+    const walkLabel = walkMin != null ? (walkMin < 1 ? '< 1' : walkMin) + ' Min' : '– Min';
+    const todayKey = isoDate(new Date());
+    const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
+    const usp = document.createElement('div');
+    usp.className = 'fav-card-usp';
+    if(abholnummer){
+      usp.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+    } else {
+      usp.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+    }
+    imgWrap.appendChild(usp);
     card.appendChild(imgWrap);
 
     const body = document.createElement('div');
     body.className = 'fav-card-body';
+    const titleRow = document.createElement('div');
+    titleRow.className = 'fav-title-row';
     const title = document.createElement('div');
     title.className = 'fav-card-title';
     title.textContent = data.dish || 'Gericht';
-    body.appendChild(title);
-    const meta = document.createElement('div');
-    meta.style.cssText = 'font-size:13px; font-weight:600; color:var(--header-subtitle-color); margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;';
-    meta.textContent = data.providerName || 'Anbieter';
+    const price = document.createElement('div');
+    price.className = 'fav-card-price';
+    price.textContent = euro(data.price);
+    titleRow.appendChild(title);
+    titleRow.appendChild(price);
+    body.appendChild(titleRow);
+    const meta = document.createElement('p');
+    meta.className = 'fav-card-provider';
+    meta.textContent = cleanProviderDisplayName(data.providerName);
     body.appendChild(meta);
-
-    const pillars = document.createElement('div');
-    pillars.className = 'fav-card-pillars';
-    pillars.innerHTML = `
-      <span class="pillar-pill active">🍴</span>
-      <span class="pillar-pill pillar-abholnummer ${abholnummer ? 'active' : ''}">🧾</span>
-      <span class="pillar-pill ${mehrweg ? 'active' : ''}">🔄</span>
-    `;
-    body.appendChild(pillars);
+    if(mode === 'team'){
+      const vote = document.createElement('div');
+      vote.className = 'fav-vote-badge';
+      vote.textContent = '🔥 ' + getFavoriteVoteCount(data.id) + ' Stimmen';
+      body.appendChild(vote);
+    }
 
     const actions = document.createElement('div');
     actions.className = 'fav-card-actions';
-    const routeBtn = document.createElement('button');
-    routeBtn.type = 'button';
-    routeBtn.className = 'btn-route';
-    routeBtn.innerHTML = '<i data-lucide="map-pin" style="width:18px;height:18px;"></i> Route starten';
-    routeBtn.onclick = (e) => {
+    const left = document.createElement('div');
+    left.className = 'fav-action-left';
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'fav-action-icon heart-on';
+    removeBtn.setAttribute('aria-label', 'Favorit entfernen');
+    removeBtn.innerHTML = '<i data-lucide="heart" style="width:18px;height:18px; fill: currentColor;"></i>';
+    removeBtn.onclick = (e) => {
       e.stopPropagation();
-      const addr = buildAddress({ address: data.address, street: data.providerStreet, zip: data.providerZip, city: data.providerCity });
-      if(addr){
-        const url = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr);
-        window.open(url, '_blank');
-      } else { if(typeof showToast === 'function') showToast('Keine Adresse hinterlegt'); }
+      e.preventDefault();
+      removeFavoriteWithUndo(data, card);
     };
-    actions.appendChild(routeBtn);
-    if(abholnummer){
-      const abholBtn = document.createElement('button');
-      abholBtn.type = 'button';
-      abholBtn.className = 'btn-abholnummer';
-      abholBtn.innerHTML = '<i data-lucide="receipt" style="width:18px;height:18px;"></i> Jetzt Abholnummer ziehen';
-      abholBtn.onclick = (e) => {
+    const shareBtn = document.createElement('button');
+    shareBtn.type = 'button';
+    shareBtn.className = 'fav-action-icon';
+    shareBtn.setAttribute('aria-label', 'Teilen');
+    shareBtn.innerHTML = '<i data-lucide="share-2" style="width:18px;height:18px;"></i>';
+    shareBtn.onclick = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      shareOffer(data);
+    };
+    left.appendChild(removeBtn);
+    left.appendChild(shareBtn);
+    actions.appendChild(left);
+    const boxBtn = document.createElement('button');
+    boxBtn.type = 'button';
+    boxBtn.className = 'fav-box-btn';
+    boxBtn.innerHTML = isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox';
+    if(!abholnummer){
+      boxBtn.classList.add('is-disabled');
+      boxBtn.disabled = true;
+      boxBtn.onclick = (e) => {
         e.stopPropagation();
-        openOffer(data.id);
+        e.preventDefault();
+        if(typeof showToast === 'function') showToast('Keine Abholnummer - nur ansehen.', 2000);
       };
-      actions.appendChild(abholBtn);
+    } else {
+      boxBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const thumb = card.querySelector('.fav-card-img-wrap img');
+        flyThumbnailToMittagsbox(thumb, function(){
+          if(!addToCart(o)){ if(typeof showToast === 'function') showToast('Fehler beim Hinzufügen.', 2000); return; }
+          if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([20]);
+          if(typeof triggerCartIconGlow === 'function') triggerCartIconGlow();
+          if(typeof updateHeaderBasket === 'function') updateHeaderBasket();
+          if(typeof showToast === 'function') showToast(isFutureOffer ? 'Vorbestellung in der Box! 🥗' : 'In der Box! 🥗', 1500);
+        });
+      };
     }
+    actions.appendChild(boxBtn);
     body.appendChild(actions);
 
-    const abgeholtRow = document.createElement('div');
-    abgeholtRow.style.cssText = 'margin-top:10px; font-size:12px; font-weight:600; color:var(--header-subtitle-color);';
-    const abgeholtToggle = document.createElement('button');
-    abgeholtToggle.type = 'button';
-    abgeholtToggle.style.cssText = 'background:none; border:none; padding:0; cursor:pointer; font-size:12px; font-weight:700; color:#22c55e; text-decoration:underline;';
-    abgeholtToggle.textContent = abgeholt ? '✓ Abgeholt · Erneut anzeigen' : 'Als abgeholt markieren';
-    abgeholtToggle.onclick = (e) => {
-      e.stopPropagation();
-      setFavAbgeholt(data.id, !abgeholt);
-      renderFavorites();
-    };
-    abgeholtRow.appendChild(abgeholtToggle);
-    body.appendChild(abgeholtRow);
-
     card.appendChild(body);
-    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [removeBtn, routeBtn, actions] }); }, 10);
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements: [card] }); }, 10);
     return card;
   }
   
@@ -5037,6 +6045,56 @@
     });
   }
 
+  function renderFavoriteProvidersPage(){
+    syncOffersFromStorage();
+    const listEl = document.getElementById('favProvidersPageList');
+    const emptyEl = document.getElementById('favProvidersPageEmpty');
+    if(!listEl || !emptyEl) return;
+    listEl.innerHTML = '';
+    const activeDayKey = isoDate(new Date());
+    const allFavoritedProviders = Array.from(providerFavs || []);
+    if(!allFavoritedProviders.length){
+      hide(listEl);
+      show(emptyEl, 'flex');
+      return;
+    }
+    hide(emptyEl);
+    setVisible(listEl, 'flex');
+    const providerMap = new Map();
+    allFavoritedProviders.forEach(function(providerId){
+      const providerOffers = offers.filter(function(o){
+        return o.providerId === providerId && o.active !== false && o.day === activeDayKey;
+      });
+      const firstOffer = offers.find(function(p){ return p.providerId === providerId; });
+      if(!firstOffer) return;
+      const providerData = {
+        providerId: providerId,
+        providerName: normalizeOffer(firstOffer).providerName || 'Anbieter',
+        orderingEnabled: firstOffer.hasPickupCode !== false,
+        dineInPossible: firstOffer.dineInPossible !== false,
+        reuse: firstOffer.reuse || { enabled: false }
+      };
+      providerMap.set(providerId, {
+        provider: providerData,
+        offers: providerOffers,
+        hasOfferToday: providerOffers.length > 0
+      });
+    });
+    const entries = Array.from(providerMap.values()).sort(function(a, b){
+      if(a.hasOfferToday !== b.hasOfferToday) return a.hasOfferToday ? -1 : 1;
+      return String((a.provider && a.provider.providerName) || '').localeCompare(String((b.provider && b.provider.providerName) || ''), 'de');
+    });
+    entries.forEach(function(entry){
+      if(!entry || !entry.provider) return;
+      listEl.appendChild(createFavoriteProviderCard(entry.provider, entry.offers || [], !!entry.hasOfferToday));
+    });
+    if(!entries.length){
+      hide(listEl);
+      show(emptyEl, 'flex');
+    }
+  }
+  if(typeof window !== 'undefined') window.renderFavoriteProvidersPage = renderFavoriteProvidersPage;
+
   // Anbieter-Favoriten-Karte: Kompakte Zeile mit Name, Text und 3 Icons
   function createFavoriteProviderCard(providerData, offersToday, hasOfferToday){
     const card = document.createElement('div');
@@ -5068,6 +6126,18 @@
       status.textContent = 'Heute kein Angebot';
     }
     body.appendChild(status);
+    if(!hasOfferToday){
+      const cta = document.createElement('button');
+      cta.type = 'button';
+      cta.textContent = 'Anbieter ansehen';
+      cta.style.cssText = 'margin-top:8px; min-height:40px; border-radius:12px; border:1px solid #e2e8f0; background:#fff; color:#0f172a; font-size:13px; font-weight:800; padding:0 12px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;';
+      cta.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        showProviderProfilePublic(providerData.providerId);
+      };
+      body.appendChild(cta);
+    }
     card.appendChild(body);
     
     const pillars = document.createElement('div');
@@ -5268,30 +6338,181 @@
     document.getElementById('orderDetailSheet').classList.remove('active');
   }
 
+  let detailDistanceSheetToken = 0;
+  function getEstimatedTravelTimes(distanceKm){
+    const km = Number(distanceKm);
+    if(!Number.isFinite(km) || km < 0){
+      return { walkMin: null, driveMin: null, distanceKm: null, source: 'estimate' };
+    }
+    const walkMin = Math.max(1, Math.round(km * 12));
+    const driveMin = Math.max(1, Math.round(km * 1.5));
+    return { walkMin: walkMin, driveMin: driveMin, distanceKm: km, source: 'estimate' };
+  }
+  function formatTravelMinutes(mins){
+    if(!Number.isFinite(Number(mins)) || Number(mins) <= 0) return 'ca. –';
+    const n = Number(mins);
+    return n < 1 ? 'ca. < 1 Min' : ('ca. ' + Math.round(n) + ' Min');
+  }
+  function formatDistanceKm(km){
+    if(!Number.isFinite(Number(km)) || Number(km) < 0) return '– km';
+    const n = Number(km);
+    return n < 1 ? '< 1 km' : (String(n.toFixed(1)).replace('.', ',') + ' km');
+  }
+  function formatUpdatedAgo(ts){
+    const ms = Number(ts);
+    if(!Number.isFinite(ms) || ms <= 0) return 'gerade eben';
+    const diffMin = Math.max(0, Math.round((Date.now() - ms) / 60000));
+    if(diffMin <= 0) return 'gerade eben';
+    if(diffMin === 1) return 'vor 1 Min';
+    if(diffMin < 60) return 'vor ' + diffMin + ' Min';
+    const diffH = Math.round(diffMin / 60);
+    return diffH <= 1 ? 'vor 1 Std' : ('vor ' + diffH + ' Std');
+  }
+  function formatArrivalClock(mins){
+    const n = Number(mins);
+    if(!Number.isFinite(n) || n <= 0) return null;
+    const eta = new Date(Date.now() + n * 60000);
+    const hh = String(eta.getHours()).padStart(2, '0');
+    const mm = String(eta.getMinutes()).padStart(2, '0');
+    return hh + ':' + mm;
+  }
+  function closeDetailDistanceSheet(){
+    const bd = document.getElementById('detailDistanceBd');
+    const sheet = document.getElementById('detailDistanceSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet){
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+    if(document.body) document.body.classList.remove('detail-distance-open');
+  }
+  function openDetailDistanceSheet(ctx){
+    const bd = document.getElementById('detailDistanceBd');
+    const sheet = document.getElementById('detailDistanceSheet');
+    const addressEl = document.getElementById('detailDistanceAddress');
+    const walkEl = document.getElementById('detailDistanceWalk');
+    const driveEl = document.getElementById('detailDistanceDrive');
+    const metricWalkEl = document.getElementById('detailDistanceMetricWalk');
+    const metricDriveEl = document.getElementById('detailDistanceMetricDrive');
+    const metaEl = document.getElementById('detailDistanceMeta');
+    const statusEl = document.getElementById('detailDistanceStatus');
+    const updatedEl = document.getElementById('detailDistanceUpdated');
+    const routeBtn = document.getElementById('btnDetailDistanceRoute');
+    const closeBtn = document.getElementById('btnDetailDistanceClose');
+    if(!bd || !sheet || !addressEl || !walkEl || !driveEl || !metricWalkEl || !metricDriveEl || !metaEl || !statusEl || !updatedEl || !routeBtn || !closeBtn) return;
+    const sheetCtx = ctx || {};
+    const estimated = getEstimatedTravelTimes(sheetCtx.distanceKm);
+    const token = ++detailDistanceSheetToken;
+    let routeMode = 'walking';
+    let currentUpdatedAt = Date.now();
+    addressEl.textContent = sheetCtx.address || 'Adresse nicht verfügbar';
+    walkEl.textContent = formatTravelMinutes(estimated.walkMin);
+    driveEl.textContent = formatTravelMinutes(estimated.driveMin);
+    statusEl.textContent = 'Ca.';
+    statusEl.classList.remove('is-live');
+    statusEl.classList.add('is-estimate');
+    updatedEl.textContent = 'Zuletzt aktualisiert: ' + formatUpdatedAgo(currentUpdatedAt);
+    metaEl.textContent = estimated.distanceKm == null
+      ? 'Distanz aktuell nicht verfügbar.'
+      : ('Ca.-Werte auf Basis von ' + formatDistanceKm(estimated.distanceKm) + '. Live-Routing folgt mit Google API.');
+    const setMode = function(nextMode){
+      routeMode = nextMode === 'driving' ? 'driving' : 'walking';
+      if(routeMode === 'walking'){
+        metricWalkEl.classList.add('is-active');
+        metricDriveEl.classList.remove('is-active');
+        metricWalkEl.setAttribute('aria-pressed', 'true');
+        metricDriveEl.setAttribute('aria-pressed', 'false');
+        routeBtn.textContent = 'Route starten';
+      } else {
+        metricWalkEl.classList.remove('is-active');
+        metricDriveEl.classList.add('is-active');
+        metricWalkEl.setAttribute('aria-pressed', 'false');
+        metricDriveEl.setAttribute('aria-pressed', 'true');
+        routeBtn.textContent = 'Route starten';
+      }
+    };
+    setMode('walking');
+    const bindMetricTap = function(el, modeName){
+      const handler = function(ev){
+        if(ev){
+          ev.preventDefault();
+          ev.stopPropagation();
+        }
+        setMode(modeName);
+      };
+      el.onclick = handler;
+      el.onpointerup = handler;
+      el.ontouchstart = handler;
+    };
+    bindMetricTap(metricWalkEl, 'walking');
+    bindMetricTap(metricDriveEl, 'driving');
+    bd.onclick = function(){ closeDetailDistanceSheet(); };
+    closeBtn.onclick = function(){ closeDetailDistanceSheet(); };
+    routeBtn.onclick = function(){
+      const addr = sheetCtx.address || '';
+      if(!addr){
+        if(typeof showToast === 'function') showToast('Adresse nicht verfügbar');
+        return;
+      }
+      const routeUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(addr) + '&travelmode=' + encodeURIComponent(routeMode);
+      window.open(routeUrl, '_blank');
+    };
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([8]);
+    else if(typeof haptic === 'function') haptic(8);
+    else if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
+    if(document.body) document.body.classList.add('detail-distance-open');
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    sheet.setAttribute('aria-hidden', 'false');
+    if(typeof window.getGoogleTravelEstimates === 'function'){
+      Promise.resolve(window.getGoogleTravelEstimates({
+        providerId: sheetCtx.providerId,
+        address: sheetCtx.address,
+        distanceKm: sheetCtx.distanceKm
+      })).then(function(live){
+        if(token !== detailDistanceSheetToken || !live) return;
+        if(Number.isFinite(Number(live.walkMin))) walkEl.textContent = formatTravelMinutes(Number(live.walkMin));
+        if(Number.isFinite(Number(live.driveMin))) driveEl.textContent = formatTravelMinutes(Number(live.driveMin));
+        currentUpdatedAt = Number(live.updatedAt) || Date.now();
+        statusEl.textContent = 'Live';
+        statusEl.classList.remove('is-estimate');
+        statusEl.classList.add('is-live');
+        updatedEl.textContent = 'Zuletzt aktualisiert: ' + formatUpdatedAgo(currentUpdatedAt);
+        if(metaEl) metaEl.textContent = 'Live-Routing von Google.';
+      }).catch(function(){});
+    }
+  }
+
   // --- Offer sheet ---
   let activeOfferId=null;
   // Navigation History für Back-Button
   let navigationHistory = [];
   
   function openOffer(id){
-    const raw = offers.find(x=>x.id===id);
+    syncOffersFromStorage();
+    normalizeDishFavoritesStore();
+    const sid = String(id);
+    const raw = offers.find(x => String(x.id) === sid);
     if(!raw) return;
     const o = normalizeOffer(raw);
     const offerProvider = offers.find(p => p.providerId === o.providerId);
     const orderingEnabled = !!(offerProvider && (offerProvider.orderingEnabled !== false && (o.hasPickupCode || offerProvider.hasPickupCode)));
-    activeOfferId = id;
+    activeOfferId = sid;
     
     // UI Elements
     const sImg = document.getElementById('sImg');
     const sDish = document.getElementById('sDish');
     const sImgPlaceholder = document.getElementById('sImgPlaceholder');
+    const sUspOverlay = document.getElementById('sUspOverlay');
     const sFavoriteBtn = document.getElementById('sFavoriteBtn');
     const sThreePillars = document.getElementById('sThreePillars');
     const sProviderAddress = document.getElementById('sProviderAddress');
+    const sProviderAddressRow = document.getElementById('sProviderAddressRow');
     const sDistanceInfo = document.getElementById('sDistanceInfo');
     const sAllergensCodes = document.getElementById('sAllergensCodes');
     const btnCTA = document.getElementById('btnPrimaryCTA');
     const primaryCTAText = document.getElementById('btnPrimaryCTAText');
+    const sArrivalHint = document.getElementById('sArrivalHint');
     const sInfoHint = document.getElementById('sInfoHint');
     const statusBadgeEl = document.getElementById('sStatusBadge');
     const badgesEl = document.getElementById('sBadges');
@@ -5300,6 +6521,8 @@
     const aw = document.getElementById('sAllergensWrap');
     const sAllergens = document.getElementById('sAllergens');
     const ew = document.getElementById('sExtrasWrap');
+    const extrasOptionsEl = document.getElementById('sExtrasOptions');
+    const extrasHintEl = document.getElementById('sExtrasHint');
     const rw = document.getElementById('sReuseWrap');
     const ecoBadgeEl = document.getElementById('sEcoBadge');
     const btnOpenRoute = document.getElementById('btnOpenRoute');
@@ -5313,11 +6536,31 @@
     }
     
     if(sDish) sDish.textContent = o.dish || '';
-    const sPriceSticker = document.getElementById('sPriceSticker');
-    if(sPriceSticker) sPriceSticker.textContent = euro(o.price);
+    const basePrice = Number(o.price || 0);
+    const selectedExtras = new Set();
+    const toNumber = function(v){
+      var n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const getSelectedExtras = function(){
+      return (o.extras || []).filter(function(ex){
+        var key = String((ex && (ex.id || ex.name)) || '');
+        return key && selectedExtras.has(key);
+      });
+    };
+    const getExtrasTotal = function(){
+      return getSelectedExtras().reduce(function(sum, ex){ return sum + toNumber(ex.price); }, 0);
+    };
+    const getLivePrice = function(){
+      return Number((basePrice + getExtrasTotal()).toFixed(2));
+    };
+    const applyLivePrice = function(){
+      var live = getLivePrice();
+      if(primaryCTAText) primaryCTAText.textContent = 'Zur Mittagsbox • ' + euro(live);
+    };
 
     const sProviderNameEl = document.getElementById('sProviderName');
-    if(sProviderNameEl) sProviderNameEl.textContent = o.providerName || 'Anbieter';
+    if(sProviderNameEl) sProviderNameEl.textContent = cleanProviderDisplayName(o.providerName);
 
     // Klick auf Anbieter-Name -> Öffnet öffentliches Profil
     const sProviderNameBtn = document.getElementById('sProviderNameBtn');
@@ -5329,9 +6572,8 @@
       };
     }
     
-    // Favorite State
-    const favorites = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-    const isFav = favorites.includes(id);
+    // Favorite State (eine Quelle: dishFavs / mittagio_dish_favs_v1 – nicht legacy mittagio_favorites)
+    const isFav = dishFavs.has(sid);
     const heartIcon = sFavoriteBtn ? sFavoriteBtn.querySelector('i[data-lucide="heart"]') : null;
     if(heartIcon){
       heartIcon.style.fill = isFav ? '#e74c3c' : 'none';
@@ -5340,58 +6582,54 @@
     if(sFavoriteBtn){
       sFavoriteBtn.onclick = (e) => {
         e.stopPropagation();
-        toggleFavorite(id, sFavoriteBtn);
+        toggleFavorite(sid, sFavoriteBtn);
       };
     }
 
-    // 3 Säulen: weiße Pill-Kacheln mit Label (VOR ORT, MEHRWEG, ABHOLNUMMER), aktiv = Akzentfarbe, inaktiv = opacity 0.3 + grayscale
-    if(sThreePillars){
-      sThreePillars.innerHTML = '';
-      sThreePillars.className = 'detail-power-bar detail-power-bar-pills';
-      const hasReuse = !!(offerProvider && (offerProvider.reuseEnabled || offerProvider.reuse || (offerProvider.providerProfile && offerProvider.providerProfile.reuseEnabled)));
-      const hasDineIn = !!(offerProvider && (offerProvider.dineInPossible !== false));
-      const pillars = [
-        { emo: '🍴', label: 'VOR ORT', active: hasDineIn, data: 'vorort' },
-        { emo: '🔄', label: 'MEHRWEG', active: hasReuse, data: 'mehrweg' },
-        { emo: '🧾', label: 'ABHOLNUMMER', active: orderingEnabled, data: 'abholnummer' },
-      ];
-      pillars.forEach(function(p){
-        const tile = document.createElement('div');
-        tile.className = 'detail-pillar-tile' + (p.active ? ' active' : '');
-        tile.setAttribute('data-pillar', p.data);
-        tile.setAttribute('aria-label', p.label);
-        tile.innerHTML = '<span class="detail-pillar-emoji">' + p.emo + '</span><span class="detail-pillar-label">' + (typeof esc === 'function' ? esc(p.label) : p.label) + '</span>';
-        sThreePillars.appendChild(tile);
-      });
+    // Discovery-Sync: USP-Badge auf dem Hero (Abholnummer + Zeit), keine 3-Säulen in der Detailansicht
+    if(sUspOverlay){
+      const walkTime = o.distanceKm != null ? Math.round(Number(o.distanceKm) * 12) : null;
+      const walkLabel = walkTime != null ? (walkTime < 1 ? '< 1' : walkTime) + ' Min' : '– Min';
+      if(orderingEnabled){
+        sUspOverlay.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+      } else {
+        sUspOverlay.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+      }
     }
 
-    // Sticky Bottom CTA: Mittagio-Gelb und Text "Mittagsbox"
+    if(sThreePillars){
+      hide(sThreePillars);
+    }
+
+    // Sticky Bottom CTA
     if(btnCTA){
       btnCTA.style.background = '#FFD700';
       btnCTA.style.color = '#1a1a1a';
       btnCTA.style.border = 'none';
       btnCTA.style.fontWeight = '900';
-      btnCTA.style.boxShadow = '0 8px 24px rgba(255,215,0,0.25)';
-      if(primaryCTAText) primaryCTAText.textContent = 'In meine Box legen';
+      btnCTA.style.boxShadow = 'none';
     }
 
     const addr = buildAddress({address:o.address, street:o.providerStreet, zip:o.providerZip, city:o.providerCity});
     if(sProviderAddress) sProviderAddress.textContent = addr || 'Adresse nicht verfügbar';
+    if(sProviderAddressRow){
+      sProviderAddressRow.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openDetailDistanceSheet({
+          providerId: o.providerId,
+          providerName: o.providerName || 'Anbieter',
+          address: addr,
+          distanceKm: o.distanceKm
+        });
+      };
+    }
+    if(sArrivalHint) hide(sArrivalHint);
 
-    // Logistik: 🚶 und 🚗 als zwei elegante klickbare Cards (Routenplanung)
+    // Distanz-Doppelinfo entfernt: Zeit steht bereits im USP-Overlay
     if(sDistanceInfo){
-      if(o.distanceKm != null){
-        setVisible(sDistanceInfo, 'grid');
-        const walk = Math.round(o.distanceKm * 12);
-        const car = Math.round(o.distanceKm * 1.5);
-        const pid = (o.providerId || '').replace(/'/g, "\\'");
-        sDistanceInfo.innerHTML = `
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚶 ${walk < 1 ? '< 1' : walk} Min.</button>
-          <button type="button" onclick="event.stopPropagation(); openGoogleMapsRoute('${pid}');" style="flex:1; min-height:48px; border-radius:14px; border:none; background:#fff; font-size:14px; font-weight:700; color:#1a1a1a; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">🚗 ${car < 1 ? '< 1' : car} Min.</button>
-        `;
-      } else {
-        hide(sDistanceInfo);
-      }
+      sDistanceInfo.innerHTML = '';
+      hide(sDistanceInfo);
     }
 
     // Status Badge
@@ -5432,14 +6670,19 @@
     // Info Row
     if(infoRowEl){
       infoRowEl.innerHTML = '';
-      if(o.pickupWindow){
-        const day = o.day ? new Date(o.day) : new Date();
-        const dateStr = fmtDateWithTime(day, o.pickupWindow);
+      const detailPickupWindow = String(
+        o.pickupWindow ||
+        (offerProvider && offerProvider.pickupWindow) ||
+        (offerProvider && offerProvider.mealWindow) ||
+        (offerProvider && offerProvider.providerProfile && offerProvider.providerProfile.mealWindow) ||
+        DEFAULT_MEAL_WINDOW
+      ).trim();
+      if(detailPickupWindow){
         const timeEl = document.createElement('div');
         setVisible(timeEl, 'flex');
         timeEl.style.alignItems = 'center';
         timeEl.style.gap = '6px';
-        timeEl.innerHTML = `${iconMarkup('clock')} <span>${esc(dateStr)}</span>`;
+        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>${iconMarkup('clock')}`;
         infoRowEl.appendChild(timeEl);
       }
       const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
@@ -5512,13 +6755,47 @@
       }
     }
 
-    // Extras
+    // Extras (nur anzeigen, wenn Extras vorhanden) + Live-Preis im CTA
     if(ew){
-      if(o.extras && o.extras.length){
+      if(Array.isArray(o.extras) && o.extras.length){
         show(ew);
+        if(extrasHintEl) show(extrasHintEl);
+        if(extrasOptionsEl){
+          extrasOptionsEl.innerHTML = '';
+          o.extras.forEach(function(ex, idx){
+            var key = String((ex && (ex.id || ex.name)) || ('extra_' + idx));
+            var row = document.createElement('label');
+            row.className = 'sheet-detail-extra-option';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.value = key;
+            input.setAttribute('data-extra-key', key);
+            input.onchange = function(){
+              if(input.checked) selectedExtras.add(key);
+              else selectedExtras.delete(key);
+              applyLivePrice();
+            };
+            var left = document.createElement('span');
+            left.className = 'sheet-detail-extra-label';
+            left.appendChild(input);
+            var title = document.createElement('span');
+            title.textContent = (ex && ex.name) ? String(ex.name) : 'Extra';
+            left.appendChild(title);
+            var price = document.createElement('span');
+            price.className = 'sheet-detail-extra-price';
+            price.textContent = '+' + euro(toNumber(ex && ex.price));
+            row.appendChild(left);
+            row.appendChild(price);
+            extrasOptionsEl.appendChild(row);
+          });
+        }
         const sx = document.getElementById('sExtras');
-        if(sx) sx.textContent = o.extras.map(e=>`${e.name} (+${euro(e.price)})`).join(' · ');
-      } else hide(ew);
+        if(sx) sx.textContent = o.extras.map(function(ex){ return (ex.name || 'Extra') + ' (+' + euro(toNumber(ex.price)) + ')'; }).join(' · ');
+      } else {
+        hide(ew);
+        if(extrasHintEl) hide(extrasHintEl);
+        if(extrasOptionsEl) extrasOptionsEl.innerHTML = '';
+      }
     }
 
     // Reuse
@@ -5547,68 +6824,79 @@
       btnCTA.classList.remove('loading', 'success');
       
       const isActive = o.active !== false;
-      const isToday = o.day === isoDate(new Date());
+      const todayKey = isoDate(new Date());
+      const offerDay = String(o.day || '');
+      const isToday = offerDay === todayKey;
+      const isFutureOffer = !!(offerDay && offerDay > todayKey);
+      const isPreorderable = isActive && isFutureOffer;
       const isAvailable = isActive && isToday;
       
-      if(!isAvailable){
+      if(!isAvailable && !isPreorderable){
         btnCTA.disabled = true;
         primaryCTAText.textContent = !isActive ? 'Angebot nicht verfügbar' : 'Angebot nicht mehr verfügbar';
         btnCTA.onclick = null;
       } else if(orderingEnabled){
-        primaryCTAText.textContent = 'In meine Box legen';
+        if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+        else applyLivePrice();
         if(sInfoHint) hide(sInfoHint);
         btnCTA.onclick = () => {
           btnCTA.disabled = true;
           btnCTA.classList.add('loading');
-          primaryCTAText.textContent = 'Wird hinzugefügt...';
+          primaryCTAText.textContent = isPreorderable ? 'Wird vorbestellt...' : 'Wird hinzugefügt...';
           
           // Auto-Favorite
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          if(!favs.includes(o.id)){
-            favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
-            dishFavs.add(o.id);
-            save(LS.dishFavs, Array.from(dishFavs));
+          const oid = String(o.id);
+          if(!dishFavs.has(oid)){
+            dishFavs.add(oid);
+            const packed = Array.from(dishFavs);
+            save(LS.dishFavs, packed);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
           
           flyThumbnailToMittagsbox(sImg, () => {
-            if(addToCart(o)){
+            const orderOffer = Object.assign({}, o, {
+              price: getLivePrice(),
+              selectedExtras: getSelectedExtras()
+            });
+            if(addToCart(orderOffer)){
               triggerCartIconGlow();
               btnCTA.classList.remove('loading');
               btnCTA.classList.add('success');
               primaryCTAText.textContent = 'Erfolgreich!';
-              showToast('Gericht hinzugefügt!');
+              showToast(isPreorderable ? 'Vorbestellung gespeichert!' : 'Gericht hinzugefügt!');
               updateHeaderBasket();
               setTimeout(() => {
                 showCart();
                 setTimeout(() => {
                   btnCTA.disabled = false;
                   btnCTA.classList.remove('success');
-                  primaryCTAText.textContent = 'In meine Box legen';
+                  if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+                  else applyLivePrice();
                 }, 500);
               }, 300);
             } else {
               btnCTA.disabled = false;
               btnCTA.classList.remove('loading');
-              primaryCTAText.textContent = 'In meine Box legen';
-              showToast('Fehler beim Hinzufügen.');
+              if(isPreorderable) primaryCTAText.textContent = 'Jetzt vorbestellen!';
+              else applyLivePrice();
+              showToast(isPreorderable ? 'Fehler bei der Vorbestellung.' : 'Fehler beim Hinzufügen.');
             }
           });
         };
       } else {
-        primaryCTAText.textContent = 'In meine Box legen';
+        applyLivePrice();
         if(sInfoHint){
           sInfoHint.textContent = 'Anbieter nimmt nicht an Abholnummer teil';
           show(sInfoHint);
         }
         btnCTA.onclick = () => {
-          const favs = JSON.parse(localStorage.getItem('mittagio_favorites') || '[]');
-          if(!favs.includes(o.id)){
-            favs.push(o.id);
-            localStorage.setItem('mittagio_favorites', JSON.stringify(favs));
-            dishFavs.add(o.id);
-            save(LS.dishFavs, Array.from(dishFavs));
+          const oid = String(o.id);
+          if(!dishFavs.has(oid)){
+            dishFavs.add(oid);
+            const packed = Array.from(dishFavs);
+            save(LS.dishFavs, packed);
+            localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
             if(heartIcon) heartIcon.style.fill = '#e74c3c';
           }
           const currentCount = parseInt(localStorage.getItem(`provider_${o.providerId}_requests`) || '0', 10);
@@ -5621,21 +6909,29 @@
           setTimeout(() => {
             btnCTA.disabled = false;
             btnCTA.classList.remove('success');
-            primaryCTAText.textContent = 'In meine Box legen';
+            applyLivePrice();
           }, 2000);
         };
       }
     }
 
-    // Allergene Overlay
+    // Allergene Overlay (mobile-safe, robuster Close)
     window.showAllergensOverlay = function(){
+      const closeExisting = document.getElementById('allergensDetailOverlay');
+      if(closeExisting) closeExisting.remove();
       const ov = document.createElement('div');
-      ov.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;';
-      ov.onclick = (e) => { if(e.target === ov) ov.remove(); };
-      
+      ov.id = 'allergensDetailOverlay';
+      ov.className = 'detail-info-overlay';
+      const closeOverlay = function(){
+        if(ov && ov.parentNode) ov.parentNode.removeChild(ov);
+      };
+      ov.onclick = function(e){
+        if(e.target === ov) closeOverlay();
+      };
+
       const content = document.createElement('div');
-      content.style.cssText = 'background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius:24px; padding:24px; max-width:420px; width:100%; border:2px solid rgba(255,255,255,0.1); box-shadow:0 8px 32px rgba(0,0,0,0.5); max-height:90vh; overflow:hidden; display:flex; flex-direction:column;';
-      content.onclick = (e) => e.stopPropagation();
+      content.className = 'detail-info-overlay-card';
+      content.onclick = function(e){ e.stopPropagation(); };
       
       const codes = (o.allergens || []).map(a => {
         const u = String(a).toUpperCase();
@@ -5658,12 +6954,20 @@
       content.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-shrink:0;">
           <h3 style="color:#fff; font-size:20px; font-weight:900; margin:0;">Allergene</h3>
-          <button type="button" onclick="this.closest('[style*=\\'position:fixed\\']').remove();" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
+          <button type="button" class="allergens-overlay-close" style="background:none; border:none; color:#fff; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
-        <div style="max-height:280px; overflow-y:auto; flex:1;">
+        <div style="max-height:280px; overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1;">
           ${listHtml || '<p style="color:rgba(255,255,255,0.5);">Keine Allergene hinterlegt.</p>'}
         </div>
       `;
+      const closeBtn = content.querySelector('.allergens-overlay-close');
+      if(closeBtn){
+        closeBtn.onclick = function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          closeOverlay();
+        };
+      }
       ov.appendChild(content);
       document.body.appendChild(ov);
       if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -5699,6 +7003,7 @@
     }
 
     updateSheetFavs();
+    if(document.body) document.body.classList.add('discover-detail-open');
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -5727,6 +7032,8 @@
   }
 
   function closeSheet(){
+    if(document.body) document.body.classList.remove('discover-detail-open');
+    if(document.body) document.body.classList.remove('detail-distance-open');
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
     
@@ -5894,6 +7201,33 @@
     };
   }
 
+  // App-Back-Orchestrator: UI-Back + Android-Back laufen über denselben History-Pfad.
+  function handleAppBack(source){
+    try { if(typeof haptic === 'function') haptic(6); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(_e){}
+    var hasState = false;
+    try { hasState = !!(typeof history !== 'undefined' && history.state); } catch(_e){ hasState = false; }
+    if(hasState && typeof history !== 'undefined'){
+      history.back();
+      return true;
+    }
+    var wiz = document.getElementById('wizard');
+    if(wiz && wiz.classList.contains('active')){
+      if(typeof closeMastercard === 'function') closeMastercard();
+      else if(typeof closeWizard === 'function') closeWizard();
+      return true;
+    }
+    if(mode === 'provider' && typeof showProviderHome === 'function'){
+      showProviderHome();
+      return true;
+    }
+    if(typeof showDiscover === 'function'){
+      showDiscover();
+      return true;
+    }
+    return false;
+  }
+  if(typeof window !== 'undefined') window.handleAppBack = handleAppBack;
+
   // Android Hardware-Back: Kontextbasierte Zurück-Navigation [cite: History-Context 2026-02-26]
   window.addEventListener('popstate', function(e){
     // AGB Onboarding Modal schließen
@@ -5946,20 +7280,27 @@
     // Inserat Step 2 → Step 1 (Hardware Back / Swipe) [cite: MASTER-CARD FIX 2026-02-23]
     var wizardEl = document.getElementById('wizard');
     if(wizardEl && wizardEl.classList.contains('active') && wizardEl.getAttribute('data-flow')==='listing'){
-      var box = document.querySelector('#wizard .liquid-master-panel');
       var slider = document.querySelector('#wizard .inserat-steps-slider');
-      if(box && slider && slider.getAttribute('data-inserat-step')==='2'){
+      var isStep2 = !!(
+        wizardEl.classList.contains('inserat-step2-active') ||
+        (slider && slider.getAttribute('data-inserat-step') === '2') ||
+        (typeof w !== 'undefined' && Number(w.inseratStep) === 2)
+      );
+      if(isStep2){
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(5); }catch(err){}
         if(typeof w !== 'undefined'){ w.inseratStep=1; }
-        slider.setAttribute('data-inserat-step','1');
+        if(slider) slider.setAttribute('data-inserat-step','1');
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         if(f1) f1.style.setProperty('display','flex','important');
         if(f2) f2.style.setProperty('display','none','important');
-        var sf = box.querySelector('[data-inserat-step="3"]');
+        var box = document.querySelector('#wizard .liquid-master-panel');
+        var sf = box ? box.querySelector('[data-inserat-step="3"]') : null;
         if(sf) sf.style.setProperty('display','none','important');
         wizardEl.classList.remove('inserat-step2-active');
         wizardEl.classList.remove('inserat-step3-active');
+        var step2El = document.getElementById('mastercard-step-2');
+        if(step2El) step2El.scrollTop = 0;
         e.preventDefault();
         return;
       }
@@ -6007,6 +7348,14 @@
         showDiscover();
         e.preventDefault();
         return;
+      } else if(viewId === 'v-provider-detail-public'){
+        goBackFromPublicProvider();
+        e.preventDefault();
+        return;
+      } else if(viewId === 'v-fav-providers'){
+        showProfile();
+        e.preventDefault();
+        return;
       } else if(viewId === 'v-cart'){
         showDiscover();
         e.preventDefault();
@@ -6034,6 +7383,16 @@
     // Provider Views
     if(mode === 'provider'){
       const providerView = currentView ? currentView.id : '';
+      /* PWA/Hardware-Back Guard:
+         Wenn kein interner State mehr vorhanden ist, bleibe in der App
+         und gehe auf Dashboard statt App-Exit. */
+      if((!e.state || !e.state.__inAppProviderGuard) && providerView){
+        if(typeof showProviderHome === 'function') showProviderHome();
+        try{
+          history.pushState({ __inAppProviderGuard: 'v-provider-home' }, '', location.pathname + (location.search || ''));
+        }catch(_e){}
+        return;
+      }
       if(providerView === 'v-provider-profile'){
         showProviderHome();
         e.preventDefault();
@@ -6519,7 +7878,6 @@
   }
 
   /* Magic-Three: Überraschung, Saison-Held, KI-Modus [cite: S25 Premium 2026-03-02] */
-  function vibrate(arr){ try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(Array.isArray(arr) ? arr : [arr]); } catch(e){} }
   function getDishesFromPast(days){
     var w = typeof load === 'function' ? load(LS.week, {}) : (typeof week !== 'undefined' ? week : {});
     var out = [];
@@ -7178,7 +8536,7 @@
   // Share Button im Header (Offer Detail Page)
   const btnShareHeader = document.getElementById('btnShareHeader');
   if(btnShareHeader) btnShareHeader.onclick=()=>{
-    const o = offers.find(x=>x.id===activeOfferId);
+    const o = offers.find(x=>String(x.id)===String(activeOfferId));
     if(!o) return;
     shareOffer(o);
   };
@@ -7329,6 +8687,7 @@
   // updateHeaderBasket, getRemainingPickupMinutes → js/app-logic.js
   
   function renderCart(){
+    if(typeof window !== 'undefined') window.cart = cart;
     const box=document.getElementById('cartBox');
     const btn=document.getElementById('btnCheckout');
     const activeWrap = document.getElementById('cartActiveSessionWrap');
@@ -7412,25 +8771,119 @@
       return;
     }
 
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     if(btn){
       show(btn, 'flex');
       btn.onclick = () => {
-        if(!cart.pickupTime){ showToast('Bitte wähle eine Abholzeit'); return; }
+        const providerIds = Array.from(new Set((cart.items || []).map(function(it){
+          const offer = offers.find(function(o){ return o.id === it.offerId; });
+          return offer ? String(offer.providerId || '') : '';
+        }).filter(Boolean)));
+        const missingProviderTime = providerIds.find(function(pid){ return !cart.pickupTimes[pid]; });
+        if(missingProviderTime){
+          showToast('Bitte wähle für jeden Anbieter eine Abholzeit');
+          return;
+        }
         showCheckout();
       };
     }
     const cartVerzehrart = document.getElementById('cartVerzehrart');
     if(cartVerzehrart) show(cartVerzehrart);
+    const cartBtnVorOrt = document.getElementById('cartBtnVorOrt');
+    const cartBtnMitnehmen = document.getElementById('cartBtnMitnehmen');
+    const cartHasAnyDineIn = (cart.items || []).some(function(it){
+      const offer = offers.find(function(o){ return o.id === it.offerId; });
+      return !!(offer && normalizeOffer(offer).dineInPossible);
+    });
+    if(!cartHasAnyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
+      cart.verzehrmodus = 'mitnehmen';
+      save(LS.cart, cart);
+    }
+    const updateCartVerzehrButtons = () => {
+      const mode = cart.verzehrmodus || 'mitnehmen';
+      const isVorOrt = mode === 'vor_ort';
+      const isMitnehmen = mode === 'mitnehmen';
+      if(cartBtnVorOrt){
+        cartBtnVorOrt.disabled = !cartHasAnyDineIn;
+        cartBtnVorOrt.classList.toggle('is-faded', !cartHasAnyDineIn);
+        cartBtnVorOrt.style.cursor = cartHasAnyDineIn ? 'pointer' : 'not-allowed';
+        cartBtnVorOrt.style.borderColor = isVorOrt ? '#FFD700' : '#e7e1d5';
+        cartBtnVorOrt.style.background = '#fff';
+        cartBtnVorOrt.style.color = isVorOrt ? '#1f2937' : '#666';
+        cartBtnVorOrt.style.fontWeight = isVorOrt ? '900' : '600';
+        cartBtnVorOrt.style.boxShadow = isVorOrt ? '0 0 0 2px rgba(255,215,0,0.24)' : 'none';
+      }
+      if(cartBtnMitnehmen){
+        cartBtnMitnehmen.style.borderColor = isMitnehmen ? '#FFD700' : '#e7e1d5';
+        cartBtnMitnehmen.style.background = '#fff';
+        cartBtnMitnehmen.style.color = isMitnehmen ? '#1f2937' : '#666';
+        cartBtnMitnehmen.style.fontWeight = isMitnehmen ? '900' : '600';
+        cartBtnMitnehmen.style.boxShadow = isMitnehmen ? '0 0 0 2px rgba(255,215,0,0.24)' : 'none';
+      }
+    };
+    updateCartVerzehrButtons();
+    if(cartBtnVorOrt){
+      cartBtnVorOrt.onclick = () => {
+        if(!cartHasAnyDineIn) return;
+        cart.verzehrmodus = 'vor_ort';
+        save(LS.cart, cart);
+        updateCartVerzehrButtons();
+      };
+    }
+    if(cartBtnMitnehmen){
+      cartBtnMitnehmen.onclick = () => {
+        cart.verzehrmodus = 'mitnehmen';
+        if(!cart.verpackung) cart.verpackung = 'mehrweg';
+        save(LS.cart, cart);
+        updateCartVerzehrButtons();
+      };
+    }
 
     let total=0;
     const TIME_SLOTS = getTimeSlots();
+    const parsePickupStartTime = function(windowText){
+      const raw = String(windowText || '').trim();
+      if(!raw) return '';
+      const match = raw.match(/(\d{1,2}:\d{2})/);
+      return match ? match[1] : '';
+    };
+    const inferProviderDefaultPickupTime = function(group){
+      if(!group || !Array.isArray(group.items)) return '';
+      for(let i = 0; i < group.items.length; i++){
+        const item = group.items[i];
+        const offer = item && item.offer ? item.offer : null;
+        if(!offer) continue;
+        const fromWindow = parsePickupStartTime(offer.pickupWindow || offer.mealWindow || '');
+        if(fromWindow) return fromWindow;
+        if(offer.timeStart) return String(offer.timeStart);
+        if(offer.pickupTimeStart) return String(offer.pickupTimeStart);
+      }
+      const normalizedGroup = group.provider || {};
+      const fromGroupWindow = parsePickupStartTime(normalizedGroup.pickupWindow || normalizedGroup.mealWindow || '');
+      if(fromGroupWindow) return fromGroupWindow;
+      if(normalizedGroup.timeStart) return String(normalizedGroup.timeStart);
+      if(normalizedGroup.pickupTimeStart) return String(normalizedGroup.pickupTimeStart);
+      return '';
+    };
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const availableSlots = TIME_SLOTS.filter(slot => {
-      const [h, m] = slot.split(':').map(Number);
-      return (h * 60 + m) >= currentMinutes + 10;
-    });
-    const slotsToShow = availableSlots.length > 0 ? availableSlots : TIME_SLOTS.slice(0, 6);
+    const getWindowSlots = function(windowText){
+      const range = parsePickupWindowRange(windowText);
+      let scoped = TIME_SLOTS;
+      if(range){
+        scoped = TIME_SLOTS.filter(function(slot){
+          const mins = parseTimeToMinutes(slot);
+          return mins != null && mins >= range.start && mins <= range.end;
+        });
+      }
+      if(!scoped.length) scoped = TIME_SLOTS;
+      let futureScoped = scoped.filter(function(slot){
+        const mins = parseTimeToMinutes(slot);
+        return mins != null && mins >= currentMinutes + 10;
+      });
+      if(!futureScoped.length) futureScoped = scoped;
+      return futureScoped;
+    };
     
     const itemsByProvider = new Map();
     cart.items.forEach(it => {
@@ -7439,51 +8892,85 @@
       if(!itemsByProvider.has(o.providerId)) itemsByProvider.set(o.providerId, { provider: normalizeOffer(o), items: [] });
       itemsByProvider.get(o.providerId).items.push({offer: o, qty: it.qty});
     });
+    const providerSlotsById = {};
+    let pickupTimesAutoFilled = false;
+    itemsByProvider.forEach((group, pid) => {
+      const firstOffer = group && Array.isArray(group.items) && group.items[0] ? group.items[0].offer : null;
+      const providerWindow = (firstOffer && firstOffer.pickupWindow) || (group.provider && group.provider.pickupWindow) || '';
+      const providerSlots = getWindowSlots(providerWindow);
+      providerSlotsById[pid] = providerSlots;
+      if(!providerSlots.length) return;
+      if(cart.pickupTimes[pid] && providerSlots.indexOf(cart.pickupTimes[pid]) >= 0) return;
+      const inferred = inferProviderDefaultPickupTime(group);
+      const fallback = providerSlots[0] || '11:30';
+      cart.pickupTimes[pid] = (inferred && providerSlots.indexOf(inferred) >= 0) ? inferred : fallback;
+      pickupTimesAutoFilled = true;
+    });
+    if(pickupTimesAutoFilled) save(LS.cart, cart);
     
     let groupedHtml = '';
     itemsByProvider.forEach((group, pid) => {
+      const providerSlots = providerSlotsById[pid] || TIME_SLOTS;
+      const selectedProviderTime = cart.pickupTimes[pid] || '';
       groupedHtml += `
-        <div style="margin-bottom:20px;">
-          <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+        <div class="cart-provider-group">
+          <div class="cart-provider-label">
             <i data-lucide="store" style="width:14px;height:14px;"></i> ${esc(group.provider.providerName)}
           </div>
           ${group.items.map(({offer, qty}) => {
             const norm = normalizeOffer(offer);
-            const lineTotal = Number(norm.price||0) * qty;
+            const lineTotal = Number(norm.price || 0) * qty;
+            const unitPrice = Number(norm.price || 0);
+            const dishImage = String(
+              norm.image ||
+              norm.imageUrl ||
+              norm.photoData ||
+              offer.image ||
+              offer.imageUrl ||
+              ''
+            ).trim();
+            const thumbHtml = dishImage
+              ? `<img class="cart-item-thumb" src="${esc(dishImage)}" alt="${esc(norm.dish || 'Gericht')}">`
+              : `<div class="cart-item-thumb cart-item-thumb-fallback" aria-hidden="true">🍽️</div>`;
             total += lineTotal;
             return `
-              <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f1f3f5;">
-                <div style="flex:1; min-width:0;">
-                  <div style="font-weight:700; font-size:14px; color:#1a1a1a;">${esc(norm.dish)}</div>
-                  <div style="font-weight:800; color:var(--brand); font-size:13px; margin-top:2px;">${euro(lineTotal)}</div>
+              <div class="cart-item-row">
+                ${thumbHtml}
+                <div class="cart-item-main">
+                  <div class="cart-item-dish">${esc(norm.dish)}</div>
+                  <div class="cart-item-unit">Einzelpreis ${euro(unitPrice)}</div>
+                  <div class="cart-item-total">${euro(lineTotal)}</div>
                 </div>
-                <div style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border-radius:10px; padding:4px;">
-                  <button onclick="changeQty('${offer.id}', -1)" style="width:28px; height:28px; border-radius:8px; border:none; background:#fff; font-weight:900; cursor:pointer;">-</button>
-                  <span style="font-weight:800; min-width:16px; text-align:center;">${qty}</span>
-                  <button onclick="changeQty('${offer.id}', 1)" style="width:28px; height:28px; border-radius:8px; border:none; background:#fff; font-weight:900; cursor:pointer;">+</button>
+                <div class="cart-qty-control">
+                  <button class="cart-qty-btn" onclick="changeQty('${offer.id}', -1)" aria-label="Menge verringern">-</button>
+                  <span class="cart-qty-value">${qty}</span>
+                  <button class="cart-qty-btn" onclick="changeQty('${offer.id}', 1)" aria-label="Menge erhoehen">+</button>
                 </div>
               </div>
             `;
           }).join('')}
+          <div style="margin-top:10px;">
+            <label class="cart-time-label">Abholzeit</label>
+            <div class="cart-time-row">
+              ${providerSlots.map(t => `
+                <button class="cust-chip ${selectedProviderTime === t ? 'active' : ''}" onclick="selectCartTimeForProvider('${pid}','${t}')">${t}</button>
+              `).join('')}
+            </div>
+          </div>
         </div>
       `;
     });
 
     box.innerHTML = groupedHtml + `
-      <div style="margin-top:20px;">
-        <label style="display:block; font-weight:800; font-size:14px; margin-bottom:12px; color:#64748b; text-transform:uppercase;">Abholzeit</label>
-        <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width:none;">
-          ${slotsToShow.map(t => `
-            <button class="cust-chip ${cart.pickupTime === t ? 'active' : ''}" onclick="selectCartTime('${t}')">${t}</button>
-          `).join('')}
-        </div>
-      </div>
-      <div style="margin-top:24px; padding-top:20px; border-top:2px solid #1a1a1a; display:flex; align-items:center; justify-content:space-between;">
-        <span style="font-weight:850; font-size:18px;">Gesamt</span>
-        <span style="font-weight:950; font-size:22px; color:#1a1a1a;">${euro(total)}</span>
+      <div class="cart-total-row">
+        <span class="cart-total-label">Gesamt</span>
+        <span class="cart-total-value">${euro(total)}</span>
       </div>
     `;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    if(typeof window !== 'undefined' && typeof window.syncCustomerPrimaryWrapScroll === 'function'){
+      requestAnimationFrame(function(){ window.syncCustomerPrimaryWrapScroll(); });
+    }
     updateHeaderBasket();
   }
 
@@ -7499,7 +8986,20 @@
   };
 
   window.selectCartTime = (t) => {
-    cart.pickupTime = t;
+    const firstProvider = (cart && cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).find(Boolean);
+    if(!firstProvider) return;
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    cart.pickupTimes[firstProvider] = t;
+    save(LS.cart, cart);
+    renderCart();
+  };
+  window.selectCartTimeForProvider = (providerId, t) => {
+    if(!cart) return;
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    cart.pickupTimes[String(providerId || '')] = t;
     save(LS.cart, cart);
     renderCart();
   };
@@ -7514,20 +9014,60 @@
   };
 
   const btnCheckout = document.getElementById('btnCheckout');
+  let checkoutPaymentInFlight = false;
+  function setCheckoutPaymentButtonState(isBusy){
+    const btn = document.getElementById('btnStandardPayment');
+    if(!btn) return;
+    const label = btn.querySelector('span');
+    btn.disabled = !!isBusy;
+    btn.classList.toggle('is-faded', !!isBusy);
+    btn.style.cursor = isBusy ? 'not-allowed' : 'pointer';
+    if(label) label.textContent = isBusy ? 'Zahlung wird gestartet...' : 'JETZT BEZAHLEN';
+  }
   /* showCheckout → js/ui-navigation.js */
   function renderCheckout(total){
     if(!cart) cart = { items: [] };
     if(!cart.verzehrmodus) cart.verzehrmodus = 'mitnehmen';
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     save(LS.cart, cart);
     
     // Zeitauswahl im 15-Minuten-Takt rendern (11:00–14:30)
     const TIME_SLOTS = getTimeSlots();
     const currentMinutes = window.currentMinutes || (new Date().getHours() * 60 + new Date().getMinutes());
+    const checkoutProviderIds = Array.from(new Set((cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).filter(Boolean)));
+    const isMultiProviderCheckout = checkoutProviderIds.length > 1;
+    const singleProviderId = (!isMultiProviderCheckout && checkoutProviderIds.length === 1) ? checkoutProviderIds[0] : '';
+    let singleProviderWindowRange = null;
+    let singleProviderSlots = TIME_SLOTS.slice();
+    if(singleProviderId){
+      const singleProviderOffer = (cart.items || []).map(function(it){
+        return offers.find(function(x){ return x.id === it.offerId; });
+      }).find(function(o){ return o && String(o.providerId || '') === singleProviderId; }) || null;
+      const singleProviderWindowText = singleProviderOffer ? String(singleProviderOffer.pickupWindow || '') : '';
+      singleProviderWindowRange = parsePickupWindowRange(singleProviderWindowText);
+      if(singleProviderWindowRange){
+        singleProviderSlots = TIME_SLOTS.filter(function(t){
+          const mins = parseTimeToMinutes(t);
+          return mins != null && mins >= singleProviderWindowRange.start && mins <= singleProviderWindowRange.end;
+        });
+        if(!singleProviderSlots.length) singleProviderSlots = TIME_SLOTS.slice();
+      }
+    }
     let selectedTime = cart && cart.pickupTime ? cart.pickupTime : '';
+    if(!selectedTime && checkoutProviderIds.length === 1){
+      selectedTime = cart.pickupTimes[checkoutProviderIds[0]] || '';
+    }
+    if(singleProviderId && selectedTime && singleProviderSlots.indexOf(selectedTime) === -1){
+      selectedTime = '';
+    }
     
     // Auto-Auswahl: Nächster verfügbarer Slot (wenn noch keine Zeit gewählt)
     if(!selectedTime){
-      const availableSlots = TIME_SLOTS.filter(t => {
+      const sourceSlots = singleProviderId ? singleProviderSlots : TIME_SLOTS;
+      const availableSlots = sourceSlots.filter(t => {
         const [h, m] = t.split(':').map(Number);
         return (h * 60 + m) >= currentMinutes + 15;
       });
@@ -7541,12 +9081,26 @@
     
     const checkoutTimeSlots = document.getElementById('checkoutTimeSlots');
     if(checkoutTimeSlots){
-      checkoutTimeSlots.innerHTML = TIME_SLOTS.map(t => {
-        const [h, m] = t.split(':').map(Number);
-        const slotMinutes = h * 60 + m;
-        const isAvailable = slotMinutes >= currentMinutes + 15;
+      const customInputWrapper = document.getElementById('customTimeInputWrapper');
+      const btnOtherTime = document.getElementById('btnOtherTime');
+      if(customInputWrapper) hide(customInputWrapper);
+      if(btnOtherTime) hide(btnOtherTime);
+      if(isMultiProviderCheckout){
+        checkoutTimeSlots.innerHTML = '';
+        const summary = checkoutProviderIds.map(function(pid){
+          const firstOffer = offers.find(function(o){ return String(o.providerId || '') === pid; });
+          const norm = firstOffer ? normalizeOffer(firstOffer) : { providerName: 'Anbieter' };
+          const t = cart.pickupTimes[pid] || 'nicht gewählt';
+          return '<div style="padding:8px 0; border-bottom:1px solid #f1f3f5; font-size:14px; color:#334155;"><strong>' + esc(norm.providerName || 'Anbieter') + ':</strong> ' + esc(t) + '</div>';
+        }).join('');
+        checkoutTimeSlots.innerHTML = '<div style="width:100%; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:10px 12px;">' + summary + '</div>';
+      } else {
+      const renderSlots = singleProviderSlots;
+      if(btnOtherTime) show(btnOtherTime, 'flex');
+      checkoutTimeSlots.innerHTML = renderSlots.map(t => {
+        const isAvailable = true;
         const isSelected = selectedTime === t;
-        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:72px; padding:12px; border-radius:12px; border:2px solid ${isSelected ? '#FFD700' : '#e7e1d5'}; background:${isSelected ? '#FFD700' : '#fff'}; color:${isSelected ? '#2D3436' : isAvailable ? '#666' : '#ccc'}; font-weight:${isSelected ? '900' : '600'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.2s ease; opacity:${isAvailable ? '1' : '0.5'};">
+        return `<button type="button" class="time-slot-btn ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}" data-time="${t}" style="flex:0 0 auto; min-width:76px; padding:12px 14px; border-radius:14px; border:2px solid ${isSelected ? '#facc15' : '#e2e8f0'}; background:${isSelected ? 'linear-gradient(180deg,#fde047 0%,#facc15 100%)' : '#fff'}; color:${isSelected ? '#111827' : isAvailable ? '#475569' : '#94a3b8'}; font-weight:${isSelected ? '900' : '700'}; font-size:14px; cursor:${isAvailable ? 'pointer' : 'not-allowed'}; transition:all 0.18s ease; opacity:${isAvailable ? '1' : '0.5'}; box-shadow:${isSelected ? '0 6px 14px rgba(250,204,21,0.35)' : '0 1px 2px rgba(15,23,42,0.06)'}; transform:${isSelected ? 'translateY(-1px)' : 'translateY(0)'};">
           ${t}
         </button>`;
       }).join('');
@@ -7569,16 +9123,18 @@
           checkoutTimeSlots.querySelectorAll('.time-slot-btn').forEach(b => {
             const isSelected = b.getAttribute('data-time') === time;
             b.classList.toggle('selected', isSelected);
-            b.style.borderColor = isSelected ? '#FFD700' : '#e7e1d5';
-            b.style.background = isSelected ? '#FFD700' : '#fff';
-            b.style.color = isSelected ? '#2D3436' : '#666';
-            b.style.fontWeight = isSelected ? '900' : '600';
+            b.style.borderColor = isSelected ? '#facc15' : '#e2e8f0';
+            b.style.background = isSelected ? 'linear-gradient(180deg,#fde047 0%,#facc15 100%)' : '#fff';
+            b.style.color = isSelected ? '#111827' : '#475569';
+            b.style.fontWeight = isSelected ? '900' : '700';
+            b.style.boxShadow = isSelected ? '0 6px 14px rgba(250,204,21,0.35)' : '0 1px 2px rgba(15,23,42,0.06)';
           });
           
           const hiddenInput = document.getElementById('checkoutPickupTime');
           if(hiddenInput) hiddenInput.value = time;
         };
       });
+      }
     }
     
     // "Andere Uhrzeit wählen" Button Handler
@@ -7586,6 +9142,15 @@
     const customTimeInputWrapper = document.getElementById('customTimeInputWrapper');
     const customTimeInput = document.getElementById('checkoutPickupTimeCustom');
     if(btnOtherTime && customTimeInputWrapper && customTimeInput){
+      const minMinutes = singleProviderWindowRange ? singleProviderWindowRange.start : (11 * 60);
+      const maxMinutes = singleProviderWindowRange ? singleProviderWindowRange.end : (14 * 60 + 30);
+      const toHHMM = function(mins){
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+      };
+      customTimeInput.min = toHHMM(minMinutes);
+      customTimeInput.max = toHHMM(maxMinutes);
       btnOtherTime.onclick = () => {
         const isVisible = window.getComputedStyle(customTimeInputWrapper).display !== 'none';
         if(isVisible) hide(customTimeInputWrapper);
@@ -7618,8 +9183,6 @@
         if(customTime){
           const [h, m] = customTime.split(':').map(Number);
           const timeMinutes = h * 60 + m;
-          const minMinutes = 11 * 60; // 11:00
-          const maxMinutes = 14 * 60 + 30; // 14:30
           if(timeMinutes >= minMinutes && timeMinutes <= maxMinutes){
             const formattedTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} Uhr`;
             if(!cart) cart = {items: []};
@@ -7629,7 +9192,7 @@
             if(hiddenInput) hiddenInput.value = formattedTime;
             showToast('Zeit gespeichert ✓', 1500);
           } else {
-            showToast('Bitte wähle eine Zeit zwischen 11:00 und 14:30 Uhr', 3000);
+            showToast('Bitte wähle eine Zeit zwischen ' + toHHMM(minMinutes) + ' und ' + toHHMM(maxMinutes) + ' Uhr', 3000);
             customTimeInput.value = '';
           }
         }
@@ -7658,7 +9221,7 @@
     }
     const vm = cart.verzehrmodus || 'mitnehmen';
     
-    // Active-State: Gelbe Hintergrundfarbe für ausgewählten Button
+    // Active-State: klare Outline statt Vollflaeche
     const updateVerzehrartButtons = () => {
       const isVorOrt = vm === 'vor_ort';
       const isMitnehmen = vm === 'mitnehmen';
@@ -7666,17 +9229,19 @@
       if(btnVorOrt){
         btnVorOrt.classList.toggle('active', isVorOrt);
         btnVorOrt.style.borderColor = isVorOrt ? '#FFD700' : '#e7e1d5';
-        btnVorOrt.style.background = isVorOrt ? '#FFD700' : '#fff';
+        btnVorOrt.style.background = '#fff';
         btnVorOrt.style.color = isVorOrt ? '#2D3436' : '#666';
         btnVorOrt.style.fontWeight = isVorOrt ? '900' : '600';
+        btnVorOrt.style.boxShadow = isVorOrt ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
       }
       
       if(btnMitnehmen){
         btnMitnehmen.classList.toggle('active', isMitnehmen);
         btnMitnehmen.style.borderColor = isMitnehmen ? '#FFD700' : '#e7e1d5';
-        btnMitnehmen.style.background = isMitnehmen ? '#FFD700' : '#fff';
+        btnMitnehmen.style.background = '#fff';
         btnMitnehmen.style.color = isMitnehmen ? '#2D3436' : '#666';
         btnMitnehmen.style.fontWeight = isMitnehmen ? '900' : '600';
+        btnMitnehmen.style.boxShadow = isMitnehmen ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
       }
     };
     
@@ -7732,9 +9297,10 @@
     const setVerpackungActive = (btn, active) => {
       if(!btn) return;
       btn.style.borderColor = active ? '#FFD700' : '#e7e1d5';
-      btn.style.background = active ? '#FFD700' : '#fff';
+      btn.style.background = '#fff';
       btn.style.color = active ? '#2D3436' : '#666';
       btn.style.fontWeight = active ? '900' : '600';
+      btn.style.boxShadow = active ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
     };
     if(btnEigenerBehaeltner){
       setVerpackungActive(btnEigenerBehaeltner, verpackung === 'eigener_behaeltner');
@@ -7781,7 +9347,6 @@
           <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.08);">
             <div>
               <div style="font-weight:600; font-size:15px; color:#2D3436;">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
-              <div style="font-size:13px; color:#666; margin-top:4px;">${esc(normalized.providerName||'Anbieter')}</div>
             </div>
             <div style="font-weight:700; font-size:16px; color:#2D3436;">${euro(lineTotal)}</div>
           </div>
@@ -7791,7 +9356,7 @@
     summaryHTML += `
       <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid #2D3436;">
         <div style="font-weight:900; font-size:18px; color:#2D3436;">Gesamt</div>
-        <div style="font-weight:900; font-size:24px; color:#FFB800;">${euro(total)}</div>
+        <div style="font-weight:900; font-size:24px; color:#111827;">${euro(total)}</div>
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
@@ -7815,16 +9380,10 @@
     // Standard Payment Button Handler
     const btnStandardPayment = document.getElementById('btnStandardPayment');
     if(btnStandardPayment){
+      setCheckoutPaymentButtonState(checkoutPaymentInFlight);
       btnStandardPayment.onclick = () => {
+        if(checkoutPaymentInFlight) return;
         processCheckoutPayment(total);
-      };
-    }
-    
-    // Back Button
-    const btnCheckoutBack = document.getElementById('btnCheckoutBack');
-    if(btnCheckoutBack){
-      btnCheckoutBack.onclick = () => {
-        showCart();
       };
     }
     
@@ -7835,26 +9394,56 @@
   }
   
   function processCheckoutPayment(total){
+    if(checkoutPaymentInFlight) return;
+    checkoutPaymentInFlight = true;
+    setCheckoutPaymentButtonState(true);
     // Name validieren
     const nameInput = document.getElementById('checkoutName');
     const name = nameInput ? nameInput.value.trim() : '';
     if(!name){
       alert('Bitte gib deinen Namen für die Abholung ein.');
       if(nameInput) nameInput.focus();
+      checkoutPaymentInFlight = false;
+      setCheckoutPaymentButtonState(false);
       return;
     }
     
-    // Abholzeit auslesen
+    if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
+    const providerIds = Array.from(new Set((cart.items || []).map(function(it){
+      const o = offers.find(function(x){ return x.id === it.offerId; });
+      return o ? String(o.providerId || '') : '';
+    }).filter(Boolean)));
+    const isMultiProvider = providerIds.length > 1;
+    // Abholzeit auslesen (Single-Provider aus Checkout, Multi-Provider aus Cart-Gruppenzeiten)
     const pickupTimeSelect = document.getElementById('checkoutPickupTime');
-    const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : 'asap';
-    const pickupTimeText = pickupTime === 'asap' ? 'So schnell wie möglich' : `${pickupTime} Uhr`;
+    const pickupTime = pickupTimeSelect ? pickupTimeSelect.value : '';
+    const pickupTimeText = pickupTime ? (String(pickupTime).indexOf('Uhr') >= 0 ? pickupTime : `${pickupTime} Uhr`) : '';
+    if(isMultiProvider){
+      const missingProviderTime = providerIds.find(function(pid){ return !cart.pickupTimes[pid]; });
+      if(missingProviderTime){
+        showToast('Bitte wähle für jeden Anbieter eine Abholzeit in der Mittagsbox.');
+        showCart();
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+        return;
+      }
+    } else {
+      if(!pickupTimeText){
+        showToast('Bitte wähle eine Abholzeit.');
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+        return;
+      }
+      const singleProviderId = providerIds[0];
+      if(singleProviderId) cart.pickupTimes[singleProviderId] = pickupTimeText.replace(' Uhr', '');
+    }
     
     // E-Mail (optional)
     const emailInput = document.getElementById('checkoutEmail');
     const email = emailInput ? emailInput.value.trim() : '';
     
     // Cart mit neuen Daten aktualisieren
-    cart.pickupTime = pickupTimeText;
+    cart.pickupTime = pickupTimeText || cart.pickupTime || '';
     cart.customerName = name;
     cart.customerEmail = email;
     save(LS.cart, cart);
@@ -7863,10 +9452,22 @@
     const ordersCreated = createOrdersFromCartByProvider(cart, 'CREATED');
     if(!ordersCreated || ordersCreated.length === 0){
       alert('Fehler beim Erstellen der Bestellung.');
+      checkoutPaymentInFlight = false;
+      setCheckoutPaymentButtonState(false);
       return;
     }
     ordersCreated.forEach(o => updateOrder(o.id, { status: 'PAYMENT_PENDING' }));
-    startStripeCheckout(total, cart, ordersCreated);
+    startStripeCheckout(total, cart, ordersCreated)
+      .then(function(result){
+        if(result && result.redirected) return;
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+      })
+      .catch(function(err){
+        console.error('Checkout Start fehlgeschlagen:', err);
+        checkoutPaymentInFlight = false;
+        setCheckoutPaymentButtonState(false);
+      });
   }
   
   if(btnCheckout){
@@ -7998,8 +9599,8 @@
         unitPrice: items[0]?.unitPriceCents || 0,
         total: totalCents,
         fulfillType: cartData.verzehrmodus === 'vor_ort' ? 'DINE_IN' : 'PICKUP',
-        etaTime: cartData.pickupTime || '',
-        abholzeit: cartData.pickupTime || '',
+        etaTime: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
+        abholzeit: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
         status: initialStatus,
         currency: 'EUR',
         stripeCheckoutSessionId: undefined,
@@ -8015,7 +9616,7 @@
         isGuest: true,
         summary: items.map(i => `${i.dishName} x ${i.quantity}`).join(', '),
         code: null,
-        pickupTime: cartData.pickupTime || '',
+        pickupTime: ((cartData.pickupTimes && cartData.pickupTimes[providerId]) ? String(cartData.pickupTimes[providerId]) : (cartData.pickupTime || '')),
         unitPriceCents: items[0]?.unitPriceCents || 0,
         totalCents: totalCents,
         paymentIntentId: null,
@@ -8043,36 +9644,61 @@
 
     if (publishableKey && apiBase !== false) {
       var endpoint = (apiBase || window.location.origin) + '/.netlify/functions/create-checkout-session';
-      var basePath = (window.location.pathname || '/').replace(/\/?$/, '') || '';
-      var successUrl = window.location.origin + basePath + '/';
-      var cancelUrl = window.location.origin + basePath + '/';
+      var baseUrl = window.location.origin + window.location.pathname;
+      var successUrl = baseUrl + '?success=1&session_id={CHECKOUT_SESSION_ID}&orderId=' + encodeURIComponent(mainOrderId);
+      var cancelUrl = baseUrl + '?cancel=1&orderId=' + encodeURIComponent(mainOrderId);
       var lineItems = (cartData && cartData.items && cartData.items.length) ? cartData.items.map(function(item){
         var offer = typeof offers !== 'undefined' && offers.find ? offers.find(function(o){ return o.id === item.offerId; }) : null;
-        var name = (offer && offer.dish) ? offer.dish : (item.dish || 'Gericht');
-        var price = (item.total != null) ? item.total : (item.price != null ? item.price * (item.quantity || 1) : total);
-        return { name: name, amount: price, quantity: 1 };
+        var normalized = offer && typeof normalizeOffer === 'function' ? normalizeOffer(offer) : null;
+        var name = (normalized && normalized.dish) ? normalized.dish : (offer && offer.dish ? offer.dish : (item.dish || 'Gericht'));
+        var unitPrice = (normalized && Number.isFinite(Number(normalized.price))) ? Number(normalized.price) : Number(item.price || 0);
+        var quantity = Math.max(1, Number(item.qty || item.quantity || 1));
+        return { name: name, amount: unitPrice, quantity: quantity };
+      }).filter(function(li){
+        return Number.isFinite(Number(li.amount)) && Number(li.amount) > 0;
       }) : null;
       var payload = {
         orderId: mainOrderId,
+        orderIds: orderIds,
         total: total,
         currency: 'eur',
+        customerEmail: cartData && cartData.customerEmail ? String(cartData.customerEmail) : '',
         successUrl: successUrl,
         cancelUrl: cancelUrl,
         lineItems: lineItems && lineItems.length ? lineItems : null
       };
 
-      fetch(endpoint, {
+      return fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
-        .then(function(r){ return r.json(); })
+        .then(function(response){
+          return response.text().then(function(raw){
+            var data = {};
+            if(raw){
+              try{
+                data = JSON.parse(raw);
+              }catch(_parseErr){
+                throw new Error('Checkout-Endpoint antwortet nicht als JSON (' + response.status + '). Starte lokal bitte mit "npx.cmd netlify-cli dev".');
+              }
+            }
+            if(!response.ok || (data && data.error)){
+              var statusHint = response.status ? (' (' + response.status + ')') : '';
+              throw new Error((data && data.error) ? data.error : ('Checkout-Endpoint nicht erreichbar' + statusHint + '. Starte lokal bitte mit "npx.cmd netlify-cli dev".'));
+            }
+            return data || {};
+          });
+        })
         .then(function(data){
           if (data.error) throw new Error(data.error);
           if (data.url) {
-            var sessionId = data.sessionId || data.url;
-            orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
+            var sessionId = data.sessionId || '';
+            if(sessionId){
+              orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
+            }
             window.location.href = data.url;
+            return { redirected: true };
           } else {
             throw new Error('Keine Checkout-URL erhalten');
           }
@@ -8081,8 +9707,8 @@
           console.error('Stripe Checkout:', err);
           if (typeof showToast === 'function') showToast('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
           else alert('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
+          throw err;
         });
-      return;
     }
 
     // Demo: Kein Stripe konfiguriert – Simuliere Checkout
@@ -8090,8 +9716,10 @@
     orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
     if (confirm('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?')) {
       handleCheckoutSuccess(sessionId, mainOrderId);
+      return Promise.resolve({ simulated: 'success' });
     } else {
       handleCheckoutCancel(mainOrderId);
+      return Promise.resolve({ simulated: 'cancel' });
     }
   }
   
@@ -8101,50 +9729,125 @@
    * @param {string} [sessionId] - Stripe session ID (optional)
    * @param {string} [orderId] - Order ID (optional, if sessionId not available)
    */
-  function handleCheckoutSuccess(sessionId, orderId){
-    // TODO: In Production, verify payment via Webhook
-    const ordersList = loadOrders();
-    let orders = [];
-    if(sessionId) orders = ordersList.filter(o => o.stripeCheckoutSessionId === sessionId);
-    if(orders.length === 0 && orderId) orders = [getOrderById(orderId)].filter(Boolean);
-    
-    if(orders.length === 0){
-      console.error('Order not found for checkout success', { sessionId, orderId });
-      // Zeige Fehler-UI
-      const errorView = document.createElement('div');
-      errorView.className = 'panel';
-      errorView.style.padding = '40px 20px';
-      errorView.style.textAlign = 'center';
-      errorView.innerHTML = `
-        <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
-        <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
-        <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
-        <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
-          <i data-lucide="compass"></i> Zur Entdecken-Seite
-        </button>
-      `;
-      document.body.appendChild(errorView);
-      showView(null); // Hide all views
-      if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
-      return;
+  function verifyStripeCheckoutSession(sessionId, orderId){
+    var safeSessionId = String(sessionId || '').trim();
+    var safeOrderId = String(orderId || '').trim();
+    if(!safeSessionId){
+      return Promise.resolve({
+        verified: false,
+        sessionId: '',
+        paymentStatus: '',
+        paymentIntentId: '',
+        customerEmail: '',
+        orderIds: safeOrderId ? [safeOrderId] : []
+      });
     }
-    
-    const paymentData = {
-      stripeCheckoutSessionId: sessionId || orders[0].stripeCheckoutSessionId,
-      paymentIntentId: 'pi_' + cryptoId(),
-      receiptEmail: 'customer@example.com'
-    };
-    const notPaid = orders.filter(o => o.status !== 'PAID');
-    notPaid.forEach(o => {
-      completePayment(o.id, paymentData, { skipCartClear: true, skipShowSuccess: true });
-    });
-    cart = null;
-    save(LS.cart, cart);
-    if(typeof renderCart === 'function') renderCart();
-    const paidOrders = loadOrders().filter(o => o.stripeCheckoutSessionId === sessionId);
-    if(paidOrders.length === 1 && paidOrders[0].status === 'PAID') showOrderSuccess(paidOrders[0]);
-    else if(paidOrders.length > 1) showOrderSuccess(paidOrders);
-    else if(paidOrders.length === 1) showPickupCode(paidOrders[0].id);
+    if(safeSessionId.indexOf('demo_session_') === 0){
+      return Promise.resolve({
+        verified: true,
+        sessionId: safeSessionId,
+        paymentStatus: 'paid',
+        paymentIntentId: 'pi_' + cryptoId(),
+        customerEmail: '',
+        orderIds: safeOrderId ? [safeOrderId] : []
+      });
+    }
+    var stripeConfig = window.MITTAGIO_STRIPE || {};
+    var apiBase = stripeConfig.apiBase || '';
+    var endpoint = (apiBase || window.location.origin) + '/.netlify/functions/verify-checkout-session';
+    return fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: safeSessionId, orderId: safeOrderId || null })
+    })
+      .then(function(response){
+        return response.json()
+          .catch(function(){ return {}; })
+          .then(function(data){
+            if(!response.ok || (data && data.error)){
+              var message = (data && data.error) ? data.error : ('Verifikation fehlgeschlagen (' + response.status + ')');
+              throw new Error(message);
+            }
+            return data || {};
+          });
+      })
+      .then(function(data){
+        var ids = Array.isArray(data.orderIds) ? data.orderIds.map(function(id){ return String(id || '').trim(); }).filter(Boolean) : [];
+        if(safeOrderId && ids.indexOf(safeOrderId) < 0) ids.push(safeOrderId);
+        return {
+          verified: !!data.verified,
+          sessionId: String(data.sessionId || safeSessionId),
+          paymentStatus: String(data.paymentStatus || ''),
+          paymentIntentId: String(data.paymentIntentId || ''),
+          customerEmail: String(data.customerEmail || ''),
+          orderIds: ids
+        };
+      });
+  }
+  function handleCheckoutSuccess(sessionId, orderId){
+    checkoutPaymentInFlight = false;
+    setCheckoutPaymentButtonState(false);
+    verifyStripeCheckoutSession(sessionId, orderId)
+      .then(function(verification){
+        if(!verification.verified){
+          if(typeof showToast === 'function') showToast('Zahlung noch nicht bestaetigt. Bitte erneut pruefen.');
+          showCart();
+          return;
+        }
+        const ordersList = loadOrders();
+        let orders = [];
+        if(verification.orderIds && verification.orderIds.length){
+          orders = verification.orderIds.map(function(id){ return ordersList.find(function(o){ return o.id === id; }); }).filter(Boolean);
+        }
+        if(orders.length === 0 && verification.sessionId){
+          orders = ordersList.filter(function(o){ return o.stripeCheckoutSessionId === verification.sessionId; });
+        }
+        if(orders.length === 0 && orderId){
+          orders = [getOrderById(orderId)].filter(Boolean);
+        }
+        if(orders.length === 0){
+          console.error('Order not found for checkout success', { sessionId, orderId, verification });
+          const errorView = document.createElement('div');
+          errorView.className = 'panel';
+          errorView.style.padding = '40px 20px';
+          errorView.style.textAlign = 'center';
+          errorView.innerHTML = `
+            <div style="font-size:48px; margin-bottom:20px;">⚠️</div>
+            <h3 style="margin-bottom:12px;">Bestellung nicht gefunden</h3>
+            <p class="hint" style="margin-bottom:24px;">Die Bestellung konnte nicht gefunden werden.</p>
+            <button class="btn" type="button" onclick="showDiscover()" style="width:100%; min-height:44px;">
+              <i data-lucide="compass"></i> Zur Entdecken-Seite
+            </button>
+          `;
+          document.body.appendChild(errorView);
+          showView(null);
+          if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+          return;
+        }
+        const paymentData = {
+          stripeCheckoutSessionId: verification.sessionId || sessionId || orders[0].stripeCheckoutSessionId,
+          paymentIntentId: verification.paymentIntentId || ('pi_' + cryptoId()),
+          receiptEmail: verification.customerEmail || ''
+        };
+        const notPaid = orders.filter(function(o){ return o.status !== 'PAID'; });
+        notPaid.forEach(function(o){
+          completePayment(o.id, paymentData, { skipCartClear: true, skipShowSuccess: true });
+        });
+        cart = null;
+        save(LS.cart, cart);
+        if(typeof renderCart === 'function') renderCart();
+        const paidOrders = loadOrders().filter(function(o){
+          return orders.some(function(sel){ return sel.id === o.id; }) && o.status === 'PAID';
+        });
+        if(paidOrders.length === 1) showOrderSuccess(paidOrders[0]);
+        else if(paidOrders.length > 1) showOrderSuccess(paidOrders);
+        else showCart();
+      })
+      .catch(function(err){
+        console.error('Checkout-Verifikation fehlgeschlagen:', err);
+        if(typeof showToast === 'function') showToast('Zahlung konnte nicht verifiziert werden.');
+        showCart();
+      });
   }
   
   /**
@@ -8154,25 +9857,27 @@
    * @param {string} [sessionId] - Stripe session ID (optional)
    */
   function handleCheckoutCancel(orderId, sessionId){
-    let order = null;
-    
-    // Find order: priority: orderId > sessionId
-    if(orderId){
-      order = getOrderById(orderId);
-    } else if(sessionId){
-      const ordersList = loadOrders();
-      order = ordersList.find(o => o.stripeCheckoutSessionId === sessionId);
+    checkoutPaymentInFlight = false;
+    setCheckoutPaymentButtonState(false);
+    const ordersList = loadOrders();
+    let targetOrders = [];
+    if(sessionId){
+      targetOrders = ordersList.filter(function(o){ return o.stripeCheckoutSessionId === sessionId; });
     }
-    
-    if(!order){
+    if(targetOrders.length === 0 && orderId){
+      const one = getOrderById(orderId);
+      if(one) targetOrders = [one];
+    }
+    if(targetOrders.length === 0){
       // Fallback: direkt zum Warenkorb
       showCart();
       return;
     }
     
-    // Set status to CANCELLED
-    updateOrder(order.id, {
-      status: 'CANCELLED'
+    // Set status to CANCELLED (nur offene Zahlungen)
+    targetOrders.forEach(function(o){
+      if(o.status === 'PAID') return;
+      updateOrder(o.id, { status: 'CANCELLED' });
     });
     
     // UI: "Zahlung abgebrochen" + Button "Zurück zum Warenkorb"
@@ -8354,16 +10059,110 @@
 
   // --- Profile View ("Mein Mittagio") - Zalando-Prinzip ---
   let currentPublicProviderId = null;
+  let currentPublicProviderCategory = 'Alle';
+
+  function goBackFromPublicProvider(){
+    const providerNavWrap = document.getElementById('providerNavWrap');
+    if(providerNavWrap) providerNavWrap.style.setProperty('display', 'none', 'important');
+    if(document.body && document.body.classList.contains('provider-mode')){
+      document.body.classList.remove('provider-mode');
+    }
+    try { if(typeof setMode === 'function') setMode('customer'); } catch(_e){}
+    if(typeof showDiscover === 'function') showDiscover();
+    else if(typeof showView === 'function') showView('v-discover');
+    else if(typeof location !== 'undefined') location.hash = '';
+  }
+  if(typeof window !== 'undefined') window.goBackFromPublicProvider = goBackFromPublicProvider;
+
+  function bindPublicProviderHeaderShrink(){
+    const view = document.getElementById('v-provider-detail-public');
+    if(!view) return;
+    const scrollEl = view.querySelector('.pub-prov-scroll');
+    const header = view.querySelector('.cust-header-sticky');
+    if(!scrollEl || !header) return;
+
+    const syncShrink = function(){
+      const localScroll = Number(scrollEl.scrollTop || 0);
+      const pageScroll = Number(window.scrollY || window.pageYOffset || 0);
+      if(localScroll > 8 || pageScroll > 8) header.classList.add('is-shrunk');
+      else header.classList.remove('is-shrunk');
+    };
+    syncShrink();
+    if(!scrollEl._pubProvShrinkBound){
+      scrollEl._pubProvShrinkBound = true;
+      scrollEl.addEventListener('scroll', syncShrink, { passive:true });
+    }
+    if(!window._pubProvShrinkBound){
+      window._pubProvShrinkBound = true;
+      window.addEventListener('scroll', syncShrink, { passive:true });
+    }
+  }
+  function paintPublicProviderHeaderIcon(btn, lucideName, fallbackChar, color, fill){
+    if(!btn) return;
+    var iconColor = color || '#334155';
+    var iconFill = fill || 'none';
+    var svg = '';
+    if(lucideName === 'share-2'){
+      svg = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="display:block"><circle cx="18" cy="5" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><circle cx="6" cy="12" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><circle cx="18" cy="19" r="3" fill="none" stroke="' + iconColor + '" stroke-width="2"></circle><path d="M8.59 13.51l6.83 3.98M15.41 6.51L8.59 10.49" fill="none" stroke="' + iconColor + '" stroke-width="2" stroke-linecap="round"></path></svg>';
+    } else if(lucideName === 'heart'){
+      svg = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" style="display:block"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="' + iconFill + '" stroke="' + iconColor + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+    }
+    btn.innerHTML = svg || ('<span class="pub-prov-icon-fallback" aria-hidden="true" style="color:' + iconColor + ';">' + fallbackChar + '</span>');
+  }
 
   function showProviderProfilePublic(providerId){
+    const providerNavWrap = document.getElementById('providerNavWrap');
+    if(providerNavWrap) providerNavWrap.style.setProperty('display', 'none', 'important');
+    if(document.body && document.body.classList.contains('provider-mode')){
+      document.body.classList.remove('provider-mode');
+    }
+    if(document.body) document.body.classList.remove('provider-mode');
+    if(String(currentPublicProviderId || '') !== String(providerId || '')){
+      currentPublicProviderCategory = 'Alle';
+    }
     currentPublicProviderId = providerId;
-    showView('v-provider-detail-public');
+    if(typeof window.showView === 'function') window.showView('v-provider-detail-public');
+    else if(typeof showView === 'function') showView('v-provider-detail-public');
     renderPublicProviderProfile();
+    bindPublicProviderHeaderShrink();
   }
 
   function renderPublicProviderProfile(){
     const pid = currentPublicProviderId;
     if(!pid) return;
+
+    const pubProvView = document.getElementById('v-provider-detail-public');
+    const headerRow = pubProvView ? pubProvView.querySelector('.pub-prov-header-row') : null;
+    if(headerRow){
+      let actionsWrap = headerRow.querySelector('.pub-prov-header-actions');
+      if(!actionsWrap){
+        actionsWrap = document.createElement('div');
+        actionsWrap.className = 'pub-prov-header-actions';
+        headerRow.appendChild(actionsWrap);
+      }
+      let shareBtnEnsure = headerRow.querySelector('#pubProvShare');
+      if(!shareBtnEnsure){
+        shareBtnEnsure = document.createElement('button');
+        shareBtnEnsure.type = 'button';
+        shareBtnEnsure.className = 'pub-prov-share-btn';
+        shareBtnEnsure.id = 'pubProvShare';
+        shareBtnEnsure.setAttribute('aria-label', 'Teilen');
+        shareBtnEnsure.innerHTML = '<i data-lucide="share-2" style="width:20px;height:20px;color:#334155;"></i>';
+        actionsWrap.appendChild(shareBtnEnsure);
+      }
+      paintPublicProviderHeaderIcon(shareBtnEnsure, 'share-2', '↗', '#334155', 'none');
+      let favBtnEnsure = headerRow.querySelector('#btnToggleFavProvider');
+      if(!favBtnEnsure){
+        favBtnEnsure = document.createElement('button');
+        favBtnEnsure.type = 'button';
+        favBtnEnsure.className = 'pub-prov-fav-btn';
+        favBtnEnsure.id = 'btnToggleFavProvider';
+        favBtnEnsure.setAttribute('aria-label', 'Favorit');
+        favBtnEnsure.innerHTML = '<i data-lucide="heart" style="width:20px;height:20px;color:#E34D4D;"></i>';
+        actionsWrap.appendChild(favBtnEnsure);
+      }
+      paintPublicProviderHeaderIcon(favBtnEnsure, 'heart', '❤', '#E34D4D', 'none');
+    }
 
     // Finde Anbieter-Daten (aus erstem verfügbarem Angebot)
     const allOffers = load(LS.offers, []);
@@ -8372,28 +10171,16 @@
     const norm = normalizeOffer(first);
 
     const pubProvName = document.getElementById('pubProvName');
-    const pubProvTitle = document.getElementById('pubProvTitle');
-    const pubProvAddress = document.getElementById('pubProvAddress');
+    const pubProvHeaderAddress = document.getElementById('pubProvHeaderAddress');
     
     if(pubProvName) pubProvName.textContent = norm.providerName || 'Anbieter';
-    if(pubProvTitle) pubProvTitle.textContent = norm.providerName || 'Anbieter';
-    if(pubProvAddress) pubProvAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
-    var logoWrap = document.getElementById('pubProvLogoWrap');
-    var logoEmoji = document.getElementById('pubProvLogoEmoji');
-    if(logoWrap){
-      if(norm.providerLogoData || first.providerLogoData){
-        var src = norm.providerLogoData || first.providerLogoData;
-        logoWrap.innerHTML = '<img src="' + esc(src) + '" alt="" style="width:100%; height:100%; object-fit:cover;" />';
-      } else if(logoEmoji) {
-        logoWrap.innerHTML = '<span id="pubProvLogoEmoji">🏢</span>';
-      }
-    }
+    if(pubProvHeaderAddress) pubProvHeaderAddress.textContent = [norm.providerStreet, norm.providerZip, norm.providerCity].filter(Boolean).join(', ') || 'Adresse nicht verfügbar';
 
     // Favorite Status
     const favBtn = document.getElementById('btnToggleFavProvider');
     if(favBtn){
       const isFav = providerFavs.has(pid);
-      favBtn.innerHTML = `<i data-lucide="heart" style="width:22px;height:22px;color:#E34D4D;${isFav ? 'fill:#E34D4D;' : ''}"></i>`;
+      paintPublicProviderHeaderIcon(favBtn, 'heart', '❤', '#E34D4D', isFav ? '#E34D4D' : 'none');
       favBtn.onclick = () => {
         toggleProviderFavorite(pid);
         renderPublicProviderProfile();
@@ -8403,51 +10190,115 @@
     // Teilen
     const shareBtn = document.getElementById('pubProvShare');
     if(shareBtn){
+      paintPublicProviderHeaderIcon(shareBtn, 'share-2', '↗', '#334155', 'none');
       shareBtn.onclick = () => {
         shareProviderMenu(pid);
       };
     }
 
-    // Heute Angebote
+    const getOfferCategory = function(offer){
+      const n = normalizeOffer(offer);
+      const raw = String((n.category || n.diet || n.tag || '')).trim();
+      const mapped = CAT_MAP[raw] || raw;
+      return mapped || 'Weitere';
+    };
+
+    // Heute Angebote + Kategorie-Chips
     const today = isoDate(new Date());
     const todayOffers = provOffers.filter(o => o.day === today && o.active !== false);
+    const todayCatsWrap = document.getElementById('pubProvTodayCats');
+    const preferredCats = ['Fleisch', 'Veggie', 'Vegan'];
+    const dynamicCats = Array.from(new Set(todayOffers.map(getOfferCategory)));
+    const orderedCats = preferredCats.filter(function(cat){ return dynamicCats.indexOf(cat) >= 0; });
+    const extraCats = dynamicCats.filter(function(cat){ return preferredCats.indexOf(cat) < 0; });
+    const cats = ['Alle'].concat(orderedCats.concat(extraCats));
+    if(cats.indexOf(currentPublicProviderCategory) < 0) currentPublicProviderCategory = 'Alle';
+    if(todayCatsWrap){
+      if(todayOffers.length <= 1){
+        todayCatsWrap.innerHTML = '';
+        hide(todayCatsWrap);
+      } else {
+        todayCatsWrap.innerHTML = cats.map(function(cat){
+          const icon = cat === 'Alle' ? '✨' : (CAT_EMOJI[cat] || '');
+          const iconHtml = icon ? '<span class="pub-prov-cat-emoji">' + esc(icon) + '</span>' : '';
+          return '<button type="button" class="pub-prov-cat' + (cat === currentPublicProviderCategory ? ' is-active' : '') + '" data-cat="' + esc(cat) + '">' + iconHtml + '<span>' + esc(cat) + '</span></button>';
+        }).join('');
+        show(todayCatsWrap, 'flex');
+        Array.from(todayCatsWrap.querySelectorAll('.pub-prov-cat')).forEach(function(btn){
+          btn.onclick = function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            currentPublicProviderCategory = String(btn.getAttribute('data-cat') || 'Alle');
+            renderPublicProviderProfile();
+          };
+        });
+      }
+    }
     const todayList = document.getElementById('pubProvTodayOffers');
     if(todayList){
-      if(todayOffers.length === 0){
+      const filteredToday = todayOffers.filter(function(o){
+        return currentPublicProviderCategory === 'Alle' ? true : getOfferCategory(o) === currentPublicProviderCategory;
+      });
+      if(filteredToday.length === 0){
         todayList.innerHTML = '<div class="pub-prov-empty">Heute keine Angebote verfügbar.</div>';
       } else {
-        todayList.innerHTML = todayOffers.map(o => createPublicOfferRow(o)).join('');
+        todayList.innerHTML = filteredToday.map(o => createPublicOfferRow(o)).join('');
       }
     }
 
-    // Wochenplan
+    // Nächste Tage (Wochentag + Datum)
+    const weekTitle = document.getElementById('pubProvWeekTitle');
+    if(weekTitle) weekTitle.textContent = 'Nächste Tage';
     const weekList = document.getElementById('pubProvWeekPlan');
     if(weekList){
-      const futureOffers = provOffers.filter(o => o.day > today && o.active !== false).sort((a,b) => a.day.localeCompare(b.day));
+      const futureOffers = provOffers
+        .filter(o => o.day > today && o.active !== false)
+        .sort((a,b) => String(a.day || '').localeCompare(String(b.day || '')));
       if(futureOffers.length === 0){
         weekList.innerHTML = '<div class="pub-prov-empty">Keine weiteren Angebote geplant.</div>';
       } else {
-        weekList.innerHTML = futureOffers.map(o => createPublicOfferRow(o, true)).join('');
+        const grouped = new Map();
+        futureOffers.forEach(function(offer){
+          const key = String(offer.day || '');
+          if(!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key).push(offer);
+        });
+        let html = '';
+        Array.from(grouped.keys()).slice(0, 7).forEach(function(dayKey){
+          html += '<div class="pub-prov-day-label">' + esc(fmtDayShort(dayKey)) + '</div>';
+          html += grouped.get(dayKey).slice(0, 4).map(function(offer){ return createPublicOfferRow(offer); }).join('');
+        });
+        weekList.innerHTML = html || '<div class="pub-prov-empty">Keine weiteren Angebote geplant.</div>';
       }
     }
 
     if(typeof lucide !== 'undefined') lucide.createIcons();
   }
 
-  function createPublicOfferRow(o, showDate = false){
+  function createPublicOfferRow(o){
     const norm = normalizeOffer(o);
-    const dateLabel = showDate ? `<div style="font-size:11px; font-weight:800; color:var(--brand); text-transform:uppercase; margin-bottom:4px;">${fmtDayShort(o.day)}</div>` : '';
+    const img = o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=600&q=80';
+    const title = norm.dish || 'Gericht';
+    const price = euro(o.price);
+    const rawCategory = String((norm.category || norm.diet || norm.tag || '')).trim();
+    const category = CAT_MAP[rawCategory] || rawCategory;
+    const categoryEmoji = CAT_EMOJI[category] || '';
+    const categoryPill = category
+      ? `<span class="pub-prov-offer-tag">${categoryEmoji ? `<span class="pub-prov-offer-tag-emoji">${esc(categoryEmoji)}</span>` : ''}<span>${esc(category)}</span></span>`
+      : '';
     return `
-      <div class="cust-card pub-prov-offer-card" onclick="showDishDetail('${o.id}')" style="padding:16px; display:flex; gap:16px; align-items:center; cursor:pointer; background:#fff; border:1px solid rgba(0,0,0,0.04); border-radius:18px;">
-        <div style="width:64px; height:64px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
-          <img src="${o.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=200&q=80'}" alt="" style="width:100%; height:100%; object-fit:cover;">
+      <div class="cust-card pub-prov-offer-card" onclick="openOffer('${o.id}')">
+        <div class="pub-prov-offer-thumb">
+          <img src="${img}" alt="">
         </div>
-        <div style="flex:1; min-width:0;">
-          ${dateLabel}
-          <div style="font-weight:800; font-size:15px; color:#1a1a1a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dish)}</div>
-          <div style="font-size:13px; color:#64748b; font-weight:600;">${o.pickupWindow || 'Mittags'} • ${euro(o.price)}</div>
+        <div class="pub-prov-offer-main">
+          <div class="pub-prov-offer-title-row">
+            <div class="pub-prov-offer-title">${esc(title)}</div>
+            <div class="pub-prov-offer-price">${esc(price)}</div>
+          </div>
+          ${categoryPill}
         </div>
-        <i data-lucide="chevron-right" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0;"></i>
+        <i data-lucide="chevron-right" class="pub-prov-offer-chevron"></i>
       </div>
     `;
   }
@@ -8462,12 +10313,16 @@
     }
     save(LS.providerFavs, Array.from(providerFavs));
     updateProfileView(); // Profil aktualisieren
+    if(typeof renderFavorites === 'function') renderFavorites();
+    if(typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
   }
 
   function fmtDayShort(dateStr){
     const d = new Date(dateStr);
-    const days = ['SO', 'MO', 'DI', 'MI', 'DO', 'FR', 'SA'];
-    return days[d.getDay()] + ' ' + d.getDate() + '.' + (d.getMonth()+1) + '.';
+    const days = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    return days[d.getDay()] + ' ' + dd + '.' + mm + '.';
   }
 
   function updateProfileView(){
@@ -8489,12 +10344,13 @@
     if(headerCard){
       if(isLoggedIn){
         headerCard.innerHTML = `
-          <div style="width:64px; height:64px; border-radius:24px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(255,215,0,0.3); flex-shrink:0;">
+          <div style="width:64px; height:64px; border-radius:20px; background:linear-gradient(135deg,#FDE047 0%,#FACC15 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(250,204,21,0.32); flex-shrink:0;">
             ${initials}
           </div>
           <div style="flex:1; min-width:0;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-            <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:2px;">Persönlicher Bereich</div>
+            <div style="font-weight:950; font-size:21px; color:#0f172a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
+            <div style="font-size:13px; font-weight:700; color:#64748b; margin-top:4px;">Dein Konto ist aktiv</div>
+            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#ecfdf5; border:1px solid #bbf7d0; color:#166534; font-size:11px; font-weight:800;">🟢 Bereit für Vorbestellungen</div>
           </div>
         `;
         // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
@@ -8504,10 +10360,15 @@
         if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
-          <div style="flex:1;">
-            <div style="font-weight:950; font-size:22px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2; margin-bottom:8px;">Willkommen 👋</div>
-            <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 20px;">Melde dich an, um deine Bestellungen und die Mittagsbox zu speichern.</p>
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px;">
+          <div style="flex:1; display:flex; align-items:center; gap:12px;">
+            <div style="width:54px; height:54px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">👋</div>
+            <div style="min-width:0;">
+              <div style="font-weight:950; font-size:21px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Willkommen</div>
+              <p style="font-size:13px; color:#64748b; line-height:1.45; margin:4px 0 0;">Melde dich an, um Bestellungen und Mittagsbox dauerhaft zu speichern.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px; width:100%;">
               Profil anlegen
             </button>
           </div>
@@ -8547,6 +10408,10 @@
         if(noAbholnummerHint) show(noAbholnummerHint);
       }
     } else if(noAbholnummerHint) show(noAbholnummerHint);
+    const ordersCard = document.getElementById('profileOrdersCard');
+    if(ordersCard){
+      ordersCard.style.marginTop = (activeAbholnummern.length === 0) ? '-4px' : '0';
+    }
 
     // Historie (letzte 2)
     const orderHistoryEl = document.getElementById('profileOrderHistoryList');
@@ -8557,13 +10422,16 @@
       } else {
         const firstTwo = sorted.slice(0, 2);
         orderHistoryEl.innerHTML = firstTwo.map(o => `
-          <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:12px 0; border-bottom:1px solid #f1f3f5; display:flex; align-items:center; gap:12px; cursor:pointer;">
-            <div style="width:40px; height:40px; border-radius:10px; background:#f8f9fa; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
+          <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:10px; border:1px solid #eef2f7; border-radius:14px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff;">
+            <div style="width:42px; height:42px; border-radius:12px; background:#f8fafc; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
             <div style="flex:1; min-width:0;">
               <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
-              <div style="font-size:12px; color:#64748b;">${esc(o.providerName || 'Anbieter')} • ${o.pickupDate || ''}</div>
+              <div style="font-size:12px; color:#64748b;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
             </div>
-            <div style="font-weight:800; font-size:14px; color:var(--brand);">${euro(Number(o.total||0)/100)}</div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:5px; min-width:74px;">
+              <div style="font-weight:900; font-size:14px; color:#111827; font-variant-numeric:tabular-nums; text-align:right;">${euro(Number(o.total||0)/100)}</div>
+              <div style="font-size:10px; font-weight:800; color:#334155; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 7px; text-align:right;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
+            </div>
           </div>
         `).join('');
       }
@@ -8645,6 +10513,9 @@
     if(faqSheet) faqSheet.innerHTML = faqHtml;
 
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+    if(typeof window !== 'undefined' && typeof window.syncCustomerPrimaryWrapScroll === 'function'){
+      requestAnimationFrame(function(){ window.syncCustomerPrimaryWrapScroll(); });
+    }
   }
   function toggleFaqAnswer(btn){
     if(!btn) return;
@@ -8687,6 +10558,22 @@
     if(bd){ hide(bd); bd.style.setProperty('opacity', '0'); }
     if(sheet){ hide(sheet); }
   }
+  function openProfileSettingsSection(sectionId){
+    const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
+    if(valid.indexOf(sectionId) < 0) return;
+    openProfileSettingsSheet();
+    valid.forEach(function(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(id === sectionId) show(el);
+      else hide(el);
+      const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + id + '"]');
+      chevrons.forEach(function(c){ c.style.setProperty('transform', id === sectionId ? 'rotate(180deg)' : 'rotate(0deg)'); });
+    });
+    var scrollEl = document.getElementById('profileSettingsSheetScroll');
+    if(scrollEl) scrollEl.scrollTop = 0;
+    if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
+  }
   function toggleProfileSettingsSection(sectionId){
     const el = document.getElementById(sectionId);
     if(!el) return;
@@ -8699,6 +10586,7 @@
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
+  if(typeof window !== 'undefined') window.openProfileSettingsSection = openProfileSettingsSection;
   function openProfilePwaTipSheet(){
     var bd = document.getElementById('pwaStartScreenBd');
     var sheet = document.getElementById('pwaStartScreenSheet');
@@ -8718,11 +10606,8 @@
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     pwaDeferredPrompt = e;
-    // Einmal pro Session unser Sheet zeigen, damit Nutzer „Zum Startbildschirm hinzufügen“ tippen kann (dann wird prompt() aufgerufen).
-    if(!pwaBannerShownThisSession && typeof openProfilePwaTipSheet === 'function'){
-      pwaBannerShownThisSession = true;
-      setTimeout(function(){ openProfilePwaTipSheet(); }, 1500);
-    }
+    // Nicht mehr automatisch im Frontend einblenden; nur noch manuell über Profil-Hinweis öffnen.
+    pwaBannerShownThisSession = true;
   });
   var pwaSheetInstallBtn = document.getElementById('pwaSheetInstallBtn');
   if(pwaSheetInstallBtn){
@@ -8744,6 +10629,7 @@
     customer.dietaryPreferences[key] = value;
     save(LS.customer, customer);
     updateProfileView();
+    applyDiscoverDefaultsFromFoodProfile({ force: true });
     
     // Feed sofort neu rendern mit Filter
     if(typeof renderDiscover === 'function'){
@@ -8792,6 +10678,7 @@
     const providerLoginSheet = document.getElementById('providerLoginSheet');
     if(providerLoginBd){ show(providerLoginBd); providerLoginBd.classList.add('active'); }
     if(providerLoginSheet){ show(providerLoginSheet); providerLoginSheet.classList.add('active'); }
+    updateProviderLoginPrecheckHint('');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
   
@@ -8805,6 +10692,45 @@
     const passField = document.getElementById('providerLoginPass');
     if(emailField) emailField.value = '';
     if(passField) passField.value = '';
+    updateProviderLoginPrecheckHint('');
+  }
+  function setProviderLoginButtonEnabled(enabled){
+    var btn = document.getElementById('btnProviderLoginModal');
+    if(!btn) return;
+    var isEnabled = !!enabled;
+    btn.disabled = !isEnabled;
+    btn.classList.toggle('is-faded', !isEnabled);
+    btn.style.cursor = isEnabled ? 'pointer' : 'not-allowed';
+  }
+  function updateProviderLoginPrecheckHint(email){
+    var hintEl = document.getElementById('providerLoginPrecheckHint');
+    if(!hintEl){
+      setProviderLoginButtonEnabled(false);
+      return;
+    }
+    var normalized = normalizeEmailAddress(email || '');
+    hintEl.classList.remove('is-ok', 'is-warn');
+    if(!normalized){
+      hintEl.textContent = 'Nur vorangelegte Anbieter sind freigeschaltet. Falls dein Login noch nicht aktiv ist, kontaktiere den Admin.';
+      setProviderLoginButtonEnabled(false);
+      return;
+    }
+    if(normalized === 'demo@mittagio.de'){
+      hintEl.classList.add('is-ok');
+      hintEl.textContent = 'Demo-Zugang erkannt. Du kannst dich mit demo@mittagio.de anmelden.';
+      setProviderLoginButtonEnabled(true);
+      return;
+    }
+    var match = (typeof findProviderDirectoryByLoginEmail === 'function') ? findProviderDirectoryByLoginEmail(normalized) : null;
+    if(match){
+      hintEl.classList.add('is-ok');
+      hintEl.textContent = 'Freigeschaltet: ' + (match.name || 'Anbieter') + ' ist vorangelegt.';
+      setProviderLoginButtonEnabled(true);
+      return;
+    }
+    hintEl.classList.add('is-warn');
+    hintEl.textContent = 'Diese E-Mail ist noch nicht freigeschaltet. Bitte zuerst im Admin unter Anbieterbasis anlegen.';
+    setProviderLoginButtonEnabled(false);
   }
   function showLoginView(){ if(typeof showView === 'function' && views && views.providerLogin) showView(views.providerLogin); }
   if(typeof window !== 'undefined'){
@@ -8829,6 +10755,18 @@
       const pass = document.getElementById('providerLoginPass').value.trim();
       if(!email || !pass){
         showToast('Bitte E-Mail und Passwort eingeben.', 2000);
+        return;
+      }
+      updateProviderLoginPrecheckHint(email);
+      var normalizedEmail = normalizeEmailAddress(email);
+      var isDemoEmail = normalizedEmail === 'demo@mittagio.de';
+      var preCreatedMatch = (typeof findProviderDirectoryByLoginEmail === 'function') ? findProviderDirectoryByLoginEmail(normalizedEmail) : null;
+      if(!isDemoEmail && !preCreatedMatch){
+        showToast('Diese E-Mail ist noch nicht freigeschaltet.', 2500);
+        return;
+      }
+      if(!isDemoEmail && pass !== 'admin'){
+        showToast('Für Testanbieter lautet das Passwort: admin', 2500);
         return;
       }
       
@@ -8955,6 +10893,9 @@
   const providerLoginEmail = document.getElementById('providerLoginEmail');
   const providerLoginPass = document.getElementById('providerLoginPass');
   if(providerLoginEmail && providerLoginPass){
+    providerLoginEmail.addEventListener('input', function(){
+      updateProviderLoginPrecheckHint(providerLoginEmail.value);
+    });
     [providerLoginEmail, providerLoginPass].forEach(field => {
       field.onkeydown = (e) => {
         if(e.key === 'Enter'){
@@ -9884,7 +11825,7 @@
   document.addEventListener('click', function(e){
     var trig = e.target.closest('.prov-header-reset-trigger');
     if(!trig || e.target.closest('input') || e.target.closest('button')) return;
-    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger')) return; // KW + Kebab Priorität [cite: 2026-03-02]
+    if (e.target.closest('#kwNavContainer') || e.target.closest('.week-kebab-trigger') || e.target.closest('.week-magic-header-trigger')) return; // KW + Header-Actions Priorität
     var view = trig.getAttribute('data-reset-view');
     if(!view) return;
     e.preventDefault();
@@ -10160,7 +12101,12 @@
     else { if(typeof openDishFlow === 'function') openDishFlow(); }
   }, true);
   const btnProviderNavBack = document.getElementById('btnProviderNavBack');
-  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){ if(typeof handleBack==='function') handleBack(); else if(typeof showSection==='function') showSection('dashboard'); else showProviderHome(); };
+  if(btnProviderNavBack) btnProviderNavBack.onclick = function(){
+    if(typeof window.handleAppBack === 'function' && window.handleAppBack('ui-hard-back')) return;
+    if(typeof handleBack==='function') handleBack();
+    else if(typeof showSection==='function') showSection('dashboard');
+    else showProviderHome();
+  };
 
   // Header Icon-Werkzeugleiste: Kochbuch (📖) + Share – identisch auf Dashboard, Abholnummern, Wochenplan
   document.addEventListener('click', function(e){
@@ -10552,7 +12498,7 @@
           const dishName = d.dish || d.title || 'Gericht';
           const isLive = o.active !== false;
           const viewsCount = parseInt(localStorage.getItem('mittagio_views_' + o.id) || '0', 10);
-          const favCount = (JSON.parse(localStorage.getItem('mittagio_favorites') || '[]')).filter(function(id){ return id === o.id; }).length;
+          const favCount = (load(LS.dishFavs, [])).filter(function(fid){ return String(fid) === String(o.id); }).length;
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
           const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
@@ -11981,8 +13927,173 @@
     try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){}
     window.__kwActivateCountPrev = count;
   }
+  function syncWeekFooterVisibility(){
+    var weekFooter = document.getElementById('weekViewFooter');
+    if(!weekFooter) return;
+    var bodyEl = document.body;
+    var providerWeekView = document.getElementById('v-provider-week');
+    var activeCustomerView = document.querySelector('.customer-view.active');
+    var providerWeekVisible = false;
+    if(providerWeekView){
+      providerWeekVisible = providerWeekView.classList.contains('active') && !providerWeekView.classList.contains('is-hidden');
+      try{
+        var cs = window.getComputedStyle(providerWeekView);
+        if(cs && (cs.display === 'none' || cs.visibility === 'hidden')) providerWeekVisible = false;
+      }catch(_e){}
+    }
+    var isProviderWeekActive = !!(
+      bodyEl &&
+      bodyEl.classList.contains('provider-mode') &&
+      !activeCustomerView &&
+      providerWeekVisible &&
+      !bodyEl.classList.contains('week-preview-mode') &&
+      !bodyEl.classList.contains('wizard-inserat-open')
+    );
+    if(bodyEl){
+      if(activeCustomerView){
+        bodyEl.classList.remove('provider-mode');
+        bodyEl.classList.remove('provider-week-active');
+        bodyEl.classList.remove('week-footer-visible');
+      } else {
+        bodyEl.classList.toggle('provider-week-active', providerWeekVisible);
+        bodyEl.classList.toggle('week-footer-visible', isProviderWeekActive);
+      }
+      bodyEl.classList.toggle('week-footer-force-hidden', !isProviderWeekActive);
+    }
+    if(activeCustomerView){
+      var providerNavWrap = document.getElementById('providerNavWrap');
+      var providerNav = document.getElementById('providerNav');
+      var customerNav = document.getElementById('customerNav');
+      if(providerNavWrap){
+        providerNavWrap.style.setProperty('display', 'none', 'important');
+        providerNavWrap.style.setProperty('visibility', 'hidden', 'important');
+        providerNavWrap.style.setProperty('pointer-events', 'none', 'important');
+      }
+      if(providerNav){
+        providerNav.style.setProperty('display', 'none', 'important');
+        providerNav.style.setProperty('visibility', 'hidden', 'important');
+      }
+      if(customerNav){
+        customerNav.style.setProperty('display', 'flex', 'important');
+        customerNav.style.setProperty('visibility', 'visible', 'important');
+      }
+    }
+    weekFooter.classList.toggle('week-footer-hidden', !isProviderWeekActive);
+    if(isProviderWeekActive){
+      weekFooter.style.setProperty('display', 'flex', 'important');
+      weekFooter.style.setProperty('visibility', 'visible', 'important');
+      weekFooter.style.setProperty('pointer-events', 'auto', 'important');
+    } else {
+      weekFooter.style.setProperty('display', 'none', 'important');
+      weekFooter.style.setProperty('visibility', 'hidden', 'important');
+      weekFooter.style.setProperty('pointer-events', 'none', 'important');
+    }
+  }
+  function applyCustomerBottomGapFix(){
+    if(typeof document === 'undefined') return;
+    var bodyEl = document.body;
+    if(!bodyEl) return;
+    var targetIds = ['v-fav', 'v-fav-providers', 'v-cart', 'v-profile', 'v-orders'];
+    var activeTargetView = document.querySelector('#v-fav.view.active, #v-fav-providers.view.active, #v-cart.view.active, #v-profile.view.active, #v-orders.view.active');
+    if(activeTargetView && bodyEl.classList.contains('provider-mode')){
+      bodyEl.classList.remove('provider-mode');
+    }
+    if(bodyEl.classList.contains('provider-mode')) return;
+    bodyEl.classList.remove('customer-nav-inline');
+    var nav = document.getElementById('customerNav');
+    var navHeight = 0;
+    if(nav){
+      try{
+        var navCs = window.getComputedStyle(nav);
+        if(navCs && navCs.display !== 'none' && navCs.visibility !== 'hidden'){
+          var navRect = nav.getBoundingClientRect();
+          navHeight = Math.round(navRect && navRect.height ? navRect.height : 0);
+        }
+      }catch(_e){}
+    }
+    if(!Number.isFinite(navHeight) || navHeight <= 0) navHeight = 78;
+    if(nav){
+      nav.style.setProperty('position', 'fixed', 'important');
+      nav.style.setProperty('left', '0', 'important');
+      nav.style.setProperty('right', '0', 'important');
+      nav.style.setProperty('bottom', '0', 'important');
+      nav.style.setProperty('top', 'auto', 'important');
+      nav.style.setProperty('margin-top', '0', 'important');
+      nav.style.setProperty('z-index', '2000', 'important');
+    }
+    targetIds.forEach(function(id){
+      var view = document.getElementById(id);
+      if(!view) return;
+      var wrap = view.querySelector('.customer-main-wrap');
+      view.style.removeProperty('padding-bottom');
+      view.style.removeProperty('min-height');
+      view.style.removeProperty('height');
+      view.style.removeProperty('overflow-y');
+      view.style.removeProperty('display');
+      view.style.removeProperty('flex-direction');
+      if(!wrap) return;
+      wrap.style.removeProperty('padding-bottom');
+      wrap.style.removeProperty('min-height');
+      wrap.style.removeProperty('height');
+      wrap.style.removeProperty('margin-bottom');
+      wrap.style.removeProperty('flex');
+      wrap.style.removeProperty('overflow-y');
+      wrap.style.removeProperty('-webkit-overflow-scrolling');
+      wrap.style.removeProperty('margin-top');
+    });
+    syncCustomerPrimaryWrapScroll();
+  }
+  function syncCustomerPrimaryWrapScroll(){
+    var targetIds = ['v-cart', 'v-profile'];
+    targetIds.forEach(function(id){
+      var view = document.getElementById(id);
+      if(!view || !view.classList.contains('active')) return;
+      var wrap = view.querySelector('.customer-main-wrap');
+      if(!wrap) return;
+      var canScroll = (wrap.scrollHeight - wrap.clientHeight) > 2;
+      wrap.style.setProperty('overflow-y', canScroll ? 'auto' : 'hidden', 'important');
+    });
+  }
+  function syncCustomerNoEmptyScrollMode(viewId){
+    if(typeof document === 'undefined') return;
+    var bodyEl = document.body;
+    if(!bodyEl || bodyEl.classList.contains('provider-mode')) return;
+    var lockViews = ['v-fav', 'v-cart', 'v-profile'];
+    var shouldLock = lockViews.indexOf(String(viewId || '')) >= 0;
+    bodyEl.classList.toggle('customer-no-empty-scroll', shouldLock);
+    if(shouldLock){
+      requestAnimationFrame(function(){ syncCustomerPrimaryWrapScroll(); });
+    }
+  }
+  if(typeof window !== 'undefined'){
+    window.applyCustomerBottomGapFix = applyCustomerBottomGapFix;
+    window.syncCustomerPrimaryWrapScroll = syncCustomerPrimaryWrapScroll;
+    window.syncCustomerNoEmptyScrollMode = syncCustomerNoEmptyScrollMode;
+  }
+  if(typeof window !== 'undefined'){
+    window.debugWeekFooterState = function(){
+      var weekFooter = document.getElementById('weekViewFooter');
+      var providerWeekView = document.getElementById('v-provider-week');
+      var activeView = document.querySelector('.view.active');
+      var activeCustomer = document.querySelector('.customer-view.active');
+      var footerStyle = weekFooter ? window.getComputedStyle(weekFooter) : null;
+      return {
+        mode: window.mode || null,
+        activeViewId: activeView ? activeView.id : null,
+        activeCustomerViewId: activeCustomer ? activeCustomer.id : null,
+        bodyClasses: document.body ? Array.from(document.body.classList) : [],
+        providerWeekActiveClass: !!(document.body && document.body.classList.contains('provider-week-active')),
+        providerWeekViewActive: !!(providerWeekView && providerWeekView.classList.contains('active')),
+        providerWeekViewHiddenClass: !!(providerWeekView && providerWeekView.classList.contains('is-hidden')),
+        weekFooterInlineDisplay: weekFooter ? weekFooter.style.display : null,
+        weekFooterComputedDisplay: footerStyle ? footerStyle.display : null,
+        weekFooterComputedVisibility: footerStyle ? footerStyle.visibility : null
+      };
+    };
+  }
   /** Aktualisiert den Wochenplan-Footer (Counter links, Button rechts). [cite: 2026-03-02] */
   function updateWeekViewFooter(weekIndex){
+    syncWeekFooterVisibility();
     var kwIdx = (weekIndex !== undefined && weekIndex !== null) ? weekIndex : ((typeof weekPlanDay !== 'undefined' && weekPlanDay && typeof getWeekIndexForDate === 'function') ? getWeekIndexForDate(weekPlanDay) : (typeof weekPlanKWIndex !== 'undefined' ? weekPlanKWIndex : 0));
     var keys = typeof getWeekDayKeys === 'function' ? getWeekDayKeys(kwIdx) : [];
     var draftKeysInKW = keys.filter(function(key){
@@ -11997,6 +14108,7 @@
     var btnWeekViewFooter = document.getElementById('btnWeekViewFooter');
     var weekFooterCounter = document.getElementById('weekFooterCounter');
     if (!weekFooter || !btnWeekViewFooter) return;
+    if(weekFooter.classList.contains('week-footer-hidden')) return;
     var count = totalDraftDishes;
     if (weekFooterCounter) weekFooterCounter.textContent = count + ' Gericht' + (count !== 1 ? 'e' : '') + ' inserieren';
     btnWeekViewFooter.textContent = 'Woche jetzt inserieren';
@@ -12526,24 +14638,12 @@
     var sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
     // KW-Badge entfernt (Layout-Symmetrie: Header wie Meine Küche)
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    /* Magic-Sheet: Lotto, Saison-Sets, Lücken füllen [cite: 2026-02-23] */
+    /* Magic-Sheet: kompakt im Wochenplan-Header */
     var magicList = document.getElementById('weekMagicSheetList');
     var magicSheet = document.getElementById('weekMagicSheet');
     var magicBd = document.getElementById('weekMagicSheetBd');
     if (magicList && magicSheet) {
       magicList.innerHTML = '';
-      /* Neues Gericht: Abholnummer (0,89 €) priorisieren – Monetarisierung [cite: 2026-01-26, 2026-03-02] */
-      var btnNew = document.createElement('button');
-      btnNew.type = 'button';
-      btnNew.className = 'week-magic-sheet-btn';
-      btnNew.innerHTML = '<span class="week-magic-sheet-emo">🍽️</span><span>Neues Gericht (mit Abholnummer 0,89 €)</span>';
-      btnNew.onclick = function(){
-        if (typeof haptic === 'function') haptic(6);
-        closeWeekMagicSheet();
-        var todayKey = typeof isoDate === 'function' ? isoDate(new Date()) : '';
-        if (typeof startListingFlow === 'function') startListingFlow({ date: todayKey, entryPoint: 'week', preferAbholnummer: true });
-      };
-      magicList.appendChild(btnNew);
       function runLottoFill(){
         closeWeekMagicSheet();
         var grid = document.getElementById('kwGrid');
@@ -12570,54 +14670,47 @@
         }
         flyNext();
       }
-      var btnLotto = document.createElement('button');
-      btnLotto.type = 'button';
-      btnLotto.className = 'week-magic-sheet-btn';
-      btnLotto.innerHTML = '<span class="week-magic-sheet-emo">🎲</span><span>Lotto-Modus: Leere Slots mit Renner füllen</span>';
-      btnLotto.onclick = function(){ if (typeof haptic === 'function') haptic(6); runLottoFill(); };
-      magicList.appendChild(btnLotto);
-      Object.keys(SAISON_LABELS || {}).forEach(function(k){
+      function createMagicOption(emoji, title, desc, onClick){
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'week-magic-sheet-btn';
-        btn.innerHTML = '<span class="week-magic-sheet-emo">🌦️</span><span>' + (SAISON_LABELS[k] || k) + '</span>';
-        btn.onclick = (function(sk){
-          return function(){
-            if (typeof haptic === 'function') haptic(6);
-            closeWeekMagicSheet();
-            var n = applySaisonSystemSet(sk);
-            if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
-            if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-            if (typeof showToast === 'function') showToast(n > 0 ? n + ' Gerichte eingetragen' : 'Keine leeren Tage');
-          };
-        })(k);
+        btn.innerHTML =
+          '<span class="week-magic-sheet-emo">' + emoji + '</span>' +
+          '<span class="week-magic-sheet-copy">' +
+            '<span class="week-magic-sheet-copy-title">' + title + '</span>' +
+            '<span class="week-magic-sheet-copy-desc">' + desc + '</span>' +
+          '</span>';
+        btn.onclick = function(){
+          if (typeof haptic === 'function') haptic(6);
+          closeWeekMagicSheet();
+          if (typeof onClick === 'function') onClick();
+        };
         magicList.appendChild(btn);
+      }
+      createMagicOption('✨', 'Ideen', 'Passende Gerichte entdecken', function(){
+        if (typeof openWeekMagicThree === 'function') openWeekMagicThree();
+        else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
       });
-      var btnGap = document.createElement('button');
-      btnGap.type = 'button';
-      btnGap.className = 'week-magic-sheet-btn';
-      btnGap.innerHTML = '<span class="week-magic-sheet-emo">🔍</span><span>Lücken füllen: Nur leere Tage ergänzen</span>';
-      btnGap.onclick = function(){
-        if (typeof haptic === 'function') haptic(6);
-        closeWeekMagicSheet();
-        var n = fillGapsOnly();
+      createMagicOption('🍂', 'Saison', 'Gerichte nach Saison anzeigen', function(){
+        var season = typeof getSeasonForWeek === 'function' ? getSeasonForWeek(weekPlanKWIndex) : null;
+        var seasonKey = season && season.id ? season.id : null;
+        if (!seasonKey || typeof applySaisonSystemSet !== 'function') {
+          if (typeof showToast === 'function') showToast('Keine Saisonlogik verfügbar');
+          return;
+        }
+        var n = applySaisonSystemSet(seasonKey);
         if (typeof renderWeekPlanBoard === 'function') renderWeekPlanBoard();
         if (typeof renderProviderWeekPreview === 'function') renderProviderWeekPreview();
-        if (typeof showToast === 'function') showToast(n > 0 ? n + ' Tage ergänzt' : 'Keine Lücken');
-      };
-      magicList.appendChild(btnGap);
-      var btnFind = document.createElement('button');
-      btnFind.type = 'button';
-      btnFind.className = 'week-magic-sheet-btn';
-      btnFind.innerHTML = '<span class="week-magic-sheet-emo">📍</span><span>Lücke finden (zum nächsten freien Slot springen)</span>';
-      btnFind.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof findAndJumpToNextFreeSlot === 'function') findAndJumpToNextFreeSlot(); };
-      magicList.appendChild(btnFind);
-      var btnFill = document.createElement('button');
-      btnFill.type = 'button';
-      btnFill.className = 'week-magic-sheet-btn';
-      btnFill.innerHTML = '<span class="week-magic-sheet-emo">📂</span><span>Woche aus eigener Vorlage füllen</span>';
-      btnFill.onclick = function(){ if (typeof haptic === 'function') haptic(6); closeWeekMagicSheet(); if (typeof openWeekTemplatesSheet === 'function') openWeekTemplatesSheet(); };
-      magicList.appendChild(btnFill);
+        if (typeof showToast === 'function') showToast(n > 0 ? n + ' Gerichte eingetragen' : 'Keine leeren Tage');
+      });
+      createMagicOption('🎲', 'Überrasch mich', 'Zufällige Gerichte auswählen', function(){
+        runLottoFill();
+      });
+      if (typeof openWeekMagicThree === 'function') {
+        createMagicOption('🤖', 'KI-Vorschläge', 'Gerichte für deine Woche generieren', function(){
+          openWeekMagicThree();
+        });
+      }
     }
   }
   /** Magic-Sheet-Inhalt bei Öffnen nachladen, falls leer [cite: Plan Wochenplan 2026-02-25] */
@@ -12647,14 +14740,6 @@
     var sheet = document.getElementById('weekMagicSheet');
     if (bd){ hide(bd); bd.classList.remove('active'); }
     if (sheet){ hide(sheet); sheet.classList.remove('active'); }
-  }
-  /** FAB beim Öffnen des Wochenplans: Magic Three (Überraschung, Saison-Held, KI-Modus) [cite: S25 Premium 2026-03-02] */
-  function ensureWeekMagicFabBound(){
-    var fab = document.getElementById('weekMagicFab');
-    if (fab && !fab._magicBound) {
-      fab._magicBound = true;
-      fab.onclick = function(){ try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){} if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet(); };
-    }
   }
   /** KW-Trigger („KW 9“) beim Öffnen des Wochenplans binden, damit Kalenderwoche klickbar ist */
   function ensureWeekHeaderKWTriggerBound(){
@@ -12704,7 +14789,7 @@
   }
   if (typeof window !== 'undefined') window.triggerWeekSharing = triggerWeekSharing;
 
-  /** Wochenplan: KW-Trigger, FAB, Kebab fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
+  /** Wochenplan: KW-Trigger + Header-Actions fest verbunden [cite: 2026-03-02] – Back-to-Now: Klick springt zur aktuellen Woche wenn nicht in KW 0 */
   function initWeekPlanInteractions(){
     var kwEl = document.getElementById('kwNavContainer') || document.getElementById('kwDisplay');
     if (kwEl && !kwEl._kwBound) {
@@ -12728,11 +14813,13 @@
         }
       };
     }
-    var fab = document.getElementById('weekMagicFab');
-    if (fab) {
-      fab.onclick = function(){
-        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate([15, 10, 20]); } catch(e){}
-        if (typeof openWeekMagicThree === 'function') openWeekMagicThree(); else if (typeof openCreateFlowSheet === 'function') openCreateFlowSheet();
+    var magicHeaderBtn = document.getElementById('btnWeekMagicHeader');
+    if (magicHeaderBtn) {
+      magicHeaderBtn.onclick = function(e){
+        e.stopPropagation();
+        try { if (window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(err){}
+        if (typeof haptic === 'function') haptic(6);
+        if (typeof openWeekMagicSheet === 'function') openWeekMagicSheet();
       };
     }
     var kebabBtn = document.getElementById('btnWeekKebab');
@@ -14317,6 +16404,105 @@
       var logoSrc = (p.logoUrl || p.logoData || '').trim();
       if(logoSrc) masterLogo.src = logoSrc;
     }
+    var directoryCountEl = document.getElementById('providerDirectoryCount');
+    var directoryMetaEl = document.getElementById('providerDirectoryMeta');
+    var directoryPreviewEl = document.getElementById('providerDirectoryPreview');
+    var launchCheckBadgeEl = document.getElementById('providerLaunchCheckBadge');
+    var launchCheckResultsEl = document.getElementById('providerLaunchCheckResults');
+    var runLaunchCheckBtn = document.getElementById('btnProviderRunLaunchCheck');
+    var directoryList = (typeof window !== 'undefined' && typeof window.getProviderDirectory === 'function')
+      ? window.getProviderDirectory()
+      : load(LS.providerDirectory, []);
+    if(!Array.isArray(directoryList)) directoryList = [];
+    if(directoryCountEl) directoryCountEl.textContent = String(directoryList.length);
+    if(directoryMetaEl){
+      var cityStats = {};
+      directoryList.forEach(function(item){
+        var city = (item && item.city ? String(item.city) : '').trim();
+        if(!city) return;
+        cityStats[city] = (cityStats[city] || 0) + 1;
+      });
+      var topCities = Object.keys(cityStats)
+        .map(function(city){ return { city: city, count: cityStats[city] }; })
+        .sort(function(a,b){ return b.count - a.count; })
+        .slice(0,3)
+        .map(function(x){ return x.city + ' (' + x.count + ')'; });
+      directoryMetaEl.textContent = topCities.length
+        ? 'Top-Städte: ' + topCities.join(' · ')
+        : 'Anbieterbasis geladen.';
+    }
+    if(directoryPreviewEl){
+      var previewItems = directoryList.slice(0, 8);
+      if(!previewItems.length){
+        directoryPreviewEl.innerHTML = '<li><span class="name">Keine Anbieter vorhanden</span><span class="addr">Bitte Datenbasis prüfen.</span></li>';
+      } else {
+        directoryPreviewEl.innerHTML = previewItems.map(function(item){
+          var n = esc(item && item.name ? item.name : 'Anbieter');
+          var addrLine = esc(buildAddress(item || {}) || '');
+          return '<li><span class="name">' + n + '</span><span class="addr">' + addrLine + '</span></li>';
+        }).join('');
+      }
+    }
+    function renderLaunchCheckResults(results){
+      if(!launchCheckResultsEl || !Array.isArray(results)) return;
+      launchCheckResultsEl.innerHTML = results.map(function(entry){
+        var cls = entry.ok ? 'is-ok' : 'is-warn';
+        var state = entry.ok ? 'OK' : 'Hinweis';
+        return '<li class="' + cls + '"><span>' + esc(entry.label || '') + '</span><span class="state">' + state + '</span></li>';
+      }).join('');
+    }
+    function runProviderLaunchCheck(){
+      var rows = Array.isArray(directoryList) ? directoryList : [];
+      var total = rows.length;
+      var withName = rows.filter(function(r){ return !!String((r && r.name) || '').trim(); }).length;
+      var withAddress = rows.filter(function(r){
+        var street = String((r && r.street) || '').trim();
+        var zip = String((r && r.zip) || '').trim();
+        var city = String((r && r.city) || '').trim();
+        var addr = String((r && r.address) || '').trim();
+        return !!addr || !!street || !!(zip && city);
+      }).length;
+      var keys = new Set();
+      var duplicateCount = 0;
+      rows.forEach(function(r){
+        var key = [
+          String((r && r.name) || '').trim().toLowerCase(),
+          String((r && r.street) || '').trim().toLowerCase(),
+          String((r && r.zip) || '').trim().toLowerCase(),
+          String((r && r.city) || '').trim().toLowerCase()
+        ].join('|');
+        if(!key || key === '|||') return;
+        if(keys.has(key)) duplicateCount++;
+        else keys.add(key);
+      });
+      var results = [
+        { label: 'Anzahl Anbieter > 0 (' + total + ')', ok: total > 0 },
+        { label: 'Pflichtfeld Name gesetzt (' + withName + '/' + total + ')', ok: total > 0 && withName === total },
+        { label: 'Adresse vollständig nutzbar (' + withAddress + '/' + total + ')', ok: total > 0 && withAddress === total },
+        { label: 'Keine Dubletten im Schlüssel (gefunden: ' + duplicateCount + ')', ok: duplicateCount === 0 }
+      ];
+      var okCount = results.filter(function(r){ return !!r.ok; }).length;
+      var allOk = okCount === results.length;
+      if(launchCheckBadgeEl){
+        launchCheckBadgeEl.classList.remove('is-ok', 'is-warn');
+        launchCheckBadgeEl.classList.add(allOk ? 'is-ok' : 'is-warn');
+        launchCheckBadgeEl.textContent = allOk ? 'Launch-ready' : 'Bitte prüfen';
+      }
+      renderLaunchCheckResults(results);
+      if(typeof showToast === 'function') showToast('Go-Live-Test: ' + okCount + '/' + results.length + ' Checks ok');
+    }
+    if(runLaunchCheckBtn){
+      runLaunchCheckBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        runProviderLaunchCheck();
+      };
+    }
+    if(!launchCheckResultsEl || !launchCheckResultsEl.children || launchCheckResultsEl.children.length === 0){
+      renderLaunchCheckResults([
+        { label: 'Anzahl Anbieter > 0', ok: directoryList.length > 0 },
+        { label: 'Pflichtfelder und Dubletten prüfen', ok: true }
+      ]);
+    }
     /* Glamour-Grid: Meine Regeln, Abrechnungen, Support, FAQ */
     var currentBillingMonthKey = (function(){
       var d = new Date();
@@ -14455,6 +16641,13 @@
     const profileEmail = document.getElementById('providerProfileEmail');
     const profileWebsite = document.getElementById('providerProfileWebsite');
     const btnSaveBusiness = document.getElementById('btnProviderSaveBusiness');
+    var linkedDirectoryEntry = (typeof resolveProviderDirectoryEntryForCurrentProvider === 'function')
+      ? resolveProviderDirectoryEntryForCurrentProvider()
+      : null;
+    var hasLinkedDirectoryEntry = !!linkedDirectoryEntry;
+    if(hasLinkedDirectoryEntry && typeof applyProviderDirectoryEntryToProfile === 'function'){
+      applyProviderDirectoryEntryToProfile(provider, linkedDirectoryEntry);
+    }
     const businessFields = [profileBusinessName, profileStreet, profileZip, profileCity, profilePhone, profileEmail, profileWebsite].filter(Boolean);
     const lastBusinessField = businessFields.length ? businessFields[businessFields.length - 1] : null;
     let businessFinalizeHintTimer = null;
@@ -14516,9 +16709,17 @@
     const saveAllBusinessData = () => {
       if(!provider.profile) provider.profile = {};
       provider.profile.name = profileBusinessName ? profileBusinessName.value.trim() : (p.name || '');
-      provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
-      provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
-      provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
+      if(hasLinkedDirectoryEntry){
+        provider.profile.street = linkedDirectoryEntry.street || '';
+        provider.profile.zip = linkedDirectoryEntry.zip || '';
+        provider.profile.city = linkedDirectoryEntry.city || '';
+        provider.profile.lockedAddress = true;
+      } else {
+        provider.profile.street = profileStreet ? profileStreet.value.trim() : (p.street || '');
+        provider.profile.zip = profileZip ? profileZip.value.trim() : (p.zip || '');
+        provider.profile.city = profileCity ? profileCity.value.trim() : (p.city || '');
+        provider.profile.lockedAddress = false;
+      }
       provider.profile.phone = profilePhone ? profilePhone.value.trim() : (p.phone || '');
       provider.profile.email = profileEmail ? profileEmail.value.trim() : (p.email || '');
       provider.profile.website = profileWebsite ? profileWebsite.value.trim() : (p.website || '');
@@ -14532,6 +16733,11 @@
     if(profileStreet) profileStreet.value = p.street || '';
     if(profileZip) profileZip.value = p.zip || '';
     if(profileCity) profileCity.value = p.city || '';
+    if(hasLinkedDirectoryEntry){
+      if(profileStreet) profileStreet.value = linkedDirectoryEntry.street || '';
+      if(profileZip) profileZip.value = linkedDirectoryEntry.zip || '';
+      if(profileCity) profileCity.value = linkedDirectoryEntry.city || '';
+    }
     if(profilePhone) profilePhone.value = p.phone || '';
     if(profileEmail) profileEmail.value = p.email || '';
     if(profileWebsite) profileWebsite.value = p.website || '';
@@ -14557,6 +16763,127 @@
       });
     }
     if(btnSaveBusiness) btnSaveBusiness.onclick = saveAllBusinessData;
+    if(profileStreet && hasLinkedDirectoryEntry){
+      var streetGroup = profileStreet.closest('.input-group');
+      var zipGroup = profileZip ? profileZip.closest('.input-group') : null;
+      var cityGroup = profileCity ? profileCity.closest('.input-group') : null;
+      var businessSubtitle = document.getElementById('providerBusinessDataSubtitle');
+      if(streetGroup) hide(streetGroup);
+      if(zipGroup) hide(zipGroup);
+      if(cityGroup) hide(cityGroup);
+      if(businessSubtitle) businessSubtitle.textContent = 'Adresse ist zentral vorangelegt und wird vom Admin verwaltet.';
+      if(profileBusinessName){
+        profileBusinessName.placeholder = '';
+        profileBusinessName.setAttribute('aria-description', 'Anbieter ist vorangelegt. Adresse wird zentral verwaltet.');
+      }
+      if(profileEmail){
+        profileEmail.value = normalizeEmailAddress(linkedDirectoryEntry.loginEmail || provider.email || p.email || '');
+        profileEmail.readOnly = true;
+        profileEmail.setAttribute('aria-description', 'Login E-Mail wird vom Admin verwaltet.');
+      }
+    } else {
+      var businessSubtitleDefault = document.getElementById('providerBusinessDataSubtitle');
+      if(businessSubtitleDefault) businessSubtitleDefault.textContent = 'Betriebsname oder Adresse suchen – Adresse wird automatisch ausgefüllt.';
+      if(profileEmail) profileEmail.readOnly = false;
+    }
+
+    // Lokales Autocomplete aus Anbieterbasis (ohne externe API)
+    (function initProviderDirectoryAutofill(){
+      var nameInput = document.getElementById('providerProfileBusinessName');
+      var streetInput = document.getElementById('providerProfileStreet');
+      var zipInput = document.getElementById('providerProfileZip');
+      var cityInput = document.getElementById('providerProfileCity');
+      var emailInput = document.getElementById('providerProfileEmail');
+      if(!nameInput || hasLinkedDirectoryEntry) return;
+      var rows = load(LS.providerDirectory, []);
+      if(!Array.isArray(rows) || !rows.length) return;
+      var options = rows.filter(function(r){ return !!String((r && r.name) || '').trim(); });
+      if(!options.length) return;
+
+      function pickRowByName(rawName){
+        var q = String(rawName || '').trim().toLowerCase();
+        if(!q) return null;
+        var exact = options.filter(function(r){ return String(r.name || '').trim().toLowerCase() === q; });
+        if(exact.length === 1) return exact[0];
+        var starts = options.filter(function(r){ return String(r.name || '').trim().toLowerCase().indexOf(q) === 0; });
+        if(starts.length === 1) return starts[0];
+        return null;
+      }
+      function applyRow(row){
+        if(!row) return;
+        if(streetInput) streetInput.value = String(row.street || '').trim();
+        if(zipInput) zipInput.value = String(row.zip || '').trim();
+        if(cityInput) cityInput.value = String(row.city || '').trim();
+        if(emailInput && !String(emailInput.value || '').trim() && row.loginEmail){
+          emailInput.value = String(row.loginEmail || '').trim();
+        }
+        [nameInput, streetInput, zipInput, cityInput, emailInput].forEach(function(el){
+          if(el && el.value && el.classList) el.classList.add('floating-filled');
+        });
+        if(typeof showToast === 'function') showToast('Anbieterdaten übernommen');
+      }
+      function closeSuggestions(){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list) return;
+        list.classList.add('is-hidden');
+        list.innerHTML = '';
+      }
+      function renderSuggestions(query){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list) return;
+        var q = String(query || '').trim().toLowerCase();
+        if(!q){
+          closeSuggestions();
+          return;
+        }
+        var matches = options.filter(function(r){
+          var name = String(r.name || '').trim().toLowerCase();
+          return name.indexOf(q) >= 0;
+        }).slice(0, 8);
+        if(!matches.length){
+          closeSuggestions();
+          return;
+        }
+        list.classList.remove('is-hidden');
+        list.innerHTML = matches.map(function(row){
+          var name = esc(String(row.name || '').trim());
+          var meta = esc([row.city, row.street].filter(Boolean).join(' · '));
+          var login = esc(normalizeEmailAddress(row.loginEmail || row.email || ''));
+          return '<button type="button" class="provider-business-suggestion-item" data-name="' + name + '">' +
+            '<span class="title">' + name + '</span>' +
+            '<span class="meta">' + meta + '</span>' +
+            (login ? '<span class="meta">Login: ' + login + '</span>' : '') +
+          '</button>';
+        }).join('');
+      }
+      nameInput.addEventListener('change', function(){ applyRow(pickRowByName(nameInput.value)); });
+      nameInput.addEventListener('blur', function(){ applyRow(pickRowByName(nameInput.value)); });
+      nameInput.addEventListener('input', function(){ renderSuggestions(nameInput.value); });
+      var nameGroup = nameInput.closest('.input-group');
+      if(nameGroup){
+        var existingList = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!existingList){
+          var list = document.createElement('div');
+          list.id = 'providerBusinessNameSuggestionsList';
+          list.className = 'provider-business-suggestions is-hidden';
+          nameGroup.appendChild(list);
+          list.addEventListener('click', function(ev){
+            var item = ev.target && ev.target.closest ? ev.target.closest('.provider-business-suggestion-item') : null;
+            if(!item) return;
+            var pickedName = item.getAttribute('data-name') || '';
+            nameInput.value = pickedName;
+            applyRow(pickRowByName(pickedName));
+            closeSuggestions();
+          });
+        }
+      }
+      document.addEventListener('click', function(ev){
+        var list = document.getElementById('providerBusinessNameSuggestionsList');
+        if(!list || list.classList.contains('is-hidden')) return;
+        if(ev.target === nameInput || (ev.target && ev.target.closest && ev.target.closest('#providerBusinessNameSuggestionsList'))) return;
+        closeSuggestions();
+      });
+    })();
 
     // Google Places Autocomplete: Betriebsname/Adresse suchen, Rest ausfüllen
     (function initProviderPlacesAutocomplete(){
@@ -14564,7 +16891,7 @@
       var streetInput = document.getElementById('providerProfileStreet');
       var zipInput = document.getElementById('providerProfileZip');
       var cityInput = document.getElementById('providerProfileCity');
-      if(!nameInput || !GOOGLE_PLACES_API_KEY) return;
+      if(!nameInput || !GOOGLE_PLACES_API_KEY || hasLinkedDirectoryEntry) return;
       function attachAutocomplete(){
         if(typeof google === 'undefined' || !google.maps || !google.maps.places) return;
         try {
@@ -14931,29 +17258,37 @@
   }
   
   // Speisekarte teilen (Provider-Menü)
-  function shareProviderMenu(){
-    const profile = normalizeProviderProfile(provider.profile || {});
-    const providerName = profile.name || provider.email || 'Anbieter';
-    const providerIdVal = providerId();
-    
-    // Alle aktiven Gerichte des Providers sammeln
-    const providerOffers = offers.filter(o => o.providerId === providerIdVal && o.active !== false);
+  function shareProviderMenu(providerIdOverride, dayOverride){
+    const providerIdVal = String(providerIdOverride || providerId() || '');
+    const providerState = (typeof provider !== 'undefined' && provider) ? provider : {};
+    const profile = normalizeProviderProfile(providerState.profile || {});
+    const providerOffers = offers
+      .filter(o => String(o.providerId || '') === providerIdVal && o.active !== false)
+      .sort((a,b) => String(a.day || '').localeCompare(String(b.day || '')));
     
     if(providerOffers.length === 0){
       showToast('Keine Gerichte zum Teilen');
       return;
     }
     
+    const firstNorm = normalizeOffer(providerOffers[0] || {});
+    const providerName = firstNorm.providerName || profile.name || providerState.email || 'Anbieter';
+    const providerAddress = [firstNorm.providerStreet, firstNorm.providerZip, firstNorm.providerCity].filter(Boolean).join(', ');
+    const todayKey = isoDate(new Date());
+    const selectedDay = dayOverride || ((providerOffers.find(o => String(o.day || '') >= todayKey) || providerOffers[0] || {}).day || '');
+    const dayOffers = selectedDay ? providerOffers.filter(o => String(o.day || '') === String(selectedDay)) : providerOffers;
+    const teaser = dayOffers.slice(0, 3).map(o => `${o.dish || o.title || 'Gericht'} (${euro(o.price || 0)})`).join(', ');
+    const dayIntro = selectedDay ? `Hast du am ${fmtDayShort(selectedDay)} Mittag Zeit?` : 'Hast du diese Woche Mittag Zeit?';
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerIdVal}`;
-    const shareText = `😋 Lust auf was Richtiges? Entdecke unsere aktuelle Speisekarte!\n\n📍 ${providerName}\n\n${providerOffers.slice(0, 5).map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}${providerOffers.length > 5 ? `\n... und viele weitere Highlights!` : ''}\n\nDirekt online bestellen & Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #speisekarte #foodie #lunchtime`;
+    const shareText = `${dayIntro}\nBei ${providerName} gibt es z. B.: ${teaser || 'leckere Tagesgerichte'}.\n${providerAddress ? `📍 ${providerAddress}\n` : ''}\nSchau dir die Angebote an:\n👉 ${shareUrl}`;
     
     if(navigator.share){
       navigator.share({
-        title: `Speisekarte ${providerName}`,
+        title: `${providerName} vorschlagen`,
         text: shareText,
         url: shareUrl
       }).then(() => {
-        showToast('Speisekarte geteilt!');
+        showToast('Anbieter geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
           copyToClipboard(shareText);
@@ -15102,6 +17437,33 @@
     const kpiUmsatz = document.getElementById('adminKpiUmsatz');
     const kpiInserate = document.getElementById('adminKpiInserate');
     const kpiAbholnummern = document.getElementById('adminKpiAbholnummern');
+    const kpiProviders = document.getElementById('adminKpiProviders');
+    const kpiUnlockedProviders = document.getElementById('adminKpiUnlockedProviders');
+    const rolloutProgressLabel = document.getElementById('adminRolloutProgressLabel');
+    const rolloutProgressBar = document.getElementById('adminRolloutProgressBar');
+    const revenueTrendList = document.getElementById('adminRevenueTrendList');
+    const activityList = document.getElementById('adminActivityList');
+    const providerBaseCount = document.getElementById('adminProviderBaseCount');
+    const providerBaseSource = document.getElementById('adminProviderBaseSource');
+    const providerBasePreview = document.getElementById('adminProviderBasePreview');
+    const providerBaseRefreshBtn = document.getElementById('adminBtnProviderBaseRefresh');
+    const massTestRunBtn = document.getElementById('adminBtnMassTestRun');
+    const providerBaseAddBtn = document.getElementById('adminBtnProviderBaseAdd');
+    const providerBaseCsvBtn = document.getElementById('adminBtnProviderBaseCsvExport');
+    const providerOpenCsvBtn = document.getElementById('adminBtnProviderOpenCsvExport');
+    const providerSearchInput = document.getElementById('adminProviderSearch');
+    const providerCityFilter = document.getElementById('adminProviderCityFilter');
+    const providerFilterResetBtn = document.getElementById('adminBtnProviderFilterReset');
+    const providerTabAll = document.getElementById('adminProviderTabAll');
+    const providerTabOpen = document.getElementById('adminProviderTabOpen');
+    const providerForm = document.getElementById('adminProviderBaseForm');
+    const providerEditId = document.getElementById('adminProviderEditId');
+    const providerNameInput = document.getElementById('adminProviderName');
+    const providerLoginEmailInput = document.getElementById('adminProviderLoginEmail');
+    const providerStreetInput = document.getElementById('adminProviderStreet');
+    const providerZipInput = document.getElementById('adminProviderZip');
+    const providerCityInput = document.getElementById('adminProviderCity');
+    const providerFormCancelBtn = document.getElementById('adminBtnProviderFormCancel');
     const feedList = document.getElementById('adminFeedList');
     const tableBody = document.getElementById('adminTableBody');
     const tableSum = document.getElementById('adminTableSum');
@@ -15119,6 +17481,371 @@
     if(kpiUmsatz) kpiUmsatz.textContent = (tagesumsatz.toFixed(2)).replace('.', ',') + ' €';
     if(kpiInserate) kpiInserate.textContent = String(activeOffers.length);
     if(kpiAbholnummern) kpiAbholnummern.textContent = String(abholnummernCount);
+    var dirRows = (typeof window !== 'undefined' && typeof window.getProviderDirectory === 'function')
+      ? window.getProviderDirectory()
+      : load(LS.providerDirectory, []);
+    if(!Array.isArray(dirRows)) dirRows = [];
+    dirRows = dirRows.slice().sort(function(a, b){
+      var ac = String((a && a.city) || '').toLowerCase();
+      var bc = String((b && b.city) || '').toLowerCase();
+      if(ac !== bc) return ac < bc ? -1 : 1;
+      var an = String((a && a.name) || '').toLowerCase();
+      var bn = String((b && b.name) || '').toLowerCase();
+      return an < bn ? -1 : an > bn ? 1 : 0;
+    });
+    function persistDirectory(rows){
+      save(LS.providerDirectory, rows);
+      save(LS.providerDirectoryVersion, REAL_PROVIDER_DIRECTORY_VERSION);
+      if(typeof setProviderDirectoryWindow === 'function') setProviderDirectoryWindow(rows);
+    }
+    function closeProviderForm(){
+      if(!providerForm) return;
+      providerForm.classList.add('is-hidden');
+      if(providerEditId) providerEditId.value = '';
+      if(providerNameInput) providerNameInput.value = '';
+      if(providerLoginEmailInput) providerLoginEmailInput.value = '';
+      if(providerStreetInput) providerStreetInput.value = '';
+      if(providerZipInput) providerZipInput.value = '';
+      if(providerCityInput) providerCityInput.value = '';
+    }
+    function openProviderForm(row){
+      if(!providerForm) return;
+      providerForm.classList.remove('is-hidden');
+      if(providerEditId) providerEditId.value = row && row.id ? String(row.id) : '';
+      if(providerNameInput) providerNameInput.value = row && row.name ? String(row.name) : '';
+      if(providerLoginEmailInput) providerLoginEmailInput.value = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(providerStreetInput) providerStreetInput.value = row && row.street ? String(row.street) : '';
+      if(providerZipInput) providerZipInput.value = row && row.zip ? String(row.zip) : '';
+      if(providerCityInput) providerCityInput.value = row && row.city ? String(row.city) : '';
+      if(providerNameInput && typeof providerNameInput.focus === 'function') providerNameInput.focus();
+    }
+    if(providerCityFilter){
+      var currentCity = String(providerCityFilter.value || '');
+      var cityList = dirRows.map(function(r){ return String((r && r.city) || '').trim(); }).filter(Boolean);
+      cityList = Array.from(new Set(cityList)).sort(function(a,b){ return a.localeCompare(b, 'de'); });
+      providerCityFilter.innerHTML = '<option value="">Alle Orte</option>' + cityList.map(function(city){
+        return '<option value="' + esc(city) + '">' + esc(city) + '</option>';
+      }).join('');
+      providerCityFilter.value = cityList.indexOf(currentCity) >= 0 ? currentCity : '';
+    }
+    var searchTerm = String((providerSearchInput && providerSearchInput.value) || '').trim().toLowerCase();
+    var cityTerm = String((providerCityFilter && providerCityFilter.value) || '').trim().toLowerCase();
+    var openOnly = !!(providerTabOpen && providerTabOpen.classList.contains('active'));
+    var filteredRows = dirRows.filter(function(row){
+      var city = String((row && row.city) || '').trim().toLowerCase();
+      var loginNorm = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+      if(openOnly && loginNorm) return false;
+      if(cityTerm && city !== cityTerm) return false;
+      if(!searchTerm) return true;
+      var haystack = [
+        row && row.name,
+        row && row.loginEmail,
+        row && row.street,
+        row && row.zip,
+        row && row.city,
+        row && row.address
+      ].map(function(v){ return String(v || '').toLowerCase(); }).join(' ');
+      return haystack.indexOf(searchTerm) >= 0;
+    });
+    var unlockedProviders = dirRows.filter(function(row){ return !!normalizeEmailAddress(row && (row.loginEmail || row.email)); }).length;
+    var totalProviders = dirRows.length;
+    var progressPct = totalProviders > 0 ? Math.round((unlockedProviders / totalProviders) * 100) : 0;
+    if(kpiProviders) kpiProviders.textContent = String(dirRows.length);
+    if(kpiUnlockedProviders) kpiUnlockedProviders.textContent = String(unlockedProviders);
+    if(rolloutProgressLabel) rolloutProgressLabel.textContent = String(unlockedProviders) + ' / ' + String(totalProviders) + ' · ' + String(progressPct) + '%';
+    if(rolloutProgressBar) rolloutProgressBar.style.width = String(progressPct) + '%';
+    if(revenueTrendList){
+      var dailyRevenue = {};
+      for(var d = 6; d >= 0; d--){
+        var dayDate = new Date();
+        dayDate.setDate(dayDate.getDate() - d);
+        var dayKey = (typeof isoDate === 'function') ? isoDate(dayDate) : dayDate.toISOString().slice(0,10);
+        dailyRevenue[dayKey] = 0;
+      }
+      txs.forEach(function(t){
+        if(!t || !t.timestamp) return;
+        var key = String(t.timestamp).slice(0,10);
+        if(dailyRevenue[key] == null) return;
+        dailyRevenue[key] += Number(t.total_amount || 0);
+      });
+      var trendRows = Object.keys(dailyRevenue).map(function(key){
+        return { key: key, value: Number(dailyRevenue[key] || 0) };
+      });
+      var maxVal = trendRows.reduce(function(m, row){ return Math.max(m, row.value); }, 0) || 1;
+      revenueTrendList.innerHTML = trendRows.map(function(row){
+        var dayLabel = new Date(row.key).toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit' });
+        var pct = Math.max(8, Math.round((row.value / maxVal) * 100));
+        return '<div class="admin-revenue-trend-row">' +
+          '<span class="day">' + esc(dayLabel) + '</span>' +
+          '<span class="bar"><span style="width:' + pct + '%;"></span></span>' +
+          '<span class="val">' + (row.value.toFixed(2).replace('.', ',')) + ' €</span>' +
+        '</div>';
+      }).join('');
+    }
+    if(activityList){
+      var actRows = [];
+      txs.slice(0, 5).forEach(function(t){
+        var amount = Number(t && t.total_amount || 0).toFixed(2).replace('.', ',') + ' €';
+        var when = t && t.timestamp ? new Date(t.timestamp).toLocaleString('de-DE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '–';
+        actRows.push({ text: 'Buchung: ' + amount, meta: when });
+      });
+      activeOffers.slice(0, 3).forEach(function(o){
+        actRows.push({
+          text: 'Live-Inserat: ' + String((o && (o.dishName || o.dish || o.name)) || 'Gericht'),
+          meta: String((o && o.day) || 'heute')
+        });
+      });
+      if(!actRows.length){
+        activityList.innerHTML = '<li><span class="txt">Noch keine Aktivität vorhanden.</span><span class="meta">–</span></li>';
+      } else {
+        activityList.innerHTML = actRows.slice(0,8).map(function(item){
+          return '<li><span class="txt">' + esc(item.text) + '</span><span class="meta">' + esc(item.meta) + '</span></li>';
+        }).join('');
+      }
+    }
+    if(providerBaseCount) providerBaseCount.textContent = String(filteredRows.length) + ' / ' + String(dirRows.length);
+    if(providerBaseSource){
+      providerBaseSource.textContent = 'Quelle: app/data/provider-directory.csv · Version ' + REAL_PROVIDER_DIRECTORY_VERSION;
+    }
+    if(providerBasePreview){
+      var previewRows = filteredRows.slice(0, 25);
+      if(!previewRows.length){
+        providerBasePreview.innerHTML = '<li><span class="name">Keine Treffer</span><span class="addr">Filter anpassen oder zurücksetzen.</span></li>';
+      } else {
+        providerBasePreview.innerHTML = previewRows.map(function(row){
+          var id = esc(row && row.id ? row.id : '');
+          var n = esc(row && row.name ? row.name : 'Anbieter');
+          var a = esc(buildAddress(row || {}) || '');
+          var loginNorm = normalizeEmailAddress(row && (row.loginEmail || row.email) ? (row.loginEmail || row.email) : '');
+          var loginInfo = esc(loginNorm || 'kein Login gesetzt');
+          var statusClass = loginNorm ? 'is-ok' : 'is-missing';
+          var statusLabel = loginNorm ? 'Freigeschaltet' : 'E-Mail fehlt';
+          return '<li data-provider-id="' + id + '">' +
+            '<div class="admin-provider-base-row">' +
+              '<div><span class="name">' + n + '</span><span class="addr">' + a + '</span><span class="addr">Login: ' + loginInfo + '</span><span class="admin-provider-status ' + statusClass + '">' + statusLabel + '</span></div>' +
+              '<div class="admin-provider-base-item-actions">' +
+                '<button type="button" class="admin-provider-base-item-btn" data-action="edit">Bearbeiten</button>' +
+                '<button type="button" class="admin-provider-base-item-btn danger" data-action="delete">Löschen</button>' +
+              '</div>' +
+            '</div>' +
+          '</li>';
+        }).join('');
+      }
+      providerBasePreview.onclick = function(ev){
+        var btn = ev.target && ev.target.closest ? ev.target.closest('button[data-action]') : null;
+        if(!btn) return;
+        var li = btn.closest('li[data-provider-id]');
+        if(!li) return;
+        var id = li.getAttribute('data-provider-id');
+        var action = btn.getAttribute('data-action');
+        var target = dirRows.find(function(r){ return String(r.id) === String(id); });
+        if(!target) return;
+        if(action === 'edit'){
+          if(typeof haptic === 'function') haptic(6);
+          openProviderForm(target);
+          return;
+        }
+        if(action === 'delete'){
+          if(typeof haptic === 'function') haptic(6);
+          var ok = confirm('Anbieter "' + (target.name || '') + '" wirklich löschen?');
+          if(!ok) return;
+          var nextRows = dirRows.filter(function(r){ return String(r.id) !== String(id); });
+          persistDirectory(nextRows);
+          if(typeof showToast === 'function') showToast('Anbieter gelöscht');
+          renderAdmin();
+        }
+      };
+    }
+    if(providerSearchInput){
+      providerSearchInput.oninput = function(){ renderAdmin(); };
+    }
+    if(providerCityFilter){
+      providerCityFilter.onchange = function(){ renderAdmin(); };
+    }
+    if(providerTabAll){
+      providerTabAll.onclick = function(){
+        providerTabAll.classList.add('active');
+        if(providerTabOpen) providerTabOpen.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerTabOpen){
+      providerTabOpen.onclick = function(){
+        providerTabOpen.classList.add('active');
+        if(providerTabAll) providerTabAll.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerFilterResetBtn){
+      providerFilterResetBtn.onclick = function(){
+        if(providerSearchInput) providerSearchInput.value = '';
+        if(providerCityFilter) providerCityFilter.value = '';
+        if(providerTabAll) providerTabAll.classList.add('active');
+        if(providerTabOpen) providerTabOpen.classList.remove('active');
+        renderAdmin();
+      };
+    }
+    if(providerBaseAddBtn){
+      providerBaseAddBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        openProviderForm(null);
+      };
+    }
+    if(providerForm){
+      providerForm.onsubmit = function(ev){
+        if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+        var nameVal = String((providerNameInput && providerNameInput.value) || '').trim();
+        var loginEmailVal = normalizeEmailAddress((providerLoginEmailInput && providerLoginEmailInput.value) || '');
+        var streetVal = String((providerStreetInput && providerStreetInput.value) || '').trim();
+        var zipVal = String((providerZipInput && providerZipInput.value) || '').trim();
+        var cityVal = String((providerCityInput && providerCityInput.value) || '').trim();
+        if(!nameVal || !streetVal || !zipVal || !cityVal){
+          if(typeof showToast === 'function') showToast('Bitte Name, Straße, PLZ und Ort ausfüllen.');
+          return;
+        }
+        var editId = String((providerEditId && providerEditId.value) || '').trim();
+        var nextRows = dirRows.slice();
+        if(editId){
+          nextRows = nextRows.map(function(row){
+            if(String(row.id) !== editId) return row;
+            return {
+              id: row.id,
+              name: nameVal,
+              loginEmail: loginEmailVal,
+              street: streetVal,
+              zip: zipVal,
+              city: cityVal,
+              country: row.country || 'Deutschland',
+              address: buildAddress({ street: streetVal, zip: zipVal, city: cityVal }),
+              source: row.source || 'admin-manual',
+              importedAt: row.importedAt || Date.now()
+            };
+          });
+        } else {
+          nextRows.push({
+            id: 'dir_' + cryptoId(),
+            name: nameVal,
+            loginEmail: loginEmailVal,
+            street: streetVal,
+            zip: zipVal,
+            city: cityVal,
+            country: 'Deutschland',
+            address: buildAddress({ street: streetVal, zip: zipVal, city: cityVal }),
+            source: 'admin-manual',
+            importedAt: Date.now()
+          });
+        }
+        persistDirectory(nextRows);
+        closeProviderForm();
+        if(typeof showToast === 'function') showToast(editId ? 'Anbieter gespeichert' : 'Anbieter hinzugefügt');
+        renderAdmin();
+      };
+    }
+    if(providerFormCancelBtn){
+      providerFormCancelBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        closeProviderForm();
+      };
+    }
+    if(providerBaseCsvBtn){
+      providerBaseCsvBtn.onclick = function(){
+        var rows = ['Firma;Strasse;PLZ;Ort;Land;LoginEmail'];
+        dirRows.forEach(function(r){
+          rows.push([
+            String((r && r.name) || '').replace(/;/g, ','),
+            String((r && r.street) || '').replace(/;/g, ','),
+            String((r && r.zip) || '').replace(/;/g, ','),
+            String((r && r.city) || '').replace(/;/g, ','),
+            String((r && r.country) || 'Deutschland').replace(/;/g, ','),
+            normalizeEmailAddress((r && (r.loginEmail || r.email)) || '').replace(/;/g, ',')
+          ].join(';'));
+        });
+        var csv = '\uFEFF' + rows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Anbieterbasis_' + todayStr + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if(typeof showToast === 'function') showToast('Anbieter-CSV exportiert.');
+      };
+    }
+    if(providerOpenCsvBtn){
+      var openRows = dirRows.filter(function(r){ return !normalizeEmailAddress((r && (r.loginEmail || r.email)) || ''); });
+      providerOpenCsvBtn.disabled = openRows.length === 0;
+      providerOpenCsvBtn.classList.toggle('is-faded', openRows.length === 0);
+      providerOpenCsvBtn.style.cursor = openRows.length === 0 ? 'not-allowed' : 'pointer';
+      providerOpenCsvBtn.onclick = function(){
+        if(openRows.length === 0){
+          if(typeof showToast === 'function') showToast('Keine offenen Freischaltungen.');
+          return;
+        }
+        var rows = ['Firma;Strasse;PLZ;Ort;Land;LoginEmail'];
+        openRows.forEach(function(r){
+          rows.push([
+            String((r && r.name) || '').replace(/;/g, ','),
+            String((r && r.street) || '').replace(/;/g, ','),
+            String((r && r.zip) || '').replace(/;/g, ','),
+            String((r && r.city) || '').replace(/;/g, ','),
+            String((r && r.country) || 'Deutschland').replace(/;/g, ','),
+            ''
+          ].join(';'));
+        });
+        var csv = '\uFEFF' + rows.join('\r\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Anbieter_Freischaltung_offen_' + todayStr + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        if(typeof showToast === 'function') showToast('Offene Freischaltungen exportiert: ' + String(openRows.length));
+      };
+    }
+    if(providerBaseRefreshBtn){
+      providerBaseRefreshBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        if(typeof window !== 'undefined' && typeof window.refreshProviderDirectory === 'function'){
+          window.refreshProviderDirectory().then(function(result){
+            closeProviderForm();
+            if(typeof showToast === 'function'){
+              showToast('Anbieterbasis aktualisiert: ' + String(result && result.total ? result.total : 0) + ' Einträge');
+            }
+            renderAdmin();
+          }).catch(function(){
+            if(typeof showToast === 'function') showToast('Anbieterbasis konnte nicht geladen werden.');
+          });
+        } else if(typeof showToast === 'function'){
+          showToast('Reload derzeit nicht verfügbar.');
+        }
+      };
+    }
+    if(massTestRunBtn){
+      massTestRunBtn.onclick = function(){
+        if(typeof haptic === 'function') haptic(6);
+        var seedResult = (typeof window !== 'undefined' && typeof window.seedAllProvidersTestWeek === 'function')
+          ? window.seedAllProvidersTestWeek()
+          : ensureMassProviderWeekTestSeed(true);
+        var testCustomers = (typeof window !== 'undefined' && typeof window.getMassTestCustomers === 'function')
+          ? window.getMassTestCustomers()
+          : load(LS.massTestCustomers, []);
+        var firstCustomer = Array.isArray(testCustomers) ? testCustomers[0] : null;
+        if(firstCustomer && typeof window !== 'undefined' && typeof window.activateMassTestCustomer === 'function'){
+          window.activateMassTestCustomer(firstCustomer.id);
+        }
+        if(typeof showToast === 'function'){
+          showToast(
+            'Batch-Testlauf aktiv: ' +
+            String((seedResult && seedResult.providers) || 0) +
+            ' Anbieter, ' +
+            String((seedResult && seedResult.offers) || 0) +
+            ' Inserate, ' +
+            String((seedResult && seedResult.customers) || (Array.isArray(testCustomers) ? testCustomers.length : 0)) +
+            ' Testkunden.'
+          , 3800);
+        }
+        renderAdmin();
+      };
+    }
 
     if(feedList){
       feedList.innerHTML = activeOffers.slice(0, 20).map(function(o){
@@ -15252,6 +17979,10 @@
 
   // Legal Pages Navigation (statische Seiten)
   function showLegalPage(page){
+    try{
+      var ae = document.activeElement;
+      if(ae && typeof ae.blur === 'function') ae.blur();
+    }catch(_e){}
     // Separate Impressen und AGBs für Kunden und Anbieter
     const isProvider = mode === 'provider';
     const pageMap = {
@@ -15269,7 +18000,48 @@
     const viewId = pageMap[page];
     if(viewId){
       showView(viewId);
-      window.scrollTo({top:0, behavior:'smooth'});
+      const viewEl = document.getElementById(viewId);
+      const appEl = document.getElementById('app');
+      const mainEl = document.querySelector('#app > main');
+      const lockLegalTop = function(){
+        try{
+          var active = document.activeElement;
+          if(active && typeof active.blur === 'function') active.blur();
+        }catch(_e){}
+        [appEl, mainEl, viewEl].forEach(function(el){
+          if(!el || !el.style) return;
+          el.style.setProperty('transform', 'none', 'important');
+          el.style.setProperty('top', '0px', 'important');
+          el.style.setProperty('margin-top', '0px', 'important');
+        });
+        try{ window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); }catch(_e){ try{ window.scrollTo(0, 0); }catch(_x){} }
+        if(document.body) document.body.scrollTop = 0;
+        if(document.documentElement) document.documentElement.scrollTop = 0;
+        if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
+        if(appEl && typeof appEl.scrollTop === 'number') appEl.scrollTop = 0;
+        if(mainEl && typeof mainEl.scrollTop === 'number') mainEl.scrollTop = 0;
+        if(viewEl){
+          try{ viewEl.style.setProperty('scroll-behavior', 'auto'); }catch(_e){}
+          viewEl.scrollTop = 0;
+          if(typeof viewEl.scrollIntoView === 'function'){
+            try{ viewEl.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' }); }catch(_e){}
+          }
+          const innerScrollEls = viewEl.querySelectorAll('.provider-support-scroll, .pub-prov-scroll, .customer-main-wrap, .sheet-body');
+          innerScrollEls.forEach(function(el){
+            if(!el) return;
+            try{ el.style.setProperty('scroll-behavior', 'auto'); }catch(_e){}
+            if(typeof el.scrollTop === 'number') el.scrollTop = 0;
+          });
+        }
+      };
+      lockLegalTop();
+      requestAnimationFrame(function(){
+        lockLegalTop();
+        requestAnimationFrame(lockLegalTop);
+      });
+      setTimeout(lockLegalTop, 60);
+      setTimeout(lockLegalTop, 180);
+      setTimeout(lockLegalTop, 360);
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
       if(viewId === 'v-legal-faq' && isProvider){
         setTimeout(() => switchFaqTab('provider'), 100);
@@ -16100,8 +18872,8 @@
             var pid = typeof providerId === 'function' ? providerId() : '';
             var newEntries = masterList.map(function(m, idx){
               var cat = (m.category || 'Fleisch').trim();
-              if(cat === 'Vegan' || cat === 'Vegetarisch') cat = 'Veggie';
-              if(cat !== 'Fleisch' && cat !== 'Eintopf' && cat !== 'Snack' && cat !== 'Veggie') cat = 'Fleisch';
+              if(cat === 'Vegetarisch') cat = 'Veggie';
+              if(cat !== 'Fleisch' && cat !== 'Veggie' && cat !== 'Vegan') cat = 'Fleisch';
               return {
                 id: typeof cryptoId === 'function' ? cryptoId() : ('ingest_' + Date.now() + '_' + idx),
                 providerId: pid,
@@ -16227,7 +18999,7 @@
       if(cookbookIsSearching) hide(pillsWrap);
       else show(pillsWrap, 'flex');
       pillsWrap.innerHTML='';
-      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Eintopf','Snack','Veggie']).forEach(function(cat){
+      (COOKBOOK_CATEGORIES||['Alle','Fleisch','Veggie','Vegan']).forEach(function(cat){
         var b = document.createElement('button');
         b.type='button';
         b.className='cookbook-cat-pill' + (cookbookCategory===cat?' on':'');
@@ -16245,6 +19017,7 @@
       filtered = mine.filter(function(x){
         var c = (x.category||'').trim();
         if(cookbookCategory==='Fleisch') return c==='Mit Fleisch'||c==='Fleisch';
+        if(cookbookCategory==='Veggie') return c==='Veggie'||c==='Vegetarisch';
         return c===cookbookCategory;
       });
     }
@@ -16365,11 +19138,15 @@
         var lastUsedLabel = !entry.lastUsed ? 'Neu' : formatDayLabel(entry.lastUsed);
         var orderCount = typeof getCookbookEntryOrderCount === 'function' ? getCookbookEntryOrderCount(entry) : 0;
         var qtyStr = orderCount > 0 ? orderCount + ' Portionen' : '–';
+        var showQty = orderCount > 0;
         var priceVal = entry.price != null && entry.price !== '' ? Number(entry.price) : '';
         var lastPriceVal = entry.lastPrice != null && entry.lastPrice !== '' ? Number(entry.lastPrice) : null;
         var showHistory = lastPriceVal != null && (priceVal === '' || Math.abs(Number(priceVal) - lastPriceVal) > 0.001);
         var priceDisplay = priceVal === '' ? '' : (typeof priceVal === 'number' ? (priceVal % 1 === 0 ? String(priceVal) : priceVal.toFixed(2)) : String(priceVal));
         var historyHtml = showHistory ? '<div class="price-history" data-last-price="'+esc(String(lastPriceVal))+'" role="button" tabindex="0">Zuletzt: '+(typeof euro === 'function' ? euro(lastPriceVal) : lastPriceVal.toFixed(2) + ' €')+'</div>' : '';
+        var qtyHtml = showQty
+          ? '<div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Menge</span><span style="font-size:16px; font-weight:700; color:#1D1D1F;">'+esc(qtyStr)+'</span></div>'
+          : '';
         var imgHtml = entry.photoData ? '<img src="'+esc(entry.photoData)+'" alt="" style="width:100%; height:100%; object-fit:cover; transition:transform 0.7s ease;" class="cookbook-magazine-img" />' : '<div style="width:100%; height:100%; background:#e5e7eb; display:flex; align-items:center; justify-content:center;"></div>';
         return '<div class="cookbook-magazine-card dish-card tgtg-flat" role="article" data-cookbook-entry-id="'+esc(entry.id||'')+'" data-cookbook-index="'+entryIdx+'" style="display:flex; flex-direction:column; position:relative; z-index:2; touch-action:manipulation; -webkit-tap-highlight-color:transparent;">'+
           '<div class="cookbook-magazine-img-wrap" style="overflow:hidden; position:relative; flex-shrink:0;">'+
@@ -16378,10 +19155,9 @@
           '<p style="margin:0 0 2px; font-size:10px; font-weight:800; color:#1D1D1F; text-transform:uppercase;">Zuletzt live</p>'+
           '<p style="margin:0; font-size:13px; font-weight:700; color:#1D1D1F;">'+esc(lastUsedLabel)+'</p></div></div>'+
           '<div style="padding:16px 16px 18px; display:flex; flex-direction:column; gap:14px; background:#fff;">'+
-          '<div><h2 style="margin:0 0 6px; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2>'+
-          '<p style="margin:0; font-size:13px; font-weight:500; color:#94a3b8;">'+esc(qtyStr)+' · Zuletzt live: '+esc(lastUsedLabel)+'</p></div>'+
+          '<div><h2 style="margin:0; font-size:24px; font-weight:900; color:#1D1D1F; line-height:1.1; letter-spacing:-0.02em;">'+esc(entry.dish||'Gericht')+'</h2></div>'+
           '<div style="display:flex; justify-content:flex-start; align-items:flex-start;">'+
-          '<div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase;">Menge</span><span style="font-size:16px; font-weight:700; color:#1D1D1F;">'+esc(qtyStr)+'</span></div>'+
+          qtyHtml+
           '<div class="cookbook-price-cell">'+
           '<span class="cookbook-price-row">'+
           '<input type="number" step="0.01" min="0" inputmode="decimal" class="cookbook-card-price-input" data-cookbook-entry-id="'+esc(entry.id||'')+'" value="'+esc(priceDisplay)+'" placeholder="0" />'+
@@ -16722,9 +19498,11 @@
 
     if(!offer.providerStreet){
       var p = normalizeProviderProfile(provider.profile || {});
-      var hasAddr = !!(p.street && p.street.trim()) || (p.zip && p.city);
+      var profileAddress = String(p.address || '').trim();
+      var profileStreet = String(p.street || '').trim();
+      var hasAddr = !!profileAddress || !!profileStreet || !!(p.zip && p.city);
       if(!hasAddr){ showAddressRequiredModal(); return; }
-      offer.providerStreet = p.street || buildAddress(p);
+      offer.providerStreet = profileStreet || profileAddress || buildAddress(p);
       offer.providerZip = p.zip; offer.providerCity = p.city;
     }
 
@@ -16768,9 +19546,11 @@
 
     if(!offer.providerStreet){
       var p = normalizeProviderProfile(provider.profile || {});
-      var hasAddr = !!(p.street && p.street.trim()) || (p.zip && p.city);
+      var profileAddress = String(p.address || '').trim();
+      var profileStreet = String(p.street || '').trim();
+      var hasAddr = !!profileAddress || !!profileStreet || !!(p.zip && p.city);
       if(!hasAddr){ showAddressRequiredModal(); return; }
-      offer.providerStreet = p.street || buildAddress(p);
+      offer.providerStreet = profileStreet || profileAddress || buildAddress(p);
       offer.providerZip = p.zip; offer.providerCity = p.city;
     }
 
@@ -18169,7 +20949,7 @@
         var step2Wrap=document.createElement('div');
         step2Wrap.id='mastercard-step-2';
         step2Wrap.className='inserat-step2-wrap mastercard-step-money final-review-step2';
-        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; flex:1; background:#ffffff; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(132px + env(safe-area-inset-bottom, 20px));';
+        step2Wrap.style.cssText='display:flex; flex-direction:column; justify-content:flex-start; width:100%; min-height:0; height:100%; flex:1; background:#ffffff; overflow:hidden; padding-bottom:calc(92px + env(safe-area-inset-bottom, 20px));';
         var thumbUrl=w.data.photoData||'https://images.unsplash.com/photo-1546069901-eacef0df6022?auto=format&fit=crop&w=200&q=60';
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
@@ -18688,6 +21468,21 @@
           });
         }
       }
+      function forceListingFooterForCurrentStep(){
+        var wizardEl = document.getElementById('wizard');
+        if(!wizardEl || !wizardEl.isConnected) return;
+        if(listingFooterOverlayLocks > 0) return;
+        if(document.querySelector('#photo-edit-overlay.is-open, .inserat-allergen-drawer.is-open, .inserat-quick-adjust-sheet.is-open')) return;
+        var step = 1;
+        if(wizardEl.classList.contains('inserat-step3-active')) step = 3;
+        else if(wizardEl.classList.contains('inserat-step2-active')) step = 2;
+        var f1 = document.getElementById('mastercard-footer-step1');
+        var f2 = document.getElementById('mastercard-footer-step2');
+        var f3 = document.querySelector('#wizard[data-flow="listing"] [data-inserat-step="3"].app-footer-main');
+        if(f1) f1.style.setProperty('display', step===1 ? 'flex' : 'none', 'important');
+        if(f2) f2.style.setProperty('display', step===2 ? 'flex' : 'none', 'important');
+        if(f3) f3.style.setProperty('display', step===3 ? 'flex' : 'none', 'important');
+      }
       function closePhotoEditOverlay(){
         var ov=document.getElementById('photo-edit-overlay');
         if(!ov) return;
@@ -19192,20 +21987,6 @@
       selectionOverlay.appendChild(selectionOverlayInner);
       photoTile.appendChild(selectionOverlay);
       function closeHeaderSelection(){ hapticLight(); photoTile.classList.remove('is-selecting'); }
-      function updatePowerBarFromBox(){
-        var bar=box.querySelector('.inserat-power-bar');
-        if(!bar) return;
-        var allergenItem=bar.querySelector('.power-item[data-type="allergene"]');
-        if(allergenItem){
-          var labelEl=allergenItem.querySelector('.power-item-label');
-          if(labelEl) labelEl.textContent=(w.data.allergens&&w.data.allergens.length)?(w.data.allergens||[]).join(', '):'Allergene';
-          allergenItem.classList.toggle('active',!!(w.data.allergens&&w.data.allergens.length));
-        }
-        var extrasItem=bar.querySelector('.power-item[data-type="extras"]');
-        if(extrasItem) extrasItem.classList.toggle('active',!!(w.data.extras&&w.data.extras.length));
-        var zeitItem=bar.querySelector('.power-item[data-type="zeit"]');
-        if(zeitItem){ var hasTime=!!(w.data.pickupWindow&&w.data.pickupWindow.trim())||(w.data.mealStart&&w.data.mealEnd); zeitItem.classList.toggle('active',!!hasTime); }
-      }
       function renderSelectionContent(type){
         selectionOverlayInner.innerHTML='';
         selectionOverlayInner.classList.remove('selection-overlay-inner--time');
@@ -19295,7 +22076,7 @@
       /* AIRBNB SCROLLABLE: Inhalt scrollt unter fixem Header weg [cite: CLEAN-SWEEP 2026-03-12] */
       /* padding-top = Header-Höhe + Safe-Area, damit Foto bündig unter Header klebt (0px Spalt) */
       var headerOffset='calc(60px + env(safe-area-inset-top, 0px))';
-      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain; touch-action:pan-y;';
+      scrollArea.style.cssText='display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; max-height:none; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-top:var(--listing-header-offset, '+headerOffset+'); padding-bottom:var(--listing-footer-offset, 88px); overscroll-behavior:contain; touch-action:pan-y; pointer-events:auto;';
       photoContainer.className='inserat-cockpit-photo inserat-photo-container photo-container';
       photoContainer.style.cssText='width:100%; max-width:100%; height:190px; overflow:hidden; position:relative; flex-shrink:0; margin:0; padding:0; display:block; line-height:0; border-radius:0;';
       photoTile.classList.add('inserat-photo-in-scroll');
@@ -19313,7 +22094,7 @@
       /* Header: Airbnb Collapsing + S25 Safe-Area (nicht hinter Kamera) */
       var fixedHeader=document.createElement('div');
       fixedHeader.id='app-sticky-header';
-      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:60px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
+      fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:44px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
       headerTitle.textContent='Dein Gericht';
@@ -19379,8 +22160,10 @@
       descriptionTextarea.className='input-description';
       descriptionTextarea.placeholder='Zutaten oder Besonderheiten...';
       descriptionTextarea.value=w.data.description||'';
-      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px;';
+      descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px; max-height:96px; overflow-y:auto;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
+      descriptionTextarea.onfocus=function(){ setTimeout(function(){ try{ scrollInputAboveKeyboard(descriptionTextarea); }catch(_e){} }, 120); };
+      descriptionTextarea.onblur=function(){ dismissKeyboard(); };
       descWrap.appendChild(descriptionTextarea);
       /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
 
@@ -19390,11 +22173,11 @@
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:flex-start; gap:6px; margin:0; width:100%; padding:0 16px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:6px 0 0; width:100%; padding:0 16px;';
       var priceLabelSmall=document.createElement('label');
       priceLabelSmall.htmlFor='gericht-preis';
-      priceLabelSmall.textContent='Dein Preis';
-      priceLabelSmall.style.cssText='font-size:12px; font-weight:500; color:#888; margin:0;';
+      priceLabelSmall.textContent='';
+      priceLabelSmall.style.cssText='display:none;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper inserat-price-ebay';
       priceInputWrapper.style.cssText='display:flex; align-items:center; gap:6px; background:#f7f7f7; border:none; border-radius:12px; padding:12px 16px; width:fit-content;';
@@ -19419,6 +22202,11 @@
       priceInputWrapper.appendChild(stepPriceWrap);
       priceSection.appendChild(priceLabelSmall);
       priceSection.appendChild(priceInputWrapper);
+      var priceSubHint=document.createElement('div');
+      priceSubHint.className='inserat-price-subhint';
+      priceSubHint.textContent='Preis pro Gericht';
+      priceSubHint.style.cssText='font-size:12px; line-height:1.2; color:#94a3b8; font-weight:600; margin:2px 0 0; text-align:center;';
+      priceSection.appendChild(priceSubHint);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
       verdienstWrap.className = 'inserat-verdienst-vorschau';
@@ -20033,16 +22821,34 @@
         setTimeout(function(){ if(priceSection) priceSection.classList.remove('harmonic-bounce'); }, 420);
       });
       stepPriceWrap.addEventListener('click', function(e){
-        if(priceSection && priceSection.classList.contains('hero-morph-active')) return;
         if(e.target===inputPrice || inputPrice.contains(e.target)) return;
         e.preventDefault();
         hapticLight();
-        if(priceSection) priceSection.classList.add('hero-morph-active');
-        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 150);
+        setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 80);
       });
-      inputPrice.onblur=function(){ if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',','); dismissKeyboard(); hapticLight(); if(priceSection) priceSection.classList.remove('hero-morph-active'); };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
-      inputPrice.onfocus=function(){ hapticLight(); };
+      inputPrice.onfocus=function(){
+        hapticLight();
+        setTimeout(function(){
+          try{ inputPrice.scrollIntoView({ behavior: 'auto', block: 'nearest' }); }catch(_e){}
+          forceListingFooterForCurrentStep();
+        }, 80);
+      };
+      inputPrice.onblur=function(){
+        if(w.data.price>0) inputPrice.value=Number(w.data.price).toFixed(2).replace('.',',');
+        dismissKeyboard();
+        hapticLight();
+        setTimeout(function(){
+          if(typeof vvHandler === 'function') vvHandler();
+          forceListingFooterForCurrentStep();
+        }, 60);
+      };
+      inputPrice.addEventListener('keydown', function(e){
+        if(e && e.key === 'Enter'){
+          e.preventDefault();
+          inputPrice.blur();
+        }
+      });
       function checkMastercardValidation(){
         if (typeof updateWizardFooter === 'function') updateWizardFooter();
       }
@@ -20093,14 +22899,20 @@
       }
       step1Container.appendChild(scrollArea);
       scrollArea.addEventListener('scroll', function(){
-        /* Airbnb Collapsing Header: Titel-Opazität 0–150px: 0, 150–200px: linear 0→1 */
+        /* Airbnb Collapsing Header: Header bleibt sticky, schrumpft beim Scrollen */
         var h = document.getElementById('app-sticky-header');
         var ht = h && h.querySelector('.header-title');
         var st = scrollArea.scrollTop;
-        if(ht) ht.style.setProperty('opacity', '1');
+        var compact = Math.min(1, st / 80);
+        if(ht){
+          ht.style.setProperty('opacity', '1');
+          ht.style.setProperty('transform', 'scale(' + (1 - 0.14 * compact).toFixed(3) + ')');
+        }
         if(h){
-          h.classList.toggle('header-collapsed', st > 180);
-          h.style.borderBottomColor = st > 180 ? '#ebebeb' : 'transparent';
+          h.classList.toggle('header-collapsed', st > 24);
+          h.style.setProperty('min-height', (44 - (6 * compact)).toFixed(1) + 'px');
+          h.style.setProperty('padding-bottom', (Math.max(0, 2 - (2 * compact))).toFixed(1) + 'px');
+          h.style.setProperty('border-bottom-color', 'transparent');
         }
         /* Inhalts-Titel (groß) blendet aus, wenn er sich dem Header nähert (150–250px) */
         var sn = box.querySelector('#step-name');
@@ -20160,6 +22972,13 @@
           if(typeof triggerValidationError==='function') triggerValidationError(btnWeiter);
           return;
         }
+        /* Fokuszustand aus Step 1 vor Übergang hart aufräumen:
+           verhindert, dass Step 2 mit aktivem Preis-Input/Keyboard mittig "hängen" bleibt. */
+        try{
+          if(priceSection) priceSection.classList.remove('hero-morph-active');
+          if(inputPrice && document.activeElement === inputPrice) inputPrice.blur();
+          if(typeof dismissKeyboard === 'function') dismissKeyboard();
+        }catch(_e){}
         hapticLight();
         w.inseratStep=2;
         if(slider) slider.setAttribute('data-inserat-step','2');
@@ -20169,6 +22988,22 @@
         var wizardEl=document.getElementById('wizard');
         if(wizardEl){ wizardEl.classList.add('inserat-step2-active'); wizardEl.classList.remove('inserat-step3-active'); }
         updateHeaderTitleByStep(2);
+        setTimeout(function(){
+          try{
+            window.scrollTo(0, 0);
+            if(document.documentElement) document.documentElement.scrollTop = 0;
+            if(document.body) document.body.scrollTop = 0;
+            var step2El = document.getElementById('mastercard-step-2');
+            if(step2El){
+              step2El.style.setProperty('overflow', 'hidden', 'important');
+              step2El.style.setProperty('min-height', '0', 'important');
+              step2El.style.setProperty('height', '100%', 'important');
+              step2El.scrollTop = 0;
+            }
+            if(typeof vvHandler === 'function') vvHandler();
+            if(typeof updateFooterVisibility === 'function') updateFooterVisibility();
+          }catch(_e){}
+        }, 60);
       }
 
       /* 3-Schritt Mastercard: Footer außerhalb des Sliders – Viewport-treu [cite: FOOTER-ENTFESSELUNG 2026-02-28] */
@@ -20176,13 +23011,15 @@
       actionSection.id='mastercard-footer-step1';
       actionSection.className='inserat-action-section fixed-footer inserat-action-pricing inserat-action-layer';
       /* position:fixed statt sticky – Footer immer am unteren Viewport-Rand [cite: S25-GRID-FIX 2026-03-12] */
-      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)) 20px; box-sizing:border-box;';
+      actionSection.style.cssText='display:flex; flex-direction:column; position:fixed; bottom:0; left:0; right:0; width:100%; z-index:4100000; margin:0; border-radius:0; background:#ffffff; border-top:1px solid #ebebeb; padding:8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px; box-sizing:border-box;';
       actionSection.style.setProperty('z-index', '4100000', 'important');
 
       var step1NavRow=document.createElement('div');
       step1NavRow.className='app-footer-main inserat-step1-nav';
-      step1NavRow.style.cssText='display:flex; width:100%; align-items:stretch; justify-content:space-between; gap:12px; margin:0; border-radius:0; background:#ffffff; padding:0;';
-      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:52px; height:52px; padding:0 16px; border:none; border-radius:12px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
+      step1NavRow.style.cssText='display:flex; width:100%; align-items:center; justify-content:space-between; gap:10px; margin:0; border-radius:0; background:#ffffff; padding:0;';
+      step1NavRow.style.setProperty('align-items', 'center', 'important');
+      step1NavRow.style.setProperty('justify-content', 'center', 'important');
+      var step1PrimaryBtnStyle='flex:1 1 0; min-width:0; min-height:48px; height:48px; padding:0 14px; border:none; border-radius:10px; cursor:pointer; box-sizing:border-box; align-self:stretch; display:inline-flex; align-items:center; justify-content:center; line-height:1.1; font-size:15px; font-weight:800; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;';
       if(showSpeichernShortcut){
         var linkSpeichern=document.createElement('button');
         linkSpeichern.type='button';
@@ -20243,7 +23080,7 @@
         footerBtn.type='button';
         footerBtn.id='main-publish-btn';
         footerBtn.className='inserat-footer-btn--499 photo-save-clone-btn';
-        footerBtn.style.cssText='width:100%; min-height:52px; height:52px; max-height:52px; padding:0 16px; border:none; border-radius:12px; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden;';
+        footerBtn.style.cssText='width:100%; min-height:48px; height:48px; max-height:48px; padding:0 14px; border:none; border-radius:10px; color:#ffffff; font-size:15px; font-weight:800; line-height:1.1; letter-spacing:0; text-transform:none; white-space:nowrap; font-family:"Montserrat", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; cursor:pointer; background:#111111; box-shadow:none; transition:transform 0.2s ease; -webkit-tap-highlight-color:transparent; position:relative; z-index:4100001; touch-action:manipulation; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden;';
         lockFooterButtonVisuals(footerBtn);
         footerBtn.disabled=false;
         footerBtn.removeAttribute('disabled');
@@ -20251,7 +23088,7 @@
         footerBtn.style.setProperty('opacity', '1');
         footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
-        footerBtn.onclick=function(){
+        var handleStep2PublishClick = function(){
           try{
             hapticLight();
             var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
@@ -20264,7 +23101,9 @@
             }
             if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
             var p = normalizeProviderProfile((provider && provider.profile) || {});
-            var hasAddr = !!((p.street && String(p.street).trim()) || ((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim())));
+            var profileAddress = String(p.address || '').trim();
+            var profileStreet = String(p.street || '').trim();
+            var hasAddr = !!profileAddress || !!profileStreet || !!((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim()));
             var usePickup=!!w.data.step2PickupEnabled;
             w.data.hasPickupCode=usePickup;
             w.data.pricingChoice=usePickup?'pro':'499';
@@ -20288,6 +23127,20 @@
             if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
           }
         };
+        footerBtn.onclick = null;
+        footerBtn.onpointerup = null;
+        footerBtn.ontouchend = null;
+        var lastStep2CtaTriggerTs = 0;
+        var triggerStep2Publish = function(ev){
+          if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+          if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+          var now = Date.now();
+          if(now - lastStep2CtaTriggerTs < 300) return;
+          lastStep2CtaTriggerTs = now;
+          handleStep2PublishClick();
+        };
+        footerBtn.addEventListener('click', triggerStep2Publish);
+        footerBtn.addEventListener('touchend', triggerStep2Publish, { passive: false });
         airbnbFooter.appendChild(footerBtn);
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
         document.body.appendChild(airbnbFooter);
@@ -20391,18 +23244,13 @@
         var activeEl = document.activeElement;
         var editableFocused = !!(activeEl && activeEl.closest && activeEl.closest('#wizard') && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA'));
         var keyboardOpen = editableFocused && keyboardH > 110;
-        /* 1. Wizard-Höhe nur bei Tastatur an vvH koppeln – weniger Sprünge bei URL-Leiste ein/aus */
-        var wiz = document.getElementById('wizard');
-        if(wiz && wiz.isConnected){
-          if(keyboardOpen){
-            wiz.style.setProperty('height', vvH + 'px', 'important');
-            wiz.style.setProperty('max-height', vvH + 'px', 'important');
-          } else {
-            wiz.style.removeProperty('height');
-            wiz.style.removeProperty('max-height');
-          }
+        var wizardEl = document.getElementById('wizard');
+        var currentStep = 1;
+        if(wizardEl){
+          if(wizardEl.classList.contains('inserat-step3-active')) currentStep = 3;
+          else if(wizardEl.classList.contains('inserat-step2-active')) currentStep = 2;
         }
-        /* 2. Footer immer unten verankern (wie Photo-Editor) */
+        /* 1. Footer immer unten verankern (wie Photo-Editor) */
         var f1=document.getElementById('mastercard-footer-step1');
         var f2=document.getElementById('mastercard-footer-step2');
         var f3=box.querySelector('[data-inserat-step="3"].app-footer-main');
@@ -20410,17 +23258,41 @@
           if(!f || !f.isConnected) return;
           f.style.setProperty('bottom', '0px', 'important');
         });
-        /* 3. Scroll-Bereich: Padding für Header und Footer */
-        if(keyboardOpen){
+        /* 2. Scroll-Bereich: Padding für Header und Footer */
+        if(keyboardOpen && activeEl && activeEl.id !== 'gericht-preis'){
           scrollInputAboveKeyboard(activeEl);
         }
         var sa = box.querySelector('.inserat-scroll-area');
         var footerH=Math.max((f1&&window.getComputedStyle(f1).display!=='none'&&f1.offsetHeight)||0,(f2&&window.getComputedStyle(f2).display!=='none'&&f2.offsetHeight)||0,(f3&&window.getComputedStyle(f3).display!=='none'&&f3.offsetHeight)||0,92);
         var headerH=(fixedHeader&&fixedHeader.isConnected)?(fixedHeader.offsetHeight||60):60;
+        var viewportH = keyboardOpen ? vvH : window.innerHeight;
+        var availableH = Math.max(220, viewportH - headerH - footerH - 12);
         if(sa){
+          sa.style.setProperty('overflow-y', 'auto', 'important');
+          sa.style.setProperty('overflow-x', 'hidden', 'important');
+          sa.style.setProperty('pointer-events', 'auto', 'important');
           sa.style.setProperty('padding-top', headerH+'px', 'important');
           sa.style.setProperty('padding-bottom', (footerH+12)+'px', 'important');
+          if(currentStep === 1){
+            sa.style.setProperty('height', availableH+'px', 'important');
+            sa.style.setProperty('max-height', availableH+'px', 'important');
+          } else {
+            sa.style.removeProperty('height');
+            sa.style.removeProperty('max-height');
+          }
         }
+        var step2El = document.getElementById('mastercard-step-2');
+        if(step2El){
+          if(currentStep === 2){
+            step2El.style.setProperty('overflow', 'hidden', 'important');
+            step2El.style.setProperty('height', availableH+'px', 'important');
+            step2El.style.setProperty('max-height', availableH+'px', 'important');
+          } else {
+            step2El.style.removeProperty('height');
+            step2El.style.removeProperty('max-height');
+          }
+        }
+        forceListingFooterForCurrentStep();
         box.style.setProperty('--listing-header-offset', headerH+'px');
         box.style.setProperty('--listing-footer-offset', (footerH+12)+'px');
         });
@@ -20627,7 +23499,9 @@
       out.providerCity = profile.city || '';
       if(!out.providerStreet && (out.providerZip || out.providerCity)) out.providerStreet = buildAddress(out);
     }
-    var hasAddress = !!(out.providerStreet && out.providerStreet.trim()) || (out.providerZip && out.providerCity);
+    var hasAddress = !!(out.providerStreet && out.providerStreet.trim()) ||
+      !!(out.address && String(out.address).trim()) ||
+      !!(out.providerZip && out.providerCity);
     if(!hasAddress){
       showAddressRequiredModal();
       return null;
@@ -22491,9 +25365,15 @@
   function initApp(){
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
-    if((window.provider && window.provider.loggedIn) || (typeof provider !== 'undefined' && provider && provider.loggedIn)){
-      document.body.classList.add('provider-mode');
-    }
+    // Reload-Policy: App startet immer im Kundenmodus auf Discover.
+    mode = 'customer';
+    try {
+      localStorage.setItem(LS.mode, 'customer');
+      localStorage.setItem('mittagio_last_view', 'v-discover');
+    } catch(_e){}
+    document.body.classList.remove('provider-mode');
+    var _providerNavWrap = document.getElementById('providerNavWrap');
+    if(_providerNavWrap) _providerNavWrap.style.setProperty('display', 'none', 'important');
     /* Flow-Sicherung: Stub durch echte Implementierung ersetzen falls vorhanden [cite: Flow-Fix 2026-03-02] */
     if(typeof startListingFlow === 'function' && typeof window !== 'undefined'){
       window.startListingFlow = startListingFlow;
@@ -22501,20 +25381,15 @@
     }
     if(typeof openDishFlow === 'function' && typeof window !== 'undefined'){ window.openDishFlow = openDishFlow; }
     renderChips();
+    ensureCustomerHeaderScrollFx();
+    setTimeout(syncCustomerHeaderScrollFx, 0);
 
   // init nav bindings – window.provider.loggedIn als Fallback (V47/V48 Bypass) [cite: 2026-03-17]
   var _effectiveLoggedIn = (provider && provider.loggedIn) || (window.provider && window.provider.loggedIn) || !!(document.body && document.body.classList.contains('provider-mode'));
   if(_effectiveLoggedIn && !provider.loggedIn){ provider.loggedIn = true; } // Lokale Variable synchronisieren
   if(mode==='provider' && !_effectiveLoggedIn) mode='customer';
   if(mode==='start') mode='customer';
-  // Auto-Login Wiedererkennung: user_role === 'provider' → direkt Dashboard, Discovery überspringen [cite: Agent-Modus]
-  try {
-    var ur = localStorage.getItem('user_role');
-    if(ur === 'provider' && provider && provider.loggedIn && checkSessionValidity()){
-      mode = 'provider';
-      save(LS.mode, mode);
-    }
-  } catch(e){}
+  // Startmodus bleibt bewusst Customer/Discover.
   
   // Single-Session: Cookie aus DB wiederherstellen, falls fehlt (z. B. nach Reload)
   if(mode === 'provider' && provider.loggedIn && provider.current_session_id && !getCookie(SESSION_COOKIE_NAME)){
@@ -22651,8 +25526,37 @@
   if(typeof testPickupCodeLogic !== 'undefined'){
     window.testPickupCodeLogic = testPickupCodeLogic;
   }
+  function bindDiscoverLogoRefresh(){
+    var discoverLogoTap = document.getElementById('discoverLogoTap');
+    if(!discoverLogoTap || discoverLogoTap.__refreshBound) return;
+    var lastRefreshTs = 0;
+    var onLogoRefresh = function(e){
+      if(e){
+        if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+        if(e.type === 'keydown') e.preventDefault();
+      }
+      var now = Date.now();
+      if(now - lastRefreshTs < 250) return;
+      lastRefreshTs = now;
+      if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(8);
+      if(typeof renderDiscover === 'function') renderDiscover();
+      if(typeof syncDiscoverMapTopInsetVar === 'function') setTimeout(syncDiscoverMapTopInsetVar, 0);
+      if(typeof showToast === 'function') showToast('Aktualisiert', 900);
+    };
+    discoverLogoTap.addEventListener('click', onLogoRefresh);
+    discoverLogoTap.addEventListener('pointerup', onLogoRefresh);
+    discoverLogoTap.addEventListener('keydown', onLogoRefresh);
+    discoverLogoTap.__refreshBound = true;
+  }
+  if(typeof window !== 'undefined') setTimeout(bindDiscoverLogoRefresh, 0);
 
   window.addEventListener('load', ()=>{
+    if(typeof syncCustomerNavHeightVar === 'function') syncCustomerNavHeightVar();
+    if(typeof syncDiscoverMapTopInsetVar === 'function') syncDiscoverMapTopInsetVar();
+    if(typeof closePwaStartScreenSheet === 'function') closePwaStartScreenSheet();
+    bindDiscoverLogoRefresh();
+    syncWeekFooterVisibility();
+    applyCustomerBottomGapFix();
     initIcons();
     const activeView = document.querySelector('.view.active');
     const topbar = document.querySelector('.topbar');
@@ -22664,6 +25568,16 @@
       setTimeout(()=>{ renderStart(); initIcons(); }, 100);
     }
   });
+  if(typeof window !== 'undefined'){
+    window.addEventListener('hashchange', syncWeekFooterVisibility, { passive: true });
+    window.addEventListener('popstate', syncWeekFooterVisibility, { passive: true });
+    window.addEventListener('hashchange', applyCustomerBottomGapFix, { passive: true });
+    window.addEventListener('popstate', applyCustomerBottomGapFix, { passive: true });
+    setInterval(function(){
+      syncWeekFooterVisibility();
+      applyCustomerBottomGapFix();
+    }, 500);
+  }
   
   // Offline/Online Event-Handler (Fallback-Verhalten)
   window.addEventListener('online', () => {
@@ -22685,13 +25599,132 @@
     // Hinweis: Service Worker ist deaktiviert, daher keine Offline-Funktionalität
   });
 
-  // Icons nach jedem View-Wechsel aktualisieren
-  if(typeof showView !== 'undefined'){
-    const originalShowView = showView;
-    showView = function(id){
+  var customerHeaderScrollFxBound = false;
+  function getActiveCustomerScrollEl(){
+    const activeView = document.querySelector('.customer-view.active');
+    if(!activeView) return null;
+    return activeView;
+  }
+  function syncCustomerHeaderScrollFx(){
+    if(document.body && document.body.classList.contains('provider-mode')) return;
+    const stickyViews = ['v-discover', 'v-fav', 'v-fav-providers', 'v-cart', 'v-profile'];
+    const activeView = document.querySelector('.customer-view.active');
+    const activeId = activeView ? activeView.id : '';
+    const shouldApply = stickyViews.indexOf(activeId) >= 0;
+    const scrollEl = getActiveCustomerScrollEl();
+    const scrolled = ((scrollEl && scrollEl.scrollTop) || window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0) > 8;
+    stickyViews.forEach(function(viewId){
+      const viewEl = document.getElementById(viewId);
+      if(!viewEl) return;
+      const header = viewEl.querySelector(':scope > .cust-header-sticky');
+      if(!header) return;
+      const activeScrolled = shouldApply && viewId === activeId && scrolled;
+      header.classList.toggle('is-scrolled', activeScrolled);
+      header.classList.toggle('scrolled', activeScrolled); // Legacy-Styles in Discover weiter unterstützen
+    });
+  }
+  function ensureCustomerHeaderScrollFx(){
+    if(window.__customerHeaderScrollFxBound || customerHeaderScrollFxBound) return;
+    window.__customerHeaderScrollFxBound = true;
+    customerHeaderScrollFxBound = true;
+    window.addEventListener('scroll', syncCustomerHeaderScrollFx, { passive: true });
+    window.addEventListener('resize', syncCustomerHeaderScrollFx, { passive: true });
+    ['#v-discover', '#v-fav', '#v-fav-providers', '#v-cart', '#v-profile'].forEach(function(sel){
+      const el = document.querySelector(sel);
+      if(el) el.addEventListener('scroll', syncCustomerHeaderScrollFx, { passive: true });
+    });
+    setTimeout(syncCustomerHeaderScrollFx, 0);
+  }
+  function refreshActiveHeaderView(){
+    const activeView = document.querySelector('.view.active');
+    const viewId = activeView ? activeView.id : '';
+    if(viewId === 'v-discover' && typeof renderDiscover === 'function') renderDiscover();
+    else if(viewId === 'v-fav' && typeof renderFavorites === 'function') renderFavorites();
+    else if(viewId === 'v-fav-providers' && typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
+    else if(viewId === 'v-cart' && typeof renderCart === 'function') renderCart();
+    else if(viewId === 'v-profile' && typeof updateProfileView === 'function') updateProfileView();
+    else if(viewId === 'v-orders' && typeof renderOrders === 'function') renderOrders();
+    else if(viewId === 'v-provider-detail-public' && typeof renderPublicProviderProfile === 'function') renderPublicProviderProfile();
+  }
+  document.addEventListener('click', function(e){
+    const title = e.target && e.target.closest ? e.target.closest('.customer-view .cust-header-sticky h1, #pubProvName') : null;
+    if(!title) return;
+    const discoverHeader = title.closest ? title.closest('#v-discover') : null;
+    if(discoverHeader) return;
+    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback(6);
+    refreshActiveHeaderView();
+  });
+  // Icons/Scroll nach jedem View-Wechsel aktualisieren (auch wenn showView erst spaeter geladen wird)
+  function enhanceShowViewOnce(){
+    if(typeof window === 'undefined') return false;
+    if(window.__mittagioShowViewEnhanced) return true;
+    if(typeof window.showView !== 'function') return false;
+    var originalShowView = window.showView;
+    window.showView = function(id){
+      var nativeScrollTo = window.scrollTo;
+      try{
+        // Erzwinge "auto" innerhalb von showView (kein initiales Nach-unten-Rutschen bei Legal/Support)
+        window.scrollTo = function(arg1, arg2){
+          if(typeof arg1 === 'object' && arg1){
+            var opts = Object.assign({}, arg1, { behavior: 'auto' });
+            nativeScrollTo.call(window, opts);
+          } else {
+            nativeScrollTo.call(window, arg1, arg2);
+          }
+        };
+      }catch(_e){}
       originalShowView(id);
-      setTimeout(()=> initIcons(), 50);
+      try{ window.scrollTo = nativeScrollTo; }catch(_e){}
+      try{
+        var activeView = document.getElementById(id);
+        window.scrollTo(0, 0);
+        if(document.documentElement) document.documentElement.scrollTop = 0;
+        if(document.body) document.body.scrollTop = 0;
+        if(activeView && typeof activeView.scrollTop === 'number') activeView.scrollTop = 0;
+        var mainEl = document.querySelector('main');
+        if(mainEl && typeof mainEl.scrollTop === 'number') mainEl.scrollTop = 0;
+        requestAnimationFrame(function(){
+          window.scrollTo(0, 0);
+          if(activeView && typeof activeView.scrollTop === 'number') activeView.scrollTop = 0;
+        });
+      }catch(_e){}
+      try{
+        var providerNavWrap = document.getElementById('providerNavWrap');
+        if(providerNavWrap){
+          if(id === 'v-provider-detail-public') providerNavWrap.style.setProperty('display', 'none', 'important');
+          else if(!(document.body && document.body.classList.contains('provider-mode'))) providerNavWrap.style.setProperty('display', 'none', 'important');
+        }
+      }catch(_e){}
+      try{
+        if(typeof id === 'string' && id.indexOf('v-provider-') === 0){
+          var state = history && history.state ? history.state : null;
+          if(!state || state.__inAppProviderGuard !== id){
+            history.pushState({ __inAppProviderGuard: id }, '', location.pathname + (location.search || ''));
+          }
+        }
+      }catch(_e){}
+      try{
+        if(id === 'v-fav-providers' && typeof renderFavoriteProvidersPage === 'function') renderFavoriteProvidersPage();
+        ensureCustomerHeaderScrollFx();
+        syncCustomerHeaderScrollFx();
+        syncWeekFooterVisibility();
+        applyCustomerBottomGapFix();
+        syncCustomerNoEmptyScrollMode(id);
+      }catch(_e){}
+      setTimeout(function(){ initIcons(); }, 50);
     };
+    window.__mittagioShowViewEnhanced = true;
+    return true;
+  }
+  if(!enhanceShowViewOnce()){
+    var enhanceAttempts = 0;
+    var enhanceTimer = setInterval(function(){
+      enhanceAttempts++;
+      if(enhanceShowViewOnce() || enhanceAttempts > 80){
+        clearInterval(enhanceTimer);
+      }
+    }, 50);
+    window.addEventListener('load', function(){ enhanceShowViewOnce(); }, { once: true });
   }
   // LIVE SYNC & OFFLINE HANDLING
   function setupLiveSync(){
@@ -22746,9 +25779,21 @@
     if(Array.isArray(_pend) && _pend.length){ while(_pend.length){ var _c = _pend.shift(); startListingFlow(_c); } }
   }
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', function(){
+      try{
+        initApp();
+      }catch(err){
+        try{ console.error('initApp failed', err); }catch(_e){}
+        if(document.body) document.body.style.visibility = 'visible';
+      }
+    });
   } else {
-    initApp();
+    try{
+      initApp();
+    }catch(err){
+      try{ console.error('initApp failed', err); }catch(_e){}
+      if(document.body) document.body.style.visibility = 'visible';
+    }
   }
   /* Fallback: Body sichtbar machen falls initApp nicht bis visibility kommt (z. B. Fehler davor) */
   setTimeout(function(){ if(document.body && document.body.style.visibility !== 'visible') document.body.style.visibility = 'visible'; }, 500);

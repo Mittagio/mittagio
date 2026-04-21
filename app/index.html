@@ -623,92 +623,79 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
-    <section class="view" id="v-checkout" style="min-height:100vh; background:var(--bg);">
-      <div class="content-padding-bottom-compact" style="padding:16px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box;">
-        <div class="panel" style="padding:20px; border-radius:24px; box-shadow:0 4px 16px rgba(0,0,0,.08); background:rgba(255,255,255,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-            <button class="back-button btn-back" type="button" id="btnCheckoutBack" aria-label="Zurück" style="background:none; border:none; padding:8px; cursor:pointer; font-size:16px; font-weight:700; color:#2D3436;">
-              <i data-lucide="chevron-left" style="width:22px;height:22px;"></i> Zurück
-            </button>
-            <div style="display:flex; align-items:center; gap:10px; flex:1;">
-              <i data-lucide="shopping-basket" style="width:24px;height:24px;color:#2D3436;flex-shrink:0;"></i>
-              <h3 class="ds-h1" style="margin:0; color:#2D3436;">Dein Mittagstisch</h3>
-            </div>
-          </div>
-          
-          <!-- Bestellübersicht -->
-          <div id="checkoutSummary" style="margin-bottom:16px; padding:16px; background:#f8f9fa; border-radius:16px;">
+    <section class="view customer-view" id="v-checkout">
+      <header class="cust-header-sticky">
+        <div class="customer-header-row">
+          <h1 class="customer-header-title">Dein Mittagstisch</h1>
+        </div>
+      </header>
+      <div class="customer-main-wrap checkout-main-wrap">
+        <div class="cust-card checkout-card">
+          <div id="checkoutSummary" class="checkout-summary-card">
             <!-- Wird dynamisch befüllt -->
           </div>
-          
-          <!-- Verzehrart (Vor Ort / Mitnehmen) -->
-          <div id="checkoutVerzehrart" style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wo möchtest du essen?</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🍴 Vor Ort</button>
-              <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen" style="padding:14px 16px; border-radius:14px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:15px; cursor:pointer; transition:all 0.2s ease;">🔄 Mitnehmen</button>
+
+          <div id="checkoutVerzehrart" class="checkout-block">
+            <label class="checkout-label">Wo möchtest du essen?</label>
+            <div class="checkout-grid-two">
+              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort">🍴 Vor Ort</button>
+              <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen">🔄 Mitnehmen</button>
             </div>
           </div>
-          <!-- Verpackung (nur bei Mitnehmen) – Säule 3 🔄 -->
-          <div id="checkoutVerpackung" style="display:none; margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Verpackung</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <button type="button" id="checkoutBtnEigenerBehaeltner" class="verpackung-btn" data-verpackung="eigener_behaeltner" style="padding:12px 14px; border-radius:12px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.2s ease; text-align:center;">Eigener Behälter<br><span style="font-size:12px; font-weight:700; color:#27AE60;">0,00 €</span></button>
-              <button type="button" id="checkoutBtnMehrweg" class="verpackung-btn" data-verpackung="mehrweg" style="padding:12px 14px; border-radius:12px; border:2px solid #e7e1d5; background:#fff; color:#666; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.2s ease; text-align:center;">Mehrweg-System 🔄<br><span style="font-size:12px; font-weight:700; color:#64748b;">Pfand/Aufpreis</span></button>
+
+          <div id="checkoutVerpackung" class="checkout-block is-hidden" aria-hidden="true">
+            <label class="checkout-label">Verpackung</label>
+            <div class="checkout-grid-two">
+              <button type="button" id="checkoutBtnEigenerBehaeltner" class="verpackung-btn" data-verpackung="eigener_behaeltner">Eigener Behälter<br><span class="checkout-meta-success">0,00 €</span></button>
+              <button type="button" id="checkoutBtnMehrweg" class="verpackung-btn" data-verpackung="mehrweg">Mehrweg-System 🔄<br><span class="checkout-meta-muted">Pfand/Aufpreis</span></button>
             </div>
           </div>
-          <!-- Abholzeit-Auswahl (15-Minuten-Takt) -->
-          <div style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Wann holst du dein Essen ab?</label>
-            <div id="checkoutTimeSlots" style="display:flex; flex-direction:row; flex-wrap:nowrap; overflow-x:auto; gap:10px; margin-bottom:12px; padding-bottom:8px; -webkit-overflow-scrolling:touch;">
+
+          <div class="checkout-block">
+            <label class="checkout-label">Wann holst du dein Essen ab?</label>
+            <div id="checkoutTimeSlots" class="checkout-time-slots">
               <!-- Wird dynamisch befüllt -->
             </div>
-            <button type="button" id="btnOtherTime" class="time-chip-alternative" style="width:100%; min-height:44px; margin-top:8px; background:#f0f0f0; border:2px dashed #e7e1d5; border-radius:12px; color:#666; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;" onmouseover="this.style.borderColor='#FFD700'; this.style.background='rgba(255,215,0,0.1)'; this.style.color='#334155';" onmouseout="this.style.borderColor='#e7e1d5'; this.style.background='#f0f0f0'; this.style.color='#666';">
+            <button type="button" id="btnOtherTime" class="time-chip-alternative">
               <i data-lucide="clock" style="width:18px;height:18px;"></i>
               <span>🕒 Andere Zeit</span>
             </button>
-            <div id="customTimeInputWrapper" style="display:none; margin-top:15px; padding:15px; background:#fff9e6; border-radius:12px; text-align:center;">
-              <input type="time" id="checkoutPickupTimeCustom" min="11:00" max="14:30" style="width:100%; padding:14px; border:2px solid #FFD700; border-radius:12px; font-size:18px; font-weight:700; background:#fff; text-align:center; margin-bottom:8px;" />
-              <p class="hint" style="font-size:12px; color:#666; margin:0; line-height:1.5;">Bitte zwischen 11:00 und 14:30 Uhr wählen</p>
+            <div id="customTimeInputWrapper" class="checkout-custom-time-wrap is-hidden" aria-hidden="true">
+              <input type="time" id="checkoutPickupTimeCustom" min="11:00" max="14:30" class="checkout-input checkout-time-input" />
+              <p class="hint checkout-time-hint">Bitte zwischen 11:00 und 14:30 Uhr wählen</p>
             </div>
             <input type="hidden" id="checkoutPickupTime" value="" />
           </div>
-          
-          <!-- Kontaktdaten (minimal) -->
-          <div style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Name (für Abholung)</label>
-            <input type="text" id="checkoutName" placeholder="Dein Name" style="width:100%; padding:14px; border:2px solid #e7e1d5; border-radius:12px; font-size:16px; background:#fff;" />
+
+          <div class="checkout-block">
+            <label class="checkout-label">Name (für Abholung)</label>
+            <input type="text" id="checkoutName" placeholder="Dein Name" class="checkout-input" />
           </div>
-          
-          <div style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">E-Mail (optional, für Beleg)</label>
-            <input type="email" id="checkoutEmail" placeholder="email@beispiel.de" style="width:100%; padding:14px; border:2px solid #e7e1d5; border-radius:12px; font-size:16px; background:#fff;" />
+
+          <div class="checkout-block">
+            <label class="checkout-label">E-Mail (optional, für Beleg)</label>
+            <input type="email" id="checkoutEmail" placeholder="email@beispiel.de" class="checkout-input" />
           </div>
-          
-          <!-- Zahlungsmethoden -->
-          <div style="margin-bottom:24px;">
-            <label style="display:block; font-weight:700; font-size:15px; margin-bottom:12px; color:#2D3436;">Zahlungsart</label>
-            <div id="checkoutPaymentMethods" style="display:flex; flex-direction:column; gap:12px;">
-              <!-- Apple Pay / Google Pay Buttons (wenn verfügbar) -->
-              <button class="btn" type="button" id="btnApplePay" style="display:none; width:100%; min-height:56px; background:#000; color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:8px;">
+
+          <div class="checkout-block">
+            <label class="checkout-label">Zahlungsart</label>
+            <div id="checkoutPaymentMethods" class="checkout-payment-methods">
+              <button class="btn is-hidden" type="button" id="btnApplePay" aria-hidden="true">
                 <span style="font-size:20px;">🍎</span> Apple Pay
               </button>
-              <button class="btn" type="button" id="btnGooglePay" style="display:none; width:100%; min-height:56px; background:#4285F4; color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; margin-bottom:8px;">
+              <button class="btn is-hidden" type="button" id="btnGooglePay" aria-hidden="true">
                 <span style="font-size:20px;">G</span> Google Pay
               </button>
-              <!-- Standard Zahlung -->
-              <button class="btn" type="button" id="btnStandardPayment" style="width:100%; min-height:56px; background:#FFD700; color:#334155; border:none; border-radius:12px; font-size:16px; font-weight:800; box-shadow:0 4px 16px rgba(255,215,0,0.25);">
+              <button class="btn-cust-primary" type="button" id="btnStandardPayment">
                 <i data-lucide="credit-card"></i> <span>JETZT BEZAHLEN</span>
               </button>
             </div>
           </div>
-          
-          <div style="text-align:center; padding:12px 0; font-size:13px; font-weight:700; color:#64748b;">
+
+          <div class="checkout-info-note">
             <span>🧾</span> Deine Abholnummer wird sofort generiert
           </div>
-          
-          <!-- Guest-Checkout Hinweis -->
-          <div style="padding:16px; background:rgba(255,184,0,0.08); border-radius:12px; font-size:13px; color:#666; line-height:1.5; text-align:center; margin-top:20px;">
+          <div class="checkout-guest-note">
             Kein Account nötig. Nach dem Kauf kannst du optional ein Passwort festlegen, um Belege zu speichern.
           </div>
         </div>
@@ -801,7 +788,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
-        <div class="cust-card" style="padding:18px; margin-bottom:0; border:1px solid #eef2f7; border-radius:18px; box-shadow:0 10px 24px rgba(15,23,42,0.05);">
+        <div class="cust-card" id="profileOrdersCard" style="padding:18px; margin-bottom:0; border:1px solid #eef2f7; border-radius:18px; box-shadow:0 10px 24px rgba(15,23,42,0.05);">
           <h3 style="margin:0 0 12px; font-size:16px; font-weight:900; color:#1a1a1a;">Bestellungen</h3>
           <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
             <!-- Dynamisch befüllt -->

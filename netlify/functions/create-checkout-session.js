@@ -1,7 +1,7 @@
 /**
  * Netlify Serverless Function: Stripe Checkout Session erstellen
  * Aufruf: POST /.netlify/functions/create-checkout-session
- * Body: { orderId, total, currency?, successUrl?, cancelUrl?, lineItems? }
+ * Body: { orderId, orderIds?, total, currency?, customerEmail?, successUrl?, cancelUrl?, lineItems? }
  * Env: STRIPE_SECRET_KEY (im Netlify Dashboard unter Site settings → Environment variables)
  */
 
@@ -30,7 +30,11 @@ exports.handler = async (event) => {
     };
   }
 
-  const { orderId, total, currency = 'eur', successUrl, cancelUrl, lineItems } = body;
+  const { orderId, orderIds, total, currency = 'eur', customerEmail, successUrl, cancelUrl, lineItems } = body;
+  const normalizedOrderIds = Array.isArray(orderIds)
+    ? orderIds.map((id) => String(id || '').trim()).filter(Boolean)
+    : [];
+  if (orderId && normalizedOrderIds.indexOf(String(orderId)) < 0) normalizedOrderIds.push(String(orderId));
   const amountCents = Math.round(Number(total) * 100);
   if (!orderId || !Number.isFinite(amountCents) || amountCents < 50) {
     return {
@@ -82,9 +86,15 @@ exports.handler = async (event) => {
     success_url: base + (base.includes('?') ? '&' : '?') + 'session_id={CHECKOUT_SESSION_ID}',
     cancel_url: cancel + (cancel.includes('?') ? '&' : '?') + 'cancel=1&orderId=' + encodeURIComponent(orderId),
     client_reference_id: orderId,
-    metadata: { orderId },
+    metadata: {
+      orderId: String(orderId),
+      orderIds: normalizedOrderIds.join(','),
+    },
     allow_promotion_codes: true,
   };
+  if (customerEmail && String(customerEmail).includes('@')) {
+    sessionConfig.customer_email = String(customerEmail).trim();
+  }
 
   try {
     const session = await stripe.checkout.sessions.create(sessionConfig);
