@@ -51,3 +51,9 @@
 - Kundenseite
 - UI-Aufwertung ohne riskante Logikänderung
 - Konsistente Optik zu Favoriten/Detailseite (Cards, Radius, feine Schatten)
+
+## Update: Scroll + Pull-to-Refresh
+
+- `Meins` (`v-profile`) ist wieder normal vertikal scrollbar im Kundenmodus.
+- Pull-to-Refresh ist auf dem Profil-Content aktiv: Runterziehen triggert `updateProfileView()`.
+- Nach dem Refresh wird der Profil-Scrollbereich erneut synchronisiert, damit Inhalte auf kleinen und großen Geräten stabil scrollbar bleiben.

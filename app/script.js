@@ -11947,6 +11947,10 @@
       var pickupsScroll = document.getElementById('provPickupsScroll') || document.getElementById('pickupsFloatingWrap');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
+      var discoverScroll = document.querySelector('#v-discover .discover-main');
+      var favScroll = document.querySelector('#v-fav .customer-main-wrap');
+      var cartScroll = document.querySelector('#v-cart .customer-main-wrap');
+      var profileScroll = document.querySelector('#v-profile .customer-main-wrap');
       var homeHeader = document.getElementById('providerDashboardHeader');
       var pickupsHeader = document.getElementById('v-provider-pickups-header');
       var weekHeader = document.getElementById('v-provider-week-header');
@@ -11973,6 +11977,28 @@
         delta: 5
       });
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
+      attachPTR(discoverScroll, function(){
+        if(typeof renderDiscover==='function') renderDiscover();
+        if(typeof showToast==='function') showToast('Entdecken aktualisiert', 900);
+      }, 'customer-discover');
+      attachPTR(favScroll, function(){
+        if(typeof renderFavorites==='function') renderFavorites();
+        if(typeof showToast==='function') showToast('Favoriten aktualisiert', 900);
+      }, 'customer-fav');
+      attachPTR(cartScroll, function(){
+        if(typeof renderCart==='function') renderCart();
+        if(typeof syncCustomerPrimaryWrapScroll==='function'){
+          requestAnimationFrame(function(){ syncCustomerPrimaryWrapScroll(); });
+        }
+        if(typeof showToast==='function') showToast('Mittagsbox aktualisiert', 900);
+      }, 'customer-cart');
+      attachPTR(profileScroll, function(){
+        if(typeof updateProfileView==='function') updateProfileView();
+        if(typeof syncCustomerPrimaryWrapScroll==='function'){
+          requestAnimationFrame(function(){ syncCustomerPrimaryWrapScroll(); });
+        }
+        if(typeof showToast==='function') showToast('Profil aktualisiert', 900);
+      }, 'customer-profile');
     }, 300);
   })();
 
@@ -13977,6 +14003,23 @@
         customerNav.style.setProperty('display', 'flex', 'important');
         customerNav.style.setProperty('visibility', 'visible', 'important');
       }
+    } else {
+      var providerNavWrapVisible = document.getElementById('providerNavWrap');
+      var providerNavVisible = document.getElementById('providerNav');
+      var customerNavReset = document.getElementById('customerNav');
+      if(providerNavWrapVisible){
+        providerNavWrapVisible.style.removeProperty('display');
+        providerNavWrapVisible.style.removeProperty('visibility');
+        providerNavWrapVisible.style.removeProperty('pointer-events');
+      }
+      if(providerNavVisible){
+        providerNavVisible.style.removeProperty('display');
+        providerNavVisible.style.removeProperty('visibility');
+      }
+      if(customerNavReset){
+        customerNavReset.style.removeProperty('display');
+        customerNavReset.style.removeProperty('visibility');
+      }
     }
     weekFooter.classList.toggle('week-footer-hidden', !isProviderWeekActive);
     if(isProviderWeekActive){
@@ -14058,7 +14101,8 @@
     if(typeof document === 'undefined') return;
     var bodyEl = document.body;
     if(!bodyEl || bodyEl.classList.contains('provider-mode')) return;
-    var lockViews = ['v-fav', 'v-cart', 'v-profile'];
+    // Haupt-Kundenseiten bleiben immer frei scrollbar.
+    var lockViews = ['v-fav-providers', 'v-orders'];
     var shouldLock = lockViews.indexOf(String(viewId || '')) >= 0;
     bodyEl.classList.toggle('customer-no-empty-scroll', shouldLock);
     if(shouldLock){

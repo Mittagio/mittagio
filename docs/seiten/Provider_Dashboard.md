@@ -166,3 +166,10 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Erste UI-State-Migration für Navigation abgeschlossen: `app/js/ui-navigation.js` und `app/js/app-logic.js` wurden von `style.display` auf `show/hide` bzw. `getComputedStyle` umgestellt.
 - Ziel des Pakets: Guard-Treffer in den zentralen Navigationsteilen reduzieren, ohne View-Logik zu verändern.
 - Ergebnis: Die gemeldeten `style.display`-Treffer aus den beiden Dateien sind entfernt; verbleibende Treffer liegen aktuell überwiegend in `app/script.js`.
+
+## Bottom-Nav Hotfix (Anbieter, Klicks blockiert)
+
+- Fehlerbild: Die Provider-Bottom-Navigation war sichtbar, reagierte aber in einzelnen Sessions nicht auf Klicks.
+- Ursache: Beim Wechsel in Customer-Views wurden auf `#providerNavWrap` Inline-Styles mit `pointer-events: none` gesetzt; beim Rückwechsel in den Anbieterkontext blieben diese Rest-Styles teilweise bestehen.
+- Fix in `app/script.js` (`syncWeekFooterVisibility()`): Im Nicht-Customer-Zweig werden die betroffenen Inline-Styles (`display`, `visibility`, `pointer-events`) auf `#providerNavWrap` wieder entfernt; zusätzlich werden für `#providerNav` und `#customerNav` die temporären Inline-Sichtbarkeitswerte zurückgesetzt.
+- Ergebnis: Die Bottom-Navigation folgt wieder ausschließlich dem regulären Provider-State und ist in `Dashboard`, `Abholnummern`, `Wochenplan`, `Kochbuch` und `Profil` erneut zuverlässig klickbar.

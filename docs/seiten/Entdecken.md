@@ -390,3 +390,16 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - Die Hybrid-Umschaltung wurde entfernt, weil die Bottom-Nav in kurzen Seiten wieder mitscrollte.
 - `#customerNav` bleibt nun in Customer-Views strikt `fixed` mit `bottom: 0`.
 - Der Inhaltsbereich in `v-fav`, `v-cart`, `v-profile`, `v-fav-providers`, `v-orders` erhält wieder einen nav-hohen Bottom-Abstand, um Überlagerung zu vermeiden.
+
+## Hotfix: Kundenseite scrollt wieder auf `/app`
+
+- Fehlerbild: Auf `mittagio.de/app` ließ sich die Kundenseite in bestimmten Zuständen nicht mehr nach unten scrollen.
+- Ursache: Ein globaler Customer-Guard setzte `body`, `#app` und `#app main` per `!important` auf `overflow: hidden`, wodurch regulärer Vertikal-Scroll blockiert wurde.
+- Fix in `app/style.css`: Im Scope `body:not(.provider-mode)` wurde der Guard auf `overflow-x: hidden` begrenzt und vertikales Scrollen wieder freigegeben (`overflow-y: auto/visible`).
+- Ergebnis: Kundenseiten (insbesondere `Entdecken`) sind wieder normal vertikal scrollbar, ohne dass Provider-Layouts beeinflusst werden.
+
+## Update: Pull-to-Refresh (Kundenseite)
+
+- `Entdecken` unterstützt jetzt Pull-to-Refresh direkt per Runterziehen im Haupt-Scrollbereich.
+- Umsetzung erfolgt über den vorhandenen PTR-Mechanismus in `app/script.js` (`setupPullToRefresh`), jetzt zusätzlich für Customer-Views gebunden.
+- Bei erfolgreichem Trigger wird `renderDiscover()` neu ausgeführt und ein kurzes Aktualisieren-Feedback angezeigt.

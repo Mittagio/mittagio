@@ -70,3 +70,9 @@ Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
 - Kundenseiten-Footer immer weiß.
 - Obere Trennlinie: `#ebebeb`.
 - Bündig mit Displayrand, Safe-Area via `env(safe-area-inset-bottom)`.
+
+## Update: Scroll + Pull-to-Refresh
+
+- `Favoriten` ist im Kundenmodus wieder zuverlässig vertikal scrollbar (kein globaler Overflow-Lock mehr auf App-Ebene).
+- Pull-to-Refresh ist für `v-fav` aktiv: Runterziehen im Content-Bereich triggert ein erneutes `renderFavorites()`.
+- Nach dem Refresh wird ein kurzes visuelles Feedback über Toast ausgegeben.

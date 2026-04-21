@@ -49,3 +49,9 @@ Jeder Anbieter hat seine eigene Abholzeit, der Checkout bleibt ein einziger Zahl
 
 - Kundenseite
 - Ein Checkout, mehrere Anbieter-Orders
+
+## Update: Scroll + Pull-to-Refresh
+
+- `Mittagsbox` (`v-cart`) bleibt im Kundenmodus vertikal scrollbar; restriktive Empty-Scroll-Locks greifen dort nicht mehr.
+- Pull-to-Refresh ist aktiv: Runterziehen im Hauptbereich der Mittagsbox triggert `renderCart()`.
+- Nach Refresh wird die Scrollfähigkeit des Inhaltsbereichs erneut synchronisiert, damit lange und kurze Warenkörbe stabil bleiben.
