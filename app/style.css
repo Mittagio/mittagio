@@ -993,10 +993,10 @@
     }
     #sheet.sheet-detail-gericht .sheet-detail-allergens-title{
       font-size:12px;
-      font-weight:800;
+      font-weight:600;
       color:#64748b;
-      text-transform:uppercase;
-      letter-spacing:0.04em;
+      text-transform:none;
+      letter-spacing:0;
     }
     #sheet.sheet-detail-gericht .sheet-detail-allergens-codes-wrap{
       display:flex;
@@ -7421,6 +7421,168 @@
     .mittagsbox-active-card .mittagsbox-route-btns button:active { transform: translateY(2px) scale(0.98); }
     .mittagsbox-active-card .btn-abgeholt { width:100%; min-height:52px; margin-top:16px; border-radius:14px; border:none; background:#22c55e; color:#fff; font-size:16px; font-weight:800; cursor:pointer; transition:transform 0.1s; }
     .mittagsbox-active-card .btn-abgeholt:active { transform: scale(0.98); }
+    #v-profile .profile-quick-action-tile{
+      min-height:96px !important;
+      height:96px !important;
+      padding:12px 10px !important;
+      border-radius:18px !important;
+      font-size:16px !important;
+      line-height:1.25 !important;
+      font-weight:800 !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      text-align:center !important;
+      white-space:normal !important;
+      box-shadow:0 8px 18px rgba(15,23,42,0.08);
+      border:1px solid rgba(255,255,255,0.65) !important;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%) !important;
+    }
+    /* Meins: ruhige, konsistente Typografie (Balanced) */
+    #v-profile .customer-header-title{
+      font-size:30px !important;
+      font-weight:700 !important;
+      letter-spacing:-0.01em !important;
+      line-height:1.25 !important;
+      color:#0f172a !important;
+    }
+    #v-profile .profile-quick-action-tile{
+      font-size:15px !important;
+      font-weight:600 !important;
+      color:#475569 !important;
+      line-height:1.35 !important;
+    }
+    #v-profile #profileOrdersCard h3,
+    #v-profile .mittagsbox-howitworks-header h3{
+      font-size:20px !important;
+      font-weight:700 !important;
+      letter-spacing:-0.01em !important;
+      line-height:1.25 !important;
+      color:#0f172a !important;
+    }
+    #v-profile #btnProfileShowAllOrders{
+      font-size:14px !important;
+      font-weight:600 !important;
+      color:#64748b !important;
+    }
+    #v-cart .mittagsbox-howitworks,
+    #v-profile .mittagsbox-howitworks{
+      background:#fff;
+      border:1px solid rgba(15,23,42,0.06);
+      border-radius:20px;
+      box-shadow:0 8px 24px rgba(15,23,42,0.08);
+      padding:14px 14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    #v-cart .mittagsbox-howitworks-header h3,
+    #v-profile .mittagsbox-howitworks-header h3{
+      margin:0;
+      font-size:17px;
+      font-weight:900;
+      color:#0f172a;
+      letter-spacing:-0.02em;
+    }
+    #v-cart .mittagsbox-howitworks-header p,
+    #v-profile .mittagsbox-howitworks-header p{
+      margin:4px 0 0;
+      font-size:12px;
+      color:#64748b;
+      font-weight:600;
+    }
+    #v-cart .mittagsbox-howitworks-track,
+    #v-profile .mittagsbox-howitworks-track{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:2px;
+      scrollbar-width:none;
+    }
+    #v-cart .mittagsbox-howitworks-track::-webkit-scrollbar,
+    #v-profile .mittagsbox-howitworks-track::-webkit-scrollbar{ display:none; }
+    #v-cart .mittagsbox-howitworks-card,
+    #v-profile .mittagsbox-howitworks-card{
+      flex:0 0 84%;
+      scroll-snap-align:start;
+      background:#fff;
+      border:1px solid rgba(15,23,42,0.08);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 6px 18px rgba(15,23,42,0.08);
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+    }
+    #v-cart .mittagsbox-howitworks-image-wrap,
+    #v-profile .mittagsbox-howitworks-image-wrap{
+      width:100%;
+      aspect-ratio:16/9;
+      background:#e2e8f0;
+      overflow:hidden;
+    }
+    #v-cart .mittagsbox-howitworks-image-wrap img,
+    #v-profile .mittagsbox-howitworks-image-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    #v-cart .mittagsbox-howitworks-body,
+    #v-profile .mittagsbox-howitworks-body{
+      padding:12px 14px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    #v-cart .mittagsbox-howitworks-body h4,
+    #v-profile .mittagsbox-howitworks-body h4{
+      margin:0;
+      font-size:15px;
+      font-weight:700;
+      color:#0f172a;
+    }
+    #v-cart .mittagsbox-howitworks-body p,
+    #v-profile .mittagsbox-howitworks-body p{
+      margin:0;
+      font-size:13px;
+      color:#64748b;
+      line-height:1.45;
+    }
+    /* Meins: Swipe deutlicher und größer als zuvor */
+    #v-profile .mittagsbox-howitworks{
+      padding:16px;
+      border-radius:22px;
+      box-shadow:0 10px 28px rgba(15,23,42,0.1);
+    }
+    #v-profile .mittagsbox-howitworks-header h3{
+      font-size:18px;
+    }
+    #v-profile .mittagsbox-howitworks-header p{
+      font-size:13px;
+    }
+    #v-profile .mittagsbox-howitworks-track{
+      gap:14px;
+    }
+    #v-profile .mittagsbox-howitworks-card{
+      flex:0 0 92%;
+      min-height:250px;
+      border-radius:20px;
+    }
+    #v-profile .mittagsbox-howitworks-image-wrap{
+      aspect-ratio:16/10;
+    }
+    #v-profile .mittagsbox-howitworks-body{
+      padding:14px 16px 16px;
+    }
+    #v-profile .mittagsbox-howitworks-body h4{
+      font-size:16px;
+    }
+    #v-profile .mittagsbox-howitworks-body p{
+      font-size:14px;
+    }
     /* Herz pulsiert einmal beim Favorisieren (Magic Move) */
     @keyframes heartPulse {
       0%, 100% { transform: scale(1); opacity: 1; }
@@ -8220,6 +8382,26 @@
       box-sizing:border-box;
     }
     #v-provider-profile .provider-profile-content-rebuild{ flex:1; overflow-y:auto; min-height:0; padding:16px max(16px, env(safe-area-inset-right)) calc(100px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); width:100%; max-width:100%; margin:0; box-sizing:border-box; }
+    /* Scroll-Fix "Meins": eigener Scroll-Container bleibt immer aktiv */
+    body.provider-mode #v-provider-profile.view.active{
+      height:100% !important;
+      min-height:0 !important;
+      max-height:100% !important;
+      overflow:hidden !important;
+    }
+    body.provider-mode #v-provider-profile.view.active #providerProfileContent{
+      flex:1 1 auto !important;
+      min-height:0 !important;
+      height:100% !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      touch-action:pan-y;
+    }
+    body.provider-mode #v-provider-profile.view.active #providerProfileMainContent{
+      padding-bottom:calc(120px + env(safe-area-inset-bottom, 0px));
+    }
     /* Account Settings Airbnb-Style: Master-Kachel + Grid + Accordion [cite: 2026-02-18] */
     .account-settings-airbnb{ display:flex; flex-direction:column; gap:20px; }
     .account-master-kachel{ display:flex; align-items:center; justify-content:space-between; padding:20px; background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); cursor:pointer; min-height:80px; transition:transform 0.15s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color:transparent; }
@@ -10722,6 +10904,20 @@
       padding-right: max(16px, env(safe-area-inset-right, 0)) !important;
       box-sizing: border-box;
     }
+    body:not(.provider-mode) #v-cart.view.active{
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    body:not(.provider-mode) #v-cart .customer-main-wrap{
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y;
+      padding-bottom: calc(var(--customer-nav-total-height, 78px) + 20px + env(safe-area-inset-bottom, 0px)) !important;
+    }
     /* Modern Sticky Header – Design-System Kundenseiten: 60px, Native App [cite: 2026-03-11 Top-Rand-Fix] */
     .cust-header-sticky {
       position: sticky;
@@ -10878,6 +11074,81 @@
       grid-template-columns:1fr 1fr;
       gap:10px;
     }
+    #v-checkout .checkout-verzehrart-summary{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 0 2px;
+      border:none;
+      border-radius:0;
+      background:transparent;
+    }
+    #v-checkout .checkout-verzehrart-simple-line{
+      font-size:13px;
+      font-weight:500;
+      color:#94a3b8;
+      line-height:1.3;
+    }
+    #v-checkout .checkout-verzehrart-value{
+      font-size:14px;
+      font-weight:700;
+      color:#2D3436;
+      line-height:1.2;
+    }
+    #v-checkout .checkout-verzehrart-value.is-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:24px;
+      padding:0 9px;
+      border-radius:999px;
+      border:1px solid rgba(250, 204, 21, 0.55);
+      background:rgba(250, 204, 21, 0.18);
+      color:#1f2937;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.01em;
+      line-height:1;
+      vertical-align:middle;
+    }
+    #v-checkout .checkout-verzehrart-edit-btn{
+      min-height:28px;
+      padding:0;
+      border:none;
+      background:transparent;
+      color:#64748b;
+      font-size:11px;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      transition:color .2s ease, transform .12s ease;
+      white-space:nowrap;
+    }
+    #v-checkout .checkout-verzehrart-edit-btn:hover{
+      color:#0f172a;
+      text-decoration:underline;
+      text-underline-offset:2px;
+    }
+    #v-checkout .checkout-verzehrart-edit-btn:active{
+      transform:scale(0.98);
+    }
+    @media (max-width: 380px){
+      #v-checkout .checkout-verzehrart-summary{
+        gap:8px;
+      }
+    }
+    @media (min-width: 381px) and (max-width: 430px){
+      #v-checkout .checkout-verzehrart-summary{
+        gap:8px;
+      }
+      #v-checkout .checkout-verzehrart-value{
+        font-size:14px;
+      }
+      #v-checkout .checkout-verzehrart-edit-btn{
+        font-size:11px;
+      }
+    }
     #v-checkout .verzehrmodus-checkout-btn,
     #v-checkout .verpackung-btn{
       min-height:52px;
@@ -10947,11 +11218,11 @@
     }
     #v-checkout .checkout-input{
       width:100%;
-      min-height:52px;
-      padding:12px 14px;
+      min-height:49px;
+      padding:10px 12px;
       border:1.5px solid #e2e8f0;
       border-radius:12px;
-      font-size:16px;
+      font-size:15px;
       background:#fff;
       color:#0f172a;
     }
@@ -15886,7 +16157,6 @@ body:not(.provider-mode) #v-orders.customer-view{
 }
 body:not(.provider-mode) #v-fav .customer-main-wrap,
 body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
-body:not(.provider-mode) #v-cart .customer-main-wrap,
 body:not(.provider-mode) #v-profile .customer-main-wrap,
 body:not(.provider-mode) #v-orders .customer-main-wrap{
   padding-bottom: 0 !important;
@@ -15914,7 +16184,6 @@ body:not(.provider-mode) #v-profile.view.active{
   overflow:hidden !important;
 }
 body:not(.provider-mode) #v-fav .customer-main-wrap,
-body:not(.provider-mode) #v-cart .customer-main-wrap,
 body:not(.provider-mode) #v-profile .customer-main-wrap{
   flex:1 1 auto !important;
   min-height:0 !important;
@@ -15923,6 +16192,76 @@ body:not(.provider-mode) #v-profile .customer-main-wrap{
   margin-top:var(--customer-header-offset, 72px) !important;
   padding-top:0 !important;
   padding-bottom:0 !important;
+}
+body:not(.provider-mode) #v-cart .customer-main-wrap{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch;
+  margin-top:var(--customer-header-offset, 72px) !important;
+  padding-top:0 !important;
+  padding-bottom:calc(var(--customer-nav-total-height, 78px) + 20px + env(safe-area-inset-bottom, 0px)) !important;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+}
+body:not(.provider-mode) #v-cart .customer-main-wrap::after{
+  content:'';
+  display:block;
+  width:100%;
+  height:calc(var(--customer-nav-total-height, 78px) + 28px + env(safe-area-inset-bottom, 0px));
+  flex:0 0 auto;
+}
+body:not(.provider-mode) #v-cart #cartMainCard{
+  flex:0 0 auto !important;
+  overflow:visible !important;
+}
+body:not(.provider-mode) #v-cart #cartBox{
+  overflow:visible !important;
+}
+/* Kundenseite "Meins": eigener Scroll-Container ohne zusätzlichen Offset */
+body:not(.provider-mode) #v-profile .customer-main-wrap{
+  margin-top:0 !important;
+  padding-top:14px !important;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+}
+/* Kundenseite "Meins" – Fallback: Viewport-Scroll statt verschachteltem Scroll-Lock */
+body:not(.provider-mode) #v-profile.view.active{
+  display:block !important;
+  height:auto !important;
+  min-height:var(--app-height) !important;
+  overflow:visible !important;
+}
+body:not(.provider-mode) #v-profile .customer-main-wrap{
+  min-height:auto !important;
+  overflow:visible !important;
+  -webkit-overflow-scrolling:auto !important;
+}
+/* HARD FIX: Kundenseite "Meins" scrollt immer (kein Fixed-Header-Lock) */
+body:not(.provider-mode) #v-profile > .cust-header-sticky{
+  position: sticky !important;
+  top: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  z-index: 120 !important;
+}
+body:not(.provider-mode) #v-profile.view.active{
+  display: block !important;
+  height: auto !important;
+  min-height: var(--app-height) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+body:not(.provider-mode) #v-profile .customer-main-wrap{
+  display: block !important;
+  height: auto !important;
+  min-height: auto !important;
+  overflow: visible !important;
+  margin-top: 0 !important;
+  padding-top: 14px !important;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
 }
 body:not(.provider-mode).customer-no-empty-scroll,
 body:not(.provider-mode).customer-no-empty-scroll #app,

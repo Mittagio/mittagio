@@ -57,3 +57,9 @@
 - `Meins` (`v-profile`) ist wieder normal vertikal scrollbar im Kundenmodus.
 - Pull-to-Refresh ist auf dem Profil-Content aktiv: Runterziehen triggert `updateProfileView()`.
 - Nach dem Refresh wird der Profil-Scrollbereich erneut synchronisiert, damit Inhalte auf kleinen und großen Geräten stabil scrollbar bleiben.
+
+## Update: Kacheln + Abholnummer-Verlagerung (22.04.2026)
+
+- Die drei Quick-Action-Kacheln (`Meine Lieblingsanbieter`, `Mein Food-Profil`, `Support`) sind deutlich größer und touchfreundlicher gestaltet (höhere Tiles, größere Rundung, stärkere visuelle Hierarchie).
+- Der Abholnummer-Bereich wurde aus `Meins` entfernt.
+- In `Meins` bleibt der Fokus auf Profil-Hub + Bestellhistorie; Abholnummern werden nicht mehr doppelt gezeigt.

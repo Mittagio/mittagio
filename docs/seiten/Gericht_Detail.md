@@ -41,3 +41,8 @@ Die Detailansicht folgt exakt der visuellen Sprache der Discovery-Kachel (Market
 - Zeit-Auswahl erfolgt ausschließlich in der Mittagsbox/Checkout; im Gericht-Detail ist sie bewusst read-only.
 - Zeitanzeige ist robust: bevorzugt `pickupWindow` des Angebots, sonst Anbieter-Zeitfenster, sonst Fallback `11:30 – 14:00`.
 - Position der Zeitanzeige: direkt unter der Adresszeile in der Meta-Info (`#sInfoRow`) mit Uhr-Icon.
+- Beim Öffnen der Gericht-Detailkarte wird der Hintergrund-Scroll konsequent gesperrt (Body/Root-Lock), damit nur die geöffnete Karte bzw. das Distanz-Sheet scrollt.
+- In der Detailansicht steht bei der Adresse kein Map-Pin mehr.
+- In der Zeile mit der Uhrzeit werden keine zusätzlichen Icons mehr angezeigt.
+- `Allergene` ist typografisch leichter (nicht fett/keine aggressive Uppercase-Wirkung).
+- Der Platzhalter-Strich (`–`) hinter `Allergene` wurde entfernt, wenn keine Kürzel vorliegen.

@@ -6376,6 +6376,31 @@
     const mm = String(eta.getMinutes()).padStart(2, '0');
     return hh + ':' + mm;
   }
+  function syncDiscoverDetailScrollLock(){
+    const body = document.body;
+    const root = document.documentElement;
+    if(!body || !root) return;
+    const shouldLock = body.classList.contains('discover-detail-open') || body.classList.contains('detail-distance-open');
+    if(shouldLock){
+      if(!body.dataset.detailPrevOverflow) body.dataset.detailPrevOverflow = body.style.overflow || '';
+      if(!body.dataset.detailPrevOverscroll) body.dataset.detailPrevOverscroll = body.style.overscrollBehavior || '';
+      if(!root.dataset.detailPrevOverflow) root.dataset.detailPrevOverflow = root.style.overflow || '';
+      if(!root.dataset.detailPrevOverscroll) root.dataset.detailPrevOverscroll = root.style.overscrollBehavior || '';
+      body.style.setProperty('overflow', 'hidden', 'important');
+      body.style.setProperty('overscroll-behavior', 'none', 'important');
+      root.style.setProperty('overflow', 'hidden', 'important');
+      root.style.setProperty('overscroll-behavior', 'none', 'important');
+      return;
+    }
+    body.style.overflow = body.dataset.detailPrevOverflow || '';
+    body.style.overscrollBehavior = body.dataset.detailPrevOverscroll || '';
+    root.style.overflow = root.dataset.detailPrevOverflow || '';
+    root.style.overscrollBehavior = root.dataset.detailPrevOverscroll || '';
+    delete body.dataset.detailPrevOverflow;
+    delete body.dataset.detailPrevOverscroll;
+    delete root.dataset.detailPrevOverflow;
+    delete root.dataset.detailPrevOverscroll;
+  }
   function closeDetailDistanceSheet(){
     const bd = document.getElementById('detailDistanceBd');
     const sheet = document.getElementById('detailDistanceSheet');
@@ -6385,6 +6410,7 @@
       sheet.setAttribute('aria-hidden', 'true');
     }
     if(document.body) document.body.classList.remove('detail-distance-open');
+    syncDiscoverDetailScrollLock();
   }
   function openDetailDistanceSheet(ctx){
     const bd = document.getElementById('detailDistanceBd');
@@ -6461,6 +6487,7 @@
     else if(typeof haptic === 'function') haptic(8);
     else if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
     if(document.body) document.body.classList.add('detail-distance-open');
+    syncDiscoverDetailScrollLock();
     bd.classList.add('active');
     sheet.classList.add('active');
     sheet.setAttribute('aria-hidden', 'false');
@@ -6681,18 +6708,9 @@
         const timeEl = document.createElement('div');
         setVisible(timeEl, 'flex');
         timeEl.style.alignItems = 'center';
-        timeEl.style.gap = '6px';
-        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>${iconMarkup('clock')}`;
+        timeEl.style.gap = '0';
+        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>`;
         infoRowEl.appendChild(timeEl);
-      }
-      const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
-                           o.category === 'Veggie' ? 'carrot' : 
-                           o.category === 'Fisch' ? 'fish' :
-                           o.category === 'Mit Fleisch' ? 'drumstick' : '';
-      if(foodTypeIcon){
-        const foodEl = document.createElement('div');
-        foodEl.innerHTML = iconMarkup(foodTypeIcon);
-        infoRowEl.appendChild(foodEl);
       }
     }
     
@@ -6726,10 +6744,7 @@
         var stdPillsHtml = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '';
         var codesText = [uniq.join(', '), customAllergenArr.join(', ')].filter(Boolean).join(' · ') || '–';
         if(sAllergensCodes) sAllergensCodes.textContent = codesText;
-        if(sAllergensCodesWrap){
-          var wrapInner = (stdPillsHtml || customPillsHtml) ? (stdPillsHtml + customPillsHtml) : '<span class="allergen-pill" style="opacity:0.7;">–</span>';
-          sAllergensCodesWrap.innerHTML = wrapInner;
-        }
+        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = (stdPillsHtml || customPillsHtml) ? (stdPillsHtml + customPillsHtml) : '';
         if(sAllergens){
           const list = uniq.map(c => {
             const label = ALLERGENE_STANDARD[c];
@@ -6750,8 +6765,8 @@
         }
       } else {
         show(aw, 'flex');
-        if(sAllergensCodes) sAllergensCodes.textContent = '–';
-        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+        if(sAllergensCodes) sAllergensCodes.textContent = '';
+        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '';
       }
     }
 
@@ -7004,6 +7019,7 @@
 
     updateSheetFavs();
     if(document.body) document.body.classList.add('discover-detail-open');
+    syncDiscoverDetailScrollLock();
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -7034,6 +7050,7 @@
   function closeSheet(){
     if(document.body) document.body.classList.remove('discover-detail-open');
     if(document.body) document.body.classList.remove('detail-distance-open');
+    syncDiscoverDetailScrollLock();
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
     
@@ -8685,6 +8702,52 @@
   }
 
   // updateHeaderBasket, getRemainingPickupMinutes → js/app-logic.js
+  function renderHowItWorksSwipeTrack(trackId){
+    var track = document.getElementById(trackId);
+    if(!track) return;
+    var steps = [
+      {
+        title: '1. Entdecken',
+        text: 'Gerichte in deiner Nähe.',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '2. In die Mittagsbox',
+        text: 'Favoriten sichern.',
+        image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '3. Abholnummer sichern',
+        text: 'Direkt nach der Zahlung.',
+        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '4. Abholen',
+        text: 'Nummer am Tresen zeigen.',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '5. Genießen',
+        text: 'Ohne Warten genießen.',
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=70'
+      }
+    ];
+    track.innerHTML = steps.map(function(step){
+      return (
+        '<article class="mittagsbox-howitworks-card">' +
+          '<div class="mittagsbox-howitworks-image-wrap">' +
+            '<img src="' + esc(step.image) + '" alt="' + esc(step.title) + '" loading="lazy" />' +
+          '</div>' +
+          '<div class="mittagsbox-howitworks-body">' +
+            '<h4>' + esc(step.title) + '</h4>' +
+            '<p>' + esc(step.text) + '</p>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join('');
+    // Immer auf Schritt 1 starten, damit die Reihenfolge klar bleibt.
+    track.scrollLeft = 0;
+  }
   
   function renderCart(){
     if(typeof window !== 'undefined') window.cart = cart;
@@ -8774,6 +8837,10 @@
     if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     if(btn){
       show(btn, 'flex');
+      btn.style.setProperty('display', 'flex', 'important');
+      btn.removeAttribute('aria-hidden');
+      var btnLabel = btn.querySelector('span');
+      if(btnLabel) btnLabel.textContent = 'Weiter zur Bezahlung';
       btn.onclick = () => {
         const providerIds = Array.from(new Set((cart.items || []).map(function(it){
           const offer = offers.find(function(o){ return o.id === it.offerId; });
@@ -8788,7 +8855,11 @@
       };
     }
     const cartVerzehrart = document.getElementById('cartVerzehrart');
-    if(cartVerzehrart) show(cartVerzehrart);
+    if(cartVerzehrart){
+      show(cartVerzehrart);
+      cartVerzehrart.style.setProperty('display', 'block', 'important');
+      cartVerzehrart.removeAttribute('aria-hidden');
+    }
     const cartBtnVorOrt = document.getElementById('cartBtnVorOrt');
     const cartBtnMitnehmen = document.getElementById('cartBtnMitnehmen');
     const cartHasAnyDineIn = (cart.items || []).some(function(it){
@@ -8967,6 +9038,15 @@
         <span class="cart-total-value">${euro(total)}</span>
       </div>
     `;
+    // Guard: CTA + Verzehrart nach Re-Render sichtbar halten.
+    if(cartVerzehrart){
+      cartVerzehrart.style.setProperty('display', 'block', 'important');
+      cartVerzehrart.removeAttribute('aria-hidden');
+    }
+    if(btn){
+      btn.style.setProperty('display', 'flex', 'important');
+      btn.removeAttribute('aria-hidden');
+    }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     if(typeof window !== 'undefined' && typeof window.syncCustomerPrimaryWrapScroll === 'function'){
       requestAnimationFrame(function(){ window.syncCustomerPrimaryWrapScroll(); });
@@ -9209,85 +9289,26 @@
       const o = offers.find(x => x.id === it.offerId);
       if(o && normalizeOffer(o).dineInPossible) anyDineIn = true;
     });
-    const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
-    const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
-    if(btnVorOrt){
-      if(anyDineIn) show(btnVorOrt);
-      else hide(btnVorOrt);
-    }
     if(!anyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
       cart.verzehrmodus = 'mitnehmen';
       save(LS.cart, cart);
     }
     const vm = cart.verzehrmodus || 'mitnehmen';
-    
-    // Active-State: klare Outline statt Vollflaeche
-    const updateVerzehrartButtons = () => {
-      const isVorOrt = vm === 'vor_ort';
-      const isMitnehmen = vm === 'mitnehmen';
-      
-      if(btnVorOrt){
-        btnVorOrt.classList.toggle('active', isVorOrt);
-        btnVorOrt.style.borderColor = isVorOrt ? '#FFD700' : '#e7e1d5';
-        btnVorOrt.style.background = '#fff';
-        btnVorOrt.style.color = isVorOrt ? '#2D3436' : '#666';
-        btnVorOrt.style.fontWeight = isVorOrt ? '900' : '600';
-        btnVorOrt.style.boxShadow = isVorOrt ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-      }
-      
-      if(btnMitnehmen){
-        btnMitnehmen.classList.toggle('active', isMitnehmen);
-        btnMitnehmen.style.borderColor = isMitnehmen ? '#FFD700' : '#e7e1d5';
-        btnMitnehmen.style.background = '#fff';
-        btnMitnehmen.style.color = isMitnehmen ? '#2D3436' : '#666';
-        btnMitnehmen.style.fontWeight = isMitnehmen ? '900' : '600';
-        btnMitnehmen.style.boxShadow = isMitnehmen ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-      }
-    };
-    
-    updateVerzehrartButtons();
-    
-    // Interaktions-Logik: Status an Anbieter-Datensatz senden
-    if(btnVorOrt){
-      btnVorOrt.onclick = () => {
-        cart.verzehrmodus = 'vor_ort';
-        save(LS.cart, cart);
-        
-        // Signal an Anbieter: Porzellan/Besteck vorbereiten
-        cart.items.forEach(item => {
-          const offer = offers.find(o => o.id === item.offerId);
-          if(offer && offer.providerId){
-            // Verzehrart wird beim Erstellen der Bestellung an den Anbieter übermittelt
-            // Der Anbieter sieht in seinem Dashboard: "Vor Ort essen" für diese Bestellung
-          }
-        });
-        
-        renderCheckout(total);
-      };
+    const verzehrartValue = document.getElementById('checkoutVerzehrartValue');
+    const verzehrartEditBtn = document.getElementById('checkoutVerzehrartEditBtn');
+    if(verzehrartValue){
+      verzehrartValue.textContent = vm === 'vor_ort' ? 'Vor Ort' : 'Mitnehmen';
+      verzehrartValue.classList.toggle('is-pill', vm === 'vor_ort');
     }
-    
-    if(btnMitnehmen){
-      btnMitnehmen.onclick = () => {
-        cart.verzehrmodus = 'mitnehmen';
-        if(!cart.verpackung) cart.verpackung = 'mehrweg';
-        save(LS.cart, cart);
-        
-        // Signal an Anbieter: Einpacken in Box/Mehrweg
-        cart.items.forEach(item => {
-          const offer = offers.find(o => o.id === item.offerId);
-          if(offer && offer.providerId){
-          }
-        });
-        
-        renderCheckout(total);
-      };
+    if(verzehrartEditBtn){
+      verzehrartEditBtn.onclick = () => showCart();
     }
     
     // Verpackung (nur bei Mitnehmen) – Anzeige + Buttons im Time-Slot-Stil
     const verpackungWrap = document.getElementById('checkoutVerpackung');
     const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
     const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
-    const isMitnehmen = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
+    const isMitnehmen = vm === 'mitnehmen';
     if(verpackungWrap){
       if(isMitnehmen) show(verpackungWrap);
       else hide(verpackungWrap);
@@ -9324,20 +9345,8 @@
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
-    // Anbieter klickbar: Bei [Name1], [Name2] → Profil
-    const providerMap = new Map();
-    cart.items.forEach(it => {
-      const o = offers.find(x => x.id === it.offerId);
-      if(o && o.providerId) providerMap.set(o.providerId, normalizeOffer(o).providerName || 'Anbieter');
-    });
-    let providerLineHtml = '<div style="margin-bottom:12px; font-size:14px; color:#64748b;">Bei: ';
-    const providerEntries = [];
-    providerMap.forEach((name, pid) => providerEntries.push({ pid, name }));
-    providerLineHtml += providerEntries.map(({ pid, name }) => `<button type="button" class="checkout-provider-link" data-provider-id="${esc(pid)}" style="background:none;border:none;padding:0;font-weight:700;color:#1a1a1a;text-decoration:underline;cursor:pointer;font-size:14px;">${esc(name)}</button>`).join(', ');
-    providerLineHtml += '</div>';
-    
-    // Bestellübersicht rendern
-    let summaryHTML = providerLineHtml + '<div style="font-weight:700; font-size:16px; margin-bottom:16px; color:#2D3436;">Bestellübersicht</div>';
+    // Bestellübersicht rendern (ohne Anbieterzeile und ohne Zusatz-Titel im Container)
+    let summaryHTML = '';
     cart.items.forEach(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(o){
@@ -9354,16 +9363,12 @@
       }
     });
     summaryHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid #2D3436;">
+      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid rgba(15,23,42,0.6);">
         <div style="font-weight:900; font-size:18px; color:#2D3436;">Gesamt</div>
         <div style="font-weight:900; font-size:24px; color:#111827;">${euro(total)}</div>
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
-    summaryEl.querySelectorAll('.checkout-provider-link').forEach(btn => {
-      const pid = btn.getAttribute('data-provider-id');
-      if(pid) btn.onclick = () => showProviderProfilePublic(pid);
-    });
     
     // Apple Pay / Google Pay Buttons prüfen (wenn verfügbar)
     const btnApplePay = document.getElementById('btnApplePay');
@@ -10360,16 +10365,15 @@
         if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
-          <div style="flex:1; display:flex; align-items:center; gap:12px;">
-            <div style="width:54px; height:54px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">👋</div>
+          <div style="flex:1; display:flex; align-items:center; gap:10px; min-width:0;">
+            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#fff7cc 0%,#fde68a 100%); border:1px solid rgba(250,204,21,0.45); display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0;">✨</div>
             <div style="min-width:0;">
-              <div style="font-weight:950; font-size:21px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Willkommen</div>
-              <p style="font-size:13px; color:#64748b; line-height:1.45; margin:4px 0 0;">Melde dich an, um Bestellungen und Mittagsbox dauerhaft zu speichern.</p>
+              <div style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#f8fafc; border:1px solid #e2e8f0; color:#475569; font-size:11px; font-weight:800;">🚀 Startklar in 30 Sekunden</div>
             </div>
           </div>
-          <div style="margin-top:14px;">
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px; width:100%;">
-              Profil anlegen
+          <div style="margin-top:0;">
+            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; min-width:136px; font-size:15px; padding:0 18px;">
+              Jetzt Profil anlegen
             </button>
           </div>
         `;
@@ -10378,39 +10382,11 @@
       }
     }
     
-    // Aktive Abholnummern
-    const abholnummerSection = document.getElementById('profileAbholnummerSection');
-    const abholnummerList = document.getElementById('profileActiveAbholnummernList');
-    const today = isoDate(new Date());
     const allOrders = loadOrders();
-    const activeAbholnummern = allOrders.filter(o => o.status === 'PAID' && o.pickupDate === today && !o.pickupCodeActivatedAt);
-
-    const noAbholnummerHint = document.getElementById('profileNoAbholnummerHint');
-    if(abholnummerSection && abholnummerList){
-      if(activeAbholnummern.length > 0){
-        show(abholnummerSection);
-        if(noAbholnummerHint) hide(noAbholnummerHint);
-        abholnummerList.innerHTML = activeAbholnummern.map(order => {
-          const code = order.pickupCode || '–';
-          return `
-            <div class="cust-card" style="flex-direction:row; padding:24px; align-items:center; gap:20px; margin-bottom:0; border:2px solid rgba(255,215,0,0.35); background:rgba(255,215,0,0.08); border-radius:20px; cursor:pointer;" onclick="showPickupCode('${esc(order.id)}');">
-              <div style="width:56px; height:56px; border-radius:16px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:28px;">🧾</div>
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:950; font-size:28px; color:#1a1a1a; letter-spacing:3px; font-family:monospace; line-height:1.2;">${esc(code)}</div>
-                <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:6px;">${esc(order.providerName || 'Anbieter')}</div>
-              </div>
-              <i data-lucide="chevron-right" style="width:24px;height:24px; color:var(--brand);"></i>
-            </div>
-          `;
-        }).join('');
-      } else {
-        hide(abholnummerSection);
-        if(noAbholnummerHint) show(noAbholnummerHint);
-      }
-    } else if(noAbholnummerHint) show(noAbholnummerHint);
+    renderHowItWorksSwipeTrack('profileHowItWorksTrack');
     const ordersCard = document.getElementById('profileOrdersCard');
     if(ordersCard){
-      ordersCard.style.marginTop = (activeAbholnummern.length === 0) ? '-4px' : '0';
+      ordersCard.style.marginTop = '0';
     }
 
     // Historie (letzte 2)
@@ -10425,12 +10401,12 @@
           <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:10px; border:1px solid #eef2f7; border-radius:14px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff;">
             <div style="width:42px; height:42px; border-radius:12px; background:#f8fafc; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
             <div style="flex:1; min-width:0;">
-              <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
-              <div style="font-size:12px; color:#64748b;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
+              <div style="font-weight:600; font-size:15px; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3;">${esc(o.dishName || 'Gericht')}</div>
+              <div style="font-size:13px; font-weight:500; color:#64748b; line-height:1.4;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:5px; min-width:74px;">
-              <div style="font-weight:900; font-size:14px; color:#111827; font-variant-numeric:tabular-nums; text-align:right;">${euro(Number(o.total||0)/100)}</div>
-              <div style="font-size:10px; font-weight:800; color:#334155; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 7px; text-align:right;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
+              <div style="font-weight:700; font-size:14px; color:#0f172a; font-variant-numeric:tabular-nums; text-align:right;">${euro(Number(o.total||0)/100)}</div>
+              <div style="font-size:12px; font-weight:600; color:#475569; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 8px; text-align:right;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
             </div>
           </div>
         `).join('');
@@ -10547,8 +10523,15 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     const scrollEl = document.getElementById('profileSettingsSheetScroll');
+    const sections = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
     if(bd){ show(bd); bd.style.setProperty('opacity', '1'); }
     if(sheet) show(sheet);
+    sections.forEach(function(id){
+      const el = document.getElementById(id);
+      if(el) hide(el);
+      const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + id + '"]');
+      chevrons.forEach(function(c){ c.style.setProperty('transform', 'rotate(0deg)'); });
+    });
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
@@ -14093,6 +14076,11 @@
       if(!view || !view.classList.contains('active')) return;
       var wrap = view.querySelector('.customer-main-wrap');
       if(!wrap) return;
+      if(id === 'v-profile' || id === 'v-cart'){
+        // "Meins" und "Mittagsbox" bleiben immer scrollbar; initiale Messungen koennen sonst faelschlich hidden setzen.
+        wrap.style.setProperty('overflow-y', 'auto', 'important');
+        return;
+      }
       var canScroll = (wrap.scrollHeight - wrap.clientHeight) > 2;
       wrap.style.setProperty('overflow-y', canScroll ? 'auto' : 'hidden', 'important');
     });

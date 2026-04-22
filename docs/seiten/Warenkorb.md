@@ -55,3 +55,30 @@ Jeder Anbieter hat seine eigene Abholzeit, der Checkout bleibt ein einziger Zahl
 - `Mittagsbox` (`v-cart`) bleibt im Kundenmodus vertikal scrollbar; restriktive Empty-Scroll-Locks greifen dort nicht mehr.
 - Pull-to-Refresh ist aktiv: Runterziehen im Hauptbereich der Mittagsbox triggert `renderCart()`.
 - Nach Refresh wird die Scrollfähigkeit des Inhaltsbereichs erneut synchronisiert, damit lange und kurze Warenkörbe stabil bleiben.
+
+## Update: Verzehrart nur einmal wählen (22.04.2026)
+
+- Die Entscheidung für die Verzehrart bleibt in der Mittagsbox (`v-cart`) als primäre Auswahl.
+- Im Checkout (`v-checkout`) wird die Verzehrart nur noch als Zusammenfassung angezeigt (kein zweites Primär-Toggle).
+- Im Checkout gibt es stattdessen eine klare Änderungsmöglichkeit: **„In Mittagsbox ändern“** (Rücksprung zur Bearbeitung).
+- Wenn „Vor Ort“ für die enthaltenen Angebote nicht möglich ist, wird automatisch auf „Mitnehmen“ korrigiert.
+- Die Zusammenfassung ist als ruhige, app-like Pill gestaltet (Icon + Label): `🍴 Vor Ort` oder `🔄 Mitnehmen`.
+- Mobile-Feinschliff: Auf sehr schmalen Screens (<381px) bricht der Änderungs-Button unter die Pill, damit kein gequetschtes Layout entsteht.
+- Zusätzlicher Breakpoint (`381px–430px`): kompaktere Paddings/Typo für Pill + Änderungs-Button, damit die Checkout-Zeile auf kleineren Geräten ruhiger wirkt.
+
+## Update: Checkout textärmer (22.04.2026)
+
+- Die Info-Texte unter `JETZT BEZAHLEN` wurden entfernt (reduzierter, ruhiger Checkout).
+- Feldlabels wurden verkürzt auf `Name` und `E-Mail` (statt erklärender Zusätze).
+- Die Verzehrart im Checkout wurde auf Variante D vereinfacht: eine knappe Statuszeile (`Aktuell: Vor Ort/Mitnehmen`) plus kleiner `Ändern`-Link statt großer Pill-Komponente.
+- Bei `Vor Ort` wird der Statuswert jetzt als kleine UI-Pill dargestellt (statt reinem Fließtext).
+- Das Label `Zahlungsart` über dem Payment-Block wurde entfernt.
+- Der Checkout-Header lautet jetzt `Bestellübersicht`.
+- Im Summary-Container wurden die Anbieterzeile (`Bei: ...`) und der zusätzliche Titel `Bestellübersicht` entfernt.
+- Der CTA in `v-cart` wurde von `Weiter zum Checkout` auf `Weiter zur Bezahlung` umbenannt.
+- Micro-Feinschliff für ruhigere Wirkung: Verzehrart-Zeile kompakter/leichter (`Aktuell` dezenter, kleinere Vor-Ort-Pill, dezentere `Ändern`-Typo), weichere Trennlinie über `Gesamt` und kompaktere Eingabefelder (`Name`/`E-Mail`).
+
+## Update: Scroll-Stabilität Mittagsbox (22.04.2026)
+
+- `v-cart` hat einen stabilen, dedizierten vertikalen Scroll-Container im Kundenmodus.
+- Der Inhaltsbereich (`.customer-main-wrap`) bleibt auch bei langen Warenkörben zuverlässig scrollbar (inkl. Safe-Area unten).

@@ -626,7 +626,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <section class="view customer-view" id="v-checkout">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
-          <h1 class="customer-header-title">Dein Mittagstisch</h1>
+          <h1 class="customer-header-title">Bestellübersicht</h1>
         </div>
       </header>
       <div class="customer-main-wrap checkout-main-wrap">
@@ -636,10 +636,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
 
           <div id="checkoutVerzehrart" class="checkout-block">
-            <label class="checkout-label">Wo möchtest du essen?</label>
-            <div class="checkout-grid-two">
-              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort">🍴 Vor Ort</button>
-              <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen">🔄 Mitnehmen</button>
+            <label class="checkout-label">Verzehrart</label>
+            <div id="checkoutVerzehrartSummary" class="checkout-verzehrart-summary">
+              <div class="checkout-verzehrart-simple-line">
+                Aktuell: <span id="checkoutVerzehrartValue" class="checkout-verzehrart-value">Mitnehmen</span>
+              </div>
+              <button type="button" id="checkoutVerzehrartEditBtn" class="checkout-verzehrart-edit-btn">Ändern</button>
             </div>
           </div>
 
@@ -668,17 +670,16 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">Name (für Abholung)</label>
+            <label class="checkout-label">Name</label>
             <input type="text" id="checkoutName" placeholder="Dein Name" class="checkout-input" />
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">E-Mail (optional, für Beleg)</label>
+            <label class="checkout-label">E-Mail</label>
             <input type="email" id="checkoutEmail" placeholder="email@beispiel.de" class="checkout-input" />
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">Zahlungsart</label>
             <div id="checkoutPaymentMethods" class="checkout-payment-methods">
               <button class="btn is-hidden" type="button" id="btnApplePay" aria-hidden="true">
                 <span style="font-size:20px;">🍎</span> Apple Pay
@@ -692,12 +693,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </div>
           </div>
 
-          <div class="checkout-info-note">
-            <span>🧾</span> Deine Abholnummer wird sofort generiert
-          </div>
-          <div class="checkout-guest-note">
-            Kein Account nötig. Nach dem Kauf kannst du optional ein Passwort festlegen, um Belege zu speichern.
-          </div>
         </div>
       </div>
     </section>
@@ -762,29 +757,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </header>
 
       <div class="customer-main-wrap" style="padding-top:14px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:16px;">
-        <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
-        <div class="cust-card" id="profileHeaderCard" style="padding:16px 18px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; border:1px solid #eef2f7; box-shadow:0 8px 20px rgba(15,23,42,0.06); border-radius:18px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-
-        <!-- Quick Actions -->
-        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;">
-          <button type="button" class="cust-chip" onclick="showView('v-fav-providers')" style="min-height:54px; border-radius:14px; font-weight:700;">🏢 Meine Lieblingsanbieter</button>
-          <button type="button" class="cust-chip" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:54px; border-radius:14px; font-weight:700;">🥗 Mein Food-Profil</button>
-          <button type="button" class="cust-chip" onclick="showLegalPage('support')" style="min-height:54px; border-radius:14px; font-weight:700;">💬 Support</button>
-        </div>
-
-        <!-- Abholnummer GROSS oben (app-like) -->
-        <div id="profileAbholnummerSection" style="display:none;">
-          <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:16px;"></div>
-        </div>
-
-        <!-- Keine aktive Abholnummer: Hinweis -->
-        <div id="profileNoAbholnummerHint" style="display:none; padding:24px; text-align:center; background:#f8f9fa; border-radius:20px; border:2px dashed #e2e8f0;">
-          <div style="font-size:40px; margin-bottom:12px;">🧾</div>
-          <div style="font-size:15px; font-weight:700; color:#64748b;">Heute keine Abholnummer</div>
-          <div style="font-size:13px; color:#94a3b8; margin-top:4px;">Bestellungen erscheinen hier</div>
-          <button type="button" class="btn-cust-primary" onclick="showView('v-discover')" style="margin-top:14px; min-height:44px; border-radius:12px; font-size:14px; font-weight:800;">Jetzt vorbestellen</button>
+        <!-- Quick Actions (2x2) -->
+        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800;">👤 Mein Account</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showView('v-fav-providers')" style="min-height:96px; border-radius:18px; font-weight:800;">🏢 Meine Lieblingsanbieter</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:96px; border-radius:18px; font-weight:800;">🥗 Mein Food Profil</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showLegalPage('support')" style="min-height:96px; border-radius:18px; font-weight:800;">💬 Support</button>
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
@@ -795,6 +773,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:44px; font-size:14px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:12px;">Alle Bestellungen anzeigen</button>
         </div>
+
+        <section id="profileHowItWorksSwipe" class="mittagsbox-howitworks" aria-label="Mittagio in 5 Schritten">
+          <div class="mittagsbox-howitworks-header">
+            <h3>Mittagio in 5 Schritten</h3>
+          </div>
+          <div id="profileHowItWorksTrack" class="mittagsbox-howitworks-track"></div>
+        </section>
 
         <!-- Versteckte Bereiche für Zahnrad-Menü (Inhalt wird in Sheet geduplt / per ID referenziert) -->
         <div id="profileCollapseData" style="display:none;">
@@ -2031,7 +2016,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <!-- Mike kontaktieren (24h-Garantie) -->
           <div class="provider-support-contact-block">
             <button type="button" id="btnProviderSupportMike" class="provider-support-mike-btn">Mike kontaktieren</button>
-            <p class="provider-support-mike-hint">E-Mail an support@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
+            <p class="provider-support-mike-hint">E-Mail an info@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
           </div>
         </div>
       </div>
@@ -2101,7 +2086,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p>
-            <strong>Betreiber:</strong> Mike Quach<br>
+            <strong>Betreiber:</strong> Mittagio.de<br>
+            <strong>Ansprechpartner:</strong> Mike Quach<br>
             <strong>Adresse:</strong> Langäcker 2, 73635 Rudersberg<br>
             <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
           </p>
@@ -2123,7 +2109,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
           <p>
-            <strong>Betreiber:</strong> Mike Quach<br>
+            <strong>Betreiber:</strong> Mittagio.de<br>
+            <strong>Ansprechpartner:</strong> Mike Quach<br>
             <strong>Adresse:</strong> Langäcker 2, 73635 Rudersberg<br>
             <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
           </p>
@@ -2133,7 +2120,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:13px; color:#64748b;">
-          made with ❤️ by mittagio.de
+          made with ❤️ by Mittagio.de
         </div>
         <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
@@ -2144,22 +2131,37 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div class="panel">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB (Kunden)</h1>
         <div style="line-height:1.8; font-size:15px;">
-          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
-          <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
-          
-          <p style="margin-top:20px;"><strong>Bestellung & Zahlung:</strong></p>
-          <p>Du bestellst direkt beim Anbieter über unsere Plattform. Die Zahlung erfolgt sicher online. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
-          
-          <p style="margin-top:20px;"><strong>Abholnummer:</strong></p>
-          <p>Die Abholnummer dient als Zahlungs- & Abholnachweis. Zeige sie beim Abholen vor, um dein Essen zu erhalten.</p>
-          
-          <p style="margin-top:20px;"><strong>Stornierung:</strong></p>
-          <p>Stornierungen sind bis zu einer bestimmten Frist vor der Abholzeit möglich. Details findest du in der Bestellübersicht.</p>
-          
-          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
-          <p>Der Anbieter ist verantwortlich für Speisen, Preise und gesetzliche Vorgaben. Mittagio übernimmt keine Haftung für die Qualität der Speisen.</p>
-          
-          <p style="margin-top:20px;"><strong>Support:</strong></p>
+          <p><strong>§ 1 Geltungsbereich</strong></p>
+          <p>Diese AGB gelten für die Nutzung der Mittagio-Plattform durch Kundinnen und Kunden. Anbieter von Speisen sind eigenständige Unternehmen.</p>
+
+          <p style="margin-top:20px;"><strong>§ 2 Rolle von Mittagio</strong></p>
+          <p>Mittagio betreibt eine Vermittlungsplattform für Mittagsangebote. Mittagio ist nicht Verkäufer der Speisen. Der Vertrag über Speise und Abholung kommt ausschließlich zwischen Kunde und Anbieter zustande.</p>
+
+          <p style="margin-top:20px;"><strong>§ 3 Vertragsschluss</strong></p>
+          <p>Mit Abschluss des Bestellvorgangs gibst du ein verbindliches Angebot gegenüber dem Anbieter ab. Der Vertrag kommt mit Annahme/Bestätigung zustande (z.&nbsp;B. durch Zahlungsbestätigung und Bereitstellung der Abholnummer).</p>
+
+          <p style="margin-top:20px;"><strong>§ 4 Preise & Zahlung</strong></p>
+          <p>Es gelten die im Bestellprozess ausgewiesenen Endpreise. Die Zahlung erfolgt über die angebotenen Zahlungsarten und angebundenen Zahlungsdienstleister.</p>
+
+          <p style="margin-top:20px;"><strong>§ 5 Abholnummer</strong></p>
+          <p>Die Abholnummer dient als Abhol- und Zahlungsnachweis. Sie ist beim Anbieter vorzuzeigen. Bei missbräuchlicher Nutzung oder fehlender Zuordnung kann die Herausgabe verweigert werden.</p>
+
+          <p style="margin-top:20px;"><strong>§ 6 Abholung, Stornierung, Nichtabholung</strong></p>
+          <p>Maßgeblich sind die im Angebot angegebenen Abholzeiten und Bedingungen des Anbieters. Ob und bis wann eine Stornierung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorschriften.</p>
+
+          <p style="margin-top:20px;"><strong>§ 7 Widerruf</strong></p>
+          <p>Es gelten die gesetzlichen Widerrufsregeln. Bei schnell verderblichen Waren oder Waren mit kurzer Haltbarkeit kann das Widerrufsrecht gesetzlich ausgeschlossen sein.</p>
+
+          <p style="margin-top:20px;"><strong>§ 8 Haftung</strong></p>
+          <p>Für Inhalt, Qualität, Zubereitung und Ausgabe der Speisen ist ausschließlich der jeweilige Anbieter verantwortlich. Mittagio haftet nach den gesetzlichen Vorschriften, insbesondere unbeschränkt bei Vorsatz, grober Fahrlässigkeit sowie Verletzung von Leben, Körper oder Gesundheit.</p>
+
+          <p style="margin-top:20px;"><strong>§ 9 Datenschutz</strong></p>
+          <p>Die Verarbeitung personenbezogener Daten erfolgt gemäß Datenschutzerklärung. Für eigene Verarbeitungen des Anbieters ist dieser datenschutzrechtlich selbst verantwortlich.</p>
+
+          <p style="margin-top:20px;"><strong>§ 10 Schlussbestimmungen</strong></p>
+          <p>Es gilt deutsches Recht, soweit keine zwingenden Verbraucherschutzvorschriften entgegenstehen. Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+
+          <p style="margin-top:20px;"><strong>Kontakt</strong></p>
           <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
@@ -2232,7 +2234,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <footer style="margin-top:32px; padding:24px; background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
         <h2 style="margin:0 0 12px; font-size:14px; font-weight:700; color:#8e8e93; text-transform:uppercase; letter-spacing:0.05em;">Impressum</h2>
         <p style="margin:0; font-size:15px; line-height:1.6; color:#3a3a3c;">
-          <strong>Betreiber:</strong> Mike Quach<br>
+          <strong>Betreiber:</strong> Mittagio.de<br>
+          <strong>Ansprechpartner:</strong> Mike Quach<br>
           <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
           <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#007aff; text-decoration:none;">info@mittagio.de</a>
         </p>
@@ -2378,7 +2381,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </form>
         </div>
 
-        <div style="margin-top:24px; padding:20px; text-align:center; font-size:13px; color:#94a3b8;">made with ❤️ by mittagio.de</div>
+        <div style="margin-top:24px; padding:20px; text-align:center; font-size:13px; color:#94a3b8;">made with ❤️ by Mittagio.de</div>
 <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
@@ -2409,7 +2412,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <a href="#" id="linkInseratInfo" style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#059669; text-decoration:none;"><span style="font-size:18px;">📋</span> So funktioniert das Inserieren</a>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
-          Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>
+          Weitere Fragen? <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
         </div>
         <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
@@ -2461,37 +2464,84 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div class="panel">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Datenschutzerklärung</h1>
         <div style="line-height:1.8; font-size:15px;">
-          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
-          <p>
-            MQ Mittagio UG (haftungsbeschränkt)<br>
-            Langäcker 2, 73635 Rudersberg<br>
-            Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
-          </p>
-          
-          <p style="margin-top:24px; font-weight:700;">Datenminimierung:</p>
-          <p>Wir speichern nur, was für die Zuordnung deiner Abholnummer und deiner Ernährungseinstellungen nötig ist.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Sitzungssicherheit:</p>
-          <p>Um Missbrauch vorzubeugen, erlauben wir nur eine aktive Session pro Account. Eine Neuanmeldung trennt bestehende Verbindungen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Anbieter-Daten:</p>
-          <p>Kommunikation für Business-Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Abholnummer:</p>
-          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
-          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z.B. Kreditkartennummern).</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
-          <p>Daten werden nur an Zahlungsdienstleister und wenn gesetzlich erforderlich weitergegeben. Keine Werbeweitergabe.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Ihre Rechte:</p>
-          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <details open style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">1) Verantwortlicher</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Mittagio.de<br>
+                Mike Quach<br>
+                Langäcker 2, 73635 Rudersberg<br>
+                Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">2) Zwecke und Rechtsgrundlagen</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Wir verarbeiten personenbezogene Daten zur Bereitstellung der Plattform, zur Bestell- und Zahlungsabwicklung, zur Bereitstellung der Abholnummer,
+                zur Missbrauchsprävention und zur technischen Stabilität. Rechtsgrundlagen: Art. 6 Abs. 1 lit. b, lit. c und lit. f DSGVO.
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">3) Kategorien verarbeiteter Daten</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Je nach Nutzung verarbeiten wir Kontaktdaten (z. B. E-Mail), Bestell-/Abholdaten (inkl. Abholnummer), Zahlungsstatusdaten,
+                technische Nutzungsdaten (z. B. Session-/Logdaten) sowie freiwillige Profilangaben (z. B. Ernährungseinstellungen).
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">4) Empfänger</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Daten werden nur an erforderliche Empfänger übermittelt, insbesondere an den jeweiligen Anbieter zur Bestellabwicklung und an
+                eingebundene Zahlungsdienstleister zur Zahlungsabwicklung. Keine Weitergabe zu Werbezwecken.
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">5) Speicherdauer</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Wir speichern Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.
+                Danach werden Daten gelöscht oder datenschutzkonform anonymisiert.
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">6) Pflicht zur Bereitstellung</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Bestimmte Daten sind für zentrale Funktionen (z. B. Bestellung, Zahlung, Abholung) erforderlich. Ohne diese Daten können einzelne Leistungen
+                nicht bereitgestellt werden.
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">7) Drittlandübermittlung</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Soweit Dienstleister außerhalb der EU/des EWR eingesetzt werden, erfolgt eine Übermittlung nur unter Beachtung der gesetzlichen Vorgaben
+                (z. B. Angemessenheitsbeschluss oder geeignete Garantien).
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">8) Ihre Rechte</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch.
+                Zudem besteht ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde. Kontakt:
+                <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>.
+              </div>
+            </details>
+
+            <details style="background:#fff; border:1px solid rgba(0,0,0,0.08); border-radius:14px; overflow:hidden;">
+              <summary style="padding:14px 16px; cursor:pointer; font-weight:800; color:#1f2937;">9) Automatisierte Entscheidungen</summary>
+              <div style="padding:0 16px 14px; color:#475569;">
+                Eine ausschließlich automatisierte Entscheidungsfindung im Sinne von Art. 22 DSGVO findet im Kundenbereich derzeit nicht statt.
+              </div>
+            </details>
+          </div>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+          Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
         </div>
         <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
@@ -2504,9 +2554,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div style="line-height:1.8; font-size:15px; color:#334155;">
           <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
           <p>
-            MQ Mittagio UG (haftungsbeschränkt)<br>
+            Mittagio.de<br>
+            Mike Quach<br>
             Langäcker 2, 73635 Rudersberg<br>
-            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a><br>
+            <strong>Business-Support:</strong> <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a><br>
             Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
           </p>
           <p style="margin-top:24px; font-weight:700;">Anbieter-Daten & Zugang:</p>
@@ -2520,10 +2571,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
           <p>Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
           <p style="margin-top:24px; font-weight:700;">Deine Rechte:</p>
-          <p>Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>.</p>
+          <p>Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>.</p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
-          <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a> · Business-Bereich
+          <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a> · Business-Bereich
         </div>
         <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
@@ -2559,7 +2610,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
           
           <p style="margin-top:16px;"><strong>Support:</strong></p>
-          <p>Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          <p>Business-Anfragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
         </div>
       </div>
     </section>
@@ -2974,7 +3025,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="sDistanceInfo" class="sheet-detail-logistics is-hidden" aria-hidden="true"></div>
 
         <div id="sProviderAddressRow" class="sheet-detail-provider-address-row">
-          <i data-lucide="map-pin" style="width:18px;height:18px;color:#94a3b8; flex-shrink:0;"></i>
           <span id="sProviderAddress" class="sheet-detail-provider-address-text">Adresse</span>
         </div>
         <div id="sInfoRow" class="sheet-detail-meta-row"></div>
@@ -3492,7 +3542,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div style="padding-top:16px; border-top:1px solid #eee; text-align:center;">
       <p style="margin:0; font-size:12px; color:#666; line-height:1.5;">
         Du möchtest Küche und Kasse gleichzeitig vernetzen?<br>
-        <a href="mailto:support@mittagio.de" style="color:#E34D4D; text-decoration:none; font-weight:600;">Melde dich bei Mike für das Team-Upgrade.</a>
+        <a href="mailto:info@mittagio.de" style="color:#E34D4D; text-decoration:none; font-weight:600;">Melde dich bei Mike für das Team-Upgrade.</a>
       </p>
     </div>
   </div>
