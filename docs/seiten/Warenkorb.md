@@ -20,7 +20,7 @@ Jeder Anbieter hat seine eigene Abholzeit, der Checkout bleibt ein einziger Zahl
   - eigene Abholzeit-Chips im Anbieter-Fenster (`von–bis`, 15-Minuten-Takt), z. B. bei `11:30 – 13:30` nur Slots zwischen `11:30` und `13:30`
 - Globale Verzehrart für den Checkout:
   - 🍴 Vor Ort
-  - 🔄 Mitnehmen
+  - 🛍️ Mitnehmen (`shopping-bag`)
 - CTA: „Jetzt bezahlen“
 
 ## UI-Feinschliff (Stand 20.04.2026)
@@ -82,3 +82,21 @@ Jeder Anbieter hat seine eigene Abholzeit, der Checkout bleibt ein einziger Zahl
 
 - `v-cart` hat einen stabilen, dedizierten vertikalen Scroll-Container im Kundenmodus.
 - Der Inhaltsbereich (`.customer-main-wrap`) bleibt auch bei langen Warenkörben zuverlässig scrollbar (inkl. Safe-Area unten).
+
+## Update: Mitnehmen-Icon (27.04.2026)
+
+- Der Toggle `Mitnehmen` in der Mittagsbox nutzt jetzt ein eindeutigeres Takeaway-Symbol (`shopping-bag`) statt des bisherigen Recycling-Emojis.
+- Ziel: bessere semantische Erkennbarkeit der Verzehrart „zum Mitnehmen“.
+
+## Update: Mehrweg pro Gericht (27.04.2026)
+
+- Mehrweg wird in der Mittagsbox jetzt **pro einzelnem Gericht** gewählt (nicht mehr nur global im Checkout).
+- Die Auswahl ist als kompakte Quick-Chips umgesetzt: `Eigener Behälter` oder `Mehrweg +5 €`.
+- Die Mehrweg-Auswahl erscheint nur bei Gerichten/Anbietern mit aktivierter Mehrweg-Unterstützung.
+- Der Mehrweg-Aufpreis wird direkt in der Mittagsbox-Gesamtsumme berücksichtigt.
+
+## Update: Verzehrart-Semantik für Zeiten (27.04.2026)
+
+- Die Auswahl in der Mittagsbox (`Vor Ort` / `Mitnehmen`) steuert im Checkout die Formulierung der Zeitfrage.
+- `Vor Ort` bedeutet Essenszeit vor Ort; `Mitnehmen` bedeutet Abholzeit.
+- Dadurch bleibt die Logik für Nutzer klar, ohne zusätzliche Schritte im Flow.

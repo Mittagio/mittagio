@@ -7280,6 +7280,13 @@
       pushViewState(null, location.pathname);
       return;
     }
+    // Meins: "Mittagio in 5 Schritten" Sheet schließen
+    if(document.getElementById('profileHowItWorksSheet') && document.getElementById('profileHowItWorksSheet').classList.contains('active')){
+      if(typeof closeProfileHowItWorksSheet === 'function') closeProfileHowItWorksSheet();
+      e.preventDefault();
+      pushViewState(null, location.pathname);
+      return;
+    }
     // Login Modal schließen
     if(document.getElementById('loginSheet') && document.getElementById('loginSheet').classList.contains('active')){
       closeLoginSheet();
@@ -8748,6 +8755,92 @@
     // Immer auf Schritt 1 starten, damit die Reihenfolge klar bleibt.
     track.scrollLeft = 0;
   }
+
+  const MEHRWEG_AUFPREIS_EUR = 5;
+
+  function offerHasReusablePackaging(offer, normalized){
+    const norm = normalized || (offer ? normalizeOffer(offer) : null);
+    if(!offer && !norm) return false;
+    const normReuse = !!(norm && norm.reuse && norm.reuse.enabled);
+    const offerReuseFlag = !!(offer && (offer.reuseEnabled || (offer.reuse && offer.reuse.enabled)));
+    const providerReuseFlag = !!(offer && offer.providerProfile && (offer.providerProfile.reuseEnabled || (offer.providerProfile.reuse && offer.providerProfile.reuse.enabled)));
+    return normReuse || offerReuseFlag || providerReuseFlag;
+  }
+
+  function getCartItemPackagingValue(cartData, offerId){
+    if(!cartData || !offerId) return null;
+    const key = String(offerId);
+    if(!cartData.itemPackaging || typeof cartData.itemPackaging !== 'object') return null;
+    const val = cartData.itemPackaging[key];
+    return (val === 'mehrweg' || val === 'eigener_behaeltner') ? val : null;
+  }
+
+  function ensureCartPackagingState(){
+    if(!cart || !Array.isArray(cart.items) || !cart.items.length) return;
+    if(!cart.itemPackaging || typeof cart.itemPackaging !== 'object') cart.itemPackaging = {};
+    let changed = false;
+    const validOfferIds = new Set();
+    cart.items.forEach(function(it){
+      if(!it || !it.offerId) return;
+      const offerId = String(it.offerId);
+      validOfferIds.add(offerId);
+      const offer = offers.find(function(o){ return String(o.id) === offerId; });
+      if(!offer) return;
+      if(!offerHasReusablePackaging(offer)) {
+        if(cart.itemPackaging[offerId]){
+          delete cart.itemPackaging[offerId];
+          changed = true;
+        }
+        return;
+      }
+      const current = cart.itemPackaging[offerId];
+      if(current !== 'mehrweg' && current !== 'eigener_behaeltner'){
+        cart.itemPackaging[offerId] = 'eigener_behaeltner';
+        changed = true;
+      }
+    });
+    Object.keys(cart.itemPackaging).forEach(function(offerId){
+      if(!validOfferIds.has(String(offerId))){
+        delete cart.itemPackaging[offerId];
+        changed = true;
+      }
+    });
+    if(changed) save(LS.cart, cart);
+  }
+
+  function getCartTotals(cartData){
+    const source = cartData || cart;
+    if(!source || !Array.isArray(source.items)) return { subtotalEur: 0, surchargeEur: 0, totalEur: 0, surchargeCents: 0 };
+    let subtotalEur = 0;
+    let surchargeCents = 0;
+    const isMitnehmen = (source.verzehrmodus || 'mitnehmen') === 'mitnehmen';
+    source.items.forEach(function(it){
+      if(!it || !it.offerId) return;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const offer = offers.find(function(o){ return String(o.id) === String(it.offerId); });
+      if(!offer) return;
+      const norm = normalizeOffer(offer);
+      subtotalEur += (Number(norm.price || 0) * qty);
+      const hasReuse = offerHasReusablePackaging(offer, norm);
+      const packaging = getCartItemPackagingValue(source, offer.id) || 'eigener_behaeltner';
+      if(isMitnehmen && hasReuse && packaging === 'mehrweg'){
+        surchargeCents += Math.round(MEHRWEG_AUFPREIS_EUR * 100) * qty;
+      }
+    });
+    const surchargeEur = surchargeCents / 100;
+    const totalEur = subtotalEur + surchargeEur;
+    return { subtotalEur, surchargeEur, totalEur, surchargeCents };
+  }
+
+  function setCartItemPackaging(offerId, packaging){
+    if(!cart || !offerId) return;
+    const next = packaging === 'mehrweg' ? 'mehrweg' : 'eigener_behaeltner';
+    if(!cart.itemPackaging || typeof cart.itemPackaging !== 'object') cart.itemPackaging = {};
+    cart.itemPackaging[String(offerId)] = next;
+    save(LS.cart, cart);
+    renderCart();
+  }
+  if(typeof window !== 'undefined') window.setCartItemPackaging = setCartItemPackaging;
   
   function renderCart(){
     if(typeof window !== 'undefined') window.cart = cart;
@@ -8833,6 +8926,7 @@
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
+    ensureCartPackagingState();
 
     if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     if(btn){
@@ -8904,13 +8998,13 @@
     if(cartBtnMitnehmen){
       cartBtnMitnehmen.onclick = () => {
         cart.verzehrmodus = 'mitnehmen';
-        if(!cart.verpackung) cart.verpackung = 'mehrweg';
         save(LS.cart, cart);
         updateCartVerzehrButtons();
+        renderCart();
       };
     }
 
-    let total=0;
+    let subtotal=0;
     const TIME_SLOTS = getTimeSlots();
     const parsePickupStartTime = function(windowText){
       const raw = String(windowText || '').trim();
@@ -8983,6 +9077,7 @@
     itemsByProvider.forEach((group, pid) => {
       const providerSlots = providerSlotsById[pid] || TIME_SLOTS;
       const selectedProviderTime = cart.pickupTimes[pid] || '';
+      const isMitnehmenCart = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
       groupedHtml += `
         <div class="cart-provider-group">
           <div class="cart-provider-label">
@@ -9003,7 +9098,17 @@
             const thumbHtml = dishImage
               ? `<img class="cart-item-thumb" src="${esc(dishImage)}" alt="${esc(norm.dish || 'Gericht')}">`
               : `<div class="cart-item-thumb cart-item-thumb-fallback" aria-hidden="true">🍽️</div>`;
-            total += lineTotal;
+            subtotal += lineTotal;
+            const supportsReuse = offerHasReusablePackaging(offer, norm);
+            const selectedPackaging = getCartItemPackagingValue(cart, offer.id) || 'eigener_behaeltner';
+            const qtyNum = Math.max(1, Number(qty || 1));
+            const mehrwegAufpreis = euro(MEHRWEG_AUFPREIS_EUR * qtyNum);
+            const packagingHtml = (isMitnehmenCart && supportsReuse) ? `
+              <div class="cart-item-packaging">
+                <button type="button" class="cart-packaging-chip ${selectedPackaging === 'eigener_behaeltner' ? 'active' : ''}" onclick="setCartItemPackaging('${offer.id}','eigener_behaeltner')">Eigener Behälter</button>
+                <button type="button" class="cart-packaging-chip ${selectedPackaging === 'mehrweg' ? 'active' : ''}" onclick="setCartItemPackaging('${offer.id}','mehrweg')">Mehrweg +${mehrwegAufpreis}</button>
+              </div>
+            ` : '';
             return `
               <div class="cart-item-row">
                 ${thumbHtml}
@@ -9011,6 +9116,7 @@
                   <div class="cart-item-dish">${esc(norm.dish)}</div>
                   <div class="cart-item-unit">Einzelpreis ${euro(unitPrice)}</div>
                   <div class="cart-item-total">${euro(lineTotal)}</div>
+                  ${packagingHtml}
                 </div>
                 <div class="cart-qty-control">
                   <button class="cart-qty-btn" onclick="changeQty('${offer.id}', -1)" aria-label="Menge verringern">-</button>
@@ -9032,10 +9138,16 @@
       `;
     });
 
+    const totals = getCartTotals(cart);
+    const surchargeHtml = totals.surchargeEur > 0
+      ? `<div class="cart-total-subline"><span>Mehrweg-Aufpreis</span><span>+${euro(totals.surchargeEur)}</span></div>`
+      : '';
+
     box.innerHTML = groupedHtml + `
+      ${surchargeHtml}
       <div class="cart-total-row">
         <span class="cart-total-label">Gesamt</span>
-        <span class="cart-total-value">${euro(total)}</span>
+        <span class="cart-total-value">${euro(totals.totalEur)}</span>
       </div>
     `;
     // Guard: CTA + Verzehrart nach Re-Render sichtbar halten.
@@ -9296,56 +9408,56 @@
     const vm = cart.verzehrmodus || 'mitnehmen';
     const verzehrartValue = document.getElementById('checkoutVerzehrartValue');
     const verzehrartEditBtn = document.getElementById('checkoutVerzehrartEditBtn');
+    const checkoutTimeQuestionLabel = document.getElementById('checkoutTimeQuestionLabel');
     if(verzehrartValue){
       verzehrartValue.textContent = vm === 'vor_ort' ? 'Vor Ort' : 'Mitnehmen';
       verzehrartValue.classList.toggle('is-pill', vm === 'vor_ort');
+    }
+    if(checkoutTimeQuestionLabel){
+      checkoutTimeQuestionLabel.textContent = vm === 'vor_ort'
+        ? 'Wann möchtest du essen?'
+        : 'Wann holst du dein Essen ab?';
     }
     if(verzehrartEditBtn){
       verzehrartEditBtn.onclick = () => showCart();
     }
     
-    // Verpackung (nur bei Mitnehmen) – Anzeige + Buttons im Time-Slot-Stil
+    // Verpackung (nur bei Mitnehmen) – kompakte Zusammenfassung; Auswahl pro Gericht in der Mittagsbox
     const verpackungWrap = document.getElementById('checkoutVerpackung');
-    const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
-    const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
+    const packagingSummaryEl = document.getElementById('checkoutPackagingSummary');
     const isMitnehmen = vm === 'mitnehmen';
+    let hasAnyReuseSelectable = false;
+    let countMehrwegPortionen = 0;
+    let countEigenerPortionen = 0;
+    (cart.items || []).forEach(function(it){
+      if(!it || !it.offerId) return;
+      const offer = offers.find(function(o){ return String(o.id) === String(it.offerId); });
+      if(!offer) return;
+      const supportsReuse = offerHasReusablePackaging(offer);
+      if(!supportsReuse) return;
+      hasAnyReuseSelectable = true;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const packaging = getCartItemPackagingValue(cart, offer.id) || 'eigener_behaeltner';
+      if(packaging === 'mehrweg') countMehrwegPortionen += qty;
+      else countEigenerPortionen += qty;
+    });
     if(verpackungWrap){
-      if(isMitnehmen) show(verpackungWrap);
+      if(isMitnehmen && hasAnyReuseSelectable) show(verpackungWrap);
       else hide(verpackungWrap);
     }
-    
-    const verpackung = cart.verpackung || 'mehrweg';
-    const setVerpackungActive = (btn, active) => {
-      if(!btn) return;
-      btn.style.borderColor = active ? '#FFD700' : '#e7e1d5';
-      btn.style.background = '#fff';
-      btn.style.color = active ? '#2D3436' : '#666';
-      btn.style.fontWeight = active ? '900' : '600';
-      btn.style.boxShadow = active ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-    };
-    if(btnEigenerBehaeltner){
-      setVerpackungActive(btnEigenerBehaeltner, verpackung === 'eigener_behaeltner');
-      btnEigenerBehaeltner.onclick = () => {
-        cart.verpackung = 'eigener_behaeltner';
-        save(LS.cart, cart);
-        setVerpackungActive(btnEigenerBehaeltner, true);
-        setVerpackungActive(btnMehrweg, false);
-      };
-    }
-    if(btnMehrweg){
-      setVerpackungActive(btnMehrweg, verpackung === 'mehrweg');
-      btnMehrweg.onclick = () => {
-        cart.verpackung = 'mehrweg';
-        save(LS.cart, cart);
-        setVerpackungActive(btnMehrweg, true);
-        setVerpackungActive(btnEigenerBehaeltner, false);
-      };
+    if(packagingSummaryEl){
+      const totalsForPackaging = getCartTotals(cart);
+      const parts = [];
+      if(countMehrwegPortionen > 0) parts.push(countMehrwegPortionen + '× Mehrweg (+' + euro(totalsForPackaging.surchargeEur) + ')');
+      if(countEigenerPortionen > 0) parts.push(countEigenerPortionen + '× Eigener Behälter');
+      packagingSummaryEl.textContent = parts.length ? parts.join(' · ') : 'Wird pro Gericht in der Mittagsbox gewählt.';
     }
     
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
     // Bestellübersicht rendern (ohne Anbieterzeile und ohne Zusatz-Titel im Container)
+    const checkoutTotals = getCartTotals(cart);
     let summaryHTML = '';
     cart.items.forEach(it=>{
       const o = offers.find(x=>x.id===it.offerId);
@@ -9353,19 +9465,25 @@
         const normalized = normalizeOffer(o);
         const lineTotal = Number(normalized.price||0) * it.qty;
         summaryHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.08);">
-            <div>
-              <div style="font-weight:600; font-size:15px; color:#2D3436;">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
-            </div>
-            <div style="font-weight:700; font-size:16px; color:#2D3436;">${euro(lineTotal)}</div>
+          <div class="checkout-summary-line">
+            <div class="checkout-summary-dish">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
+            <div class="checkout-summary-price">${euro(lineTotal)}</div>
           </div>
         `;
       }
     });
+    if(checkoutTotals.surchargeEur > 0){
+      summaryHTML += `
+        <div class="checkout-summary-line checkout-summary-line--surcharge">
+          <div class="checkout-summary-dish">Mehrweg-Aufpreis</div>
+          <div class="checkout-summary-price">+${euro(checkoutTotals.surchargeEur)}</div>
+        </div>
+      `;
+    }
     summaryHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid rgba(15,23,42,0.6);">
-        <div style="font-weight:900; font-size:18px; color:#2D3436;">Gesamt</div>
-        <div style="font-weight:900; font-size:24px; color:#111827;">${euro(total)}</div>
+      <div class="checkout-summary-total-row">
+        <div class="checkout-summary-total-label">Gesamt</div>
+        <div class="checkout-summary-total-value">${euro(checkoutTotals.totalEur)}</div>
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
@@ -9388,7 +9506,7 @@
       setCheckoutPaymentButtonState(checkoutPaymentInFlight);
       btnStandardPayment.onclick = () => {
         if(checkoutPaymentInFlight) return;
-        processCheckoutPayment(total);
+        processCheckoutPayment(checkoutTotals.totalEur);
       };
     }
     
@@ -9451,6 +9569,8 @@
     cart.pickupTime = pickupTimeText || cart.pickupTime || '';
     cart.customerName = name;
     cart.customerEmail = email;
+    const checkoutTotals = getCartTotals(cart);
+    cart.mehrwegSurchargeEur = checkoutTotals.surchargeEur;
     save(LS.cart, cart);
     
     // Pro Anbieter eine Order erstellen (eine Zahlung, mehrere Abholnummern)
@@ -9495,20 +9615,35 @@
     
     // Gesamtpreis berechnen (in Cents)
     let totalCents = 0;
+    const verpackungByOffer = {};
+    const packagingModes = new Set();
     const items = cartData.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return null;
       const normalized = normalizeOffer(o);
       const unitPriceCents = Math.round(Number(normalized.price||0) * 100);
-      const lineTotalCents = unitPriceCents * it.qty;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const supportsReuse = offerHasReusablePackaging(o, normalized);
+      const packaging = supportsReuse ? (getCartItemPackagingValue(cartData, o.id) || 'eigener_behaeltner') : null;
+      const moreFeeCents = (cartData.verzehrmodus === 'mitnehmen' && supportsReuse && packaging === 'mehrweg')
+        ? (Math.round(MEHRWEG_AUFPREIS_EUR * 100) * qty)
+        : 0;
+      const lineTotalCents = (unitPriceCents * qty) + moreFeeCents;
       totalCents += lineTotalCents;
+      if(packaging){
+        verpackungByOffer[String(o.id)] = packaging;
+        packagingModes.add(packaging);
+      }
       return {
         dishId: o.id,
         dishName: normalized.dish || normalized.title || 'Gericht',
-        quantity: it.qty,
+        quantity: qty,
         unitPriceCents: unitPriceCents
       };
     }).filter(Boolean);
+    const derivedPackaging = packagingModes.size > 1
+      ? 'gemischt'
+      : (packagingModes.size === 1 ? Array.from(packagingModes)[0] : null);
     
     const now = Date.now();
     /** @type {Order} */
@@ -9555,7 +9690,8 @@
       unitPriceCents: items[0]?.unitPriceCents || 0,
       totalCents: totalCents,
       paymentIntentId: null,
-      verpackung: cartData.verpackung || null // Säule 3: eigener_behaeltner | mehrweg (nur bei Mitnehmen)
+      verpackung: derivedPackaging || cartData.verpackung || null,
+      verpackungByOffer: Object.keys(verpackungByOffer).length ? verpackungByOffer : null
     };
     
     return addOrder(order);
@@ -9581,13 +9717,28 @@
       const first = providerItems[0].offer;
       const firstNorm = normalizeOffer(first);
       let totalCents = 0;
+      const verpackungByOffer = {};
+      const packagingModes = new Set();
       const items = providerItems.map(({ offer, qty }) => {
         const normalized = normalizeOffer(offer);
         const unitPriceCents = Math.round(Number(normalized.price || 0) * 100);
-        const lineTotalCents = unitPriceCents * qty;
+        const safeQty = Math.max(1, Number(qty || 1));
+        const supportsReuse = offerHasReusablePackaging(offer, normalized);
+        const packaging = supportsReuse ? (getCartItemPackagingValue(cartData, offer.id) || 'eigener_behaeltner') : null;
+        const moreFeeCents = (cartData.verzehrmodus === 'mitnehmen' && supportsReuse && packaging === 'mehrweg')
+          ? (Math.round(MEHRWEG_AUFPREIS_EUR * 100) * safeQty)
+          : 0;
+        const lineTotalCents = (unitPriceCents * safeQty) + moreFeeCents;
         totalCents += lineTotalCents;
-        return { dishId: offer.id, dishName: normalized.dish || normalized.title || 'Gericht', quantity: qty, unitPriceCents };
+        if(packaging){
+          verpackungByOffer[String(offer.id)] = packaging;
+          packagingModes.add(packaging);
+        }
+        return { dishId: offer.id, dishName: normalized.dish || normalized.title || 'Gericht', quantity: safeQty, unitPriceCents };
       });
+      const derivedPackaging = packagingModes.size > 1
+        ? 'gemischt'
+        : (packagingModes.size === 1 ? Array.from(packagingModes)[0] : null);
       const now = Date.now();
       const order = {
         id: cryptoId(),
@@ -9625,7 +9776,8 @@
         unitPriceCents: items[0]?.unitPriceCents || 0,
         totalCents: totalCents,
         paymentIntentId: null,
-        verpackung: cartData.verpackung || null
+        verpackung: derivedPackaging || cartData.verpackung || null,
+        verpackungByOffer: Object.keys(verpackungByOffer).length ? verpackungByOffer : null
       };
       const added = addOrder(order);
       if(added) result.push(added);
@@ -9662,6 +9814,10 @@
       }).filter(function(li){
         return Number.isFinite(Number(li.amount)) && Number(li.amount) > 0;
       }) : null;
+      var mehrwegSurcharge = Number(cartData && cartData.mehrwegSurchargeEur || 0);
+      if(lineItems && lineItems.length && Number.isFinite(mehrwegSurcharge) && mehrwegSurcharge > 0){
+        lineItems.push({ name: 'Mehrweg-Aufpreis', amount: mehrwegSurcharge, quantity: 1 });
+      }
       var payload = {
         orderId: mainOrderId,
         orderIds: orderIds,
@@ -10015,7 +10171,9 @@
     if(verpackungWrap){
       if(isMitnehmen && verpackung){
         show(verpackungWrap, 'flex');
-        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span style="font-size:18px;">🔄</span> Eigener Behälter' : '<span style="font-size:18px;">🔄</span> Mehrweg-System';
+        if(verpackung === 'eigener_behaeltner') verpackungWrap.innerHTML = '<span style="font-size:18px;">🥡</span> Eigener Behälter';
+        else if(verpackung === 'gemischt') verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Verpackung gemischt';
+        else verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Mehrweg-System';
       } else hide(verpackungWrap);
     }
     if(thumbEl && thumbWrap){
@@ -10383,7 +10541,12 @@
     }
     
     const allOrders = loadOrders();
-    renderHowItWorksSwipeTrack('profileHowItWorksTrack');
+    renderHowItWorksSwipeTrack('profileHowItWorksSheetTrack');
+    const btnHowItWorks = document.getElementById('btnProfileHowItWorksHelp');
+    if(btnHowItWorks && !btnHowItWorks._boundHowItWorks){
+      btnHowItWorks._boundHowItWorks = true;
+      btnHowItWorks.onclick = function(){ openProfileHowItWorksSheet(); };
+    }
     const ordersCard = document.getElementById('profileOrdersCard');
     if(ordersCard){
       ordersCard.style.marginTop = '0';
@@ -10540,6 +10703,49 @@
     const sheet = document.getElementById('profileSettingsSheet');
     if(bd){ hide(bd); bd.style.setProperty('opacity', '0'); }
     if(sheet){ hide(sheet); }
+  }
+  function openProfileHowItWorksSheet(){
+    var bd = document.getElementById('profileHowItWorksSheetBd');
+    var sheet = document.getElementById('profileHowItWorksSheet');
+    var closeBtn = document.getElementById('btnCloseProfileHowItWorksSheet');
+    var doneBtn = document.getElementById('btnDoneProfileHowItWorksSheet');
+    if(!bd || !sheet) return;
+    renderHowItWorksSwipeTrack('profileHowItWorksSheetTrack');
+    show(bd);
+    show(sheet);
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    if(bd && !bd._boundClose){
+      bd._boundClose = true;
+      bd.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(closeBtn && !closeBtn._boundClose){
+      closeBtn._boundClose = true;
+      closeBtn.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(doneBtn && !doneBtn._boundDone){
+      doneBtn._boundDone = true;
+      doneBtn.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements:[sheet] }); }, 30);
+    try{
+      if(typeof hapticLight === 'function') hapticLight();
+      else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+    } catch(_err){}
+  }
+  function closeProfileHowItWorksSheet(){
+    var bd = document.getElementById('profileHowItWorksSheetBd');
+    var sheet = document.getElementById('profileHowItWorksSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
+    window.setTimeout(function(){
+      if(bd) hide(bd);
+      if(sheet) hide(sheet);
+    }, 220);
+  }
+  if(typeof window !== 'undefined'){
+    window.openProfileHowItWorksSheet = openProfileHowItWorksSheet;
+    window.closeProfileHowItWorksSheet = closeProfileHowItWorksSheet;
   }
   function openProfileSettingsSection(sectionId){
     const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
@@ -20986,36 +21192,58 @@
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
+        var isWeekPlannerContext = !!(w && w.ctx && (
+          String(w.ctx.entryPoint || '').toLowerCase() === 'week' ||
+          (Array.isArray(w.ctx.bulkDraftDates) && w.ctx.bulkDraftDates.length > 0)
+        ));
+        var step2Kicker=document.createElement('div');
+        step2Kicker.className='step2-review-kicker';
+        step2Kicker.textContent=isWeekPlannerContext ? 'Wochenplan' : 'Dein Inserat';
+        step2Wrap.appendChild(step2Kicker);
         var step2Header=document.createElement('h3');
-        step2Header.className='step2-review-title';
-        step2Header.textContent='Dein Gericht';
-        step2Header.style.cssText='margin:0; padding:16px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
+        step2Header.className='step2-review-title step2-review-title--money';
+        step2Header.textContent=isWeekPlannerContext ? 'So planst du diese Woche live' : 'So gehst du heute live';
+        step2Header.style.cssText='margin:0; padding:4px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
         stampCard.style.cssText='display:flex; align-items:stretch; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid rgba(250,204,21,0.55); border-radius:14px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%); box-shadow:0 10px 24px rgba(15,23,42,0.08);';
-        stampCard.innerHTML='<span class="step2-thron-badge">DEIN INSERAT</span><img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:78px; height:78px; border-radius:12px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; align-items:center; min-width:0; flex:1;"><span id="money-dish-name" style="font-size:18px; line-height:1.2; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
+        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:78px; height:78px; border-radius:12px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; align-items:center; min-width:0; flex:1;"><span id="money-dish-name" style="font-size:18px; line-height:1.2; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
         step2Wrap.appendChild(stampCard);
         var optionsLabel=document.createElement('div');
         optionsLabel.className='step2-options-label';
-        optionsLabel.textContent='Deine Optionen';
+        optionsLabel.textContent=isWeekPlannerContext ? 'Wähle dein Wochenplan-Modell' : 'Wähle dein Modell';
         step2Wrap.appendChild(optionsLabel);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
         tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 12px; box-sizing:border-box; width:100%;';
+        var weekDaysCount = (Array.isArray(w.ctx && w.ctx.bulkDraftDates) && w.ctx.bulkDraftDates.length > 0) ? w.ctx.bulkDraftDates.length : (isWeekPlannerContext ? 1 : 0);
+        var weekFixkosten = weekDaysCount > 0 ? weekDaysCount * 4.99 : 4.99;
+        var weekFixkostenText = (typeof euro === 'function') ? euro(weekFixkosten) : weekFixkosten.toFixed(2).replace('.',',') + ' €';
+        var standardTileTitle = isWeekPlannerContext ? 'Wochenplan Standard' : 'Standard-Inserat';
+        var standardTileSub = isWeekPlannerContext ? 'Diese Woche wird als Standard-Inserat aktiviert.' : 'Dein Gericht wird veröffentlicht.';
+        var pickupTileSub = isWeekPlannerContext ? 'Mit Abholnummer je Gericht (0,89 € pro Vorgang)' : 'Inklusive Abholnummer (0,89 € pro Vorgang)';
+        var standardTileImpact = isWeekPlannerContext ? ('Fixkosten: ' + weekFixkostenText + ' für ' + weekDaysCount + ' Tag' + (weekDaysCount === 1 ? '' : 'e')) : 'Fixkosten: 4,99 € einmalig';
+        var pickupTileImpact = 'Kosten nur bei Verkauf: 0,89 € je Abholnummer';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile service-tile-card';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">'+esc(standardTileTitle)+'</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">'+esc(standardTileSub)+'</div><div class="step2-choice-impact">'+esc(standardTileImpact)+'</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card has-recommendation';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer (0,89 € pro Vorgang)</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">'+esc(pickupTileSub)+'</div><div class="step2-choice-impact">'+esc(pickupTileImpact)+'</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
+        if(isWeekPlannerContext){
+          var weekCompareLine=document.createElement('div');
+          weekCompareLine.className='step2-week-compare';
+          weekCompareLine.textContent='Vergleich: Standard = ' + weekFixkostenText + ' Fixkosten · Stressfrei = nur bei Verkäufen';
+          step2Wrap.appendChild(weekCompareLine);
+        }
         var step2Spacer=document.createElement('div');
         step2Spacer.style.cssText='display:none;';
         step2Wrap.appendChild(step2Spacer);
@@ -21068,6 +21296,9 @@
         var popoverCloseBtn = infoPopover.querySelector('.step2-popover-close');
         if(popoverCloseBtn) popoverCloseBtn.onclick = function(){ closeInfoPopover(); };
         function getStep2PublishLabel(isPickupEnabled){
+          if(isWeekPlannerContext){
+            return isPickupEnabled ? 'Woche stressfrei aktivieren' : 'Woche für 4,99 € aktivieren';
+          }
           return isPickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
         }
         function updateTileUI(){
@@ -22205,18 +22436,32 @@
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:6px 0 0; width:100%; padding:0 16px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin:10px 0 0; width:100%; padding:0 16px;';
       var priceLabelSmall=document.createElement('label');
       priceLabelSmall.htmlFor='gericht-preis';
       priceLabelSmall.textContent='';
       priceLabelSmall.style.cssText='display:none;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper inserat-price-ebay';
-      priceInputWrapper.style.cssText='display:flex; align-items:center; gap:6px; background:#f7f7f7; border:none; border-radius:12px; padding:12px 16px; width:fit-content;';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(180deg,#fffdf5 0%,#fff7d6 100%); border:2px solid #facc15; border-radius:18px; padding:14px 20px; min-width:196px; box-shadow:0 10px 24px rgba(250,204,21,0.22), inset 0 1px 0 rgba(255,255,255,0.92);';
+      var priceHeroLabel=document.createElement('div');
+      priceHeroLabel.className='inserat-price-hero-label';
+      priceHeroLabel.textContent='DEIN PREIS';
+      priceHeroLabel.style.cssText='font-size:11px; line-height:1; color:#334155; font-weight:900; letter-spacing:0.12em; margin:0;';
       var stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
       stepPriceWrap.className='inserat-price-pill-wrap';
-      stepPriceWrap.style.cssText='display:flex; align-items:baseline; gap:4px;';
+      stepPriceWrap.style.cssText='display:flex; align-items:baseline; justify-content:center; gap:6px; width:100%;';
+      var priceMinusBtn=document.createElement('button');
+      priceMinusBtn.type='button';
+      priceMinusBtn.className='inserat-price-stepper inserat-price-stepper-minus';
+      priceMinusBtn.setAttribute('aria-label','Preis um 0,50 Euro senken');
+      priceMinusBtn.textContent='−';
+      var pricePlusBtn=document.createElement('button');
+      pricePlusBtn.type='button';
+      pricePlusBtn.className='inserat-price-stepper inserat-price-stepper-plus';
+      pricePlusBtn.setAttribute('aria-label','Preis um 0,50 Euro erhöhen');
+      pricePlusBtn.textContent='+';
       var inputPrice=document.createElement('input');
       inputPrice.type='text';
       inputPrice.id='gericht-preis';
@@ -22224,25 +22469,38 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:26px; font-weight:800; color:#222; width:100px; text-align:left;';
+      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:40px; font-weight:900; line-height:1; letter-spacing:-0.03em; color:#0f172a; width:128px; text-align:center;';
       var eurSpan=document.createElement('span');
-      eurSpan.className='currency inserat-price-pill-euro';
+      eurSpan.className='currency inserat-price-main-euro';
       eurSpan.textContent='\u20AC';
-      eurSpan.style.cssText='font-size:18px; font-weight:600; color:#555; line-height:1;';
+      eurSpan.style.cssText='font-size:26px; font-weight:900; color:#b45309; line-height:1;';
       stepPriceWrap.appendChild(inputPrice);
       stepPriceWrap.appendChild(eurSpan);
+      priceInputWrapper.appendChild(priceMinusBtn);
       priceInputWrapper.appendChild(stepPriceWrap);
+      priceInputWrapper.appendChild(pricePlusBtn);
       priceSection.appendChild(priceLabelSmall);
-      priceSection.appendChild(priceInputWrapper);
       var priceSubHint=document.createElement('div');
       priceSubHint.className='inserat-price-subhint';
       priceSubHint.textContent='Preis pro Gericht';
-      priceSubHint.style.cssText='font-size:12px; line-height:1.2; color:#94a3b8; font-weight:600; margin:2px 0 0; text-align:center;';
+      priceSubHint.style.cssText='font-size:13px; line-height:1.2; color:#334155; font-weight:800; letter-spacing:0.01em; margin:0; text-align:center;';
       priceSection.appendChild(priceSubHint);
+      priceSection.appendChild(priceHeroLabel);
+      priceSection.appendChild(priceInputWrapper);
+      var priceOwnerHint=document.createElement('div');
+      priceOwnerHint.className='inserat-price-owner-hint';
+      priceOwnerHint.textContent='Das ist dein Verkaufspreis.';
+      priceOwnerHint.style.cssText='font-size:12px; line-height:1.2; color:#64748b; font-weight:700; margin:-2px 0 0; text-align:center;';
+      priceSection.appendChild(priceOwnerHint);
+      var priceAnchorHint=document.createElement('div');
+      priceAnchorHint.className='inserat-price-anchor-hint';
+      priceAnchorHint.textContent='Typisch in deiner Umgebung: 8,90–10,90 €';
+      priceAnchorHint.style.cssText='font-size:11px; line-height:1.2; color:#64748b; font-weight:700; margin:0; text-align:center;';
+      priceSection.appendChild(priceAnchorHint);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
       verdienstWrap.className = 'inserat-verdienst-vorschau';
-      verdienstWrap.style.cssText = 'display:none; font-size:13px; margin-top:6px;';
+      verdienstWrap.style.cssText = 'display:block; font-size:12px; margin-top:4px; text-align:center;';
       priceSection.appendChild(verdienstWrap);
 
       // ========== 6. SERVICE-GRID: 5 quadratische Kacheln (S25 Cockpit) ==========
@@ -22829,12 +23087,32 @@
         if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
         var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
         if(verdienstEl){
-          var verdienst = Math.max(0, (price - 0.89) * 30);
-          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
-          if(price > 0) show(verdienstEl);
-          else hide(verdienstEl);
+          if(price > 0){
+            var umsatz20 = price * 20;
+            var erloes20 = Math.max(0, (price - 0.89) * 20);
+            verdienstEl.textContent = 'Bei 20 Portionen: ' + umsatz20.toFixed(2).replace('.',',') + ' € Umsatz · ca. ' + erloes20.toFixed(2).replace('.',',') + ' € nach Gebühr';
+            show(verdienstEl);
+          } else {
+            verdienstEl.textContent = 'Bei 20 Portionen: 0,00 € Umsatz · 0,00 € nach Gebühr';
+            show(verdienstEl);
+          }
         }
       };
+      function normalizePriceValue(raw){
+        var num = Number(raw);
+        if(!isFinite(num)) num = 0;
+        num = Math.max(0, Math.min(99.99, Math.round(num * 100) / 100));
+        return num;
+      }
+      function setPriceValue(nextPrice){
+        var normalized = normalizePriceValue(nextPrice);
+        w.data.price = normalized;
+        inputPrice.value = normalized > 0 ? normalized.toFixed(2).replace('.',',') : '';
+        updateProfit(normalized.toFixed(2));
+        saveDraft();
+        if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+      }
       /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Preis */
       infoSection.appendChild(powerBar);
       contentSheet.appendChild(infoSection);
@@ -22858,6 +23136,18 @@
         hapticLight();
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 80);
       });
+      priceMinusBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        hapticLight();
+        setPriceValue((Number(w.data.price)||0)-0.5);
+      };
+      pricePlusBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        hapticLight();
+        setPriceValue((Number(w.data.price)||0)+0.5);
+      };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){
         hapticLight();
@@ -23120,43 +23410,71 @@
         footerBtn.style.setProperty('opacity', '1');
         footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
+        var setStep2CtaBusy = function(isBusy){
+          var btnEl = document.getElementById('main-publish-btn') || footerBtnStep2;
+          if(!btnEl) return;
+          if(isBusy){
+            btnEl.dataset.busy = '1';
+            btnEl.classList.add('is-busy');
+            btnEl.disabled = true;
+            btnEl.textContent = isWeekPlannerContext ? 'Woche wird vorbereitet…' : 'Wird vorbereitet…';
+          } else {
+            btnEl.dataset.busy = '0';
+            btnEl.classList.remove('is-busy');
+            btnEl.disabled = false;
+            btnEl.textContent = getStep2PublishLabel(!!pickupEnabled);
+          }
+          lockFooterButtonVisuals(btnEl);
+        };
         var handleStep2PublishClick = function(){
           try{
+            setStep2CtaBusy(true);
             hapticLight();
             var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
+            var usePickup = !!pickupEnabled;
+            var btnLabel = (this && typeof this.textContent === 'string') ? this.textContent : '';
+            if(!usePickup && (btnLabel.indexOf('Küche entlasten') !== -1 || btnLabel.indexOf('Woche stressfrei aktivieren') !== -1)){
+              // Guard against stale state: CTA label wins if state desynced.
+              usePickup = true;
+            }
             if(bulkDates.length>0){
-              var useAbholnummer=!!w.data.step2PickupEnabled;
+              var useAbholnummer = !!usePickup;
               if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
+              else if(typeof showToast==='function') showToast('Wochenaktivierung gerade nicht verfügbar. Bitte neu laden.');
               closeWizard(true);
               if(typeof showProviderWeek==='function') showProviderWeek();
               return;
             }
-            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); setStep2CtaBusy(false); return; }
             var p = normalizeProviderProfile((provider && provider.profile) || {});
             var profileAddress = String(p.address || '').trim();
             var profileStreet = String(p.street || '').trim();
             var hasAddr = !!profileAddress || !!profileStreet || !!((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim()));
-            var usePickup=!!w.data.step2PickupEnabled;
             w.data.hasPickupCode=usePickup;
             w.data.pricingChoice=usePickup?'pro':'499';
             w.data.inseratFeeWaived=usePickup;
+            w.data.step2PickupEnabled=usePickup;
             w.data.pricingOption=usePickup?'abholnummer':undefined;
             var o=previewOfferFromWizard();
             if(!hasAddr){
               if(typeof openAddressModal === 'function') openAddressModal();
               else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
               if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
+              setStep2CtaBusy(false);
               return;
             }
             publishFeeUseStep3=true;
             if(typeof showPublishFeeModal === 'function'){
               showPublishFeeModal(o);
+              setStep2CtaBusy(false);
             } else if(typeof showToast === 'function'){
               showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+              setStep2CtaBusy(false);
             }
           } catch(err){
             console.error('[Step2 publish click failed]', err);
             if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
+            setStep2CtaBusy(false);
           }
         };
         footerBtn.onclick = null;
@@ -23166,6 +23484,7 @@
         var triggerStep2Publish = function(ev){
           if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
           if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+          if(footerBtn && footerBtn.dataset && footerBtn.dataset.busy === '1') return;
           var now = Date.now();
           if(now - lastStep2CtaTriggerTs < 300) return;
           lastStep2CtaTriggerTs = now;
@@ -25068,6 +25387,7 @@
     if(hash){
       const legalRoutes = {
         '#/impressum': 'impressum',
+        '#/agb': 'agb-kurz',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
         '#/faq': 'faq',
@@ -25087,6 +25407,7 @@
       const hash = window.location.hash;
       const legalRoutes = {
         '#/impressum': 'impressum',
+        '#/agb': 'agb-kurz',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
         '#/faq': 'faq',
@@ -25468,6 +25789,15 @@
   } else if(path.indexOf('/anbieter/hilfe/inserat') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
     if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
     if(typeof showLegalPage === 'function') showLegalPage('inserat-info-provider');
+  } else if(path.indexOf('/anbieter/recht/impressum') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('impressum-provider');
+  } else if(path.indexOf('/anbieter/recht/agb') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('agb-provider');
+  } else if(path.indexOf('/anbieter/recht/datenschutz') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('datenschutz-provider');
   } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {

@@ -63,3 +63,15 @@
 - Die drei Quick-Action-Kacheln (`Meine Lieblingsanbieter`, `Mein Food-Profil`, `Support`) sind deutlich größer und touchfreundlicher gestaltet (höhere Tiles, größere Rundung, stärkere visuelle Hierarchie).
 - Der Abholnummer-Bereich wurde aus `Meins` entfernt.
 - In `Meins` bleibt der Fokus auf Profil-Hub + Bestellhistorie; Abholnummern werden nicht mehr doppelt gezeigt.
+
+## Update: Hilfe per Fragezeichen (27.04.2026)
+
+- Die feste Sektion `Mittagio in 5 Schritten` wurde aus dem Haupt-Scrollbereich von `Meins` entfernt.
+- Im Header von `Meins` gibt es jetzt oben rechts ein `?`-Icon als kontextuelle Hilfe.
+- Tap auf das `?` öffnet ein eigenes Bottom-Sheet mit den bekannten 5 Schritten als Swipe-Cards (Bilder + Kurztexte).
+- Das Sheet ist bewusst on-demand: Nutzer sehen die Hilfe nur bei Bedarf, die Seite bleibt im Alltag ruhiger und fokussierter.
+
+## Update: Header vereinheitlicht (27.04.2026)
+
+- Der Header von `Meins` nutzt jetzt dieselbe Typografie wie `Favoriten` und `Mittagsbox` (gleiche Schriftgröße, Gewicht und Farbsystem).
+- Ziel: ein einheitliches Header-Muster über alle drei Kunden-Views ohne visuelle Sonderbehandlung für `Meins`.

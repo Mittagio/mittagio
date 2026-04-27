@@ -111,6 +111,11 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - `showProviderWeek()` akzeptiert sowohl `week/day` als auch legacy `/week`-Keys, damit alte History-Einträge keine unfertigen Layoutzustände triggern.
 - In lokalen Browser-Umgebungen (`localhost`, `127.0.0.1`) wird kein Service Worker registriert; vorhandene Registrierungen werden deaktiviert, um Cache-Mischzustände zwischen PWA und Browser zu verhindern.
 
+## Update: Bottom-Nav opak (27.04.2026)
+
+- Die Anbieter-Bottom-Navigation ist jetzt bewusst vollständig opak (kein Glas-/Transparenz-Effekt).
+- `#providerNavWrap` und `#providerNav` verwenden im Provider-Modus einen festen weißen Hintergrund ohne `backdrop-filter`.
+
 ## Mobile Feinschliff (Meine Küche)
 
 - Wochenvorschau im Dashboard wurde verdichtet: kompaktere Abstände, reduzierte Corner-Radien, ruhigere Schatten.

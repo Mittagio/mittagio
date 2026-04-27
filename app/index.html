@@ -604,7 +604,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <label style="display:block; font-weight:800; font-size:14px; margin-bottom:12px; color:#64748b; text-transform:uppercase;">Wo möchtest du essen?</label>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
               <button type="button" id="cartBtnVorOrt" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px;">🍴 Vor Ort</button>
-              <button type="button" id="cartBtnMitnehmen" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px;">🔄 Mitnehmen</button>
+              <button type="button" id="cartBtnMitnehmen" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; gap:6px;"><i data-lucide="shopping-bag" style="width:16px;height:16px;"></i><span>Mitnehmen</span></button>
             </div>
           </div>
 
@@ -647,14 +647,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
           <div id="checkoutVerpackung" class="checkout-block is-hidden" aria-hidden="true">
             <label class="checkout-label">Verpackung</label>
-            <div class="checkout-grid-two">
-              <button type="button" id="checkoutBtnEigenerBehaeltner" class="verpackung-btn" data-verpackung="eigener_behaeltner">Eigener Behälter<br><span class="checkout-meta-success">0,00 €</span></button>
-              <button type="button" id="checkoutBtnMehrweg" class="verpackung-btn" data-verpackung="mehrweg">Mehrweg-System 🔄<br><span class="checkout-meta-muted">Pfand/Aufpreis</span></button>
-            </div>
+            <div id="checkoutPackagingSummary" class="checkout-packaging-summary">Wird in der Mittagsbox pro Gericht gewählt.</div>
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">Wann holst du dein Essen ab?</label>
+            <label class="checkout-label" id="checkoutTimeQuestionLabel">Wann holst du dein Essen ab?</label>
             <div id="checkoutTimeSlots" class="checkout-time-slots">
               <!-- Wird dynamisch befüllt -->
             </div>
@@ -743,14 +740,14 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div class="customer-header-row">
           <h1 class="customer-header-title">Meins</h1>
           <div class="customer-header-actions">
+            <button type="button" id="btnProfileHowItWorksHelp" class="customer-header-icon-btn" aria-label="Mittagio in 5 Schritten" onclick="if(typeof openProfileHowItWorksSheet==='function') openProfileHowItWorksSheet();">
+              <i data-lucide="circle-help" style="width:20px;height:20px;color:#1a1a1a;"></i>
+            </button>
             <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--brand" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
             </button>
             <button type="button" id="btnProfileSettings" class="customer-header-icon-btn" aria-label="Einstellungen" onclick="openProfileSettingsSheet()">
               <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
-            </button>
-            <button type="button" class="customer-header-icon-btn" onclick="showView('v-discover')">
-              <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
           </div>
         </div>
@@ -773,13 +770,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:44px; font-size:14px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:12px;">Alle Bestellungen anzeigen</button>
         </div>
-
-        <section id="profileHowItWorksSwipe" class="mittagsbox-howitworks" aria-label="Mittagio in 5 Schritten">
-          <div class="mittagsbox-howitworks-header">
-            <h3>Mittagio in 5 Schritten</h3>
-          </div>
-          <div id="profileHowItWorksTrack" class="mittagsbox-howitworks-track"></div>
-        </section>
 
         <!-- Versteckte Bereiche für Zahnrad-Menü (Inhalt wird in Sheet geduplt / per ID referenziert) -->
         <div id="profileCollapseData" style="display:none;">
@@ -866,6 +856,21 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </button>
         </div>
         <p style="text-align:center; font-size:11px; color:#cbd5e1; font-weight:700; margin-top:20px;">mittagio • made with ❤️ in Rudersberg</p>
+      </div>
+    </div>
+    <div id="profileHowItWorksSheetBd" class="backdrop is-hidden" aria-hidden="true"></div>
+    <div id="profileHowItWorksSheet" class="sheet profile-howitworks-sheet is-hidden" aria-hidden="true" role="dialog" aria-label="Mittagio in 5 Schritten">
+      <div class="profile-howitworks-sheet-handle"></div>
+      <div class="profile-howitworks-sheet-header">
+        <h2>Mittagio in 5 Schritten</h2>
+        <button type="button" id="btnCloseProfileHowItWorksSheet" class="profile-howitworks-close-btn" aria-label="Schließen">
+          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        </button>
+      </div>
+      <p class="profile-howitworks-sheet-sub">Kurz erklärt: so läuft es vom Entdecken bis zum Genießen.</p>
+      <div id="profileHowItWorksSheetTrack" class="mittagsbox-howitworks-track profile-howitworks-track"></div>
+      <div class="profile-howitworks-sheet-footer">
+        <button type="button" id="btnDoneProfileHowItWorksSheet" class="btn">Verstanden</button>
       </div>
     </div>
 
@@ -1713,7 +1718,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <span class="account-legal-sep">·</span>
             <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
             <span class="account-legal-sep">·</span>
-            <a href="#/agb" class="account-legal-link">AGB</a>
+            <a href="#/agb-kurz" class="account-legal-link">AGB</a>
           </div>
           <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn account-logout-btn-dezent">
             <i data-lucide="log-out" style="width:18px;height:18px;"></i><span>Abmelden</span>
@@ -1828,7 +1833,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
           <p class="tgtg-section-title">RECHTLICHES</p>
           <div class="tgtg-list">
-            <a href="#/agb" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <a href="#/agb-kurz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
             <a href="#/datenschutz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">🛡️</span><span class="tgtg-label">Datenschutz</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
             <button type="button" class="tgtg-row" id="btnProviderImpressum"><span class="tgtg-icon">⚖️</span><span class="tgtg-label">Impressum <small style="display:block;font-size:12px;font-weight:600;color:#64748b;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
@@ -1993,7 +1998,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Kostentransparenz</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Kein Abo, kein Vertrag. 4,99 € pro Inserat. Optional 0,89 € pro Abholnummer. Ende.</p></div>
+              <div class="accordion-content"><p>Kein Abo, kein Vertrag. Du wählst pro Veröffentlichung: 4,99 € als „Nur Inserat“ oder gratis inserieren mit Abholnummer (0,89 € je erfolgreicher Abholung/Bestellung).</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist das digitale Kochbuch?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
@@ -2009,7 +2014,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <h2 class="provider-support-section-title" style="margin-top:24px;">Rechtliches</h2>
           <div class="provider-support-legal-links">
             <a href="#/impressum" class="provider-support-legal-row"><span>Impressum <small style="display:block; font-size:12px; font-weight:600; color:#6B7280;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
-            <a href="#/agb" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
+            <a href="#/agb-kurz" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
             <a href="#/datenschutz" class="provider-support-legal-row"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
           </div>
 
@@ -2180,19 +2185,20 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <p style="margin:0 0 20px; font-size:14px; color:#8e8e93;">Klick auf eine Zeile öffnet den rechtlichen Text.</p>
       <div id="agbProviderAccordion" style="display:flex; flex-direction:column; gap:12px;">
         <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 1</span> Geltungsbereich &amp; Plattform-Modell</summary>
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 1</span> Geltungsbereich &amp; Plattformmodell</summary>
           <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;">Wir bieten eine Plattform zur Vermittlung von Mahlzeiten für Gastronomie und Handwerk an.</p>
-            <p style="margin:0;">Ziel ist die Maximierung deines Umsatzes durch effiziente Inserate. Eine Nutzung als reines Informationstool ohne Verkaufsabsicht ist nicht gestattet.</p>
+            <p style="margin:0 0 12px;">Mittagio bietet eine Plattform zur Vermittlung von Mahlzeiten für Gastronomie und Handwerk.</p>
+            <p style="margin:0;">Mittagio ist Plattformbetreiber und nicht Verkäufer der angebotenen Speisen.</p>
           </div>
         </details>
         <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 2</span> Inserate &amp; Kosten (Das 4,99 € Modell)</summary>
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 2</span> Inserate &amp; Kosten</summary>
           <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;"><strong>Fixpreis:</strong> Jedes Inserat wird mit einer Pauschale von 4,99 € berechnet.</p>
-            <p style="margin:0 0 12px;"><strong>Zusatzleistung:</strong> Die Abholnummer kann für 0,89 € pro Vorgang optional hinzugebucht werden. Dieser Preis deckt alle Transaktionsgebühren ab.</p>
-            <p style="margin:0 0 12px;"><strong>Fälligkeit:</strong> Die Gebühr wird mit Veröffentlichung des Inserats fällig.</p>
-            <p style="margin:0 0 12px;"><strong>Kein Abo. Kein Vertrag.</strong> Die Nutzung erfolgt ohne vertragliche Mindestlaufzeit. Jede Inseratsgebühr (4,99 €) ist eine Einzeltransaktion.</p>
+            <p style="margin:0 0 12px;"><strong>Wahlmodell:</strong> Du wählst pro Veröffentlichung zwischen zwei Modi.</p>
+            <p style="margin:0 0 12px;"><strong>Option A:</strong> „Nur Inserat“ zum Fixpreis von 4,99 € pro Veröffentlichung.</p>
+            <p style="margin:0 0 12px;"><strong>Option B:</strong> „Gratis inserieren“ mit Abholnummer; dafür fallen 0,89 € pro erfolgreicher Abholung/Bestellung an (inkl. Zahlungsabwicklung).</p>
+            <p style="margin:0 0 12px;"><strong>Fälligkeit:</strong> Bei Option A mit Veröffentlichung, bei Option B je Abholung/Bestellung.</p>
+            <p style="margin:0 0 12px;"><strong>Kein Abo. Kein Vertrag.</strong> Die Nutzung erfolgt ohne vertragliche Mindestlaufzeit. Jede gewählte Leistung (4,99 € Inserat oder 0,89 € pro Abholung) ist eine Einzeltransaktion.</p>
             <p style="margin:0;"><strong>Jederzeit flexibel:</strong> Du kannst die App jederzeit deinstallieren oder dein Profil löschen, ohne Kündigungsfristen beachten zu müssen.</p>
           </div>
         </details>
@@ -2223,10 +2229,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
         </details>
         <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 6</span> Datenschutz &amp; Standort (Silicon Valley Standard)</summary>
+          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 6</span> Datenschutz &amp; Standort</summary>
           <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
             <p style="margin:0 0 12px;"><strong>Geodaten:</strong> Wir nutzen deinen Standort nur, um Kunden im Umkreis dein Angebot anzuzeigen.</p>
-            <p style="margin:0;"><strong>Transparenz:</strong> Es erfolgt kein Tracking der Nutzer außerhalb der App-Nutzung. Daten werden nicht an Dritte verkauft.</p>
+            <p style="margin:0;"><strong>Transparenz:</strong> Es erfolgt kein Tracking außerhalb der App-Nutzung. Daten werden nicht zu Werbezwecken verkauft.</p>
           </div>
         </details>
       </div>
@@ -2314,7 +2320,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </details>
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
             <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Warum gibt es eine Service-Pauschale von 0,89 €?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
+            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Die 0,89 € fallen nur im Modus „mit Abholnummer“ je erfolgreicher Abholung an. Darin enthalten sind Zahlungsabwicklung, Bankgebühren und die Zuordnung über die Abholnummer.</p>
           </details>
           <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
             <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich eine Mindestmenge an Essen angeben?</summary>
@@ -2393,11 +2399,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div style="line-height:1.8; font-size:15px; color:#334155;">
           <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
             <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Wie funktioniert der Küchenmodus?</h3>
-            <p style="margin:0; color:#334155;">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
+            <p style="margin:0; color:#334155;">Im Küchenmodus siehst du eingehende Bestellungen in Echtzeit, verwaltest deine Mittagskarte und bearbeitest Abholnummern zentral an einer Stelle.</p>
           </div>
           <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
             <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Warum gibt es eine Service-Pauschale von 0,89 €?</h3>
-            <p style="margin:0; color:#334155;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
+            <p style="margin:0; color:#334155;">Die 0,89 € fallen nur im Modus „mit Abholnummer“ je erfolgreicher Abholung an. Darin enthalten sind Zahlungsabwicklung, Bankgebühren und die Zuordnung über die Abholnummer.</p>
           </div>
           <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
             <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Muss ich eine Mindestmenge an Essen angeben?</h3>
@@ -2405,7 +2411,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
             <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Wie sicher ist die Auszahlung?</h3>
-            <p style="margin:0; color:#334155;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
+            <p style="margin:0; color:#334155;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Umsätze werden nachvollziehbar aufbereitet und gemäß Abrechnungslogik für deine Buchhaltung bereitgestellt.</p>
           </div>
         </div>
         <div style="margin-top:24px; padding:16px; background:#f0fdf4; border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
@@ -2561,8 +2567,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
           </p>
           <p style="margin-top:24px; font-weight:700;">Anbieter-Daten & Zugang:</p>
-          <p>Für deinen Anbieter-Zugang speichern wir E-Mail, Passwort (verschlüsselt) und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
-          <p style="margin-top:24px; font-weight:700;">Sitzung & Sicherheit:</p>
+          <p>Für deinen Anbieter-Zugang speichern wir E-Mail, erforderliche Zugangsdaten und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
+          <p style="margin-top:24px; font-weight:700;">Sitzung &amp; Sicherheit:</p>
           <p>Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
           <p style="margin-top:24px; font-weight:700;">Bestell- & Abholdaten:</p>
           <p>Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
@@ -2571,7 +2577,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
           <p>Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
           <p style="margin-top:24px; font-weight:700;">Deine Rechte:</p>
-          <p>Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>.</p>
+          <p>Du hast insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>.</p>
         </div>
         <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
           <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a> · Business-Bereich
@@ -2599,12 +2605,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           
           <p style="margin-top:16px;"><strong>Kosten:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
-            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+            <li>Option A: 4,99 € zzgl. MwSt. pro Veröffentlichung (`Nur Inserat`).</li>
+            <li>Option B: 0,89 € zzgl. MwSt. pro erfolgreicher Abholung/Bestellung (`Gratis inserieren` mit Abholnummer, inkl. Zahlungsabwicklung).</li>
           </ul>
           
           <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
-          <p>Abholnummer = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+          <p>Die Abholnummer dient als Zahlungs- und Abholnachweis bei Bestellungen im Abholnummer-Modus.</p>
           
           <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
           <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
@@ -2621,7 +2627,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="faq">
             <details>
               <summary>Was ist Mittagio?</summary>
-              <p>Mittagio ist eine Online-Plattform, auf der du dein Mittagsangebot sichtbar machst – schnell, einfach und flexibel.</p>
+              <p>Mittagio ist eine Online-Plattform, über die du dein Mittagsangebot veröffentlichen und verwalten kannst.</p>
             </details>
             <details>
               <summary>Wie verdiene ich damit Zeit?</summary>
@@ -2637,7 +2643,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </details>
             <details>
               <summary>Inseratsgebühr / Abholnummer?</summary>
-              <p>Inseratsgebühr: 4,99 € einmalig heute pro Gericht. Abholnummer: 0,89 € pro Vorgang (inkl. aller Bankgebühren). Keine Mindestlaufzeit.</p>
+              <p>Pro Veröffentlichung wählst du: „Nur Inserat“ für 4,99 € oder „Gratis inserieren“ mit Abholnummer (0,89 € je erfolgreicher Abholung/Bestellung). Keine Mindestlaufzeit.</p>
             </details>
             <details>
               <summary>Wie funktionieren Abholungen?</summary>
@@ -2649,7 +2655,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </details>
             <details>
               <summary>Was kostet die Abholnummer?</summary>
-              <p>0,89 € pro Vorgang. Auch mit mehreren Gerichten. Inkl. aller Bank- & Verwaltungsgebühren für Kartenzahlung.</p>
+              <p>0,89 € je erfolgreicher Abholung/Bestellung im Abholnummer-Modus (inkl. Zahlungsabwicklung und Bankgebühren).</p>
             </details>
             <details>
               <summary>Wie spare ich Zeit?</summary>

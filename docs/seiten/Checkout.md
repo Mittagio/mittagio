@@ -37,6 +37,20 @@ Kasse: Name, Abholzeit, Zahlung (Stripe/Demo). Abholnummer-Option 0,89 €.
 - Verifikation fehlgeschlagen oder nicht bezahlt: keine automatische `PAID`-Markierung, Rückführung zur Mittagsbox/Checkout
 - Abgebrochene Zahlung setzt offene Orders auf `CANCELLED`
 
+## Update: Responsive Summary + Verpackung (27.04.2026)
+
+- Die obere Bestellübersicht ist nun robust gegen lange Gerichtsnamen (kein gequetschter Preisbereich, saubere Umbrüche).
+- Verpackung wird im Checkout nicht mehr als große Button-Container-Auswahl geführt.
+- Stattdessen zeigt der Checkout eine kompakte Verpackungs-Zusammenfassung; die eigentliche Auswahl erfolgt pro Gericht in der Mittagsbox.
+- Mehrweg-Aufpreise aus der Mittagsbox werden in der Checkout-Gesamtsumme und im Zahlungsbetrag berücksichtigt.
+
+## Update: Verzehrart-Textlogik (27.04.2026)
+
+- Die Zeitfrage im Checkout ist jetzt kontextabhängig:
+  - `Vor Ort` → **„Wann möchtest du essen?“**
+  - `Mitnehmen` → **„Wann holst du dein Essen ab?“**
+- Ziel: klare semantische Trennung zwischen Essenszeit und Abholzeit bei gleicher Slot-Logik.
+
 ## Regeln
 
 - Kein Account nötig (Gast)

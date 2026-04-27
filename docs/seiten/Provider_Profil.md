@@ -95,3 +95,16 @@ Anbieter-Profil: Betriebsdaten, Einstellungen, Rechtliches, Support, Abmelden.
 - **Auto-Fill ohne API:** Für nicht verknüpfte Fälle schlägt das Feld `Betriebsname` lokale Anbieter aus der Basis vor und übernimmt Adresse (und ggf. Login-E-Mail) automatisch.
 - **Mobile Suggestion-Liste:** Unter `Betriebsname` erscheint eine tapbare Vorschlagsliste (Name, Ort/Adresse, optional Login), Auswahl übernimmt die Daten sofort.
 - **UI-Polish:** Betriebsdaten-Inputs wurden visuell auf ein moderneres App-Card-Layout mit klarer Typo und ruhiger Hierarchie umgestellt.
+
+## Update: Legal-Copy Feinschliff (27.04.2026)
+
+- Anbieter-Rechtstexte (`AGB`, `FAQ`, `Datenschutz`) wurden sprachlich vereinheitlicht und auf konsistente Terminologie gebracht.
+- Preislogik ist jetzt durchgängig gleich formuliert: **Option A** `Nur Inserat` (4,99 €) oder **Option B** `Gratis inserieren mit Abholnummer` (0,89 € je erfolgreicher Abholung/Bestellung).
+- Marketinglastige Begriffe in Rechtstexten wurden reduziert; Fokus liegt auf klaren, neutralen Aussagen.
+- Datenschutztext präzisiert (neutralere Formulierungen zu Zugangsdaten und Betroffenenrechten).
+
+## Update: Finaler Legal-Consistency-Pass (27.04.2026)
+
+- Resttexte im Anbieterbereich wurden auf denselben Sprachstandard gebracht (`v-legal-agb-onboarding`, Support-FAQ-Accordion, Legacy-FAQ-Block `provFaqBox`).
+- Preis- und Abrechnungslogik ist nun in allen Anbieter-Texten konsistent (kein Mischbild aus Alt- und Neulogik).
+- Übergreifende Formulierungen wurden auf klare, sachliche Aussagen reduziert; doppelte oder widersprüchliche Aussagen wurden entfernt.
