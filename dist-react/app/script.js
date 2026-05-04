@@ -11938,21 +11938,26 @@
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
   if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
 
-  // Support-Formular (Kunden): Nachricht senden – Bestätigung ohne E-Mail im UI
-  const supportForm = document.getElementById('supportForm');
-  if(supportForm){
-    supportForm.addEventListener('submit', function(e){
-      e.preventDefault();
-      const subjectEl = document.getElementById('supportSubject');
-      const messageEl = document.getElementById('supportMessage');
-      const pickupRefEl = document.getElementById('supportPickupRef');
-      if(!messageEl || !messageEl.value.trim()){ showToast('Bitte Nachricht eingeben.', 2000); return; }
-      showToast('Vielen Dank. Deine Nachricht wurde übermittelt. Wir melden uns in Kürze.', 4000);
-      if(subjectEl) subjectEl.value = '';
-      if(messageEl) messageEl.value = '';
-      if(pickupRefEl) pickupRefEl.value = '';
-    });
+  // Support-Formular (Kunden): Delegation für Lazy-Mount-Szenarien
+  function handleSupportFormSubmit(e){
+    e.preventDefault();
+    var formEl = e.target;
+    if(!formEl || formEl.id !== 'supportForm') return;
+    const subjectEl = document.getElementById('supportSubject');
+    const messageEl = document.getElementById('supportMessage');
+    const pickupRefEl = document.getElementById('supportPickupRef');
+    if(!messageEl || !messageEl.value.trim()){ showToast('Bitte Nachricht eingeben.', 2000); return; }
+    showToast('Vielen Dank. Deine Nachricht wurde übermittelt. Wir melden uns in Kürze.', 4000);
+    if(subjectEl) subjectEl.value = '';
+    if(messageEl) messageEl.value = '';
+    if(pickupRefEl) pickupRefEl.value = '';
   }
+  const supportForm = document.getElementById('supportForm');
+  if(supportForm) supportForm.addEventListener('submit', handleSupportFormSubmit);
+  document.addEventListener('submit', function(e){
+    var target = e.target;
+    if(target && target.id === 'supportForm') handleSupportFormSubmit(e);
+  }, true);
   
   // Profil anlegen Sheet: Submit & Abbrechen
   const btnProfileCreateSubmit = document.getElementById('btnProfileCreateSubmit');
@@ -18164,6 +18169,13 @@
   if(linkInseratInfo){
     linkInseratInfo.onclick=function(e){ e.preventDefault(); if(typeof hapticLight === 'function') hapticLight(); showLegalPage('inserat-info-provider'); };
   }
+  document.addEventListener('click', function(e){
+    var link = e.target && e.target.closest ? e.target.closest('#linkInseratInfo') : null;
+    if(!link) return;
+    e.preventDefault();
+    if(typeof hapticLight === 'function') hapticLight();
+    showLegalPage('inserat-info-provider');
+  }, true);
 
   const btnBilling = document.getElementById('btnBilling');
   if(btnBilling){

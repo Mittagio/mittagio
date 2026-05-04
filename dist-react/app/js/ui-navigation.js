@@ -55,7 +55,66 @@
     document.querySelectorAll('#providerNav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.pgo===go));
   }
 
+  // Stufe 1: inaktive Views semantisch deaktivieren + schwere Nebenbereiche lazy mounten.
+  var LAZY_MOUNT_VIEW_IDS = [
+    'v-admin',
+    'v-legal-impressum',
+    'v-legal-impressum-provider',
+    'v-legal-agb-kurz',
+    'v-legal-agb-provider',
+    'v-legal-datenschutz',
+    'v-legal-datenschutz-provider',
+    'v-legal-faq',
+    'v-support',
+    'v-legal-faq-provider',
+    'v-legal-inserat-info-provider',
+    'v-version',
+    'v-legal-agb-onboarding'
+  ];
+  var lazyMountedViews = Object.create(null);
+
+  function setViewInteractivity(viewEl, isActive){
+    if(!viewEl) return;
+    if(isActive){
+      viewEl.removeAttribute('hidden');
+      viewEl.removeAttribute('inert');
+      viewEl.setAttribute('aria-hidden', 'false');
+      return;
+    }
+    viewEl.setAttribute('hidden', '');
+    viewEl.setAttribute('inert', '');
+    viewEl.setAttribute('aria-hidden', 'true');
+  }
+
+  function syncViewAccessibility(activeView){
+    document.querySelectorAll('.view').forEach(function(v){
+      setViewInteractivity(v, v === activeView);
+    });
+  }
+
+  function unmountLazyView(id){
+    if(lazyMountedViews[id]) return;
+    var el = document.getElementById(id);
+    if(!el || !el.parentNode || el.classList.contains('active')) return;
+    var marker = document.createComment('lazy-view:' + id);
+    el.parentNode.insertBefore(marker, el);
+    lazyMountedViews[id] = { el: el, marker: marker };
+    el.parentNode.removeChild(el);
+  }
+
+  function ensureViewMounted(id){
+    if(document.getElementById(id)) return;
+    var entry = lazyMountedViews[id];
+    if(!entry || !entry.marker || !entry.marker.parentNode || !entry.el) return;
+    entry.marker.parentNode.insertBefore(entry.el, entry.marker);
+  }
+
+  function initLazyViews(){
+    LAZY_MOUNT_VIEW_IDS.forEach(unmountLazyView);
+  }
+
   function showView(id){
+    ensureViewMounted(id);
     try{
       if(typeof history !== 'undefined' && history.scrollRestoration !== undefined){
         history.scrollRestoration = 'manual';
@@ -69,7 +128,11 @@
     if(!view){
       console.error('View not found:', id);
       const fallbackView = document.getElementById(views.discover || 'v-discover');
-      if(fallbackView) fallbackView.classList.add('active');
+      if(fallbackView){
+        fallbackView.classList.add('active');
+        setViewInteractivity(fallbackView, true);
+        syncViewAccessibility(fallbackView);
+      }
       window.scrollTo({top:0,behavior:'auto'});
       return;
     }
@@ -122,6 +185,7 @@
       } catch(e) {}
     }
     view.classList.add('active');
+    setViewInteractivity(view, true);
     if(id === 'v-pickup-code') show(view, 'flex');
     else show(view);
     if(id === 'v-provider-week') view.style.cssText = 'flex-direction:column; min-height:100vh; visibility:visible; opacity:1;';
@@ -131,7 +195,9 @@
       if(v === view) return;
       v.classList.remove('active');
       hide(v);
+      setViewInteractivity(v, false);
     });
+    syncViewAccessibility(view);
     /* Body-Klassen zentral: alte entfernen, nur neue setzen [cite: GLOBAL NATIVE NAV 2026-02-23] */
     document.body.classList.remove('provider-week-active', 'provider-cookbook-active', 'cookbook-active');
     if (id !== 'v-provider-cookbook') document.body.classList.remove('cookbook-from-dashboard');
@@ -774,6 +840,9 @@
       pushViewState({view: 'checkout'}, '#checkout');
     }
   }
+
+  initLazyViews();
+  syncViewAccessibility(document.querySelector('.view.active'));
 
   window.showView = showView;
   window.setMode = setMode;
