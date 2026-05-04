@@ -103,7 +103,7 @@
       return o.providerId === providerId && o.pickupDate === pickupDate && o.dishLetter === dishLetter && o.status === 'PAID';
     });
     runningNumber = existingOrders.length + 1;
-    pickupCode = runningNumber + dishLetter;
+    pickupCode = dishLetter + runningNumber;
     return { dishLetter: dishLetter, runningNumber: runningNumber, pickupCode: pickupCode };
   }
   function generateDishLetterPickupCode(orderId, dishId, providerIdVal, day){

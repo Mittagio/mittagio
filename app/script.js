@@ -1078,7 +1078,7 @@
    * @property {string} [stripeCheckoutSessionId]
    * @property {string} [stripePaymentIntentId]
    * @property {string} [receiptEmail]
-   * @property {string} [pickupCode] - nur bei PAID (Format: "2B")
+   * @property {string} [pickupCode] - nur bei PAID (Format: "A1")
    * @property {number} [pickupCodeActivatedAt] - nur bei PAID
    * @property {string} [pickupDate] - ISO date "YYYY-MM-DD"
    * @property {string} [pickupWindow] - e.g. "11:30–14:30"
@@ -1262,7 +1262,7 @@
   let activeCat = null;
   let activeDay = isoDate(new Date());
   let providerWeekDay = isoDate(new Date());
-  let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
+  let pickupSort = 'code'; // Default: sort by code (A1, A2, B1, B2...)
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
   let cookbookCategory = 'Alle'; // Alle | Fleisch | Veggie | Vegan
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
@@ -8860,7 +8860,7 @@
       const abholDisplay = document.getElementById('cartActiveAbholnummerDisplay');
       const listEl = document.getElementById('cartActiveSessionList');
       const firstCode = activeOrders[0].pickupCode || activeOrders[0].abholnummer || activeOrders[0].code || '–';
-      if(abholDisplay) abholDisplay.textContent = (String(firstCode).indexOf('#') === 0 ? '' : '#') + firstCode;
+      if(abholDisplay) abholDisplay.textContent = String(firstCode).replace(/^#/, '');
       if(listEl){
         listEl.innerHTML = activeOrders.map(function(order){
           const offer = offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
@@ -10155,13 +10155,13 @@
         multiBlock.innerHTML = orders.map(function(o){
           const c = o.pickupCode || o.abholnummer || o.code || '–';
           const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">#' + (c + '').replace(/</g, '&lt;') + '</span></div></div>';
+          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">' + (c + '').replace(/^#/, '').replace(/</g, '&lt;') + '</span></div></div>';
         }).join('');
       }
     } else {
       if(singleBlock) show(singleBlock);
       if(multiBlock) hide(multiBlock);
-      if(abholnummerEl) abholnummerEl.textContent = (codeStr.indexOf('#') === 0 ? '' : '#') + codeStr;
+      if(abholnummerEl) abholnummerEl.textContent = codeStr.replace(/^#/, '');
     }
     if(zeitEl) zeitEl.innerHTML = '<span style="font-size:18px;">🕒</span> Abholbereit um ' + zeitDisplay;
     if(modusEl){
@@ -11121,6 +11121,12 @@
   }
 
   // --- Onboarding-Redirect: Alle Einstiege führen in Dashboard/InseratCard [cite: Bereinigung 2026-03-04] ---
+  // Legacy-Flow deaktivieren: nur noch Unified Onboarding-Flow verwenden.
+  (function disableLegacyProviderOnboarding(){
+    var legacy = document.getElementById('v-provider-onboarding');
+    if(legacy && legacy.parentNode) legacy.parentNode.removeChild(legacy);
+  })();
+
   let onboardingDraftDish = load(LS.onboardingDraft, null);
   
   function showOnboardingEntry(hasDraft){
@@ -11548,7 +11554,8 @@
         <p style="margin-top:16px;"><strong>Kosten:</strong></p>
         <ul style="padding-left:20px; margin:8px 0;">
           <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-          <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+          <li>0,89 € zzgl. MwSt. je online vorbestelltem und bezahltem Abholnummer-Vorgang (inkl. Bank- & Zahlungsgebühren)</li>
+          <li>Vor-Ort-Essen ohne Online-Zahlung: 0,00 € Abholnummer-Gebühr</li>
         </ul>
         
         <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
@@ -11787,7 +11794,7 @@
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Muss ich online bezahlen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Vor-Ort-Essen ohne Online-Zahlung hat keine Abholnummer-Gebühr; eine Abholnummer gibt's nur bei online vorbestellten und bezahlten Vorgängen.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
@@ -12717,7 +12724,7 @@
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
           const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
-          const firstPickupCode = paidWithCode.length ? ('#' + (paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2))) : null;
+          const firstPickupCode = paidWithCode.length ? String(paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2)).replace(/^#/, '') : null;
           const abholnummerLabel = hasPickupNumber ? (firstPickupCode || '–') : '–';
           const abholnummerGray = !hasPickupNumber;
           /* Dashboard: Abholnummer nicht auf Kachel (Silent Defaults, Fokus Bild/Name/Preis) */
@@ -12909,7 +12916,7 @@
           const pill = document.createElement('div');
           const isFirst = i === 0;
           pill.style.cssText = 'flex-shrink:0; width:40px; height:40px; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; background:' + (isFirst ? '#ffde00' : '#f1f1f1') + '; color:' + (isFirst ? '#1a1a1a' : 'rgba(0,0,0,0.4)') + '; box-shadow:' + (isFirst ? 'inset 0 1px 2px rgba(0,0,0,0.08)' : 'none') + ';';
-          pill.textContent = '#' + (ord.pickupCode || ord.id.slice(-3));
+          pill.textContent = String(ord.pickupCode || ord.id.slice(-3)).replace(/^#/, '');
           providerNextPickupPills.appendChild(pill);
         });
         if(paidOrders.length === 0){
@@ -16202,17 +16209,20 @@
         if(aTimeNum !== bTimeNum) return aTimeNum - bTimeNum;
       }
       
-      // Priorität 2: Code-Reihenfolge (1A, 1B, 1C, 2A, 2B, 2C, 10A, 10B...)
+      // Priorität 2: Code-Reihenfolge (A1, A2, B1, B2 ...) + Legacy-Support (1A)
       const parseCode = (code) => {
-        const match = String(code || '').match(/^(\d+)([A-Z])$/);
-        if(!match) return {num: 9999, letter: 'Z'};
-        return {num: parseInt(match[1], 10), letter: match[2]};
+        const normalized = String(code || '').replace(/\s/g, '').replace(/^#/, '');
+        const modernMatch = normalized.match(/^([A-Z])(\d+)$/);
+        if(modernMatch) return {letter: modernMatch[1], num: parseInt(modernMatch[2], 10)};
+        const legacyMatch = normalized.match(/^(\d+)([A-Z])$/);
+        if(legacyMatch) return {letter: legacyMatch[2], num: parseInt(legacyMatch[1], 10)};
+        return {num: 9999, letter: 'Z'};
       };
       const aCode = parseCode(a.code);
       const bCode = parseCode(b.code);
       
-      if(aCode.num !== bCode.num) return aCode.num - bCode.num;
-      return aCode.letter.localeCompare(bCode.letter);
+      if(aCode.letter !== bCode.letter) return aCode.letter.localeCompare(bCode.letter);
+      return aCode.num - bCode.num;
     });
 
     // Render Grid (Theken-Grid) - Große Kacheln
@@ -16225,7 +16235,7 @@
       list.forEach(p=>{
         const isDone = p.status === 'PICKED_UP';
         const isPaid = !isDone;
-        const codeDisplay = (p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–');
+        const codeDisplay = (p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–');
         const pillarsHtml = [];
         if(p.hasEatIn) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Vor Ort (Teller)">🍴</span>');
         if(p.hasReuse) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Mehrweg (Box)">🔄</span>');
@@ -16268,7 +16278,7 @@
     else hide(listEl);
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
-      const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+      const codeDisplay = p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–';
       const pillars = [];
       if(p.hasEatIn) pillars.push('<span style="font-size:22px;" title="Vor Ort (Teller)">🍴</span>');
       if(p.hasReuse) pillars.push('<span style="font-size:22px;" title="Mehrweg (Box)">🔄</span>');
@@ -16311,7 +16321,7 @@
     if(!order) return;
     currentPickupConfirmOrderId = orderId;
     const code = order.pickupCode || order.code || '–';
-    const codeDisplay = code ? '#' + String(code).replace(/\s/g,'') : '#–';
+    const codeDisplay = code ? String(code).replace(/\s/g,'').replace(/^#/, '') : '–';
     const codeEl = document.getElementById('pickupConfirmCode');
     if(codeEl) codeEl.textContent = codeDisplay;
     const hasEatIn = order.verzehrmodus === 'vor_ort';
@@ -16359,7 +16369,7 @@
       if(listEl){
         const next3 = openPickups.slice(0, 3);
         listEl.innerHTML = next3.length ? next3.map(p => {
-          const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+          const codeDisplay = p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–';
           return '<button type="button" data-order-id="' + esc(p.orderId) + '" style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:#f1f5f9; border:none; border-radius:14px; font-size:16px; font-weight:700; cursor:pointer; text-align:left;">' + esc(codeDisplay) + ' <span style="color:#64748b; font-weight:500;">→</span></button>';
         }).join('') : '<p style="margin:0; color:#64748b; font-size:15px;">Keine weiteren Abholnummern.</p>';
         listEl.querySelectorAll('button[data-order-id]').forEach(btn => {
@@ -18310,33 +18320,13 @@
     const providerContent = document.getElementById('faqContentProvider');
     
     if(tab === 'customer'){
-      if(customerTab){
-        customerTab.style.background = '#fff';
-        customerTab.style.borderBottom = '3px solid #FFD700';
-        customerTab.style.fontWeight = '700';
-        customerTab.style.color = '#334155';
-      }
-      if(providerTab){
-        providerTab.style.background = '#f9f9f9';
-        providerTab.style.borderBottom = '3px solid transparent';
-        providerTab.style.fontWeight = '600';
-        providerTab.style.color = '#666';
-      }
+      if(customerTab) customerTab.classList.add('faq-tab-btn--active');
+      if(providerTab) providerTab.classList.remove('faq-tab-btn--active');
       if(customerContent) show(customerContent);
       if(providerContent) hide(providerContent);
     } else {
-      if(providerTab){
-        providerTab.style.background = '#fff';
-        providerTab.style.borderBottom = '3px solid #FFD700';
-        providerTab.style.fontWeight = '700';
-        providerTab.style.color = '#334155';
-      }
-      if(customerTab){
-        customerTab.style.background = '#f9f9f9';
-        customerTab.style.borderBottom = '3px solid transparent';
-        customerTab.style.fontWeight = '600';
-        customerTab.style.color = '#666';
-      }
+      if(providerTab) providerTab.classList.add('faq-tab-btn--active');
+      if(customerTab) customerTab.classList.remove('faq-tab-btn--active');
       if(providerContent) show(providerContent);
       if(customerContent) hide(customerContent);
     }
@@ -18624,7 +18614,7 @@
       const todayOrders = typeof loadOrders === 'function' ? loadOrders() : [];
       const todayOfferIds = mineToday.map(function(o){ return o.id; });
       const firstPaidCode = todayOrders.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode && todayOfferIds.indexOf(ord.dishId) !== -1; })[0];
-      const abholnummerStr = hasAbholnummer ? (firstPaidCode ? ('#' + (firstPaidCode.pickupCode || '')) : 'verfügbar') : '–';
+      const abholnummerStr = hasAbholnummer ? (firstPaidCode ? String(firstPaidCode.pickupCode || '').replace(/^#/, '') : 'verfügbar') : '–';
       const dishesBlock = mineToday.map(function(o){ return '🥘 *' + (o.dish || o.title || 'Gericht').replace(/\*/g,'') + '* — ' + (typeof euro === 'function' ? euro(o.price || 0) : (Number(o.price)||0).toFixed(2).replace('.',',') + ' €'); }).join('\n');
       let msg = '🔪 *Frisch aus unserer Küche für heute!* 👨‍🍳\n\n' + dishesBlock + '\n\n*Service:*\n🍴 Vor Ort genießen\n🧾 Abholnummer: *' + abholnummerStr + '*\n';
       if(hasMehrweg) msg += '🔄 Mehrweg verfügbar\n';
@@ -24128,7 +24118,7 @@
       var todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === (typeof providerId === 'function' ? providerId() : '') && o.day === todayKey; }).sort(function(a,b){ return (a.createdAt || 0) - (b.createdAt || 0); });
       var idx = todayOffers.findIndex(function(o){ return o.id === publishedOffer.id; });
       var letter = idx >= 0 ? String.fromCharCode(65 + Math.min(idx, 4)) : 'A';
-      abholId.textContent = '#' + letter + '-' + String(todayOrders.length + 1).padStart(2, '0');
+      abholId.textContent = letter + String(todayOrders.length + 1);
     }
     var step3Container = document.getElementById('step3ConfettiContainer');
     if(step3Container){
@@ -24482,7 +24472,7 @@
     const todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(off => off.providerId === providerId() && off.day === todayKey).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
     const dishIdx = todayOffers.findIndex(off => off.id === publishedOffer.id);
     const dishLetter = dishIdx >= 0 ? String.fromCharCode(65 + Math.min(dishIdx, 4)) : 'A';
-    const codeDisplay = dishLetter + '-' + String(runningNumber).padStart(2, '0');
+    const codeDisplay = dishLetter + String(runningNumber);
     if(nextCodeEl) nextCodeEl.textContent = codeDisplay;
     if(abholSection){
       if(d.hasPickupCode) show(abholSection);

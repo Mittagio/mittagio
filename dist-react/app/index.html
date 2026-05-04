@@ -581,15 +581,15 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </header>
 
       <div class="customer-main-wrap" style="padding:16px; display:flex; flex-direction:column; gap:16px;">
-        <!-- Aktive Session: Abholnummer oben + Gericht-Karten (🍴🔄🧾, Routen, Timer, Abgeholt) -->
+        <!-- Aktive Abholnummer: Abholnummer oben + Gericht-Karten (🍴🔄🧾, Routen, Timer, Abgeholt) -->
         <div id="cartActiveSessionWrap" style="display:none;">
           <!-- Highlight: Abholnummer ganz oben, großer Fokus -->
           <div class="mittagsbox-abholnummer-hero" style="text-align:center; padding:24px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.06) 100%); border-radius:20px; border:1px solid rgba(255,215,0,0.25); margin-bottom:20px;">
             <div style="display:inline-flex; align-items:center; gap:12px;">
               <span class="mittagsbox-session-dot" style="width:10px; height:10px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.3);"></span>
-              <span class="ds-meta" style="text-transform:uppercase; letter-spacing:0.05em;">Aktive Session</span>
+              <span class="ds-meta" style="text-transform:uppercase; letter-spacing:0.05em;">Aktive Abholnummer</span>
             </div>
-            <div id="cartActiveAbholnummerDisplay">#A12</div>
+            <div id="cartActiveAbholnummerDisplay">A1</div>
             <div class="ds-body" style="font-size:13px; font-weight:600;">Abholnummer</div>
           </div>
           <div id="cartActiveSessionList" style="display:flex; flex-direction:column; gap:16px;"></div>
@@ -604,7 +604,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <label style="display:block; font-weight:800; font-size:14px; margin-bottom:12px; color:#64748b; text-transform:uppercase;">Wo möchtest du essen?</label>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
               <button type="button" id="cartBtnVorOrt" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px;">🍴 Vor Ort</button>
-              <button type="button" id="cartBtnMitnehmen" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px;">🔄 Mitnehmen</button>
+              <button type="button" id="cartBtnMitnehmen" class="cust-chip" style="height:48px; border-radius:14px; font-size:14px; display:inline-flex; align-items:center; justify-content:center; gap:6px;"><i data-lucide="shopping-bag" style="width:16px;height:16px;"></i><span>Mitnehmen</span></button>
             </div>
           </div>
 
@@ -626,7 +626,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <section class="view customer-view" id="v-checkout">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
-          <h1 class="customer-header-title">Dein Mittagstisch</h1>
+          <h1 class="customer-header-title">Bestellübersicht</h1>
         </div>
       </header>
       <div class="customer-main-wrap checkout-main-wrap">
@@ -636,23 +636,22 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
 
           <div id="checkoutVerzehrart" class="checkout-block">
-            <label class="checkout-label">Wo möchtest du essen?</label>
-            <div class="checkout-grid-two">
-              <button type="button" id="checkoutBtnVorOrt" class="verzehrmodus-checkout-btn" data-mode="vor_ort">🍴 Vor Ort</button>
-              <button type="button" id="checkoutBtnMitnehmen" class="verzehrmodus-checkout-btn" data-mode="mitnehmen">🔄 Mitnehmen</button>
+            <label class="checkout-label">Verzehrart</label>
+            <div id="checkoutVerzehrartSummary" class="checkout-verzehrart-summary">
+              <div class="checkout-verzehrart-simple-line">
+                Aktuell: <span id="checkoutVerzehrartValue" class="checkout-verzehrart-value">Mitnehmen</span>
+              </div>
+              <button type="button" id="checkoutVerzehrartEditBtn" class="checkout-verzehrart-edit-btn">Ändern</button>
             </div>
           </div>
 
           <div id="checkoutVerpackung" class="checkout-block is-hidden" aria-hidden="true">
             <label class="checkout-label">Verpackung</label>
-            <div class="checkout-grid-two">
-              <button type="button" id="checkoutBtnEigenerBehaeltner" class="verpackung-btn" data-verpackung="eigener_behaeltner">Eigener Behälter<br><span class="checkout-meta-success">0,00 €</span></button>
-              <button type="button" id="checkoutBtnMehrweg" class="verpackung-btn" data-verpackung="mehrweg">Mehrweg-System 🔄<br><span class="checkout-meta-muted">Pfand/Aufpreis</span></button>
-            </div>
+            <div id="checkoutPackagingSummary" class="checkout-packaging-summary">Wird in der Mittagsbox pro Gericht gewählt.</div>
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">Wann holst du dein Essen ab?</label>
+            <label class="checkout-label" id="checkoutTimeQuestionLabel">Wann holst du dein Essen ab?</label>
             <div id="checkoutTimeSlots" class="checkout-time-slots">
               <!-- Wird dynamisch befüllt -->
             </div>
@@ -668,17 +667,17 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">Name (für Abholung)</label>
+            <label class="checkout-label">Name</label>
             <input type="text" id="checkoutName" placeholder="Dein Name" class="checkout-input" />
           </div>
 
           <div class="checkout-block">
-            <label class="checkout-label">E-Mail (optional, für Beleg)</label>
+            <label class="checkout-label">E-Mail</label>
             <input type="email" id="checkoutEmail" placeholder="email@beispiel.de" class="checkout-input" />
           </div>
+          <p class="hint checkout-guest-note">Kein Account nötig: Du kannst direkt bestellen. Optional kannst du danach ein Profil anlegen, um Abholnummern und Belege wiederzufinden.</p>
 
           <div class="checkout-block">
-            <label class="checkout-label">Zahlungsart</label>
             <div id="checkoutPaymentMethods" class="checkout-payment-methods">
               <button class="btn is-hidden" type="button" id="btnApplePay" aria-hidden="true">
                 <span style="font-size:20px;">🍎</span> Apple Pay
@@ -692,12 +691,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </div>
           </div>
 
-          <div class="checkout-info-note">
-            <span>🧾</span> Deine Abholnummer wird sofort generiert
-          </div>
-          <div class="checkout-guest-note">
-            Kein Account nötig. Nach dem Kauf kannst du optional ein Passwort festlegen, um Belege zu speichern.
-          </div>
         </div>
       </div>
     </section>
@@ -718,7 +711,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="ds-meta" style="font-size:14px; margin-bottom:8px;">Deine Abholnummer für den Tresen</div>
           <div style="display:inline-flex; align-items:center; justify-content:center; gap:12px;">
             <span class="ds-abholnummer-emoji">🧾</span>
-            <div id="orderSuccessAbholnummer">#101</div>
+            <div id="orderSuccessAbholnummer">A1</div>
           </div>
         </div>
         <div id="orderSuccessMultiBlock" style="display:none; margin-bottom:24px;"></div>
@@ -748,43 +741,26 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div class="customer-header-row">
           <h1 class="customer-header-title">Meins</h1>
           <div class="customer-header-actions">
+            <button type="button" id="btnProfileHowItWorksHelp" class="customer-header-icon-btn" aria-label="Mittagio in 5 Schritten" onclick="if(typeof openProfileHowItWorksSheet==='function') openProfileHowItWorksSheet();">
+              <i data-lucide="circle-help" style="width:20px;height:20px;color:#1a1a1a;"></i>
+            </button>
             <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--brand" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
             </button>
             <button type="button" id="btnProfileSettings" class="customer-header-icon-btn" aria-label="Einstellungen" onclick="openProfileSettingsSheet()">
               <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
-            <button type="button" class="customer-header-icon-btn" onclick="showView('v-discover')">
-              <i data-lucide="x" style="width:20px;height:20px;color:#1a1a1a;"></i>
-            </button>
           </div>
         </div>
       </header>
 
       <div class="customer-main-wrap" style="padding-top:14px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:16px;">
-        <!-- Kurz Identität (Avatar + Name), nur wenn eingeloggt -->
-        <div class="cust-card" id="profileHeaderCard" style="padding:16px 18px; flex-direction:row; align-items:center; gap:12px; margin-bottom:0; border:1px solid #eef2f7; box-shadow:0 8px 20px rgba(15,23,42,0.06); border-radius:18px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);">
-          <!-- Wird dynamisch befüllt -->
-        </div>
-
-        <!-- Quick Actions -->
-        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;">
-          <button type="button" class="cust-chip" onclick="showView('v-fav-providers')" style="min-height:54px; border-radius:14px; font-weight:700;">🏢 Meine Lieblingsanbieter</button>
-          <button type="button" class="cust-chip" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:54px; border-radius:14px; font-weight:700;">🥗 Mein Food-Profil</button>
-          <button type="button" class="cust-chip" onclick="showLegalPage('support')" style="min-height:54px; border-radius:14px; font-weight:700;">💬 Support</button>
-        </div>
-
-        <!-- Abholnummer GROSS oben (app-like) -->
-        <div id="profileAbholnummerSection" style="display:none;">
-          <div id="profileActiveAbholnummernList" style="display:flex; flex-direction:column; gap:16px;"></div>
-        </div>
-
-        <!-- Keine aktive Abholnummer: Hinweis -->
-        <div id="profileNoAbholnummerHint" style="display:none; padding:24px; text-align:center; background:#f8f9fa; border-radius:20px; border:2px dashed #e2e8f0;">
-          <div style="font-size:40px; margin-bottom:12px;">🧾</div>
-          <div style="font-size:15px; font-weight:700; color:#64748b;">Heute keine Abholnummer</div>
-          <div style="font-size:13px; color:#94a3b8; margin-top:4px;">Bestellungen erscheinen hier</div>
-          <button type="button" class="btn-cust-primary" onclick="showView('v-discover')" style="margin-top:14px; min-height:44px; border-radius:12px; font-size:14px; font-weight:800;">Jetzt vorbestellen</button>
+        <!-- Quick Actions (2x2) -->
+        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800;">👤 Mein Account</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showView('v-fav-providers')" style="min-height:96px; border-radius:18px; font-weight:800;">🏢 Meine Lieblingsanbieter</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:96px; border-radius:18px; font-weight:800;">🥗 Mein Food Profil</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showLegalPage('support')" style="min-height:96px; border-radius:18px; font-weight:800;">💬 Support</button>
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
@@ -883,6 +859,21 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <p style="text-align:center; font-size:11px; color:#cbd5e1; font-weight:700; margin-top:20px;">mittagio • made with ❤️ in Rudersberg</p>
       </div>
     </div>
+    <div id="profileHowItWorksSheetBd" class="backdrop is-hidden" aria-hidden="true"></div>
+    <div id="profileHowItWorksSheet" class="sheet profile-howitworks-sheet is-hidden" aria-hidden="true" role="dialog" aria-label="Mittagio in 5 Schritten">
+      <div class="profile-howitworks-sheet-handle"></div>
+      <div class="profile-howitworks-sheet-header">
+        <h2>Mittagio in 5 Schritten</h2>
+        <button type="button" id="btnCloseProfileHowItWorksSheet" class="profile-howitworks-close-btn" aria-label="Schließen">
+          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        </button>
+      </div>
+      <p class="profile-howitworks-sheet-sub">Kurz erklärt: so läuft es vom Entdecken bis zum Genießen.</p>
+      <div id="profileHowItWorksSheetTrack" class="mittagsbox-howitworks-track profile-howitworks-track"></div>
+      <div class="profile-howitworks-sheet-footer">
+        <button type="button" id="btnDoneProfileHowItWorksSheet" class="btn">Verstanden</button>
+      </div>
+    </div>
 
     <section class="view customer-view" id="v-provider-detail-public">
       <header class="cust-header-sticky">
@@ -944,7 +935,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <!-- PROVIDER: Onboarding (ALT) -->
+    <!-- PROVIDER: Onboarding (ALT, deaktiviert zugunsten Unified Flow) -->
     <section class="view" id="v-provider-onboarding">
       <!-- Schritt 1: Betriebsname -->
       <div class="panel onboarding-step" data-step="1">
@@ -1728,7 +1719,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <span class="account-legal-sep">·</span>
             <a href="#/datenschutz" class="account-legal-link">Datenschutz</a>
             <span class="account-legal-sep">·</span>
-            <a href="#/agb" class="account-legal-link">AGB</a>
+            <a href="#/agb-kurz" class="account-legal-link">AGB</a>
           </div>
           <button type="button" id="btnProviderLogout" aria-label="Abmelden" class="account-logout-btn account-logout-btn-dezent">
             <i data-lucide="log-out" style="width:18px;height:18px;"></i><span>Abmelden</span>
@@ -1829,7 +1820,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
                 <button type="button" class="tgtg-accordion-trigger" aria-expanded="false"><span class="tgtg-icon">❓</span><span class="tgtg-label">Was ist was?</span><i data-lucide="chevron-right" class="tgtg-accordion-chevron"></i></button>
                 <div class="tgtg-accordion-content"><div class="tgtg-accordion-content-inner">
                   <div class="tgtg-accordion-body">
-                    <p><strong>Abholnummer:</strong> Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Pro Vorgang 0,89 €.</p>
+                    <p><strong>Abholnummer:</strong> Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Die Gebühr von 0,89 € fällt nur je online vorbestelltem und bezahltem Vorgang an.</p>
                     <p><strong>Kochbuch:</strong> Dein digitales Kochbuch speichert Gerichte mit Bild und Allergenen. Von hier schaltest du blitzschnell in den Wochenplan oder als Inserat.</p>
                     <p><strong>Wochenplan:</strong> Plane Mo–So. Gerichte per „Folgetag“ kopieren. Einmal einrichten, jede Woche nutzen.</p>
                     <p><strong>Allergene:</strong> Beim Anlegen schlägt die App passende Allergene vor. Du wählst aus – Kunden sehen es in der Gerichtsbeschreibung.</p>
@@ -1843,7 +1834,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
           <p class="tgtg-section-title">RECHTLICHES</p>
           <div class="tgtg-list">
-            <a href="#/agb" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <a href="#/agb-kurz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
             <a href="#/datenschutz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">🛡️</span><span class="tgtg-label">Datenschutz</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
             <button type="button" class="tgtg-row" id="btnProviderImpressum"><span class="tgtg-icon">⚖️</span><span class="tgtg-label">Impressum <small style="display:block;font-size:12px;font-weight:600;color:#64748b;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
@@ -2008,7 +1999,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Kostentransparenz</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
-              <div class="accordion-content"><p>Kein Abo, kein Vertrag. 4,99 € pro Inserat. Optional 0,89 € pro Abholnummer. Ende.</p></div>
+              <div class="accordion-content"><p>Kein Abo, kein Vertrag. Du wählst pro Veröffentlichung: 4,99 € als „Nur Inserat“ oder gratis inserieren mit Abholnummer (0,89 € je erfolgreicher Abholung/Bestellung).</p></div>
             </div>
             <div class="provider-support-accordion-item">
               <button type="button" class="provider-support-accordion-trigger" aria-expanded="false"><span>Was ist das digitale Kochbuch?</span><i data-lucide="chevron-down" class="chevron-icon" style="width:20px;height:20px;"></i></button>
@@ -2024,14 +2015,14 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <h2 class="provider-support-section-title" style="margin-top:24px;">Rechtliches</h2>
           <div class="provider-support-legal-links">
             <a href="#/impressum" class="provider-support-legal-row"><span>Impressum <small style="display:block; font-size:12px; font-weight:600; color:#6B7280;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
-            <a href="#/agb" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
+            <a href="#/agb-kurz" class="provider-support-legal-row"><span>AGB</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
             <a href="#/datenschutz" class="provider-support-legal-row"><span>Datenschutz</span><i data-lucide="chevron-right" style="width:20px;height:20px;color:#9ca3af;"></i></a>
           </div>
 
           <!-- Mike kontaktieren (24h-Garantie) -->
           <div class="provider-support-contact-block">
             <button type="button" id="btnProviderSupportMike" class="provider-support-mike-btn">Mike kontaktieren</button>
-            <p class="provider-support-mike-hint">E-Mail an support@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
+            <p class="provider-support-mike-hint">E-Mail an info@mittagio.de – Mike meldet sich garantiert innerhalb von 24h persönlich.</p>
           </div>
         </div>
       </div>
@@ -2101,7 +2092,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px;">
           <p>
-            <strong>Betreiber:</strong> Mike Quach<br>
+            <strong>Betreiber:</strong> Mittagio.de<br>
+            <strong>Ansprechpartner:</strong> Mike Quach<br>
             <strong>Adresse:</strong> Langäcker 2, 73635 Rudersberg<br>
             <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a>
           </p>
@@ -2113,7 +2105,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
           mittagio • made with ❤️ in Rudersberg
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -2123,7 +2114,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
           <p>
-            <strong>Betreiber:</strong> Mike Quach<br>
+            <strong>Betreiber:</strong> Mittagio.de<br>
+            <strong>Ansprechpartner:</strong> Mike Quach<br>
             <strong>Adresse:</strong> Langäcker 2, 73635 Rudersberg<br>
             <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
           </p>
@@ -2133,236 +2125,252 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:13px; color:#64748b;">
-          made with ❤️ by mittagio.de
+          made with ❤️ by Mittagio.de
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
     <!-- AGB für Kunden -->
     <section class="view" id="v-legal-agb-kurz">
       <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">AGB (Kunden)</h1>
-        <div style="line-height:1.8; font-size:15px;">
-          <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
-          <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
-          
-          <p style="margin-top:20px;"><strong>Bestellung & Zahlung:</strong></p>
-          <p>Du bestellst direkt beim Anbieter über unsere Plattform. Die Zahlung erfolgt sicher online. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
-          
-          <p style="margin-top:20px;"><strong>Abholnummer:</strong></p>
-          <p>Die Abholnummer dient als Zahlungs- & Abholnachweis. Zeige sie beim Abholen vor, um dein Essen zu erhalten.</p>
-          
-          <p style="margin-top:20px;"><strong>Stornierung:</strong></p>
-          <p>Stornierungen sind bis zu einer bestimmten Frist vor der Abholzeit möglich. Details findest du in der Bestellübersicht.</p>
-          
-          <p style="margin-top:20px;"><strong>Verantwortung:</strong></p>
-          <p>Der Anbieter ist verantwortlich für Speisen, Preise und gesetzliche Vorgaben. Mittagio übernimmt keine Haftung für die Qualität der Speisen.</p>
-          
-          <p style="margin-top:20px;"><strong>Support:</strong></p>
-          <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+        <h1 class="legal-page-title legal-page-title--tight">AGB (Kunden)</h1>
+        <p class="legal-page-subtitle legal-page-subtitle--tight">Kurz und klar: Der Vertrag über Speisen entsteht zwischen dir und dem Anbieter. Mittagio ist die Vermittlungsplattform.</p>
+        <div class="legal-content">
+          <p><strong>§ 1 Geltungsbereich</strong></p>
+          <p>Diese AGB gelten für die Nutzung der Mittagio-Plattform durch Kundinnen und Kunden. Anbieter von Speisen handeln eigenständig und in eigener Verantwortung.</p>
+
+          <p class="legal-clause"><strong>§ 2 Rolle von Mittagio</strong></p>
+          <p>Mittagio betreibt eine Vermittlungsplattform für Mittagsangebote. Mittagio ist nicht Verkäufer der Speisen. Der Vertrag über Speise, Zubereitung und Abholung kommt ausschließlich zwischen dir und dem jeweiligen Anbieter zustande.</p>
+
+          <p class="legal-clause"><strong>§ 3 Vertragsschluss</strong></p>
+          <p>Mit Abschluss des Bestellvorgangs gibst du ein verbindliches Angebot gegenüber dem Anbieter ab. Der Vertrag kommt mit Annahme/Bestätigung zustande (z.&nbsp;B. durch Zahlungsbestätigung und Bereitstellung der Abholnummer).</p>
+
+          <p class="legal-clause"><strong>§ 4 Preise & Zahlung</strong></p>
+          <p>Es gelten die im Bestellprozess ausgewiesenen Endpreise. Online-Zahlungen werden über angebundene Zahlungsdienstleister abgewickelt. Die Abholnummer-Gebühr entsteht nur bei online vorbestellten und bezahlten Vorgängen. Zahlungsbelege zur Transaktion stellt die Plattform bereit; für steuerliche Belege zur Speiseausgabe ist der jeweilige Anbieter verantwortlich.</p>
+
+          <p class="legal-clause"><strong>§ 5 Abholnummer</strong></p>
+          <p>Die Abholnummer dient als Abhol- und Zahlungsnachweis. Sie ist beim Anbieter vorzuzeigen. Bei missbräuchlicher Nutzung oder fehlender Zuordnung kann die Ausgabe verweigert werden.</p>
+
+          <p class="legal-clause"><strong>§ 6 Abholung, Stornierung, Nichtabholung</strong></p>
+          <p>Maßgeblich sind die im Angebot angegebenen Abholzeiten und Bedingungen des Anbieters. Ob und bis wann eine Stornierung oder Erstattung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorschriften. Bei Nichtabholung gelten die im Angebot ausgewiesenen Bedingungen des Anbieters.</p>
+
+          <p class="legal-clause"><strong>§ 7 Widerruf</strong></p>
+          <p>Es gelten die gesetzlichen Widerrufsregeln. Bei schnell verderblichen Waren oder Waren mit kurzer Haltbarkeit kann das Widerrufsrecht gesetzlich ausgeschlossen sein.</p>
+
+          <p class="legal-clause"><strong>§ 8 Haftung</strong></p>
+          <p>Für Inhalt, Qualität, Zubereitung, Allergenkennzeichnung und Ausgabe der Speisen ist ausschließlich der jeweilige Anbieter verantwortlich. Mittagio haftet nach den gesetzlichen Vorschriften, insbesondere unbeschränkt bei Vorsatz, grober Fahrlässigkeit sowie bei Verletzung von Leben, Körper oder Gesundheit.</p>
+
+          <p class="legal-clause"><strong>§ 9 Datenschutz</strong></p>
+          <p>Die Verarbeitung personenbezogener Daten erfolgt gemäß Datenschutzerklärung. Für eigene Verarbeitungen des Anbieters ist dieser datenschutzrechtlich selbst verantwortlich.</p>
+
+          <p class="legal-clause"><strong>§ 10 Schlussbestimmungen</strong></p>
+          <p>Es gilt deutsches Recht, soweit keine zwingenden Verbraucherschutzvorschriften entgegenstehen. Sollten einzelne Bestimmungen unwirksam sein, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.</p>
+
+          <p class="legal-clause"><strong>Kontakt</strong></p>
+          <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a></p>
         </div>
-        <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
+        <div class="legal-footer-note legal-footer-note--divider">
           mittagio • made with ❤️ in Rudersberg
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
-    <!-- AGB für Anbieter: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-legal-agb-provider" style="min-height:100vh; padding:20px;">
-      <div style="margin-bottom:24px; display:flex; align-items:center; gap:12px;">
-        <button type="button" onclick="goBackFromLegalPage()" aria-label="Zurück" style="width:40px; height:40px; border-radius:50%; background:#fff; border:none; box-shadow:0 2px 8px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; justify-content:center;"><i data-lucide="chevron-left" style="width:22px; height:22px; color:#1a1a1a;"></i></button>
-        <h1 style="margin:0; font-size:22px; font-weight:800; color:#1a1a1a; letter-spacing:-0.02em;">AGB (Anbieter)</h1>
+    <!-- AGB für Anbieter: einheitliche Rechtsseiten-Optik -->
+    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-agb-provider">
+      <div class="provider-legal-header">
+        <button type="button" class="provider-legal-back-btn" onclick="goBackFromLegalPage()" aria-label="Zurück"><i data-lucide="chevron-left"></i></button>
+        <h1 class="provider-legal-title">AGB (Anbieter)</h1>
       </div>
-      <p style="margin:0 0 20px; font-size:14px; color:#8e8e93;">Klick auf eine Zeile öffnet den rechtlichen Text.</p>
-      <div id="agbProviderAccordion" style="display:flex; flex-direction:column; gap:12px;">
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 1</span> Geltungsbereich &amp; Plattform-Modell</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;">Wir bieten eine Plattform zur Vermittlung von Mahlzeiten für Gastronomie und Handwerk an.</p>
-            <p style="margin:0;">Ziel ist die Maximierung deines Umsatzes durch effiziente Inserate. Eine Nutzung als reines Informationstool ohne Verkaufsabsicht ist nicht gestattet.</p>
+      <p class="legal-page-subtitle legal-page-subtitle--tight">Tippe auf eine Zeile, um den rechtlichen Text zu öffnen.</p>
+      <div id="agbProviderAccordion" class="legal-accordion-group legal-accordion-group--wide">
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 1</span> Geltungsbereich &amp; Plattformmodell</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p><strong>Mittagio ist Vermittlungsplattform:</strong> Mittagio bietet eine Plattform zur Vermittlung von Mahlzeiten für Gastronomie und Handwerk.</p>
+            <p>Mittagio ist Plattformbetreiber und nicht Verkäufer der angebotenen Speisen.</p>
           </div>
         </details>
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 2</span> Inserate &amp; Kosten (Das 4,99 € Modell)</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;"><strong>Fixpreis:</strong> Jedes Inserat wird mit einer Pauschale von 4,99 € berechnet.</p>
-            <p style="margin:0 0 12px;"><strong>Zusatzleistung:</strong> Die Abholnummer kann für 0,89 € pro Vorgang optional hinzugebucht werden. Dieser Preis deckt alle Transaktionsgebühren ab.</p>
-            <p style="margin:0 0 12px;"><strong>Fälligkeit:</strong> Die Gebühr wird mit Veröffentlichung des Inserats fällig.</p>
-            <p style="margin:0 0 12px;"><strong>Kein Abo. Kein Vertrag.</strong> Die Nutzung erfolgt ohne vertragliche Mindestlaufzeit. Jede Inseratsgebühr (4,99 €) ist eine Einzeltransaktion.</p>
-            <p style="margin:0;"><strong>Jederzeit flexibel:</strong> Du kannst die App jederzeit deinstallieren oder dein Profil löschen, ohne Kündigungsfristen beachten zu müssen.</p>
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 2</span> Inserate &amp; Kosten</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p><strong>Wahlmodell:</strong> Du wählst pro Veröffentlichung zwischen zwei Modi.</p>
+            <p><strong>Option A:</strong> „Nur Inserat“ zum Fixpreis von 4,99 € pro Veröffentlichung.</p>
+            <p><strong>Option B:</strong> „Gratis inserieren“ mit Abholnummer; dafür fallen 0,89 € pro erfolgreicher Abholung/Bestellung an (inkl. Zahlungsabwicklung).</p>
+            <p><strong>Fälligkeit:</strong> Bei Option A mit Veröffentlichung, bei Option B je Abholung/Bestellung.</p>
+            <p><strong>Erstattung:</strong> Über Erstattungen an Kundinnen und Kunden entscheidet der Anbieter nach seinen Bedingungen und den gesetzlichen Vorgaben.</p>
+            <p><strong>Kein Abo. Kein Vertrag.</strong> Die Nutzung erfolgt ohne vertragliche Mindestlaufzeit. Jede gewählte Leistung (4,99 € Inserat oder 0,89 € pro Abholung) ist eine Einzeltransaktion.</p>
+            <p><strong>Jederzeit flexibel:</strong> Du kannst die App jederzeit deinstallieren oder dein Profil löschen, ohne Kündigungsfristen beachten zu müssen.</p>
           </div>
         </details>
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 3</span> Zeitfenster-Logik (Keine Bestandsführung)</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;"><strong>Mittags-Fokus:</strong> Inserate sind streng an das gewählte Mittags-Zeitfenster gebunden.</p>
-            <p style="margin:0;"><strong>Automatisierung:</strong> Das Angebot endet automatisch mit Ablauf der Endzeit. Eine manuelle Bestandsführung (Stückzahlen) ist systemseitig nicht vorgesehen.</p>
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 3</span> Zeitfenster-Logik (Keine automatische Portionsverwaltung)</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p><strong>Mittags-Fokus:</strong> Inserate sind streng an das gewählte Mittags-Zeitfenster gebunden.</p>
+            <p><strong>Automatisierung:</strong> Das Angebot endet automatisch mit Ablauf der Endzeit. Eine automatische Portionsverwaltung ist systemseitig nicht vorgesehen; Anbieter können ein Angebot jederzeit manuell beenden oder als ausverkauft markieren.</p>
           </div>
         </details>
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 4</span> Die 3 Säulen &amp; Emoji-Regeln</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;">Der Anbieter ist für die korrekte Kennzeichnung verantwortlich:</p>
-            <ul style="margin:0 0 12px; padding-left:20px;">
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 4</span> Die 3 Säulen &amp; Emoji-Regeln</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p>Der Anbieter ist für die korrekte Kennzeichnung verantwortlich:</p>
+            <ul>
               <li><strong>🍴 Vor Ort essen:</strong> Optionaler Toggle.</li>
               <li><strong>🔄 Mehrweg:</strong> Nachhaltigkeits-Toggle.</li>
               <li><strong>🧾 Abholnummer:</strong> Zusatzservice für 0,89 €.</li>
             </ul>
-            <p style="margin:0;"><strong>Wording:</strong> Die Verwendung der Begriffe „Ticket“ oder „Abholcode“ ist untersagt. Es gilt ausschließlich die Abholnummer.</p>
+            <p><strong>Wording:</strong> Die Verwendung der Begriffe „Ticket“ oder „Abholcode“ ist untersagt. Es gilt ausschließlich die Abholnummer.</p>
           </div>
         </details>
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 5</span> Account-Sicherheit &amp; Session-Limit</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;"><strong>Single-Session:</strong> Um die Integrität des Systems zu wahren, ist nur eine aktive Sitzung pro Account erlaubt. Bei Anmeldung auf einem neuen Gerät wird die bestehende Sitzung nach Bestätigung beendet.</p>
-            <p style="margin:0;"><strong>Löschung:</strong> Das Konto kann jederzeit im Profil gelöscht werden. Mit der Löschung enden alle aktiven Inserate sofort.</p>
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 5</span> Account-Sicherheit &amp; Session-Limit</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p><strong>Single-Session:</strong> Um die Integrität des Systems zu wahren, ist nur eine aktive Sitzung pro Account erlaubt. Bei Anmeldung auf einem neuen Gerät wird die bestehende Sitzung nach Bestätigung beendet.</p>
+            <p><strong>Löschung:</strong> Das Konto kann jederzeit im Profil gelöscht werden. Mit der Löschung enden alle aktiven Inserate sofort.</p>
           </div>
         </details>
-        <details class="agb-provider-item" style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-          <summary style="padding:18px 20px; font-size:16px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none; display:flex; align-items:center; gap:10px;"><span style="color:#8e8e93;">§ 6</span> Datenschutz &amp; Standort (Silicon Valley Standard)</summary>
-          <div style="padding:0 20px 20px; font-size:15px; line-height:1.7; color:#3a3a3c;">
-            <p style="margin:0 0 12px;"><strong>Geodaten:</strong> Wir nutzen deinen Standort nur, um Kunden im Umkreis dein Angebot anzuzeigen.</p>
-            <p style="margin:0;"><strong>Transparenz:</strong> Es erfolgt kein Tracking der Nutzer außerhalb der App-Nutzung. Daten werden nicht an Dritte verkauft.</p>
+        <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
+          <summary><span class="legal-paragraph-id">§ 6</span> Datenschutz &amp; Standort</summary>
+          <div class="legal-accordion-body legal-accordion-body--wide">
+            <p><strong>Geodaten:</strong> Wir nutzen deinen Standort nur, um Kunden im Umkreis dein Angebot anzuzeigen.</p>
+            <p><strong>Transparenz:</strong> Es erfolgt kein Tracking außerhalb der App-Nutzung. Daten werden nicht zu Werbezwecken verkauft.</p>
           </div>
         </details>
       </div>
-      <!-- Globaler Footer (Big Tech Design) – Ende jeder rechtlichen Seite -->
-      <footer style="margin-top:32px; padding:24px; background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-        <h2 style="margin:0 0 12px; font-size:14px; font-weight:700; color:#8e8e93; text-transform:uppercase; letter-spacing:0.05em;">Impressum</h2>
-        <p style="margin:0; font-size:15px; line-height:1.6; color:#3a3a3c;">
-          <strong>Betreiber:</strong> Mike Quach<br>
+      <footer class="legal-contact-card">
+        <h2 class="legal-contact-card-title">Impressum</h2>
+        <p>
+          <strong>Betreiber:</strong> Mittagio.de<br>
+          <strong>Ansprechpartner:</strong> Mike Quach<br>
           <strong>Anschrift:</strong> Langäcker 2, 73635 Rudersberg<br>
-          <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" style="color:#007aff; text-decoration:none;">info@mittagio.de</a>
+          <strong>Kontakt:</strong> <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
         </p>
       </footer>
     </section>
 
     <!-- FAQ mit Reitern (Kunden & Anbieter) -->
-    <section class="view content-padding-bottom-compact" id="v-legal-faq" style="background:#F7F6F0; min-height:100vh; padding:20px;">
-      <div class="panel" style="padding:0; overflow:hidden;">
-        <h1 style="font-size:24px; font-weight:900; margin:20px 20px 0; padding-bottom:20px;">FAQ</h1>
+    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-faq">
+      <div class="panel legal-unified-panel">
+        <h1 class="legal-page-title legal-page-title--faq">FAQ</h1>
         
         <!-- Reiter (Tabs) -->
-        <div style="display:flex; border-bottom:2px solid #eee; background:#fff;">
-          <button class="faq-tab-btn" id="faqTabCustomer" onclick="switchFaqTab('customer')" style="flex:1; padding:16px; background:#fff; border:none; border-bottom:3px solid #FFD700; font-weight:700; font-size:15px; color:#334155; cursor:pointer;">
+        <div class="faq-tabs">
+          <button class="faq-tab-btn faq-tab-btn--active" id="faqTabCustomer" onclick="switchFaqTab('customer')">
             Für Kunden
           </button>
-          <button class="faq-tab-btn" id="faqTabProvider" onclick="switchFaqTab('provider')" style="flex:1; padding:16px; background:#f9f9f9; border:none; border-bottom:3px solid transparent; font-weight:600; font-size:15px; color:#666; cursor:pointer;">
+          <button class="faq-tab-btn" id="faqTabProvider" onclick="switchFaqTab('provider')">
             Für Anbieter
           </button>
         </div>
         
         <!-- FAQ-Inhalt: Kunden (Accordion – Tippen = Ausklappen) -->
-        <div id="faqContentCustomer" style="display:block; padding:20px; line-height:1.8; font-size:15px;">
-          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" style="width:100%; margin-bottom:20px; padding:18px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.08) 100%); border:2px solid rgba(255,215,0,0.4); border-radius:16px; text-align:left; cursor:pointer; display:flex; align-items:center; gap:14px;">
-            <span style="font-size:28px;">🧾</span>
-            <div>
-              <div style="font-size:16px; font-weight:800; color:#1a1a1a;">So funktioniert die Abholnummer</div>
-              <div style="font-size:13px; color:#64748b; margin-top:2px;">5 kurze Schritte – mit Bildern</div>
+        <div id="faqContentCustomer" class="legal-content-wrap" style="display:block;">
+          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" class="faq-highlight-card">
+            <span class="faq-highlight-icon">🧾</span>
+            <div class="faq-highlight-content">
+              <div class="faq-highlight-title">So funktioniert die Abholnummer</div>
+              <div class="faq-highlight-subtitle">5 kurze Schritte – mit Bildern</div>
             </div>
-            <i data-lucide="chevron-right" style="width:20px;height:20px;color:#94a3b8;margin-left:auto;"></i>
+            <i data-lucide="chevron-right" class="faq-highlight-chevron"></i>
           </button>
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Bestellungen &amp; Bezahlung</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich mich registrieren?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Ja, damit wir deine Abholnummer sicher zuordnen und dir deine Bestellhistorie anzeigen können.</p>
+          <h2 class="legal-section-title">Bestellungen &amp; Bezahlung</h2>
+          <details class="legal-accordion-item">
+            <summary>Muss ich mich registrieren?</summary>
+            <p class="legal-accordion-body">Nein. Du kannst ohne Account bestellen. Nach dem Kauf kannst du freiwillig ein Profil anlegen, damit du Abholnummern, Belege und Bestellhistorie später wiederfindest.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie bezahle ich mein Essen?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Die Bezahlung erfolgt digital direkt über die Plattform, damit du vor Ort keine Wartezeit an der Kasse hast.</p>
+          <details class="legal-accordion-item">
+            <summary>Wie bezahle ich mein Essen?</summary>
+            <p class="legal-accordion-body">Die Bezahlung erfolgt digital direkt über die Plattform, damit du vor Ort keine Wartezeit an der Kasse hast.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Kann ich eine Bestellung stornieren?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich.</p>
+          <details class="legal-accordion-item legal-accordion-item--spaced">
+            <summary>Kann ich eine Bestellung stornieren?</summary>
+            <p class="legal-accordion-body">Ob und bis wann eine Stornierung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorgaben.</p>
           </details>
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Anbieter &amp; Auswahl</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Warum sehe ich keine Mehrweg-Option bei meinem Anbieter?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Wir arbeiten daran, dass bald alle Partner Mehrweg anbieten. Aktuell liegt die Entscheidung noch beim jeweiligen Anbieter.</p>
+          <h2 class="legal-section-title">Anbieter &amp; Auswahl</h2>
+          <details class="legal-accordion-item">
+            <summary>Warum sehe ich keine Mehrweg-Option bei meinem Anbieter?</summary>
+            <p class="legal-accordion-body">Wir arbeiten daran, dass bald alle Partner Mehrweg anbieten. Aktuell liegt die Entscheidung noch beim jeweiligen Anbieter.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Sind die Allergene (Glutenfrei etc.) verlässlich?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Ja, die Angaben stammen direkt vom Anbieter. Du kannst diese Filter in deinem Profil unter „Mein Geschmack“ voreinstellen.</p>
+          <details class="legal-accordion-item legal-accordion-item--spaced">
+            <summary>Sind die Allergene (Glutenfrei etc.) verlässlich?</summary>
+            <p class="legal-accordion-body">Ja, die Angaben stammen direkt vom Anbieter. Du kannst diese Filter in deinem Profil unter „Mein Geschmack“ voreinstellen.</p>
           </details>
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Technik &amp; Account</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wo finde ich meine alten Bestellungen?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Alle vergangenen Mahlzeiten sind in deinem Profil in der „Historie“ chronologisch aufgelistet.</p>
+          <h2 class="legal-section-title">Technik &amp; Account</h2>
+          <details class="legal-accordion-item">
+            <summary>Wo finde ich meine alten Bestellungen?</summary>
+            <p class="legal-accordion-body">Wenn du ein Profil angelegt hast, findest du dort in der „Historie“ deine vergangenen Bestellungen und Belege chronologisch.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
-            <summary style="padding:14px 16px; font-size:15px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie ändere ich meine Mail-Adresse?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Gehe in deinem Profil zum Bereich „Profildaten“ – dort kannst du deine E-Mail und deinen Namen jederzeit aktualisieren.</p>
+          <details class="legal-accordion-item legal-accordion-item--spaced">
+            <summary>Wie ändere ich meine Mail-Adresse?</summary>
+            <p class="legal-accordion-body">Wenn du ein Profil angelegt hast, kannst du im Bereich „Profildaten“ deine E-Mail und deinen Namen jederzeit aktualisieren.</p>
           </details>
         </div>
         
         <!-- FAQ-Inhalt: Anbieter (Accordion – Tippen = Ausklappen) -->
-        <div id="faqContentProvider" style="display:none; padding:20px; line-height:1.8; font-size:15px;">
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Kosten &amp; Flexibilität</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Gibt es eine monatliche Grundgebühr oder ein Abo?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Nein. Bei uns gibt es kein Abo, keine Verträge und keine Laufzeiten. Du zahlst nur, wenn du wirklich ein Inserat schaltest. Wenn du nicht inserierst, entstehen dir keinerlei Kosten.</p>
+        <div id="faqContentProvider" class="legal-content-wrap" style="display:none;">
+          <h2 class="legal-section-title">Kosten &amp; Flexibilität</h2>
+          <details class="legal-accordion-item">
+            <summary>Gibt es eine monatliche Grundgebühr oder ein Abo?</summary>
+            <p class="legal-accordion-body">Nein. Bei uns gibt es kein Abo, keine Verträge und keine Laufzeiten. Du zahlst nur, wenn du wirklich ein Inserat schaltest. Wenn du nicht inserierst, entstehen dir keinerlei Kosten.</p>
           </details>
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a; text-transform:uppercase; letter-spacing:0.5px;">Küche &amp; Ablauf</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie funktioniert der Küchenmodus?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
+          <h2 class="legal-section-title">Küche &amp; Ablauf</h2>
+          <details class="legal-accordion-item">
+            <summary>Wie funktioniert der Küchenmodus?</summary>
+            <p class="legal-accordion-body">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Warum gibt es eine Service-Pauschale von 0,89 €?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
+          <details class="legal-accordion-item">
+            <summary>Warum gibt es eine Service-Pauschale von 0,89 €?</summary>
+            <p class="legal-accordion-body">Die 0,89 € fallen nur je online vorbestelltem und bezahltem Abholnummer-Vorgang an. Vor-Ort-Essen ohne Online-Zahlung verursacht keine Abholnummer-Gebühr.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Muss ich eine Mindestmenge an Essen angeben?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Nein. Du entscheidest flexibel, wann ein Gericht „Ausverkauft" ist. Ein Klick im Küchenmodus genügt, um das Angebot für den Tag zu beenden.</p>
+          <details class="legal-accordion-item">
+            <summary>Muss ich eine Mindestmenge an Essen angeben?</summary>
+            <p class="legal-accordion-body">Es gibt keine automatische Portionsverwaltung. Du kannst ein Angebot jederzeit manuell beenden oder als ausverkauft markieren.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:16px;">
-            <summary style="padding:14px 16px; font-size:16px; font-weight:700; color:#2D3436; cursor:pointer; list-style:none;">Wie sicher ist die Auszahlung?</summary>
-            <p style="margin:0; padding:0 16px 16px; font-size:15px; color:#666;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
+          <details class="legal-accordion-item legal-accordion-item--spaced">
+            <summary>Wie sicher ist die Auszahlung?</summary>
+            <p class="legal-accordion-body">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
           </details>
         </div>
         
-        <div style="margin-top:32px; padding:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666; background:#f9f9f9;">
+        <div class="legal-footer-help">
           Weitere Fragen? Nutze den Button „Weitere Fragen &amp; Hilfe“ in deinem Profil (Meins).
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
     <!-- Support-Seite (Kunden): erweiterte FAQs + Kontaktformular, keine E-Mail im UI -->
-    <section class="view content-padding-bottom-compact" id="v-support" style="background:#F7F6F0; min-height:100vh; padding:20px;">
-      <div class="panel" style="padding:0; overflow:hidden;">
-        <h1 style="font-size:24px; font-weight:900; margin:20px 20px 0; padding-bottom:20px;">Support &amp; Hilfe</h1>
+    <section class="view content-padding-bottom-compact legal-unified-page" id="v-support">
+      <div class="panel legal-unified-panel">
+        <h1 class="legal-page-title">Support &amp; Hilfe</h1>
+        <p class="legal-page-subtitle">Schnelle Hilfe zu Bestellung, Abholnummer, Zahlung und Profil.</p>
 
         <!-- Erweiterte Kunden-FAQs (Zahlung, Stornierung, Account) -->
-        <div style="padding:0 20px 20px;">
-          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" style="width:100%; margin-bottom:20px; padding:14px 18px; background:rgba(255,215,0,0.12); border:2px solid rgba(255,215,0,0.35); border-radius:14px; text-align:left; cursor:pointer; display:flex; align-items:center; gap:12px;">
-            <span style="font-size:24px;">🧾</span>
-            <span style="font-size:15px; font-weight:700; color:#1a1a1a;">So funktioniert die Abholnummer (5 Schritte)</span>
-            <i data-lucide="chevron-right" style="width:18px;height:18px;color:#94a3b8;margin-left:auto;"></i>
+        <div class="legal-block">
+          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" class="faq-highlight-card faq-highlight-card--support">
+            <span class="faq-highlight-icon">🧾</span>
+            <span class="faq-highlight-title faq-highlight-title--support">So funktioniert die Abholnummer (5 Schritte)</span>
+            <i data-lucide="chevron-right" class="faq-highlight-chevron faq-highlight-chevron--support"></i>
           </button>
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 12px; color:#1a1a1a;">Häufige Fragen</h2>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Wie bezahle ich mein Essen?</summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Die Bezahlung erfolgt digital direkt über die Plattform. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
+          <h2 class="legal-section-title legal-section-title--plain">Häufige Fragen</h2>
+          <details class="legal-accordion-item">
+            <summary>Wie bezahle ich mein Essen?</summary>
+            <p class="legal-accordion-body">Die Bezahlung erfolgt digital über die Plattform. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Kann ich eine Bestellung stornieren?</summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Da die Mahlzeiten frisch für dich vorbereitet werden, ist eine Stornierung nach Ablauf des Zeitfensters leider nicht möglich. Details findest du in der Bestellübersicht.</p>
+          <details class="legal-accordion-item">
+            <summary>Kann ich eine Bestellung stornieren?</summary>
+            <p class="legal-accordion-body">Ob und bis wann eine Stornierung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorgaben.</p>
           </details>
-          <details style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.06); overflow:hidden; margin-bottom:8px;">
-            <summary style="padding:12px 14px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; list-style:none;">Wo finde ich meine Bestellungen / Account?</summary>
-            <p style="margin:0; padding:0 14px 14px 14px; font-size:14px; line-height:1.5; color:#555;">Alle Bestellungen und deine Profildaten findest du unter „Meins“ in der App.</p>
+          <details class="legal-accordion-item">
+            <summary>Wo finde ich meine Bestellungen / Account?</summary>
+            <p class="legal-accordion-body">Unter „Meins“ findest du dein Profil. Bestellungen und Belege siehst du dort, sobald du ein Profil angelegt hast.</p>
           </details>
         </div>
 
         <!-- Kontaktformular -->
-        <div style="padding:20px; border-top:1px solid #eee;">
-          <h2 style="font-size:16px; font-weight:800; margin:0 0 16px; color:#1a1a1a;">Nachricht senden</h2>
-          <form id="supportForm" style="display:flex; flex-direction:column; gap:14px;">
-            <label style="font-size:14px; font-weight:600; color:#334155;">Betreff</label>
-            <select id="supportSubject" required style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; background:#fff;">
+        <div class="legal-divider-block">
+          <h2 class="legal-section-title legal-section-title--plain legal-section-title--mb16">Nachricht senden</h2>
+          <form id="supportForm" class="support-form">
+            <label>Betreff</label>
+            <select id="supportSubject" required>
               <option value="">Bitte wählen</option>
               <option value="bestellung">Frage zu meiner Bestellung</option>
               <option value="abholnummer">Problem mit Abholnummer</option>
@@ -2370,162 +2378,223 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
               <option value="technisch">Technischer Fehler</option>
               <option value="sonstiges">Sonstiges</option>
             </select>
-            <label style="font-size:14px; font-weight:600; color:#334155;">Abholnummer (optional)</label>
-            <input type="text" id="supportPickupRef" placeholder="z.B. #1A" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; box-sizing:border-box;">
-            <label style="font-size:14px; font-weight:600; color:#334155;">Nachricht</label>
-            <textarea id="supportMessage" required rows="4" placeholder="Deine Nachricht…" style="width:100%; padding:14px 16px; border-radius:12px; border:2px solid rgba(0,0,0,.1); font-size:15px; resize:vertical; box-sizing:border-box;"></textarea>
-            <button type="submit" class="btn" id="btnSupportSubmit" style="width:100%; min-height:52px; font-weight:800; font-size:16px; border-radius:14px; background:var(--brand); color:#1a1a1a; border:none; cursor:pointer;">Nachricht senden</button>
+            <label>Abholnummer (optional)</label>
+            <input type="text" id="supportPickupRef" placeholder="z.B. A1">
+            <label>Nachricht</label>
+            <textarea id="supportMessage" required rows="4" placeholder="Deine Nachricht…"></textarea>
+            <button type="submit" class="btn support-submit" id="btnSupportSubmit">Nachricht senden</button>
           </form>
         </div>
 
-        <div style="margin-top:24px; padding:20px; text-align:center; font-size:13px; color:#94a3b8;">made with ❤️ by mittagio.de</div>
-<button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin:0 20px 20px; width:calc(100% - 40px);"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
+        <div class="legal-footer-note">made with ❤️ by Mittagio.de</div>
       </div>
     </section>
 
-    <!-- Anbieter-FAQ: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-legal-faq-provider" style="min-height:100vh; padding:20px;">
-      <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">FAQ für Anbieter</h1>
-        <div style="line-height:1.8; font-size:15px; color:#334155;">
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Wie funktioniert der Küchenmodus?</h3>
-            <p style="margin:0; color:#334155;">Der Küchenmodus ist dein digitales Cockpit. Hier siehst du live eingehende Bestellungen, kannst deine Mittagskarte verwalten und die Abholnummer-Liste für deine Küche ausdrucken oder per E-Mail versenden.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Warum gibt es eine Service-Pauschale von 0,89 €?</h3>
-            <p style="margin:0; color:#334155;">Diese Pauschale ist dein „Rundum-Sorglos-Paket". Wir übernehmen die komplette Zahlungsabwicklung und die Bankgebühren für dich. Zudem sparst du massiv Personalzeit an der Kasse und hast keinen manuellen Buchungsaufwand mehr.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Muss ich eine Mindestmenge an Essen angeben?</h3>
-            <p style="margin:0; color:#334155;">Nein. Du entscheidest flexibel, wann ein Gericht „Ausverkauft" ist. Ein Klick im Küchenmodus genügt, um das Angebot für den Tag zu beenden.</p>
-          </div>
-          <div style="margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
-            <h3 style="font-size:18px; font-weight:700; margin-bottom:8px; color:#1a1a1a;">Wie sicher ist die Auszahlung?</h3>
-            <p style="margin:0; color:#334155;">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Dein Umsatz wird gesammelt und regelmäßig direkt auf dein Bankkonto überwiesen – sauber aufgeschlüsselt für deine Buchhaltung.</p>
+    <!-- Anbieter-FAQ: einheitliche Rechtsseiten-Optik -->
+    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-faq-provider">
+      <div class="panel legal-unified-panel">
+        <h1 class="legal-page-title">FAQ für Anbieter</h1>
+        <p class="legal-page-subtitle">Kurz, klar und praxisnah: Antworten für deinen Küchenalltag mit Mittagio.</p>
+        <div class="legal-content-wrap">
+          <details class="legal-accordion-item">
+            <summary>Wie funktioniert der Küchenmodus?</summary>
+            <p class="legal-accordion-body">Im Küchenmodus siehst du eingehende Bestellungen in Echtzeit, verwaltest deine Mittagskarte und bearbeitest Abholnummern zentral an einer Stelle.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>Warum gibt es eine Service-Pauschale von 0,89 €?</summary>
+            <p class="legal-accordion-body">Die 0,89 € fallen nur je online vorbestelltem und bezahltem Abholnummer-Vorgang an. Vor-Ort-Essen ohne Online-Zahlung verursacht keine Abholnummer-Gebühr.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>Muss ich eine Mindestmenge an Essen angeben?</summary>
+            <p class="legal-accordion-body">Es gibt keine automatische Portionsverwaltung. Du kannst ein Angebot jederzeit manuell beenden oder als ausverkauft markieren.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>Wie sicher ist die Auszahlung?</summary>
+            <p class="legal-accordion-body">Wir arbeiten mit professionellen Zahlungsdienstleistern zusammen. Umsätze werden nachvollziehbar aufbereitet und gemäß Abrechnungslogik für deine Buchhaltung bereitgestellt.</p>
+          </details>
+          <div class="legal-feature-card">
+            <a href="#" id="linkInseratInfo" class="legal-feature-link"><span class="legal-feature-icon">📋</span> So funktioniert das Inserieren</a>
           </div>
         </div>
-        <div style="margin-top:24px; padding:16px; background:#f0fdf4; border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
-          <a href="#" id="linkInseratInfo" style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#059669; text-decoration:none;"><span style="font-size:18px;">📋</span> So funktioniert das Inserieren</a>
+        <div class="legal-footer-help">
+          Weitere Fragen? <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
-          Weitere Fragen? <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>
-        </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
     <!-- Anbieter Infoseite Inseratsflow: Hero + 5 Kern-Funktionen -->
-    <section class="view content-padding-bottom-compact" id="v-legal-inserat-info-provider" style="min-height:100vh; padding:20px;">
-      <div class="panel inserat-info-panel" style="padding:24px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06); background:#fff;">
-        <h1 class="inserat-info-hero-title" style="font-size:26px; font-weight:900; margin:0 0 12px; color:#1a1a1a; letter-spacing:-0.03em; line-height:1.2;">Inserieren in unter 30 Sekunden</h1>
-        <p class="inserat-info-hero-sub" style="font-size:16px; color:#64748b; margin:0 0 24px; line-height:1.5;">Erreiche hungrige Gäste direkt in deiner Umgebung – ohne Bindung, ohne Risiko.</p>
-        <ul class="inserat-info-hero-list" style="margin:0 0 32px; padding-left:20px; font-size:15px; color:#334155; line-height:1.7;">
-          <li style="margin-bottom:10px;"><strong>Gerichtsname:</strong> Intelligente Autovervollständigung (Kategorien &amp; Allergene).</li>
-          <li style="margin-bottom:10px;"><strong>Bild-Modul:</strong> Kamera, Upload oder 3 Profi-Vorschläge.</li>
-          <li style="margin-bottom:0;"><strong>Zeitfenster:</strong> Du bestimmst Start- und Endzeit (keine Bestandsführung).</li>
+    <section class="view content-padding-bottom-compact inserat-info-page" id="v-legal-inserat-info-provider">
+      <div class="panel inserat-info-panel">
+        <h1 class="inserat-info-hero-title">Inserieren in unter 30 Sekunden</h1>
+        <p class="inserat-info-hero-sub">Erreiche hungrige Gäste direkt in deiner Umgebung – ohne Bindung, ohne Risiko.</p>
+        <ul class="inserat-info-hero-list">
+          <li><strong>Gerichtsname:</strong> Intelligente Autovervollständigung (Kategorien &amp; Allergene).</li>
+          <li><strong>Bild-Modul:</strong> Kamera, Upload oder 3 Profi-Vorschläge.</li>
+          <li><strong>Zeitfenster:</strong> Du bestimmst Start- und Endzeit (keine automatische Portionsverwaltung).</li>
         </ul>
-        <h2 class="inserat-info-section-title" style="font-size:18px; font-weight:800; margin:0 0 20px; color:#1a1a1a;">Die 5 Kern-Funktionen</h2>
+        <h2 class="inserat-info-section-title">Die 5 Kern-Funktionen</h2>
         <div class="inserat-info-grid">
-          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
-            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🔄</div>
-            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Mehrweg</div>
-            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Aktiviere den Toggle, wenn du nachhaltige Pfandsysteme unterstützt.</p>
+          <div class="inserat-info-card">
+            <div class="inserat-info-icon">🔄</div>
+            <div class="inserat-info-label">Mehrweg</div>
+            <p class="inserat-info-text">Aktiviere den Toggle, wenn du nachhaltige Pfandsysteme unterstützt.</p>
           </div>
-          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
-            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🍴</div>
-            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Vor Ort</div>
-            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Standardmäßig aktiv – zeige Gästen, dass sie bei dir Platz nehmen können.</p>
+          <div class="inserat-info-card">
+            <div class="inserat-info-icon">🍴</div>
+            <div class="inserat-info-label">Vor Ort</div>
+            <p class="inserat-info-text">Standardmäßig aktiv – zeige Gästen, dass sie bei dir Platz nehmen können.</p>
           </div>
-          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
-            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">➕</div>
-            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Extras</div>
-            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Füge Beilagen oder Upgrades mit individuellem Aufpreis hinzu.</p>
+          <div class="inserat-info-card">
+            <div class="inserat-info-icon">➕</div>
+            <div class="inserat-info-label">Extras</div>
+            <p class="inserat-info-text">Füge Beilagen oder Upgrades mit individuellem Aufpreis hinzu.</p>
           </div>
-          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
-            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">⚠️</div>
-            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Allergene</div>
-            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Schnelle Auswahl über Kategorie-Pills und Kürzel für maximale Sicherheit.</p>
+          <div class="inserat-info-card">
+            <div class="inserat-info-icon">⚠️</div>
+            <div class="inserat-info-label">Allergene</div>
+            <p class="inserat-info-text">Schnelle Auswahl über Kategorie-Pills und Kürzel für maximale Sicherheit.</p>
           </div>
-          <div class="inserat-info-card" style="padding:16px; border-radius:14px; background:#f8fafc; border:1px solid rgba(0,0,0,0.06);">
-            <div class="inserat-info-icon" style="font-size:28px; margin-bottom:10px; line-height:1;">🕒</div>
-            <div class="inserat-info-label" style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Abholzeit</div>
-            <p class="inserat-info-text" style="margin:0; font-size:14px; color:#334155; line-height:1.5;">Definiere klar, wann das Gericht bereitsteht – für stressfreie Abläufe.</p>
+          <div class="inserat-info-card">
+            <div class="inserat-info-icon">🕒</div>
+            <div class="inserat-info-label">Abholzeit</div>
+            <p class="inserat-info-text">Definiere klar, wann das Gericht bereitsteht – für stressfreie Abläufe.</p>
           </div>
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:28px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
+        <button class="btn ghost btn-back inserat-info-back" type="button" onclick="goBackFromLegalPage()"><i data-lucide="chevron-left"></i> Zurück</button>
       </div>
     </section>
 
     <section class="view" id="v-legal-datenschutz">
       <div class="panel">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Datenschutzerklärung</h1>
-        <div style="line-height:1.8; font-size:15px;">
-          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
-          <p>
-            MQ Mittagio UG (haftungsbeschränkt)<br>
-            Langäcker 2, 73635 Rudersberg<br>
-            Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a><br>
-            Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
-          </p>
-          
-          <p style="margin-top:24px; font-weight:700;">Datenminimierung:</p>
-          <p>Wir speichern nur, was für die Zuordnung deiner Abholnummer und deiner Ernährungseinstellungen nötig ist.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Sitzungssicherheit:</p>
-          <p>Um Missbrauch vorzubeugen, erlauben wir nur eine aktive Session pro Account. Eine Neuanmeldung trennt bestehende Verbindungen.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Anbieter-Daten:</p>
-          <p>Kommunikation für Business-Partner erfolgt strikt über <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Abholnummer:</p>
-          <p>Die Abholnummer dient als Zahlungs-/Abholnachweis, zur Zuordnung und zum Missbrauchsschutz.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Online-Zahlung:</p>
-          <p>Online-Zahlung erfolgt über externe Zahlungsdienstleister (z.B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z.B. Kreditkartennummern).</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
-          <p>Daten werden nur an Zahlungsdienstleister und wenn gesetzlich erforderlich weitergegeben. Keine Werbeweitergabe.</p>
-          
-          <p style="margin-top:24px; font-weight:700;">Ihre Rechte:</p>
-          <p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Kontakt: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+        <h1 class="legal-page-title legal-page-title--tight">Datenschutzerklärung</h1>
+        <p class="legal-page-subtitle legal-page-subtitle--tight">Hier findest du transparent, welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
+        <div class="legal-content">
+          <div class="legal-accordion-group">
+            <details open class="legal-accordion-item">
+              <summary>1) Verantwortlicher</summary>
+              <div class="legal-accordion-body">
+                Mittagio.de<br>
+                Mike Quach<br>
+                Langäcker 2, 73635 Rudersberg<br>
+                Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>2) Zwecke und Rechtsgrundlagen</summary>
+              <div class="legal-accordion-body">
+                Wir verarbeiten personenbezogene Daten zur Bereitstellung der Plattform, zur Bestell- und Zahlungsabwicklung, zur Bereitstellung der Abholnummer,
+                zur Missbrauchsprävention und zur technischen Stabilität. Rechtsgrundlagen: Art. 6 Abs. 1 lit. b, lit. c und lit. f DSGVO.
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>3) Kategorien verarbeiteter Daten</summary>
+              <div class="legal-accordion-body">
+                Je nach Nutzung verarbeiten wir Kontaktdaten (z. B. E-Mail), Bestell-/Abholdaten (inkl. Abholnummer), Zahlungsstatusdaten,
+                technische Nutzungsdaten (z. B. Session-/Logdaten) sowie freiwillige Profilangaben (z. B. Ernährungseinstellungen).
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>4) Empfänger</summary>
+              <div class="legal-accordion-body">
+                Daten werden nur an erforderliche Empfänger übermittelt, insbesondere an den jeweiligen Anbieter zur Bestellabwicklung und an
+                eingebundene Zahlungsdienstleister zur Zahlungsabwicklung. Keine Weitergabe zu Werbezwecken.
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>5) Speicherdauer</summary>
+              <div class="legal-accordion-body">
+                Wir speichern Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.
+                Danach werden Daten gelöscht oder datenschutzkonform anonymisiert.
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>6) Pflicht zur Bereitstellung</summary>
+              <div class="legal-accordion-body">
+                Bestimmte Daten sind für zentrale Funktionen (z. B. Bestellung, Zahlung, Abholung) erforderlich. Ohne diese Daten können einzelne Leistungen
+                nicht bereitgestellt werden.
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>7) Drittlandübermittlung</summary>
+              <div class="legal-accordion-body">
+                Soweit Dienstleister außerhalb der EU/des EWR eingesetzt werden, erfolgt eine Übermittlung nur unter Beachtung der gesetzlichen Vorgaben
+                (z. B. Angemessenheitsbeschluss oder geeignete Garantien).
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>8) Deine Rechte</summary>
+              <div class="legal-accordion-body">
+                Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch.
+                Zudem besteht ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde. Kontakt:
+                <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.
+              </div>
+            </details>
+
+            <details class="legal-accordion-item">
+              <summary>9) Automatisierte Entscheidungen</summary>
+              <div class="legal-accordion-body">
+                Eine ausschließlich automatisierte Entscheidungsfindung im Sinne von Art. 22 DSGVO findet im Kundenbereich derzeit nicht statt.
+              </div>
+            </details>
+          </div>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid #eee; text-align:center; font-size:14px; color:#666;">
-          Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a> | Business: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a>
+        <div class="legal-footer-help legal-footer-help--plain">
+          Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
-    <!-- Datenschutz für Anbieter: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-legal-datenschutz-provider" style="min-height:100vh; padding:20px;">
-      <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
-        <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Datenschutzerklärung (Anbieter)</h1>
-        <div style="line-height:1.8; font-size:15px; color:#334155;">
-          <p style="font-weight:700; margin-bottom:12px;">Verantwortlicher:</p>
-          <p>
-            MQ Mittagio UG (haftungsbeschränkt)<br>
-            Langäcker 2, 73635 Rudersberg<br>
-            <strong>Business-Support:</strong> <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a><br>
-            Kunden-Hilfe: <a href="mailto:info@mittagio.de" style="color:#0A84FF;">info@mittagio.de</a>
-          </p>
-          <p style="margin-top:24px; font-weight:700;">Anbieter-Daten & Zugang:</p>
-          <p>Für deinen Anbieter-Zugang speichern wir E-Mail, Passwort (verschlüsselt) und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
-          <p style="margin-top:24px; font-weight:700;">Sitzung & Sicherheit:</p>
-          <p>Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
-          <p style="margin-top:24px; font-weight:700;">Bestell- & Abholdaten:</p>
-          <p>Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
-          <p style="margin-top:24px; font-weight:700;">Zahlungsdienstleister:</p>
-          <p>Online-Zahlungen laufen über externe Anbieter (z. B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z. B. Kreditkartennummern).</p>
-          <p style="margin-top:24px; font-weight:700;">Weitergabe:</p>
-          <p>Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
-          <p style="margin-top:24px; font-weight:700;">Deine Rechte:</p>
-          <p>Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a>.</p>
+    <!-- Datenschutz für Anbieter: einheitliche Rechtsseiten-Optik -->
+    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-datenschutz-provider">
+      <div class="panel legal-unified-panel">
+        <h1 class="legal-page-title">Datenschutzerklärung (Anbieter)</h1>
+        <p class="legal-page-subtitle">Transparenz für deinen Business-Bereich: Welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
+        <div class="legal-content-wrap">
+          <details open class="legal-accordion-item">
+            <summary>1) Verantwortlicher</summary>
+            <div class="legal-accordion-body">
+              Mittagio.de<br>
+              Mike Quach<br>
+              Langäcker 2, 73635 Rudersberg<br>
+              <strong>Business-Support:</strong> <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a><br>
+              Kunden-Hilfe: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
+            </div>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>2) Anbieter-Daten &amp; Zugang</summary>
+            <p class="legal-accordion-body">Für deinen Anbieter-Zugang speichern wir E-Mail, erforderliche Zugangsdaten und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>3) Sitzung &amp; Sicherheit</summary>
+            <p class="legal-accordion-body">Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>4) Bestell- &amp; Abholdaten</summary>
+            <p class="legal-accordion-body">Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>5) Zahlungsdienstleister</summary>
+            <p class="legal-accordion-body">Online-Zahlungen laufen über externe Anbieter (z. B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z. B. Kreditkartennummern).</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>6) Weitergabe</summary>
+            <p class="legal-accordion-body">Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>7) Deine Rechte</summary>
+            <p class="legal-accordion-body">Du hast insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.</p>
+          </details>
         </div>
-        <div style="margin-top:32px; padding-top:20px; border-top:1px solid rgba(0,0,0,0.08); text-align:center; font-size:14px; color:#64748b;">
-          <a href="mailto:support@mittagio.de" style="color:#0A84FF;">support@mittagio.de</a> · Business-Bereich
+        <div class="legal-footer-help">
+          <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a> · Business-Bereich
         </div>
-        <button class="btn ghost btn-back" type="button" onclick="goBackFromLegalPage()" style="margin-top:20px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
@@ -2535,31 +2604,34 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Version</h1>
         <p style="font-size:16px; color:#555; margin-bottom:16px;">Aktuelle App-Version: <strong>v1.0.0</strong></p>
         <p style="font-size:14px; color:#666; line-height:1.6;">Changelog und technische Details findest du hier. Bei Fragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
-        <button class="btn ghost btn-back" type="button" onclick="history.back();" style="margin-top:24px; width:100%;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
       </div>
     </section>
 
     <section class="view" id="v-legal-agb-onboarding">
       <div class="panel">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB</h2>
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Anbieter)</h2>
         <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto;">
           <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
           <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
           
           <p style="margin-top:16px;"><strong>Kosten:</strong></p>
           <ul style="padding-left:20px; margin:8px 0;">
-            <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-            <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+            <li>Option A: 4,99 € zzgl. MwSt. pro Veröffentlichung (`Nur Inserat`).</li>
+            <li>Option B: 0,89 € zzgl. MwSt. pro erfolgreicher Abholung/Bestellung (`Gratis inserieren` mit Abholnummer, inkl. Zahlungsabwicklung).</li>
           </ul>
           
           <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
-          <p>Abholnummer = Zahlungs- & Abholnachweis. Abwicklungsgebühr fällt auch bei Nicht-Abholung an.</p>
+          <p>Die Abholnummer dient als Zahlungs- und Abholnachweis bei Bestellungen im Abholnummer-Modus.</p>
+          <p>Vor-Ort-Essen ohne Online-Zahlung: keine Abholnummer-Gebühr.</p>
+          
+          <p style="margin-top:16px;"><strong>Storno, Erstattung, Nichtabholung:</strong></p>
+          <p>Ob und bis wann eine Stornierung oder Erstattung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorgaben. Bei Nichtabholung gelten die Bedingungen des jeweiligen Angebots.</p>
           
           <p style="margin-top:16px;"><strong>Verantwortung:</strong></p>
           <p>Anbieter ist verantwortlich für Inhalte/Speisen/gesetzliche Vorgaben.</p>
           
           <p style="margin-top:16px;"><strong>Support:</strong></p>
-          <p>Business-Anfragen: <a href="mailto:support@mittagio.de" style="color:var(--brand);">support@mittagio.de</a></p>
+          <p>Business-Anfragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
         </div>
       </div>
     </section>
@@ -2570,7 +2642,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="faq">
             <details>
               <summary>Was ist Mittagio?</summary>
-              <p>Mittagio ist eine Online-Plattform, auf der du dein Mittagsangebot sichtbar machst – schnell, einfach und flexibel.</p>
+              <p>Mittagio ist eine Online-Plattform, über die du dein Mittagsangebot veröffentlichen und verwalten kannst.</p>
             </details>
             <details>
               <summary>Wie verdiene ich damit Zeit?</summary>
@@ -2578,7 +2650,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </details>
             <details>
               <summary>Muss Online-Zahlung aktiv sein?</summary>
-              <p>Nein. Online-Zahlung ist optional. Abholnummern gibt’s nur bei Online-Zahlung.</p>
+              <p>Nein. Online-Zahlung ist optional. Vor-Ort-Essen ohne Online-Zahlung hat keine Abholnummer-Gebühr; eine Abholnummer entsteht nur bei online vorbestellten und bezahlten Vorgängen.</p>
             </details>
             <details>
               <summary>Wie kann ich mein Angebot teilen?</summary>
@@ -2586,7 +2658,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </details>
             <details>
               <summary>Inseratsgebühr / Abholnummer?</summary>
-              <p>Inseratsgebühr: 4,99 € einmalig heute pro Gericht. Abholnummer: 0,89 € pro Vorgang (inkl. aller Bankgebühren). Keine Mindestlaufzeit.</p>
+              <p>Pro Veröffentlichung wählst du: „Nur Inserat“ für 4,99 € oder „Gratis inserieren“ mit Abholnummer (0,89 € je erfolgreicher Abholung/Bestellung). Keine Mindestlaufzeit.</p>
             </details>
             <details>
               <summary>Wie funktionieren Abholungen?</summary>
@@ -2598,7 +2670,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </details>
             <details>
               <summary>Was kostet die Abholnummer?</summary>
-              <p>0,89 € pro Vorgang. Auch mit mehreren Gerichten. Inkl. aller Bank- & Verwaltungsgebühren für Kartenzahlung.</p>
+              <p>0,89 € je online vorbestelltem und bezahltem Abholnummer-Vorgang (inkl. Zahlungsabwicklung und Bankgebühren). Vor-Ort-Essen ohne Online-Zahlung: 0,00 € Abholnummer-Gebühr.</p>
             </details>
             <details>
               <summary>Wie spare ich Zeit?</summary>
@@ -2974,7 +3046,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="sDistanceInfo" class="sheet-detail-logistics is-hidden" aria-hidden="true"></div>
 
         <div id="sProviderAddressRow" class="sheet-detail-provider-address-row">
-          <i data-lucide="map-pin" style="width:18px;height:18px;color:#94a3b8; flex-shrink:0;"></i>
           <span id="sProviderAddress" class="sheet-detail-provider-address-text">Adresse</span>
         </div>
         <div id="sInfoRow" class="sheet-detail-meta-row"></div>
@@ -3492,7 +3563,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div style="padding-top:16px; border-top:1px solid #eee; text-align:center;">
       <p style="margin:0; font-size:12px; color:#666; line-height:1.5;">
         Du möchtest Küche und Kasse gleichzeitig vernetzen?<br>
-        <a href="mailto:support@mittagio.de" style="color:#E34D4D; text-decoration:none; font-weight:600;">Melde dich bei Mike für das Team-Upgrade.</a>
+        <a href="mailto:info@mittagio.de" style="color:#E34D4D; text-decoration:none; font-weight:600;">Melde dich bei Mike für das Team-Upgrade.</a>
       </p>
     </div>
   </div>

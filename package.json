@@ -4,7 +4,9 @@
   "description": "Mittagio – Mittagsangebote & Abholnummer",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "dev:local": "vite --host localhost --port 5173",
+    "dev:lan": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build && node scripts/copy-app.js",
     "preview": "vite preview",
     "check:ui-state": "node scripts/check-ui-state.js"

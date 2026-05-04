@@ -2948,7 +2948,7 @@
     #wizard[data-flow="listing"] .photo-section-ebay,
     #wizard[data-flow="listing"] .photo-section {
       width: 100%;
-      width: 100vw;
+      width: 100%;
       height: 190px;
       min-height: 190px;
       max-height: 190px;
@@ -5727,6 +5727,443 @@
     #v-legal-faq-provider details summary::marker{content:''}
     details p{margin:10px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
     .profile-faq-accordion details summary::-webkit-details-marker{display:none}
+    /* Rechtliches/Support – einheitliche Optik (Kundenbereich) */
+    .legal-unified-page{
+      background:#f7f6f0;
+      min-height:100vh;
+      padding:20px;
+    }
+    .legal-unified-panel{
+      padding:0;
+      overflow:hidden;
+    }
+    .faq-tabs{
+      display:flex;
+      border-bottom:2px solid #eee;
+      background:#fff;
+    }
+    .faq-tab-btn{
+      flex:1;
+      padding:16px;
+      background:#f9f9f9;
+      border:none;
+      border-bottom:3px solid transparent;
+      font-weight:600;
+      font-size:15px;
+      color:#666;
+      cursor:pointer;
+      transition:background .15s ease,color .15s ease,border-color .15s ease;
+    }
+    .faq-tab-btn.faq-tab-btn--active{
+      background:#fff;
+      border-bottom-color:#ffd700;
+      font-weight:700;
+      color:#334155;
+    }
+    .faq-highlight-card{
+      width:100%;
+      margin-bottom:20px;
+      padding:18px 20px;
+      background:linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0.08) 100%);
+      border:2px solid rgba(255,215,0,0.4);
+      border-radius:16px;
+      text-align:left;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .faq-highlight-card--support{
+      padding:14px 18px;
+      background:rgba(255,215,0,0.12);
+      border-color:rgba(255,215,0,0.35);
+      border-radius:14px;
+      gap:12px;
+    }
+    .faq-highlight-icon{
+      font-size:28px;
+      line-height:1;
+    }
+    .faq-highlight-card--support .faq-highlight-icon{
+      font-size:24px;
+    }
+    .faq-highlight-content{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .faq-highlight-title{
+      font-size:16px;
+      font-weight:800;
+      color:#1a1a1a;
+      line-height:1.2;
+    }
+    .faq-highlight-title--support{
+      font-size:15px;
+      font-weight:700;
+    }
+    .faq-highlight-subtitle{
+      font-size:13px;
+      color:#64748b;
+      line-height:1.3;
+    }
+    .faq-highlight-chevron{
+      width:20px;
+      height:20px;
+      color:#94a3b8;
+      margin-left:auto;
+      flex-shrink:0;
+    }
+    .faq-highlight-chevron--support{
+      width:18px;
+      height:18px;
+    }
+    .legal-page-title{
+      font-size:24px;
+      font-weight:900;
+      margin:20px 20px 4px;
+      color:#1a1a1a;
+    }
+    .legal-page-title--tight{
+      margin:0 0 8px;
+    }
+    .legal-page-title--faq{
+      margin:20px 20px 0;
+      padding-bottom:20px;
+    }
+    .legal-page-subtitle{
+      margin:0 20px 20px;
+      font-size:14px;
+      line-height:1.6;
+      color:#64748b;
+    }
+    .legal-page-subtitle--tight{
+      margin:0 0 20px;
+    }
+    .legal-content{
+      line-height:1.8;
+      font-size:15px;
+      color:#334155;
+    }
+    .legal-content p{
+      color:#475569;
+    }
+    .legal-content .legal-clause{
+      margin-top:20px;
+    }
+    .legal-content .legal-clause:first-child{
+      margin-top:0;
+    }
+    .legal-accordion-group{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .legal-accordion-item{
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:none;
+      padding:0;
+    }
+    .legal-accordion-item + .legal-accordion-item{
+      margin-top:0;
+    }
+    .legal-accordion-item > summary{
+      padding:14px 16px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:800;
+      line-height:1.45;
+      color:#1f2937;
+      list-style:none;
+    }
+    .legal-accordion-body{
+      padding:0 16px 16px;
+      font-size:15px;
+      line-height:1.6;
+      color:#475569;
+    }
+    .legal-section-title{
+      font-size:16px;
+      font-weight:800;
+      margin:0 0 12px;
+      color:#1a1a1a;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    .legal-section-title--plain{
+      text-transform:none;
+      letter-spacing:0;
+    }
+    .legal-content-wrap{
+      padding:20px;
+      line-height:1.8;
+      font-size:15px;
+    }
+    .legal-block{
+      padding:0 20px 20px;
+    }
+    .legal-divider-block{
+      padding:20px;
+      border-top:1px solid #eee;
+    }
+    .legal-footer-note{
+      margin-top:24px;
+      padding:20px;
+      text-align:center;
+      font-size:13px;
+      color:#94a3b8;
+    }
+    .legal-footer-note--divider{
+      border-top:1px solid #eee;
+    }
+    .legal-footer-help{
+      margin-top:32px;
+      padding:20px;
+      border-top:1px solid #eee;
+      text-align:center;
+      font-size:14px;
+      color:#64748b;
+      background:#f9f9f9;
+    }
+    .legal-footer-help--plain{
+      background:transparent;
+    }
+    .legal-section-title--mb16{
+      margin-bottom:16px;
+    }
+    .legal-accordion-item--spaced{
+      margin-bottom:16px;
+    }
+    .support-form{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .support-form label{
+      font-size:14px;
+      font-weight:600;
+      color:#334155;
+    }
+    .support-form select,
+    .support-form input,
+    .support-form textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:12px;
+      border:2px solid rgba(0,0,0,.1);
+      font-size:15px;
+      background:#fff;
+      box-sizing:border-box;
+    }
+    .support-form textarea{
+      resize:vertical;
+    }
+    .support-form .support-submit{
+      width:100%;
+      min-height:52px;
+      font-weight:800;
+      font-size:16px;
+      border-radius:14px;
+      background:var(--brand);
+      color:#1a1a1a;
+      border:none;
+      cursor:pointer;
+    }
+    .legal-mail-link{
+      color:var(--brand);
+    }
+    .provider-legal-header{
+      margin-bottom:24px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .provider-legal-back-btn{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:#fff;
+      border:none;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+    .provider-legal-back-btn i{
+      width:22px;
+      height:22px;
+      color:#1a1a1a;
+    }
+    .provider-legal-title{
+      margin:0;
+      font-size:22px;
+      font-weight:800;
+      color:#1a1a1a;
+      letter-spacing:-0.02em;
+    }
+    .legal-accordion-group--wide{
+      gap:12px;
+    }
+    .legal-accordion-item--wide > summary{
+      padding:18px 20px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:16px;
+      font-weight:700;
+      color:#1a1a1a;
+    }
+    .legal-accordion-body--wide{
+      padding:0 20px 20px;
+      line-height:1.7;
+      color:#3a3a3c;
+    }
+    .legal-accordion-body--wide p{
+      margin:0 0 12px;
+      font-size:15px;
+      color:#3a3a3c;
+      line-height:1.7;
+    }
+    .legal-accordion-body--wide p:last-child{
+      margin-bottom:0;
+    }
+    .legal-accordion-body--wide ul{
+      margin:0 0 12px;
+      padding-left:20px;
+    }
+    .legal-accordion-body--wide li{
+      margin:0 0 8px;
+    }
+    .legal-accordion-body--wide li:last-child{
+      margin-bottom:0;
+    }
+    .legal-paragraph-id{
+      color:#8e8e93;
+      flex-shrink:0;
+    }
+    .legal-contact-card{
+      margin-top:32px;
+      padding:24px;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.06);
+      border:1px solid rgba(0,0,0,0.06);
+    }
+    .legal-contact-card-title{
+      margin:0 0 12px;
+      font-size:14px;
+      font-weight:700;
+      color:#8e8e93;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+    .legal-contact-card p{
+      margin:0;
+      font-size:15px;
+      line-height:1.6;
+      color:#3a3a3c;
+    }
+    .legal-feature-card{
+      margin-top:24px;
+      padding:16px;
+      background:#f0fdf4;
+      border-radius:12px;
+      border:1px solid rgba(16,185,129,0.2);
+    }
+    .legal-feature-link{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:15px;
+      font-weight:700;
+      color:#059669;
+      text-decoration:none;
+    }
+    .legal-feature-link .legal-feature-icon{
+      font-size:18px;
+    }
+    .inserat-info-page{
+      min-height:100vh;
+      padding:20px;
+    }
+    .inserat-info-panel{
+      padding:24px !important;
+      border-radius:16px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.06);
+      box-shadow:0 2px 12px rgba(0,0,0,0.06);
+    }
+    .inserat-info-hero-title{
+      font-size:26px;
+      font-weight:900;
+      margin:0 0 12px;
+      color:#1a1a1a;
+      letter-spacing:-0.03em;
+      line-height:1.2;
+    }
+    .inserat-info-hero-sub{
+      font-size:16px;
+      color:#64748b;
+      margin:0 0 24px;
+      line-height:1.5;
+    }
+    .inserat-info-hero-list{
+      margin:0 0 32px;
+      padding-left:20px;
+      font-size:15px;
+      color:#334155;
+      line-height:1.7;
+    }
+    .inserat-info-hero-list li{
+      margin-bottom:10px;
+    }
+    .inserat-info-hero-list li:last-child{
+      margin-bottom:0;
+    }
+    .inserat-info-section-title{
+      font-size:18px;
+      font-weight:800;
+      margin:0 0 20px;
+      color:#1a1a1a;
+    }
+    .inserat-info-card{
+      padding:16px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid rgba(0,0,0,0.06);
+    }
+    .inserat-info-icon{
+      font-size:28px;
+      margin-bottom:10px;
+      line-height:1;
+    }
+    .inserat-info-label{
+      font-size:12px;
+      font-weight:800;
+      color:#64748b;
+      text-transform:uppercase;
+      letter-spacing:0.04em;
+      margin-bottom:6px;
+    }
+    .inserat-info-text{
+      margin:0;
+      font-size:14px;
+      color:#334155;
+      line-height:1.5;
+    }
+    .inserat-info-back{
+      margin-top:28px;
+      width:100%;
+    }
+    .inserat-info-back i{
+      width:18px;
+      height:18px;
+    }
 
     /* helper */
     .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.25}
@@ -5997,6 +6434,7 @@
     body:not(.provider-mode) #v-discover > .cust-header-sticky,
     body:not(.provider-mode) #v-fav > .cust-header-sticky,
     body:not(.provider-mode) #v-fav-providers > .cust-header-sticky,
+    body:not(.provider-mode) #v-orders > .cust-header-sticky,
     body:not(.provider-mode) #v-cart > .cust-header-sticky,
     body:not(.provider-mode) #v-profile > .cust-header-sticky{
       position: fixed !important;
@@ -6015,6 +6453,7 @@
     body:not(.provider-mode) #v-discover.view.active,
     body:not(.provider-mode) #v-fav.view.active,
     body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-orders.view.active,
     body:not(.provider-mode) #v-cart.view.active,
     body:not(.provider-mode) #v-profile.view.active{
       display: flex !important;
@@ -6030,12 +6469,14 @@
     body:not(.provider-mode) #v-discover.view.active{ --customer-header-offset: 56px; }
     body:not(.provider-mode) #v-fav.view.active,
     body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-orders.view.active,
     body:not(.provider-mode) #v-cart.view.active,
     body:not(.provider-mode) #v-profile.view.active{ --customer-header-offset: 72px; }
     /* WICHTIG: Keine transform-Animation auf aktiver Customer-View, sonst scrollt fixed Header mit */
     body:not(.provider-mode) #v-discover.view.active,
     body:not(.provider-mode) #v-fav.view.active,
     body:not(.provider-mode) #v-fav-providers.view.active,
+    body:not(.provider-mode) #v-orders.view.active,
     body:not(.provider-mode) #v-cart.view.active,
     body:not(.provider-mode) #v-profile.view.active{
       animation: none !important;
@@ -6069,6 +6510,7 @@
     }
     body:not(.provider-mode) #v-fav .customer-main-wrap,
     body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
+    body:not(.provider-mode) #v-orders .customer-main-wrap,
     body:not(.provider-mode) #v-cart .customer-main-wrap,
     body:not(.provider-mode) #v-profile .customer-main-wrap{
       flex: 1 1 auto;
@@ -6083,6 +6525,7 @@
     }
     body:not(.provider-mode) #v-fav > .cust-header-sticky > div,
     body:not(.provider-mode) #v-fav-providers > .cust-header-sticky > div,
+    body:not(.provider-mode) #v-orders > .cust-header-sticky > div,
     body:not(.provider-mode) #v-cart > .cust-header-sticky > div,
     body:not(.provider-mode) #v-profile > .cust-header-sticky > div{
       transition: padding 180ms ease, min-height 180ms ease;
@@ -6090,6 +6533,7 @@
     body:not(.provider-mode) #v-discover > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-fav-providers > .cust-header-sticky.is-scrolled,
+    body:not(.provider-mode) #v-orders > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled,
     body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled{
       background: rgba(255, 255, 255, 0.9);
@@ -6100,6 +6544,7 @@
     }
     body:not(.provider-mode) #v-fav > .cust-header-sticky.is-scrolled > div,
     body:not(.provider-mode) #v-fav-providers > .cust-header-sticky.is-scrolled > div,
+    body:not(.provider-mode) #v-orders > .cust-header-sticky.is-scrolled > div,
     body:not(.provider-mode) #v-cart > .cust-header-sticky.is-scrolled > div,
     body:not(.provider-mode) #v-profile > .cust-header-sticky.is-scrolled > div{
       padding-top: 10px !important;
@@ -7425,7 +7870,7 @@
     .cart-icon-breathe {
       animation: cartIconBreathe 0.45s ease-out;
     }
-    /* Mittagsbox: Aktive Session – pulsierender Status-Punkt */
+    /* Mittagsbox: Aktive Abholnummer – pulsierender Status-Punkt */
     @keyframes mittagsbox-session-pulse {
       0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 3px rgba(34,197,94,0.3); }
       50% { opacity: 0.85; transform: scale(1.15); box-shadow: 0 0 0 6px rgba(34,197,94,0.2); }
@@ -11212,6 +11657,15 @@
       overflow:visible;
       padding-bottom:calc(var(--customer-nav-total-height, calc(78px + env(safe-area-inset-bottom, 0px))) + 12px);
     }
+    body:not(.provider-mode) #v-order-success.view.active{
+      display:block !important;
+      min-height:var(--app-height) !important;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(var(--customer-nav-total-height, calc(78px + env(safe-area-inset-bottom, 0px))) + 16px) !important;
+      box-sizing:border-box;
+    }
     #v-checkout .checkout-card{
       padding:16px;
       border-radius:20px;
@@ -12577,7 +13031,7 @@
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  width: 100vw !important;
+  width: 100% !important;
   background: #ffffff !important;
   border-top: 1px solid #ebebeb !important;
   padding: 12px 24px calc(16px + env(safe-area-inset-bottom)) !important;
@@ -13257,7 +13711,8 @@ body:not(.provider-mode) #v-support,
 body:not(.provider-mode) #v-legal-impressum,
 body:not(.provider-mode) #v-legal-agb-kurz,
 body:not(.provider-mode) #v-legal-datenschutz,
-body:not(.provider-mode) #v-legal-faq{
+body:not(.provider-mode) #v-legal-faq,
+body:not(.provider-mode) #v-version{
   padding: 0 max(20px, env(safe-area-inset-right, 0px)) calc(var(--content-padding-bottom-compact) + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)) !important;
   margin-top: 0 !important;
 }
@@ -13272,7 +13727,8 @@ body:not(.provider-mode) #v-support.view.active,
 body:not(.provider-mode) #v-legal-impressum.view.active,
 body:not(.provider-mode) #v-legal-agb-kurz.view.active,
 body:not(.provider-mode) #v-legal-datenschutz.view.active,
-body:not(.provider-mode) #v-legal-faq.view.active{
+body:not(.provider-mode) #v-legal-faq.view.active,
+body:not(.provider-mode) #v-version.view.active{
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -13287,14 +13743,16 @@ body:not(.provider-mode) #v-support > .panel,
 body:not(.provider-mode) #v-legal-impressum > .panel,
 body:not(.provider-mode) #v-legal-agb-kurz > .panel,
 body:not(.provider-mode) #v-legal-datenschutz > .panel,
-body:not(.provider-mode) #v-legal-faq > .panel{
+body:not(.provider-mode) #v-legal-faq > .panel,
+body:not(.provider-mode) #v-version > .panel{
   margin-top: 0 !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
 }
 
 #wizard[data-flow="listing"] {
   bottom: 0 !important;
   height: 100vh !important;
-  width: 100vw !important;
+  width: 100% !important;
   z-index: 100000 !important;
 }
 
@@ -13311,7 +13769,7 @@ body:not(.provider-mode) #v-legal-faq > .panel{
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: var(--app-height);
   background: #ffffff !important;
   z-index: 100;
@@ -13373,7 +13831,7 @@ body.wizard-inserat-open #wizard.sheet--kitchen.active {
   visibility: visible !important;
   opacity: 1 !important;
   transform: translateY(0) !important;
-  width: 100vw !important;
+  width: 100% !important;
   height: 100vh !important;
   max-height: 100vh !important;
 }
@@ -16465,8 +16923,8 @@ body.provider-mode.wizard-inserat-open #wizard[data-flow="listing"] #inserat-fix
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 !important;
     border-radius: 0 !important;
     background: #ffffff !important;
@@ -16555,6 +17013,8 @@ body:not(.provider-mode) #v-orders .customer-main-wrap{
    - kein leerer Bottom-Scroll auf der ganzen View
    - nur der Inhaltsbereich scrollt bei Bedarf */
 body:not(.provider-mode) #v-fav.view.active,
+body:not(.provider-mode) #v-fav-providers.view.active,
+body:not(.provider-mode) #v-orders.view.active,
 body:not(.provider-mode) #v-cart.view.active,
 body:not(.provider-mode) #v-profile.view.active{
   display:flex !important;
@@ -16564,6 +17024,8 @@ body:not(.provider-mode) #v-profile.view.active{
   overflow:hidden !important;
 }
 body:not(.provider-mode) #v-fav .customer-main-wrap,
+body:not(.provider-mode) #v-fav-providers .customer-main-wrap,
+body:not(.provider-mode) #v-orders .customer-main-wrap,
 body:not(.provider-mode) #v-profile .customer-main-wrap{
   flex:1 1 auto !important;
   min-height:0 !important;

@@ -1078,7 +1078,7 @@
    * @property {string} [stripeCheckoutSessionId]
    * @property {string} [stripePaymentIntentId]
    * @property {string} [receiptEmail]
-   * @property {string} [pickupCode] - nur bei PAID (Format: "2B")
+   * @property {string} [pickupCode] - nur bei PAID (Format: "A1")
    * @property {number} [pickupCodeActivatedAt] - nur bei PAID
    * @property {string} [pickupDate] - ISO date "YYYY-MM-DD"
    * @property {string} [pickupWindow] - e.g. "11:30–14:30"
@@ -1262,7 +1262,7 @@
   let activeCat = null;
   let activeDay = isoDate(new Date());
   let providerWeekDay = isoDate(new Date());
-  let pickupSort = 'code'; // Default: sort by code (1A, 1B, 1C, 2A, 2B...)
+  let pickupSort = 'code'; // Default: sort by code (A1, A2, B1, B2...)
   let pickupFilter = 'offen'; // 'offen' | 'abgeholt'
   let cookbookCategory = 'Alle'; // Alle | Fleisch | Veggie | Vegan
   let cookbookMagazineIndex = 0; // aktuell angezeigte Magazin-Karte (filtered[cookbookMagazineIndex])
@@ -6376,6 +6376,31 @@
     const mm = String(eta.getMinutes()).padStart(2, '0');
     return hh + ':' + mm;
   }
+  function syncDiscoverDetailScrollLock(){
+    const body = document.body;
+    const root = document.documentElement;
+    if(!body || !root) return;
+    const shouldLock = body.classList.contains('discover-detail-open') || body.classList.contains('detail-distance-open');
+    if(shouldLock){
+      if(!body.dataset.detailPrevOverflow) body.dataset.detailPrevOverflow = body.style.overflow || '';
+      if(!body.dataset.detailPrevOverscroll) body.dataset.detailPrevOverscroll = body.style.overscrollBehavior || '';
+      if(!root.dataset.detailPrevOverflow) root.dataset.detailPrevOverflow = root.style.overflow || '';
+      if(!root.dataset.detailPrevOverscroll) root.dataset.detailPrevOverscroll = root.style.overscrollBehavior || '';
+      body.style.setProperty('overflow', 'hidden', 'important');
+      body.style.setProperty('overscroll-behavior', 'none', 'important');
+      root.style.setProperty('overflow', 'hidden', 'important');
+      root.style.setProperty('overscroll-behavior', 'none', 'important');
+      return;
+    }
+    body.style.overflow = body.dataset.detailPrevOverflow || '';
+    body.style.overscrollBehavior = body.dataset.detailPrevOverscroll || '';
+    root.style.overflow = root.dataset.detailPrevOverflow || '';
+    root.style.overscrollBehavior = root.dataset.detailPrevOverscroll || '';
+    delete body.dataset.detailPrevOverflow;
+    delete body.dataset.detailPrevOverscroll;
+    delete root.dataset.detailPrevOverflow;
+    delete root.dataset.detailPrevOverscroll;
+  }
   function closeDetailDistanceSheet(){
     const bd = document.getElementById('detailDistanceBd');
     const sheet = document.getElementById('detailDistanceSheet');
@@ -6385,6 +6410,7 @@
       sheet.setAttribute('aria-hidden', 'true');
     }
     if(document.body) document.body.classList.remove('detail-distance-open');
+    syncDiscoverDetailScrollLock();
   }
   function openDetailDistanceSheet(ctx){
     const bd = document.getElementById('detailDistanceBd');
@@ -6461,6 +6487,7 @@
     else if(typeof haptic === 'function') haptic(8);
     else if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
     if(document.body) document.body.classList.add('detail-distance-open');
+    syncDiscoverDetailScrollLock();
     bd.classList.add('active');
     sheet.classList.add('active');
     sheet.setAttribute('aria-hidden', 'false');
@@ -6681,18 +6708,9 @@
         const timeEl = document.createElement('div');
         setVisible(timeEl, 'flex');
         timeEl.style.alignItems = 'center';
-        timeEl.style.gap = '6px';
-        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>${iconMarkup('clock')}`;
+        timeEl.style.gap = '0';
+        timeEl.innerHTML = `<span>${esc(detailPickupWindow)}</span>`;
         infoRowEl.appendChild(timeEl);
-      }
-      const foodTypeIcon = o.category === 'Vegan' ? 'leaf' : 
-                           o.category === 'Veggie' ? 'carrot' : 
-                           o.category === 'Fisch' ? 'fish' :
-                           o.category === 'Mit Fleisch' ? 'drumstick' : '';
-      if(foodTypeIcon){
-        const foodEl = document.createElement('div');
-        foodEl.innerHTML = iconMarkup(foodTypeIcon);
-        infoRowEl.appendChild(foodEl);
       }
     }
     
@@ -6726,10 +6744,7 @@
         var stdPillsHtml = uniq.length ? uniq.map(c => '<span class="allergen-pill">' + (typeof esc === 'function' ? esc(c) : c) + '</span>').join('') : '';
         var codesText = [uniq.join(', '), customAllergenArr.join(', ')].filter(Boolean).join(' · ') || '–';
         if(sAllergensCodes) sAllergensCodes.textContent = codesText;
-        if(sAllergensCodesWrap){
-          var wrapInner = (stdPillsHtml || customPillsHtml) ? (stdPillsHtml + customPillsHtml) : '<span class="allergen-pill" style="opacity:0.7;">–</span>';
-          sAllergensCodesWrap.innerHTML = wrapInner;
-        }
+        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = (stdPillsHtml || customPillsHtml) ? (stdPillsHtml + customPillsHtml) : '';
         if(sAllergens){
           const list = uniq.map(c => {
             const label = ALLERGENE_STANDARD[c];
@@ -6750,8 +6765,8 @@
         }
       } else {
         show(aw, 'flex');
-        if(sAllergensCodes) sAllergensCodes.textContent = '–';
-        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '<span class="allergen-pill" style="opacity:0.7;">–</span>';
+        if(sAllergensCodes) sAllergensCodes.textContent = '';
+        if(sAllergensCodesWrap) sAllergensCodesWrap.innerHTML = '';
       }
     }
 
@@ -7004,6 +7019,7 @@
 
     updateSheetFavs();
     if(document.body) document.body.classList.add('discover-detail-open');
+    syncDiscoverDetailScrollLock();
     document.getElementById('bd').classList.add('active');
     document.getElementById('sheet').classList.add('active');
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
@@ -7034,6 +7050,7 @@
   function closeSheet(){
     if(document.body) document.body.classList.remove('discover-detail-open');
     if(document.body) document.body.classList.remove('detail-distance-open');
+    syncDiscoverDetailScrollLock();
     document.getElementById('bd').classList.remove('active');
     document.getElementById('sheet').classList.remove('active');
     
@@ -7259,6 +7276,13 @@
     // FAQ Sheet schließen
     if(document.getElementById('faqSheet') && document.getElementById('faqSheet').classList.contains('active')){
       closeFaqSheet();
+      e.preventDefault();
+      pushViewState(null, location.pathname);
+      return;
+    }
+    // Meins: "Mittagio in 5 Schritten" Sheet schließen
+    if(document.getElementById('profileHowItWorksSheet') && document.getElementById('profileHowItWorksSheet').classList.contains('active')){
+      if(typeof closeProfileHowItWorksSheet === 'function') closeProfileHowItWorksSheet();
       e.preventDefault();
       pushViewState(null, location.pathname);
       return;
@@ -8685,6 +8709,138 @@
   }
 
   // updateHeaderBasket, getRemainingPickupMinutes → js/app-logic.js
+  function renderHowItWorksSwipeTrack(trackId){
+    var track = document.getElementById(trackId);
+    if(!track) return;
+    var steps = [
+      {
+        title: '1. Entdecken',
+        text: 'Gerichte in deiner Nähe.',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '2. In die Mittagsbox',
+        text: 'Favoriten sichern.',
+        image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '3. Abholnummer sichern',
+        text: 'Direkt nach der Zahlung.',
+        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '4. Abholen',
+        text: 'Nummer am Tresen zeigen.',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=70'
+      },
+      {
+        title: '5. Genießen',
+        text: 'Ohne Warten genießen.',
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=70'
+      }
+    ];
+    track.innerHTML = steps.map(function(step){
+      return (
+        '<article class="mittagsbox-howitworks-card">' +
+          '<div class="mittagsbox-howitworks-image-wrap">' +
+            '<img src="' + esc(step.image) + '" alt="' + esc(step.title) + '" loading="lazy" />' +
+          '</div>' +
+          '<div class="mittagsbox-howitworks-body">' +
+            '<h4>' + esc(step.title) + '</h4>' +
+            '<p>' + esc(step.text) + '</p>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join('');
+    // Immer auf Schritt 1 starten, damit die Reihenfolge klar bleibt.
+    track.scrollLeft = 0;
+  }
+
+  const MEHRWEG_AUFPREIS_EUR = 5;
+
+  function offerHasReusablePackaging(offer, normalized){
+    const norm = normalized || (offer ? normalizeOffer(offer) : null);
+    if(!offer && !norm) return false;
+    const normReuse = !!(norm && norm.reuse && norm.reuse.enabled);
+    const offerReuseFlag = !!(offer && (offer.reuseEnabled || (offer.reuse && offer.reuse.enabled)));
+    const providerReuseFlag = !!(offer && offer.providerProfile && (offer.providerProfile.reuseEnabled || (offer.providerProfile.reuse && offer.providerProfile.reuse.enabled)));
+    return normReuse || offerReuseFlag || providerReuseFlag;
+  }
+
+  function getCartItemPackagingValue(cartData, offerId){
+    if(!cartData || !offerId) return null;
+    const key = String(offerId);
+    if(!cartData.itemPackaging || typeof cartData.itemPackaging !== 'object') return null;
+    const val = cartData.itemPackaging[key];
+    return (val === 'mehrweg' || val === 'eigener_behaeltner') ? val : null;
+  }
+
+  function ensureCartPackagingState(){
+    if(!cart || !Array.isArray(cart.items) || !cart.items.length) return;
+    if(!cart.itemPackaging || typeof cart.itemPackaging !== 'object') cart.itemPackaging = {};
+    let changed = false;
+    const validOfferIds = new Set();
+    cart.items.forEach(function(it){
+      if(!it || !it.offerId) return;
+      const offerId = String(it.offerId);
+      validOfferIds.add(offerId);
+      const offer = offers.find(function(o){ return String(o.id) === offerId; });
+      if(!offer) return;
+      if(!offerHasReusablePackaging(offer)) {
+        if(cart.itemPackaging[offerId]){
+          delete cart.itemPackaging[offerId];
+          changed = true;
+        }
+        return;
+      }
+      const current = cart.itemPackaging[offerId];
+      if(current !== 'mehrweg' && current !== 'eigener_behaeltner'){
+        cart.itemPackaging[offerId] = 'eigener_behaeltner';
+        changed = true;
+      }
+    });
+    Object.keys(cart.itemPackaging).forEach(function(offerId){
+      if(!validOfferIds.has(String(offerId))){
+        delete cart.itemPackaging[offerId];
+        changed = true;
+      }
+    });
+    if(changed) save(LS.cart, cart);
+  }
+
+  function getCartTotals(cartData){
+    const source = cartData || cart;
+    if(!source || !Array.isArray(source.items)) return { subtotalEur: 0, surchargeEur: 0, totalEur: 0, surchargeCents: 0 };
+    let subtotalEur = 0;
+    let surchargeCents = 0;
+    const isMitnehmen = (source.verzehrmodus || 'mitnehmen') === 'mitnehmen';
+    source.items.forEach(function(it){
+      if(!it || !it.offerId) return;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const offer = offers.find(function(o){ return String(o.id) === String(it.offerId); });
+      if(!offer) return;
+      const norm = normalizeOffer(offer);
+      subtotalEur += (Number(norm.price || 0) * qty);
+      const hasReuse = offerHasReusablePackaging(offer, norm);
+      const packaging = getCartItemPackagingValue(source, offer.id) || 'eigener_behaeltner';
+      if(isMitnehmen && hasReuse && packaging === 'mehrweg'){
+        surchargeCents += Math.round(MEHRWEG_AUFPREIS_EUR * 100) * qty;
+      }
+    });
+    const surchargeEur = surchargeCents / 100;
+    const totalEur = subtotalEur + surchargeEur;
+    return { subtotalEur, surchargeEur, totalEur, surchargeCents };
+  }
+
+  function setCartItemPackaging(offerId, packaging){
+    if(!cart || !offerId) return;
+    const next = packaging === 'mehrweg' ? 'mehrweg' : 'eigener_behaeltner';
+    if(!cart.itemPackaging || typeof cart.itemPackaging !== 'object') cart.itemPackaging = {};
+    cart.itemPackaging[String(offerId)] = next;
+    save(LS.cart, cart);
+    renderCart();
+  }
+  if(typeof window !== 'undefined') window.setCartItemPackaging = setCartItemPackaging;
   
   function renderCart(){
     if(typeof window !== 'undefined') window.cart = cart;
@@ -8704,7 +8860,7 @@
       const abholDisplay = document.getElementById('cartActiveAbholnummerDisplay');
       const listEl = document.getElementById('cartActiveSessionList');
       const firstCode = activeOrders[0].pickupCode || activeOrders[0].abholnummer || activeOrders[0].code || '–';
-      if(abholDisplay) abholDisplay.textContent = (String(firstCode).indexOf('#') === 0 ? '' : '#') + firstCode;
+      if(abholDisplay) abholDisplay.textContent = String(firstCode).replace(/^#/, '');
       if(listEl){
         listEl.innerHTML = activeOrders.map(function(order){
           const offer = offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
@@ -8770,10 +8926,15 @@
       if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
       return;
     }
+    ensureCartPackagingState();
 
     if(!cart.pickupTimes || typeof cart.pickupTimes !== 'object') cart.pickupTimes = {};
     if(btn){
       show(btn, 'flex');
+      btn.style.setProperty('display', 'flex', 'important');
+      btn.removeAttribute('aria-hidden');
+      var btnLabel = btn.querySelector('span');
+      if(btnLabel) btnLabel.textContent = 'Weiter zur Bezahlung';
       btn.onclick = () => {
         const providerIds = Array.from(new Set((cart.items || []).map(function(it){
           const offer = offers.find(function(o){ return o.id === it.offerId; });
@@ -8788,7 +8949,11 @@
       };
     }
     const cartVerzehrart = document.getElementById('cartVerzehrart');
-    if(cartVerzehrart) show(cartVerzehrart);
+    if(cartVerzehrart){
+      show(cartVerzehrart);
+      cartVerzehrart.style.setProperty('display', 'block', 'important');
+      cartVerzehrart.removeAttribute('aria-hidden');
+    }
     const cartBtnVorOrt = document.getElementById('cartBtnVorOrt');
     const cartBtnMitnehmen = document.getElementById('cartBtnMitnehmen');
     const cartHasAnyDineIn = (cart.items || []).some(function(it){
@@ -8833,13 +8998,13 @@
     if(cartBtnMitnehmen){
       cartBtnMitnehmen.onclick = () => {
         cart.verzehrmodus = 'mitnehmen';
-        if(!cart.verpackung) cart.verpackung = 'mehrweg';
         save(LS.cart, cart);
         updateCartVerzehrButtons();
+        renderCart();
       };
     }
 
-    let total=0;
+    let subtotal=0;
     const TIME_SLOTS = getTimeSlots();
     const parsePickupStartTime = function(windowText){
       const raw = String(windowText || '').trim();
@@ -8912,6 +9077,7 @@
     itemsByProvider.forEach((group, pid) => {
       const providerSlots = providerSlotsById[pid] || TIME_SLOTS;
       const selectedProviderTime = cart.pickupTimes[pid] || '';
+      const isMitnehmenCart = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
       groupedHtml += `
         <div class="cart-provider-group">
           <div class="cart-provider-label">
@@ -8932,7 +9098,17 @@
             const thumbHtml = dishImage
               ? `<img class="cart-item-thumb" src="${esc(dishImage)}" alt="${esc(norm.dish || 'Gericht')}">`
               : `<div class="cart-item-thumb cart-item-thumb-fallback" aria-hidden="true">🍽️</div>`;
-            total += lineTotal;
+            subtotal += lineTotal;
+            const supportsReuse = offerHasReusablePackaging(offer, norm);
+            const selectedPackaging = getCartItemPackagingValue(cart, offer.id) || 'eigener_behaeltner';
+            const qtyNum = Math.max(1, Number(qty || 1));
+            const mehrwegAufpreis = euro(MEHRWEG_AUFPREIS_EUR * qtyNum);
+            const packagingHtml = (isMitnehmenCart && supportsReuse) ? `
+              <div class="cart-item-packaging">
+                <button type="button" class="cart-packaging-chip ${selectedPackaging === 'eigener_behaeltner' ? 'active' : ''}" onclick="setCartItemPackaging('${offer.id}','eigener_behaeltner')">Eigener Behälter</button>
+                <button type="button" class="cart-packaging-chip ${selectedPackaging === 'mehrweg' ? 'active' : ''}" onclick="setCartItemPackaging('${offer.id}','mehrweg')">Mehrweg +${mehrwegAufpreis}</button>
+              </div>
+            ` : '';
             return `
               <div class="cart-item-row">
                 ${thumbHtml}
@@ -8940,6 +9116,7 @@
                   <div class="cart-item-dish">${esc(norm.dish)}</div>
                   <div class="cart-item-unit">Einzelpreis ${euro(unitPrice)}</div>
                   <div class="cart-item-total">${euro(lineTotal)}</div>
+                  ${packagingHtml}
                 </div>
                 <div class="cart-qty-control">
                   <button class="cart-qty-btn" onclick="changeQty('${offer.id}', -1)" aria-label="Menge verringern">-</button>
@@ -8961,12 +9138,27 @@
       `;
     });
 
+    const totals = getCartTotals(cart);
+    const surchargeHtml = totals.surchargeEur > 0
+      ? `<div class="cart-total-subline"><span>Mehrweg-Aufpreis</span><span>+${euro(totals.surchargeEur)}</span></div>`
+      : '';
+
     box.innerHTML = groupedHtml + `
+      ${surchargeHtml}
       <div class="cart-total-row">
         <span class="cart-total-label">Gesamt</span>
-        <span class="cart-total-value">${euro(total)}</span>
+        <span class="cart-total-value">${euro(totals.totalEur)}</span>
       </div>
     `;
+    // Guard: CTA + Verzehrart nach Re-Render sichtbar halten.
+    if(cartVerzehrart){
+      cartVerzehrart.style.setProperty('display', 'block', 'important');
+      cartVerzehrart.removeAttribute('aria-hidden');
+    }
+    if(btn){
+      btn.style.setProperty('display', 'flex', 'important');
+      btn.removeAttribute('aria-hidden');
+    }
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
     if(typeof window !== 'undefined' && typeof window.syncCustomerPrimaryWrapScroll === 'function'){
       requestAnimationFrame(function(){ window.syncCustomerPrimaryWrapScroll(); });
@@ -9209,161 +9401,92 @@
       const o = offers.find(x => x.id === it.offerId);
       if(o && normalizeOffer(o).dineInPossible) anyDineIn = true;
     });
-    const btnVorOrt = document.getElementById('checkoutBtnVorOrt');
-    const btnMitnehmen = document.getElementById('checkoutBtnMitnehmen');
-    if(btnVorOrt){
-      if(anyDineIn) show(btnVorOrt);
-      else hide(btnVorOrt);
-    }
     if(!anyDineIn && (cart.verzehrmodus || '') === 'vor_ort'){
       cart.verzehrmodus = 'mitnehmen';
       save(LS.cart, cart);
     }
     const vm = cart.verzehrmodus || 'mitnehmen';
-    
-    // Active-State: klare Outline statt Vollflaeche
-    const updateVerzehrartButtons = () => {
-      const isVorOrt = vm === 'vor_ort';
-      const isMitnehmen = vm === 'mitnehmen';
-      
-      if(btnVorOrt){
-        btnVorOrt.classList.toggle('active', isVorOrt);
-        btnVorOrt.style.borderColor = isVorOrt ? '#FFD700' : '#e7e1d5';
-        btnVorOrt.style.background = '#fff';
-        btnVorOrt.style.color = isVorOrt ? '#2D3436' : '#666';
-        btnVorOrt.style.fontWeight = isVorOrt ? '900' : '600';
-        btnVorOrt.style.boxShadow = isVorOrt ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-      }
-      
-      if(btnMitnehmen){
-        btnMitnehmen.classList.toggle('active', isMitnehmen);
-        btnMitnehmen.style.borderColor = isMitnehmen ? '#FFD700' : '#e7e1d5';
-        btnMitnehmen.style.background = '#fff';
-        btnMitnehmen.style.color = isMitnehmen ? '#2D3436' : '#666';
-        btnMitnehmen.style.fontWeight = isMitnehmen ? '900' : '600';
-        btnMitnehmen.style.boxShadow = isMitnehmen ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-      }
-    };
-    
-    updateVerzehrartButtons();
-    
-    // Interaktions-Logik: Status an Anbieter-Datensatz senden
-    if(btnVorOrt){
-      btnVorOrt.onclick = () => {
-        cart.verzehrmodus = 'vor_ort';
-        save(LS.cart, cart);
-        
-        // Signal an Anbieter: Porzellan/Besteck vorbereiten
-        cart.items.forEach(item => {
-          const offer = offers.find(o => o.id === item.offerId);
-          if(offer && offer.providerId){
-            // Verzehrart wird beim Erstellen der Bestellung an den Anbieter übermittelt
-            // Der Anbieter sieht in seinem Dashboard: "Vor Ort essen" für diese Bestellung
-          }
-        });
-        
-        renderCheckout(total);
-      };
+    const verzehrartValue = document.getElementById('checkoutVerzehrartValue');
+    const verzehrartEditBtn = document.getElementById('checkoutVerzehrartEditBtn');
+    const checkoutTimeQuestionLabel = document.getElementById('checkoutTimeQuestionLabel');
+    if(verzehrartValue){
+      verzehrartValue.textContent = vm === 'vor_ort' ? 'Vor Ort' : 'Mitnehmen';
+      verzehrartValue.classList.toggle('is-pill', vm === 'vor_ort');
+    }
+    if(checkoutTimeQuestionLabel){
+      checkoutTimeQuestionLabel.textContent = vm === 'vor_ort'
+        ? 'Wann möchtest du essen?'
+        : 'Wann holst du dein Essen ab?';
+    }
+    if(verzehrartEditBtn){
+      verzehrartEditBtn.onclick = () => showCart();
     }
     
-    if(btnMitnehmen){
-      btnMitnehmen.onclick = () => {
-        cart.verzehrmodus = 'mitnehmen';
-        if(!cart.verpackung) cart.verpackung = 'mehrweg';
-        save(LS.cart, cart);
-        
-        // Signal an Anbieter: Einpacken in Box/Mehrweg
-        cart.items.forEach(item => {
-          const offer = offers.find(o => o.id === item.offerId);
-          if(offer && offer.providerId){
-          }
-        });
-        
-        renderCheckout(total);
-      };
-    }
-    
-    // Verpackung (nur bei Mitnehmen) – Anzeige + Buttons im Time-Slot-Stil
+    // Verpackung (nur bei Mitnehmen) – kompakte Zusammenfassung; Auswahl pro Gericht in der Mittagsbox
     const verpackungWrap = document.getElementById('checkoutVerpackung');
-    const btnEigenerBehaeltner = document.getElementById('checkoutBtnEigenerBehaeltner');
-    const btnMehrweg = document.getElementById('checkoutBtnMehrweg');
-    const isMitnehmen = (cart.verzehrmodus || 'mitnehmen') === 'mitnehmen';
+    const packagingSummaryEl = document.getElementById('checkoutPackagingSummary');
+    const isMitnehmen = vm === 'mitnehmen';
+    let hasAnyReuseSelectable = false;
+    let countMehrwegPortionen = 0;
+    let countEigenerPortionen = 0;
+    (cart.items || []).forEach(function(it){
+      if(!it || !it.offerId) return;
+      const offer = offers.find(function(o){ return String(o.id) === String(it.offerId); });
+      if(!offer) return;
+      const supportsReuse = offerHasReusablePackaging(offer);
+      if(!supportsReuse) return;
+      hasAnyReuseSelectable = true;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const packaging = getCartItemPackagingValue(cart, offer.id) || 'eigener_behaeltner';
+      if(packaging === 'mehrweg') countMehrwegPortionen += qty;
+      else countEigenerPortionen += qty;
+    });
     if(verpackungWrap){
-      if(isMitnehmen) show(verpackungWrap);
+      if(isMitnehmen && hasAnyReuseSelectable) show(verpackungWrap);
       else hide(verpackungWrap);
     }
-    
-    const verpackung = cart.verpackung || 'mehrweg';
-    const setVerpackungActive = (btn, active) => {
-      if(!btn) return;
-      btn.style.borderColor = active ? '#FFD700' : '#e7e1d5';
-      btn.style.background = '#fff';
-      btn.style.color = active ? '#2D3436' : '#666';
-      btn.style.fontWeight = active ? '900' : '600';
-      btn.style.boxShadow = active ? '0 0 0 2px rgba(255,215,0,0.22)' : 'none';
-    };
-    if(btnEigenerBehaeltner){
-      setVerpackungActive(btnEigenerBehaeltner, verpackung === 'eigener_behaeltner');
-      btnEigenerBehaeltner.onclick = () => {
-        cart.verpackung = 'eigener_behaeltner';
-        save(LS.cart, cart);
-        setVerpackungActive(btnEigenerBehaeltner, true);
-        setVerpackungActive(btnMehrweg, false);
-      };
-    }
-    if(btnMehrweg){
-      setVerpackungActive(btnMehrweg, verpackung === 'mehrweg');
-      btnMehrweg.onclick = () => {
-        cart.verpackung = 'mehrweg';
-        save(LS.cart, cart);
-        setVerpackungActive(btnMehrweg, true);
-        setVerpackungActive(btnEigenerBehaeltner, false);
-      };
+    if(packagingSummaryEl){
+      const totalsForPackaging = getCartTotals(cart);
+      const parts = [];
+      if(countMehrwegPortionen > 0) parts.push(countMehrwegPortionen + '× Mehrweg (+' + euro(totalsForPackaging.surchargeEur) + ')');
+      if(countEigenerPortionen > 0) parts.push(countEigenerPortionen + '× Eigener Behälter');
+      packagingSummaryEl.textContent = parts.length ? parts.join(' · ') : 'Wird pro Gericht in der Mittagsbox gewählt.';
     }
     
     const summaryEl = document.getElementById('checkoutSummary');
     if(!summaryEl) return;
     
-    // Anbieter klickbar: Bei [Name1], [Name2] → Profil
-    const providerMap = new Map();
-    cart.items.forEach(it => {
-      const o = offers.find(x => x.id === it.offerId);
-      if(o && o.providerId) providerMap.set(o.providerId, normalizeOffer(o).providerName || 'Anbieter');
-    });
-    let providerLineHtml = '<div style="margin-bottom:12px; font-size:14px; color:#64748b;">Bei: ';
-    const providerEntries = [];
-    providerMap.forEach((name, pid) => providerEntries.push({ pid, name }));
-    providerLineHtml += providerEntries.map(({ pid, name }) => `<button type="button" class="checkout-provider-link" data-provider-id="${esc(pid)}" style="background:none;border:none;padding:0;font-weight:700;color:#1a1a1a;text-decoration:underline;cursor:pointer;font-size:14px;">${esc(name)}</button>`).join(', ');
-    providerLineHtml += '</div>';
-    
-    // Bestellübersicht rendern
-    let summaryHTML = providerLineHtml + '<div style="font-weight:700; font-size:16px; margin-bottom:16px; color:#2D3436;">Bestellübersicht</div>';
+    // Bestellübersicht rendern (ohne Anbieterzeile und ohne Zusatz-Titel im Container)
+    const checkoutTotals = getCartTotals(cart);
+    let summaryHTML = '';
     cart.items.forEach(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(o){
         const normalized = normalizeOffer(o);
         const lineTotal = Number(normalized.price||0) * it.qty;
         summaryHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,.08);">
-            <div>
-              <div style="font-weight:600; font-size:15px; color:#2D3436;">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
-            </div>
-            <div style="font-weight:700; font-size:16px; color:#2D3436;">${euro(lineTotal)}</div>
+          <div class="checkout-summary-line">
+            <div class="checkout-summary-dish">${esc(normalized.dish||'Gericht')} × ${it.qty}</div>
+            <div class="checkout-summary-price">${euro(lineTotal)}</div>
           </div>
         `;
       }
     });
+    if(checkoutTotals.surchargeEur > 0){
+      summaryHTML += `
+        <div class="checkout-summary-line checkout-summary-line--surcharge">
+          <div class="checkout-summary-dish">Mehrweg-Aufpreis</div>
+          <div class="checkout-summary-price">+${euro(checkoutTotals.surchargeEur)}</div>
+        </div>
+      `;
+    }
     summaryHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; margin-top:16px; border-top:2px solid #2D3436;">
-        <div style="font-weight:900; font-size:18px; color:#2D3436;">Gesamt</div>
-        <div style="font-weight:900; font-size:24px; color:#111827;">${euro(total)}</div>
+      <div class="checkout-summary-total-row">
+        <div class="checkout-summary-total-label">Gesamt</div>
+        <div class="checkout-summary-total-value">${euro(checkoutTotals.totalEur)}</div>
       </div>
     `;
     summaryEl.innerHTML = summaryHTML;
-    summaryEl.querySelectorAll('.checkout-provider-link').forEach(btn => {
-      const pid = btn.getAttribute('data-provider-id');
-      if(pid) btn.onclick = () => showProviderProfilePublic(pid);
-    });
     
     // Apple Pay / Google Pay Buttons prüfen (wenn verfügbar)
     const btnApplePay = document.getElementById('btnApplePay');
@@ -9383,7 +9506,7 @@
       setCheckoutPaymentButtonState(checkoutPaymentInFlight);
       btnStandardPayment.onclick = () => {
         if(checkoutPaymentInFlight) return;
-        processCheckoutPayment(total);
+        processCheckoutPayment(checkoutTotals.totalEur);
       };
     }
     
@@ -9446,6 +9569,8 @@
     cart.pickupTime = pickupTimeText || cart.pickupTime || '';
     cart.customerName = name;
     cart.customerEmail = email;
+    const checkoutTotals = getCartTotals(cart);
+    cart.mehrwegSurchargeEur = checkoutTotals.surchargeEur;
     save(LS.cart, cart);
     
     // Pro Anbieter eine Order erstellen (eine Zahlung, mehrere Abholnummern)
@@ -9490,20 +9615,35 @@
     
     // Gesamtpreis berechnen (in Cents)
     let totalCents = 0;
+    const verpackungByOffer = {};
+    const packagingModes = new Set();
     const items = cartData.items.map(it=>{
       const o = offers.find(x=>x.id===it.offerId);
       if(!o) return null;
       const normalized = normalizeOffer(o);
       const unitPriceCents = Math.round(Number(normalized.price||0) * 100);
-      const lineTotalCents = unitPriceCents * it.qty;
+      const qty = Math.max(1, Number(it.qty || 1));
+      const supportsReuse = offerHasReusablePackaging(o, normalized);
+      const packaging = supportsReuse ? (getCartItemPackagingValue(cartData, o.id) || 'eigener_behaeltner') : null;
+      const moreFeeCents = (cartData.verzehrmodus === 'mitnehmen' && supportsReuse && packaging === 'mehrweg')
+        ? (Math.round(MEHRWEG_AUFPREIS_EUR * 100) * qty)
+        : 0;
+      const lineTotalCents = (unitPriceCents * qty) + moreFeeCents;
       totalCents += lineTotalCents;
+      if(packaging){
+        verpackungByOffer[String(o.id)] = packaging;
+        packagingModes.add(packaging);
+      }
       return {
         dishId: o.id,
         dishName: normalized.dish || normalized.title || 'Gericht',
-        quantity: it.qty,
+        quantity: qty,
         unitPriceCents: unitPriceCents
       };
     }).filter(Boolean);
+    const derivedPackaging = packagingModes.size > 1
+      ? 'gemischt'
+      : (packagingModes.size === 1 ? Array.from(packagingModes)[0] : null);
     
     const now = Date.now();
     /** @type {Order} */
@@ -9550,7 +9690,8 @@
       unitPriceCents: items[0]?.unitPriceCents || 0,
       totalCents: totalCents,
       paymentIntentId: null,
-      verpackung: cartData.verpackung || null // Säule 3: eigener_behaeltner | mehrweg (nur bei Mitnehmen)
+      verpackung: derivedPackaging || cartData.verpackung || null,
+      verpackungByOffer: Object.keys(verpackungByOffer).length ? verpackungByOffer : null
     };
     
     return addOrder(order);
@@ -9576,13 +9717,28 @@
       const first = providerItems[0].offer;
       const firstNorm = normalizeOffer(first);
       let totalCents = 0;
+      const verpackungByOffer = {};
+      const packagingModes = new Set();
       const items = providerItems.map(({ offer, qty }) => {
         const normalized = normalizeOffer(offer);
         const unitPriceCents = Math.round(Number(normalized.price || 0) * 100);
-        const lineTotalCents = unitPriceCents * qty;
+        const safeQty = Math.max(1, Number(qty || 1));
+        const supportsReuse = offerHasReusablePackaging(offer, normalized);
+        const packaging = supportsReuse ? (getCartItemPackagingValue(cartData, offer.id) || 'eigener_behaeltner') : null;
+        const moreFeeCents = (cartData.verzehrmodus === 'mitnehmen' && supportsReuse && packaging === 'mehrweg')
+          ? (Math.round(MEHRWEG_AUFPREIS_EUR * 100) * safeQty)
+          : 0;
+        const lineTotalCents = (unitPriceCents * safeQty) + moreFeeCents;
         totalCents += lineTotalCents;
-        return { dishId: offer.id, dishName: normalized.dish || normalized.title || 'Gericht', quantity: qty, unitPriceCents };
+        if(packaging){
+          verpackungByOffer[String(offer.id)] = packaging;
+          packagingModes.add(packaging);
+        }
+        return { dishId: offer.id, dishName: normalized.dish || normalized.title || 'Gericht', quantity: safeQty, unitPriceCents };
       });
+      const derivedPackaging = packagingModes.size > 1
+        ? 'gemischt'
+        : (packagingModes.size === 1 ? Array.from(packagingModes)[0] : null);
       const now = Date.now();
       const order = {
         id: cryptoId(),
@@ -9620,7 +9776,8 @@
         unitPriceCents: items[0]?.unitPriceCents || 0,
         totalCents: totalCents,
         paymentIntentId: null,
-        verpackung: cartData.verpackung || null
+        verpackung: derivedPackaging || cartData.verpackung || null,
+        verpackungByOffer: Object.keys(verpackungByOffer).length ? verpackungByOffer : null
       };
       const added = addOrder(order);
       if(added) result.push(added);
@@ -9657,6 +9814,10 @@
       }).filter(function(li){
         return Number.isFinite(Number(li.amount)) && Number(li.amount) > 0;
       }) : null;
+      var mehrwegSurcharge = Number(cartData && cartData.mehrwegSurchargeEur || 0);
+      if(lineItems && lineItems.length && Number.isFinite(mehrwegSurcharge) && mehrwegSurcharge > 0){
+        lineItems.push({ name: 'Mehrweg-Aufpreis', amount: mehrwegSurcharge, quantity: 1 });
+      }
       var payload = {
         orderId: mainOrderId,
         orderIds: orderIds,
@@ -9994,13 +10155,13 @@
         multiBlock.innerHTML = orders.map(function(o){
           const c = o.pickupCode || o.abholnummer || o.code || '–';
           const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">#' + (c + '').replace(/</g, '&lt;') + '</span></div></div>';
+          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">' + (c + '').replace(/^#/, '').replace(/</g, '&lt;') + '</span></div></div>';
         }).join('');
       }
     } else {
       if(singleBlock) show(singleBlock);
       if(multiBlock) hide(multiBlock);
-      if(abholnummerEl) abholnummerEl.textContent = (codeStr.indexOf('#') === 0 ? '' : '#') + codeStr;
+      if(abholnummerEl) abholnummerEl.textContent = codeStr.replace(/^#/, '');
     }
     if(zeitEl) zeitEl.innerHTML = '<span style="font-size:18px;">🕒</span> Abholbereit um ' + zeitDisplay;
     if(modusEl){
@@ -10010,7 +10171,9 @@
     if(verpackungWrap){
       if(isMitnehmen && verpackung){
         show(verpackungWrap, 'flex');
-        verpackungWrap.innerHTML = verpackung === 'eigener_behaeltner' ? '<span style="font-size:18px;">🔄</span> Eigener Behälter' : '<span style="font-size:18px;">🔄</span> Mehrweg-System';
+        if(verpackung === 'eigener_behaeltner') verpackungWrap.innerHTML = '<span style="font-size:18px;">🥡</span> Eigener Behälter';
+        else if(verpackung === 'gemischt') verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Verpackung gemischt';
+        else verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Mehrweg-System';
       } else hide(verpackungWrap);
     }
     if(thumbEl && thumbWrap){
@@ -10360,16 +10523,15 @@
         if(emailSheet) emailSheet.textContent = customer.email || '-';
       } else {
         headerCard.innerHTML = `
-          <div style="flex:1; display:flex; align-items:center; gap:12px;">
-            <div style="width:54px; height:54px; border-radius:16px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">👋</div>
+          <div style="flex:1; display:flex; align-items:center; gap:10px; min-width:0;">
+            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#fff7cc 0%,#fde68a 100%); border:1px solid rgba(250,204,21,0.45); display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0;">✨</div>
             <div style="min-width:0;">
-              <div style="font-weight:950; font-size:21px; color:#1a1a1a; letter-spacing:-0.02em; line-height:1.2;">Willkommen</div>
-              <p style="font-size:13px; color:#64748b; line-height:1.45; margin:4px 0 0;">Melde dich an, um Bestellungen und Mittagsbox dauerhaft zu speichern.</p>
+              <div style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#f8fafc; border:1px solid #e2e8f0; color:#475569; font-size:11px; font-weight:800;">🚀 Startklar in 30 Sekunden</div>
             </div>
           </div>
-          <div style="margin-top:14px;">
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; font-size:15px; width:100%;">
-              Profil anlegen
+          <div style="margin-top:0;">
+            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; min-width:136px; font-size:15px; padding:0 18px;">
+              Jetzt Profil anlegen
             </button>
           </div>
         `;
@@ -10378,39 +10540,16 @@
       }
     }
     
-    // Aktive Abholnummern
-    const abholnummerSection = document.getElementById('profileAbholnummerSection');
-    const abholnummerList = document.getElementById('profileActiveAbholnummernList');
-    const today = isoDate(new Date());
     const allOrders = loadOrders();
-    const activeAbholnummern = allOrders.filter(o => o.status === 'PAID' && o.pickupDate === today && !o.pickupCodeActivatedAt);
-
-    const noAbholnummerHint = document.getElementById('profileNoAbholnummerHint');
-    if(abholnummerSection && abholnummerList){
-      if(activeAbholnummern.length > 0){
-        show(abholnummerSection);
-        if(noAbholnummerHint) hide(noAbholnummerHint);
-        abholnummerList.innerHTML = activeAbholnummern.map(order => {
-          const code = order.pickupCode || '–';
-          return `
-            <div class="cust-card" style="flex-direction:row; padding:24px; align-items:center; gap:20px; margin-bottom:0; border:2px solid rgba(255,215,0,0.35); background:rgba(255,215,0,0.08); border-radius:20px; cursor:pointer;" onclick="showPickupCode('${esc(order.id)}');">
-              <div style="width:56px; height:56px; border-radius:16px; background:var(--brand); display:flex; align-items:center; justify-content:center; font-size:28px;">🧾</div>
-              <div style="flex:1; min-width:0;">
-                <div style="font-weight:950; font-size:28px; color:#1a1a1a; letter-spacing:3px; font-family:monospace; line-height:1.2;">${esc(code)}</div>
-                <div style="font-size:14px; font-weight:600; color:#64748b; margin-top:6px;">${esc(order.providerName || 'Anbieter')}</div>
-              </div>
-              <i data-lucide="chevron-right" style="width:24px;height:24px; color:var(--brand);"></i>
-            </div>
-          `;
-        }).join('');
-      } else {
-        hide(abholnummerSection);
-        if(noAbholnummerHint) show(noAbholnummerHint);
-      }
-    } else if(noAbholnummerHint) show(noAbholnummerHint);
+    renderHowItWorksSwipeTrack('profileHowItWorksSheetTrack');
+    const btnHowItWorks = document.getElementById('btnProfileHowItWorksHelp');
+    if(btnHowItWorks && !btnHowItWorks._boundHowItWorks){
+      btnHowItWorks._boundHowItWorks = true;
+      btnHowItWorks.onclick = function(){ openProfileHowItWorksSheet(); };
+    }
     const ordersCard = document.getElementById('profileOrdersCard');
     if(ordersCard){
-      ordersCard.style.marginTop = (activeAbholnummern.length === 0) ? '-4px' : '0';
+      ordersCard.style.marginTop = '0';
     }
 
     // Historie (letzte 2)
@@ -10425,12 +10564,12 @@
           <div class="profile-order-item" onclick="showOrderDetail('${o.id}')" style="padding:10px; border:1px solid #eef2f7; border-radius:14px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff;">
             <div style="width:42px; height:42px; border-radius:12px; background:#f8fafc; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px;">🍽️</div>
             <div style="flex:1; min-width:0;">
-              <div style="font-weight:700; font-size:14px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(o.dishName || 'Gericht')}</div>
-              <div style="font-size:12px; color:#64748b;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
+              <div style="font-weight:600; font-size:15px; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3;">${esc(o.dishName || 'Gericht')}</div>
+              <div style="font-size:13px; font-weight:500; color:#64748b; line-height:1.4;">${esc(cleanProviderDisplayName(o.providerName || 'Anbieter'))} • ${o.pickupDate || ''}</div>
             </div>
             <div style="display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:5px; min-width:74px;">
-              <div style="font-weight:900; font-size:14px; color:#111827; font-variant-numeric:tabular-nums; text-align:right;">${euro(Number(o.total||0)/100)}</div>
-              <div style="font-size:10px; font-weight:800; color:#334155; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 7px; text-align:right;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
+              <div style="font-weight:700; font-size:14px; color:#0f172a; font-variant-numeric:tabular-nums; text-align:right;">${euro(Number(o.total||0)/100)}</div>
+              <div style="font-size:12px; font-weight:600; color:#475569; background:#f8fafc; border:1px solid #e2e8f0; border-radius:999px; padding:2px 8px; text-align:right;">${esc((o.status === 'PAID' ? 'Bezahlt' : o.status === 'PICKED_UP' ? 'Abgeholt' : o.status === 'CANCELLED' ? 'Storniert' : (o.status || 'Offen')))}</div>
             </div>
           </div>
         `).join('');
@@ -10547,8 +10686,15 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     const scrollEl = document.getElementById('profileSettingsSheetScroll');
+    const sections = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
     if(bd){ show(bd); bd.style.setProperty('opacity', '1'); }
     if(sheet) show(sheet);
+    sections.forEach(function(id){
+      const el = document.getElementById(id);
+      if(el) hide(el);
+      const chevrons = document.querySelectorAll('.profile-sheet-chevron[data-section="' + id + '"]');
+      chevrons.forEach(function(c){ c.style.setProperty('transform', 'rotate(0deg)'); });
+    });
     if(scrollEl) scrollEl.scrollTop = 0;
     if(typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 50);
   }
@@ -10557,6 +10703,49 @@
     const sheet = document.getElementById('profileSettingsSheet');
     if(bd){ hide(bd); bd.style.setProperty('opacity', '0'); }
     if(sheet){ hide(sheet); }
+  }
+  function openProfileHowItWorksSheet(){
+    var bd = document.getElementById('profileHowItWorksSheetBd');
+    var sheet = document.getElementById('profileHowItWorksSheet');
+    var closeBtn = document.getElementById('btnCloseProfileHowItWorksSheet');
+    var doneBtn = document.getElementById('btnDoneProfileHowItWorksSheet');
+    if(!bd || !sheet) return;
+    renderHowItWorksSwipeTrack('profileHowItWorksSheetTrack');
+    show(bd);
+    show(sheet);
+    bd.classList.add('active');
+    sheet.classList.add('active');
+    if(bd && !bd._boundClose){
+      bd._boundClose = true;
+      bd.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(closeBtn && !closeBtn._boundClose){
+      closeBtn._boundClose = true;
+      closeBtn.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(doneBtn && !doneBtn._boundDone){
+      doneBtn._boundDone = true;
+      doneBtn.onclick = function(){ closeProfileHowItWorksSheet(); };
+    }
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons({ elements:[sheet] }); }, 30);
+    try{
+      if(typeof hapticLight === 'function') hapticLight();
+      else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
+    } catch(_err){}
+  }
+  function closeProfileHowItWorksSheet(){
+    var bd = document.getElementById('profileHowItWorksSheetBd');
+    var sheet = document.getElementById('profileHowItWorksSheet');
+    if(bd) bd.classList.remove('active');
+    if(sheet) sheet.classList.remove('active');
+    window.setTimeout(function(){
+      if(bd) hide(bd);
+      if(sheet) hide(sheet);
+    }, 220);
+  }
+  if(typeof window !== 'undefined'){
+    window.openProfileHowItWorksSheet = openProfileHowItWorksSheet;
+    window.closeProfileHowItWorksSheet = closeProfileHowItWorksSheet;
   }
   function openProfileSettingsSection(sectionId){
     const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
@@ -10932,6 +11121,12 @@
   }
 
   // --- Onboarding-Redirect: Alle Einstiege führen in Dashboard/InseratCard [cite: Bereinigung 2026-03-04] ---
+  // Legacy-Flow deaktivieren: nur noch Unified Onboarding-Flow verwenden.
+  (function disableLegacyProviderOnboarding(){
+    var legacy = document.getElementById('v-provider-onboarding');
+    if(legacy && legacy.parentNode) legacy.parentNode.removeChild(legacy);
+  })();
+
   let onboardingDraftDish = load(LS.onboardingDraft, null);
   
   function showOnboardingEntry(hasDraft){
@@ -11359,7 +11554,8 @@
         <p style="margin-top:16px;"><strong>Kosten:</strong></p>
         <ul style="padding-left:20px; margin:8px 0;">
           <li>4,99 € zzgl. MwSt. pro Veröffentlichung</li>
-          <li>0,89 € zzgl. MwSt. pro Online-Bestellung inkl. aller Bank- & Zahlungsgebühren (pro Bestellung, egal wie viele Gerichte)</li>
+          <li>0,89 € zzgl. MwSt. je online vorbestelltem und bezahltem Abholnummer-Vorgang (inkl. Bank- & Zahlungsgebühren)</li>
+          <li>Vor-Ort-Essen ohne Online-Zahlung: 0,00 € Abholnummer-Gebühr</li>
         </ul>
         
         <p style="margin-top:16px;"><strong>Abholnummer:</strong></p>
@@ -11598,7 +11794,7 @@
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Muss ich online bezahlen?</summary>
-        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Eine Abholnummer gibt's nur bei Online-Zahlung.</p>
+        <p style="font-size:14px; line-height:1.5; margin-top:8px; padding-bottom:12px; color:var(--muted);">Nein. Online-Zahlung ist optional. Vor-Ort-Essen ohne Online-Zahlung hat keine Abholnummer-Gebühr; eine Abholnummer gibt's nur bei online vorbestellten und bezahlten Vorgängen.</p>
       </details>
       <details>
         <summary style="font-size:15px; line-height:1.4; font-weight:500; padding:12px 0;">Kann ich ohne Abholnummer Gerichte hinzufügen?</summary>
@@ -11947,6 +12143,10 @@
       var pickupsScroll = document.getElementById('provPickupsScroll') || document.getElementById('pickupsFloatingWrap');
       var weekScroll = document.getElementById('kwBoardScroll');
       var cookbookScroll = document.getElementById('cookbookScrollWrap');
+      var discoverScroll = document.querySelector('#v-discover .discover-main');
+      var favScroll = document.querySelector('#v-fav .customer-main-wrap');
+      var cartScroll = document.querySelector('#v-cart .customer-main-wrap');
+      var profileScroll = document.querySelector('#v-profile .customer-main-wrap');
       var homeHeader = document.getElementById('providerDashboardHeader');
       var pickupsHeader = document.getElementById('v-provider-pickups-header');
       var weekHeader = document.getElementById('v-provider-week-header');
@@ -11973,6 +12173,28 @@
         delta: 5
       });
       attachPTR(cookbookScroll, function(){ if(typeof renderCookbook==='function') renderCookbook(); }, 'provider-cookbook');
+      attachPTR(discoverScroll, function(){
+        if(typeof renderDiscover==='function') renderDiscover();
+        if(typeof showToast==='function') showToast('Entdecken aktualisiert', 900);
+      }, 'customer-discover');
+      attachPTR(favScroll, function(){
+        if(typeof renderFavorites==='function') renderFavorites();
+        if(typeof showToast==='function') showToast('Favoriten aktualisiert', 900);
+      }, 'customer-fav');
+      attachPTR(cartScroll, function(){
+        if(typeof renderCart==='function') renderCart();
+        if(typeof syncCustomerPrimaryWrapScroll==='function'){
+          requestAnimationFrame(function(){ syncCustomerPrimaryWrapScroll(); });
+        }
+        if(typeof showToast==='function') showToast('Mittagsbox aktualisiert', 900);
+      }, 'customer-cart');
+      attachPTR(profileScroll, function(){
+        if(typeof updateProfileView==='function') updateProfileView();
+        if(typeof syncCustomerPrimaryWrapScroll==='function'){
+          requestAnimationFrame(function(){ syncCustomerPrimaryWrapScroll(); });
+        }
+        if(typeof showToast==='function') showToast('Profil aktualisiert', 900);
+      }, 'customer-profile');
     }, 300);
   })();
 
@@ -12502,7 +12724,7 @@
           const pickupsForOffer = todayOrders.filter(function(ord){ return ord.dishId === o.id; });
           const orderCount = pickupsForOffer.length;
           const paidWithCode = pickupsForOffer.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode; });
-          const firstPickupCode = paidWithCode.length ? ('#' + (paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2))) : null;
+          const firstPickupCode = paidWithCode.length ? String(paidWithCode[0].pickupCode || String(paidWithCode[0].id || '').slice(-2)).replace(/^#/, '') : null;
           const abholnummerLabel = hasPickupNumber ? (firstPickupCode || '–') : '–';
           const abholnummerGray = !hasPickupNumber;
           /* Dashboard: Abholnummer nicht auf Kachel (Silent Defaults, Fokus Bild/Name/Preis) */
@@ -12694,7 +12916,7 @@
           const pill = document.createElement('div');
           const isFirst = i === 0;
           pill.style.cssText = 'flex-shrink:0; width:40px; height:40px; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; background:' + (isFirst ? '#ffde00' : '#f1f1f1') + '; color:' + (isFirst ? '#1a1a1a' : 'rgba(0,0,0,0.4)') + '; box-shadow:' + (isFirst ? 'inset 0 1px 2px rgba(0,0,0,0.08)' : 'none') + ';';
-          pill.textContent = '#' + (ord.pickupCode || ord.id.slice(-3));
+          pill.textContent = String(ord.pickupCode || ord.id.slice(-3)).replace(/^#/, '');
           providerNextPickupPills.appendChild(pill);
         });
         if(paidOrders.length === 0){
@@ -13977,6 +14199,23 @@
         customerNav.style.setProperty('display', 'flex', 'important');
         customerNav.style.setProperty('visibility', 'visible', 'important');
       }
+    } else {
+      var providerNavWrapVisible = document.getElementById('providerNavWrap');
+      var providerNavVisible = document.getElementById('providerNav');
+      var customerNavReset = document.getElementById('customerNav');
+      if(providerNavWrapVisible){
+        providerNavWrapVisible.style.removeProperty('display');
+        providerNavWrapVisible.style.removeProperty('visibility');
+        providerNavWrapVisible.style.removeProperty('pointer-events');
+      }
+      if(providerNavVisible){
+        providerNavVisible.style.removeProperty('display');
+        providerNavVisible.style.removeProperty('visibility');
+      }
+      if(customerNavReset){
+        customerNavReset.style.removeProperty('display');
+        customerNavReset.style.removeProperty('visibility');
+      }
     }
     weekFooter.classList.toggle('week-footer-hidden', !isProviderWeekActive);
     if(isProviderWeekActive){
@@ -14050,6 +14289,11 @@
       if(!view || !view.classList.contains('active')) return;
       var wrap = view.querySelector('.customer-main-wrap');
       if(!wrap) return;
+      if(id === 'v-profile' || id === 'v-cart'){
+        // "Meins" und "Mittagsbox" bleiben immer scrollbar; initiale Messungen koennen sonst faelschlich hidden setzen.
+        wrap.style.setProperty('overflow-y', 'auto', 'important');
+        return;
+      }
       var canScroll = (wrap.scrollHeight - wrap.clientHeight) > 2;
       wrap.style.setProperty('overflow-y', canScroll ? 'auto' : 'hidden', 'important');
     });
@@ -14058,7 +14302,8 @@
     if(typeof document === 'undefined') return;
     var bodyEl = document.body;
     if(!bodyEl || bodyEl.classList.contains('provider-mode')) return;
-    var lockViews = ['v-fav', 'v-cart', 'v-profile'];
+    // Haupt-Kundenseiten bleiben immer frei scrollbar.
+    var lockViews = ['v-fav-providers', 'v-orders'];
     var shouldLock = lockViews.indexOf(String(viewId || '')) >= 0;
     bodyEl.classList.toggle('customer-no-empty-scroll', shouldLock);
     if(shouldLock){
@@ -15964,17 +16209,20 @@
         if(aTimeNum !== bTimeNum) return aTimeNum - bTimeNum;
       }
       
-      // Priorität 2: Code-Reihenfolge (1A, 1B, 1C, 2A, 2B, 2C, 10A, 10B...)
+      // Priorität 2: Code-Reihenfolge (A1, A2, B1, B2 ...) + Legacy-Support (1A)
       const parseCode = (code) => {
-        const match = String(code || '').match(/^(\d+)([A-Z])$/);
-        if(!match) return {num: 9999, letter: 'Z'};
-        return {num: parseInt(match[1], 10), letter: match[2]};
+        const normalized = String(code || '').replace(/\s/g, '').replace(/^#/, '');
+        const modernMatch = normalized.match(/^([A-Z])(\d+)$/);
+        if(modernMatch) return {letter: modernMatch[1], num: parseInt(modernMatch[2], 10)};
+        const legacyMatch = normalized.match(/^(\d+)([A-Z])$/);
+        if(legacyMatch) return {letter: legacyMatch[2], num: parseInt(legacyMatch[1], 10)};
+        return {num: 9999, letter: 'Z'};
       };
       const aCode = parseCode(a.code);
       const bCode = parseCode(b.code);
       
-      if(aCode.num !== bCode.num) return aCode.num - bCode.num;
-      return aCode.letter.localeCompare(bCode.letter);
+      if(aCode.letter !== bCode.letter) return aCode.letter.localeCompare(bCode.letter);
+      return aCode.num - bCode.num;
     });
 
     // Render Grid (Theken-Grid) - Große Kacheln
@@ -15987,7 +16235,7 @@
       list.forEach(p=>{
         const isDone = p.status === 'PICKED_UP';
         const isPaid = !isDone;
-        const codeDisplay = (p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–');
+        const codeDisplay = (p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–');
         const pillarsHtml = [];
         if(p.hasEatIn) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Vor Ort (Teller)">🍴</span>');
         if(p.hasReuse) pillarsHtml.push('<span class="pickup-pillar" style="font-size:20px;" title="Mehrweg (Box)">🔄</span>');
@@ -16030,7 +16278,7 @@
     else hide(listEl);
     list.forEach(p=>{
       const isPickedUp = p.status === 'PICKED_UP';
-      const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+      const codeDisplay = p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–';
       const pillars = [];
       if(p.hasEatIn) pillars.push('<span style="font-size:22px;" title="Vor Ort (Teller)">🍴</span>');
       if(p.hasReuse) pillars.push('<span style="font-size:22px;" title="Mehrweg (Box)">🔄</span>');
@@ -16073,7 +16321,7 @@
     if(!order) return;
     currentPickupConfirmOrderId = orderId;
     const code = order.pickupCode || order.code || '–';
-    const codeDisplay = code ? '#' + String(code).replace(/\s/g,'') : '#–';
+    const codeDisplay = code ? String(code).replace(/\s/g,'').replace(/^#/, '') : '–';
     const codeEl = document.getElementById('pickupConfirmCode');
     if(codeEl) codeEl.textContent = codeDisplay;
     const hasEatIn = order.verzehrmodus === 'vor_ort';
@@ -16121,7 +16369,7 @@
       if(listEl){
         const next3 = openPickups.slice(0, 3);
         listEl.innerHTML = next3.length ? next3.map(p => {
-          const codeDisplay = p.code ? '#' + String(p.code).replace(/\s/g,'') : '#–';
+          const codeDisplay = p.code ? String(p.code).replace(/\s/g,'').replace(/^#/, '') : '–';
           return '<button type="button" data-order-id="' + esc(p.orderId) + '" style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:#f1f5f9; border:none; border-radius:14px; font-size:16px; font-weight:700; cursor:pointer; text-align:left;">' + esc(codeDisplay) + ' <span style="color:#64748b; font-weight:500;">→</span></button>';
         }).join('') : '<p style="margin:0; color:#64748b; font-size:15px;">Keine weiteren Abholnummern.</p>';
         listEl.querySelectorAll('button[data-order-id]').forEach(btn => {
@@ -18072,33 +18320,13 @@
     const providerContent = document.getElementById('faqContentProvider');
     
     if(tab === 'customer'){
-      if(customerTab){
-        customerTab.style.background = '#fff';
-        customerTab.style.borderBottom = '3px solid #FFD700';
-        customerTab.style.fontWeight = '700';
-        customerTab.style.color = '#334155';
-      }
-      if(providerTab){
-        providerTab.style.background = '#f9f9f9';
-        providerTab.style.borderBottom = '3px solid transparent';
-        providerTab.style.fontWeight = '600';
-        providerTab.style.color = '#666';
-      }
+      if(customerTab) customerTab.classList.add('faq-tab-btn--active');
+      if(providerTab) providerTab.classList.remove('faq-tab-btn--active');
       if(customerContent) show(customerContent);
       if(providerContent) hide(providerContent);
     } else {
-      if(providerTab){
-        providerTab.style.background = '#fff';
-        providerTab.style.borderBottom = '3px solid #FFD700';
-        providerTab.style.fontWeight = '700';
-        providerTab.style.color = '#334155';
-      }
-      if(customerTab){
-        customerTab.style.background = '#f9f9f9';
-        customerTab.style.borderBottom = '3px solid transparent';
-        customerTab.style.fontWeight = '600';
-        customerTab.style.color = '#666';
-      }
+      if(providerTab) providerTab.classList.add('faq-tab-btn--active');
+      if(customerTab) customerTab.classList.remove('faq-tab-btn--active');
       if(providerContent) show(providerContent);
       if(customerContent) hide(customerContent);
     }
@@ -18386,7 +18614,7 @@
       const todayOrders = typeof loadOrders === 'function' ? loadOrders() : [];
       const todayOfferIds = mineToday.map(function(o){ return o.id; });
       const firstPaidCode = todayOrders.filter(function(ord){ return ord.status === 'PAID' && ord.pickupCode && todayOfferIds.indexOf(ord.dishId) !== -1; })[0];
-      const abholnummerStr = hasAbholnummer ? (firstPaidCode ? ('#' + (firstPaidCode.pickupCode || '')) : 'verfügbar') : '–';
+      const abholnummerStr = hasAbholnummer ? (firstPaidCode ? String(firstPaidCode.pickupCode || '').replace(/^#/, '') : 'verfügbar') : '–';
       const dishesBlock = mineToday.map(function(o){ return '🥘 *' + (o.dish || o.title || 'Gericht').replace(/\*/g,'') + '* — ' + (typeof euro === 'function' ? euro(o.price || 0) : (Number(o.price)||0).toFixed(2).replace('.',',') + ' €'); }).join('\n');
       let msg = '🔪 *Frisch aus unserer Küche für heute!* 👨‍🍳\n\n' + dishesBlock + '\n\n*Service:*\n🍴 Vor Ort genießen\n🧾 Abholnummer: *' + abholnummerStr + '*\n';
       if(hasMehrweg) msg += '🔄 Mehrweg verfügbar\n';
@@ -20954,36 +21182,58 @@
         var objPos2=(typeof w.data.photoObjectPanY==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanY)):(typeof w.data.photoObjectPosition==='number')?w.data.photoObjectPosition:(typeof w.data.photoCropY==='number'?Math.round(50+(w.data.photoCropY/80)*50):50);
         var objPan2=(typeof w.data.photoObjectPanX==='number')?Math.max(0,Math.min(100,w.data.photoObjectPanX)):50;
         var dishNameS2=(w.data.dish||'').trim()||'Gericht';
+        var isWeekPlannerContext = !!(w && w.ctx && (
+          String(w.ctx.entryPoint || '').toLowerCase() === 'week' ||
+          (Array.isArray(w.ctx.bulkDraftDates) && w.ctx.bulkDraftDates.length > 0)
+        ));
+        var step2Kicker=document.createElement('div');
+        step2Kicker.className='step2-review-kicker';
+        step2Kicker.textContent=isWeekPlannerContext ? 'Wochenplan' : 'Dein Inserat';
+        step2Wrap.appendChild(step2Kicker);
         var step2Header=document.createElement('h3');
-        step2Header.className='step2-review-title';
-        step2Header.textContent='Dein Gericht';
-        step2Header.style.cssText='margin:0; padding:16px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
+        step2Header.className='step2-review-title step2-review-title--money';
+        step2Header.textContent=isWeekPlannerContext ? 'So planst du diese Woche live' : 'So gehst du heute live';
+        step2Header.style.cssText='margin:0; padding:4px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
         stampCard.className='step2-review-stamp photo-preview-container step2-ticket-card';
         stampCard.style.cssText='display:flex; align-items:stretch; gap:10px; margin:0 20px; padding:10px 12px; border:1px solid rgba(250,204,21,0.55); border-radius:14px; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%); box-shadow:0 10px 24px rgba(15,23,42,0.08);';
-        stampCard.innerHTML='<span class="step2-thron-badge">DEIN INSERAT</span><img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:78px; height:78px; border-radius:12px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; align-items:center; min-width:0; flex:1;"><span id="money-dish-name" style="font-size:18px; line-height:1.2; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
+        stampCard.innerHTML='<img src="'+thumbUrl+'" id="money-dish-img" alt="" style="width:78px; height:78px; border-radius:12px; object-fit:cover; object-position:'+objPan2+'% '+objPos2+'%; flex-shrink:0;"><div style="display:flex; align-items:center; min-width:0; flex:1;"><span id="money-dish-name" style="font-size:18px; line-height:1.2; font-weight:800; color:#111827; word-break:break-word; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">'+esc(dishNameS2)+'</span></div>';
         step2Wrap.appendChild(stampCard);
         var optionsLabel=document.createElement('div');
         optionsLabel.className='step2-options-label';
-        optionsLabel.textContent='Deine Optionen';
+        optionsLabel.textContent=isWeekPlannerContext ? 'Wähle dein Wochenplan-Modell' : 'Wähle dein Modell';
         step2Wrap.appendChild(optionsLabel);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
         tilesWrap.style.cssText='display:flex; flex-direction:column; gap:12px; padding:16px 20px 12px; box-sizing:border-box; width:100%;';
+        var weekDaysCount = (Array.isArray(w.ctx && w.ctx.bulkDraftDates) && w.ctx.bulkDraftDates.length > 0) ? w.ctx.bulkDraftDates.length : (isWeekPlannerContext ? 1 : 0);
+        var weekFixkosten = weekDaysCount > 0 ? weekDaysCount * 4.99 : 4.99;
+        var weekFixkostenText = (typeof euro === 'function') ? euro(weekFixkosten) : weekFixkosten.toFixed(2).replace('.',',') + ' €';
+        var standardTileTitle = isWeekPlannerContext ? 'Wochenplan Standard' : 'Standard-Inserat';
+        var standardTileSub = isWeekPlannerContext ? 'Diese Woche wird als Standard-Inserat aktiviert.' : 'Dein Gericht wird veröffentlicht.';
+        var pickupTileSub = isWeekPlannerContext ? 'Mit Abholnummer je Gericht (0,89 € pro Vorgang)' : 'Inklusive Abholnummer (0,89 € pro Vorgang)';
+        var standardTileImpact = isWeekPlannerContext ? ('Fixkosten: ' + weekFixkostenText + ' für ' + weekDaysCount + ' Tag' + (weekDaysCount === 1 ? '' : 'e')) : 'Fixkosten: 4,99 € einmalig';
+        var pickupTileImpact = 'Kosten nur bei Verkauf: 0,89 € je Abholnummer';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile service-tile-card';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">Standard-Inserat</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">Dein Gericht wird veröffentlicht.</div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">'+esc(standardTileTitle)+'</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">'+esc(standardTileSub)+'</div><div class="step2-choice-impact">'+esc(standardTileImpact)+'</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card has-recommendation';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">Inklusive Abholnummer (0,89 € pro Vorgang)</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">'+esc(pickupTileSub)+'</div><div class="step2-choice-impact">'+esc(pickupTileImpact)+'</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
+        if(isWeekPlannerContext){
+          var weekCompareLine=document.createElement('div');
+          weekCompareLine.className='step2-week-compare';
+          weekCompareLine.textContent='Vergleich: Standard = ' + weekFixkostenText + ' Fixkosten · Stressfrei = nur bei Verkäufen';
+          step2Wrap.appendChild(weekCompareLine);
+        }
         var step2Spacer=document.createElement('div');
         step2Spacer.style.cssText='display:none;';
         step2Wrap.appendChild(step2Spacer);
@@ -21036,6 +21286,9 @@
         var popoverCloseBtn = infoPopover.querySelector('.step2-popover-close');
         if(popoverCloseBtn) popoverCloseBtn.onclick = function(){ closeInfoPopover(); };
         function getStep2PublishLabel(isPickupEnabled){
+          if(isWeekPlannerContext){
+            return isPickupEnabled ? 'Woche stressfrei aktivieren' : 'Woche für 4,99 € aktivieren';
+          }
           return isPickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
         }
         function updateTileUI(){
@@ -22173,18 +22426,32 @@
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
       priceSection.className='price-section';
-      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:4px; margin:6px 0 0; width:100%; padding:0 16px;';
+      priceSection.style.cssText='display:flex; flex-direction:column; align-items:center; gap:8px; margin:10px 0 0; width:100%; padding:0 16px;';
       var priceLabelSmall=document.createElement('label');
       priceLabelSmall.htmlFor='gericht-preis';
       priceLabelSmall.textContent='';
       priceLabelSmall.style.cssText='display:none;';
       var priceInputWrapper=document.createElement('div');
       priceInputWrapper.className='price-input-wrapper inserat-price-ebay';
-      priceInputWrapper.style.cssText='display:flex; align-items:center; gap:6px; background:#f7f7f7; border:none; border-radius:12px; padding:12px 16px; width:fit-content;';
+      priceInputWrapper.style.cssText='display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(180deg,#fffdf5 0%,#fff7d6 100%); border:2px solid #facc15; border-radius:18px; padding:14px 20px; min-width:196px; box-shadow:0 10px 24px rgba(250,204,21,0.22), inset 0 1px 0 rgba(255,255,255,0.92);';
+      var priceHeroLabel=document.createElement('div');
+      priceHeroLabel.className='inserat-price-hero-label';
+      priceHeroLabel.textContent='DEIN PREIS';
+      priceHeroLabel.style.cssText='font-size:11px; line-height:1; color:#334155; font-weight:900; letter-spacing:0.12em; margin:0;';
       var stepPriceWrap=document.createElement('div');
       stepPriceWrap.id='step-price';
       stepPriceWrap.className='inserat-price-pill-wrap';
-      stepPriceWrap.style.cssText='display:flex; align-items:baseline; gap:4px;';
+      stepPriceWrap.style.cssText='display:flex; align-items:baseline; justify-content:center; gap:6px; width:100%;';
+      var priceMinusBtn=document.createElement('button');
+      priceMinusBtn.type='button';
+      priceMinusBtn.className='inserat-price-stepper inserat-price-stepper-minus';
+      priceMinusBtn.setAttribute('aria-label','Preis um 0,50 Euro senken');
+      priceMinusBtn.textContent='−';
+      var pricePlusBtn=document.createElement('button');
+      pricePlusBtn.type='button';
+      pricePlusBtn.className='inserat-price-stepper inserat-price-stepper-plus';
+      pricePlusBtn.setAttribute('aria-label','Preis um 0,50 Euro erhöhen');
+      pricePlusBtn.textContent='+';
       var inputPrice=document.createElement('input');
       inputPrice.type='text';
       inputPrice.id='gericht-preis';
@@ -22192,25 +22459,38 @@
       inputPrice.setAttribute('inputmode','decimal');
       inputPrice.placeholder='0,00';
       inputPrice.value=(w.data.price>0?Number(w.data.price).toFixed(2).replace('.',','):'');
-      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:26px; font-weight:800; color:#222; width:100px; text-align:left;';
+      inputPrice.style.cssText='border:none; background:transparent; outline:none; font-size:40px; font-weight:900; line-height:1; letter-spacing:-0.03em; color:#0f172a; width:128px; text-align:center;';
       var eurSpan=document.createElement('span');
-      eurSpan.className='currency inserat-price-pill-euro';
+      eurSpan.className='currency inserat-price-main-euro';
       eurSpan.textContent='\u20AC';
-      eurSpan.style.cssText='font-size:18px; font-weight:600; color:#555; line-height:1;';
+      eurSpan.style.cssText='font-size:26px; font-weight:900; color:#b45309; line-height:1;';
       stepPriceWrap.appendChild(inputPrice);
       stepPriceWrap.appendChild(eurSpan);
+      priceInputWrapper.appendChild(priceMinusBtn);
       priceInputWrapper.appendChild(stepPriceWrap);
+      priceInputWrapper.appendChild(pricePlusBtn);
       priceSection.appendChild(priceLabelSmall);
-      priceSection.appendChild(priceInputWrapper);
       var priceSubHint=document.createElement('div');
       priceSubHint.className='inserat-price-subhint';
       priceSubHint.textContent='Preis pro Gericht';
-      priceSubHint.style.cssText='font-size:12px; line-height:1.2; color:#94a3b8; font-weight:600; margin:2px 0 0; text-align:center;';
+      priceSubHint.style.cssText='font-size:13px; line-height:1.2; color:#334155; font-weight:800; letter-spacing:0.01em; margin:0; text-align:center;';
       priceSection.appendChild(priceSubHint);
+      priceSection.appendChild(priceHeroLabel);
+      priceSection.appendChild(priceInputWrapper);
+      var priceOwnerHint=document.createElement('div');
+      priceOwnerHint.className='inserat-price-owner-hint';
+      priceOwnerHint.textContent='Das ist dein Verkaufspreis.';
+      priceOwnerHint.style.cssText='font-size:12px; line-height:1.2; color:#64748b; font-weight:700; margin:-2px 0 0; text-align:center;';
+      priceSection.appendChild(priceOwnerHint);
+      var priceAnchorHint=document.createElement('div');
+      priceAnchorHint.className='inserat-price-anchor-hint';
+      priceAnchorHint.textContent='Typisch in deiner Umgebung: 8,90–10,90 €';
+      priceAnchorHint.style.cssText='font-size:11px; line-height:1.2; color:#64748b; font-weight:700; margin:0; text-align:center;';
+      priceSection.appendChild(priceAnchorHint);
       var verdienstWrap = document.createElement('div');
       verdienstWrap.id = 'inserat-verdienst-vorschau';
       verdienstWrap.className = 'inserat-verdienst-vorschau';
-      verdienstWrap.style.cssText = 'display:none; font-size:13px; margin-top:6px;';
+      verdienstWrap.style.cssText = 'display:block; font-size:12px; margin-top:4px; text-align:center;';
       priceSection.appendChild(verdienstWrap);
 
       // ========== 6. SERVICE-GRID: 5 quadratische Kacheln (S25 Cockpit) ==========
@@ -22797,12 +23077,32 @@
         if(calcVal) calcVal.textContent = (price * 30).toFixed(2).replace('.',',');
         var verdienstEl = document.getElementById('inserat-verdienst-vorschau');
         if(verdienstEl){
-          var verdienst = Math.max(0, (price - 0.89) * 30);
-          verdienstEl.textContent = 'Dein Verdienst (ca. 30 Portionen): ' + verdienst.toFixed(2).replace('.',',') + ' €';
-          if(price > 0) show(verdienstEl);
-          else hide(verdienstEl);
+          if(price > 0){
+            var umsatz20 = price * 20;
+            var erloes20 = Math.max(0, (price - 0.89) * 20);
+            verdienstEl.textContent = 'Bei 20 Portionen: ' + umsatz20.toFixed(2).replace('.',',') + ' € Umsatz · ca. ' + erloes20.toFixed(2).replace('.',',') + ' € nach Gebühr';
+            show(verdienstEl);
+          } else {
+            verdienstEl.textContent = 'Bei 20 Portionen: 0,00 € Umsatz · 0,00 € nach Gebühr';
+            show(verdienstEl);
+          }
         }
       };
+      function normalizePriceValue(raw){
+        var num = Number(raw);
+        if(!isFinite(num)) num = 0;
+        num = Math.max(0, Math.min(99.99, Math.round(num * 100) / 100));
+        return num;
+      }
+      function setPriceValue(nextPrice){
+        var normalized = normalizePriceValue(nextPrice);
+        w.data.price = normalized;
+        inputPrice.value = normalized > 0 ? normalized.toFixed(2).replace('.',',') : '';
+        updateProfit(normalized.toFixed(2));
+        saveDraft();
+        if(typeof checkMastercardValidation==='function') checkMastercardValidation();
+        if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
+      }
       /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Preis */
       infoSection.appendChild(powerBar);
       contentSheet.appendChild(infoSection);
@@ -22826,6 +23126,18 @@
         hapticLight();
         setTimeout(function(){ try{ inputPrice.focus(); }catch(err){} }, 80);
       });
+      priceMinusBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        hapticLight();
+        setPriceValue((Number(w.data.price)||0)-0.5);
+      };
+      pricePlusBtn.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        hapticLight();
+        setPriceValue((Number(w.data.price)||0)+0.5);
+      };
       inputPrice.oninput=()=>{ var v=inputPrice.value.replace(',','.'); w.data.price=parseFloat(v)||0; saveDraft(); updateProfit(v); hapticLight(); if(typeof checkMastercardValidation==='function') checkMastercardValidation(); if(updateStep2ContextZoneRef) updateStep2ContextZoneRef(); };
       inputPrice.onfocus=function(){
         hapticLight();
@@ -23088,43 +23400,71 @@
         footerBtn.style.setProperty('opacity', '1');
         footerBtn.textContent=getStep2PublishLabel(!!w.data.step2PickupEnabled);
         footerBtnStep2 = footerBtn;
+        var setStep2CtaBusy = function(isBusy){
+          var btnEl = document.getElementById('main-publish-btn') || footerBtnStep2;
+          if(!btnEl) return;
+          if(isBusy){
+            btnEl.dataset.busy = '1';
+            btnEl.classList.add('is-busy');
+            btnEl.disabled = true;
+            btnEl.textContent = isWeekPlannerContext ? 'Woche wird vorbereitet…' : 'Wird vorbereitet…';
+          } else {
+            btnEl.dataset.busy = '0';
+            btnEl.classList.remove('is-busy');
+            btnEl.disabled = false;
+            btnEl.textContent = getStep2PublishLabel(!!pickupEnabled);
+          }
+          lockFooterButtonVisuals(btnEl);
+        };
         var handleStep2PublishClick = function(){
           try{
+            setStep2CtaBusy(true);
             hapticLight();
             var bulkDates=(w.ctx&&w.ctx.bulkDraftDates)||[];
+            var usePickup = !!pickupEnabled;
+            var btnLabel = (this && typeof this.textContent === 'string') ? this.textContent : '';
+            if(!usePickup && (btnLabel.indexOf('Küche entlasten') !== -1 || btnLabel.indexOf('Woche stressfrei aktivieren') !== -1)){
+              // Guard against stale state: CTA label wins if state desynced.
+              usePickup = true;
+            }
             if(bulkDates.length>0){
-              var useAbholnummer=!!w.data.step2PickupEnabled;
+              var useAbholnummer = !!usePickup;
               if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
+              else if(typeof showToast==='function') showToast('Wochenaktivierung gerade nicht verfügbar. Bitte neu laden.');
               closeWizard(true);
               if(typeof showProviderWeek==='function') showProviderWeek();
               return;
             }
-            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); return; }
+            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); setStep2CtaBusy(false); return; }
             var p = normalizeProviderProfile((provider && provider.profile) || {});
             var profileAddress = String(p.address || '').trim();
             var profileStreet = String(p.street || '').trim();
             var hasAddr = !!profileAddress || !!profileStreet || !!((p.zip && String(p.zip).trim()) && (p.city && String(p.city).trim()));
-            var usePickup=!!w.data.step2PickupEnabled;
             w.data.hasPickupCode=usePickup;
             w.data.pricingChoice=usePickup?'pro':'499';
             w.data.inseratFeeWaived=usePickup;
+            w.data.step2PickupEnabled=usePickup;
             w.data.pricingOption=usePickup?'abholnummer':undefined;
             var o=previewOfferFromWizard();
             if(!hasAddr){
               if(typeof openAddressModal === 'function') openAddressModal();
               else if(typeof showAddressRequiredModal === 'function') showAddressRequiredModal();
               if(typeof showToast === 'function') showToast('Bitte zuerst Adresse im Profil ergänzen.');
+              setStep2CtaBusy(false);
               return;
             }
             publishFeeUseStep3=true;
             if(typeof showPublishFeeModal === 'function'){
               showPublishFeeModal(o);
+              setStep2CtaBusy(false);
             } else if(typeof showToast === 'function'){
               showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+              setStep2CtaBusy(false);
             }
           } catch(err){
             console.error('[Step2 publish click failed]', err);
             if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
+            setStep2CtaBusy(false);
           }
         };
         footerBtn.onclick = null;
@@ -23134,6 +23474,7 @@
         var triggerStep2Publish = function(ev){
           if(ev && typeof ev.preventDefault === 'function') ev.preventDefault();
           if(ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+          if(footerBtn && footerBtn.dataset && footerBtn.dataset.busy === '1') return;
           var now = Date.now();
           if(now - lastStep2CtaTriggerTs < 300) return;
           lastStep2CtaTriggerTs = now;
@@ -23777,7 +24118,7 @@
       var todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(function(o){ return o.providerId === (typeof providerId === 'function' ? providerId() : '') && o.day === todayKey; }).sort(function(a,b){ return (a.createdAt || 0) - (b.createdAt || 0); });
       var idx = todayOffers.findIndex(function(o){ return o.id === publishedOffer.id; });
       var letter = idx >= 0 ? String.fromCharCode(65 + Math.min(idx, 4)) : 'A';
-      abholId.textContent = '#' + letter + '-' + String(todayOrders.length + 1).padStart(2, '0');
+      abholId.textContent = letter + String(todayOrders.length + 1);
     }
     var step3Container = document.getElementById('step3ConfettiContainer');
     if(step3Container){
@@ -24131,7 +24472,7 @@
     const todayOffers = (typeof offers !== 'undefined' ? offers : []).filter(off => off.providerId === providerId() && off.day === todayKey).sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
     const dishIdx = todayOffers.findIndex(off => off.id === publishedOffer.id);
     const dishLetter = dishIdx >= 0 ? String.fromCharCode(65 + Math.min(dishIdx, 4)) : 'A';
-    const codeDisplay = dishLetter + '-' + String(runningNumber).padStart(2, '0');
+    const codeDisplay = dishLetter + String(runningNumber);
     if(nextCodeEl) nextCodeEl.textContent = codeDisplay;
     if(abholSection){
       if(d.hasPickupCode) show(abholSection);
@@ -25036,6 +25377,7 @@
     if(hash){
       const legalRoutes = {
         '#/impressum': 'impressum',
+        '#/agb': 'agb-kurz',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
         '#/faq': 'faq',
@@ -25055,6 +25397,7 @@
       const hash = window.location.hash;
       const legalRoutes = {
         '#/impressum': 'impressum',
+        '#/agb': 'agb-kurz',
         '#/agb-kurz': 'agb-kurz',
         '#/datenschutz': 'datenschutz',
         '#/faq': 'faq',
@@ -25436,6 +25779,15 @@
   } else if(path.indexOf('/anbieter/hilfe/inserat') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
     if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
     if(typeof showLegalPage === 'function') showLegalPage('inserat-info-provider');
+  } else if(path.indexOf('/anbieter/recht/impressum') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('impressum-provider');
+  } else if(path.indexOf('/anbieter/recht/agb') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('agb-provider');
+  } else if(path.indexOf('/anbieter/recht/datenschutz') !== -1 && typeof provider !== 'undefined' && provider && provider.loggedIn){
+    if(typeof setMode === 'function') setMode('provider'); else if(typeof window.setMode === 'function') window.setMode('provider');
+    if(typeof showLegalPage === 'function') showLegalPage('datenschutz-provider');
   } else if(planMatch && typeof showPlanPublicView === 'function'){
     showPlanPublicView(decodeURIComponent(planMatch[1]));
   } else {

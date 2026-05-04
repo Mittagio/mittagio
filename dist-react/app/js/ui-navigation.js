@@ -99,6 +99,15 @@
     var customerViewIds = [views.start, views.discover, views.fav, views.orders, views.cart, views.profile, views.orderSuccess, views.pickupCode, views.checkout].filter(Boolean);
     if(!isProviderView && customerViewIds.indexOf(id) !== -1){
       document.body.classList.remove('provider-mode');
+      document.body.classList.remove(
+        'wizard-inserat-open',
+        'create-flow-open',
+        'vendor-area',
+        'provider-week-active',
+        'provider-cookbook-active',
+        'cookbook-active',
+        'cookbook-from-dashboard'
+      );
       window.mode = 'customer';
       try { if(typeof save === 'function' && typeof LS !== 'undefined') save(LS.mode, window.mode); } catch(e) {}
     }
