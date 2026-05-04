@@ -11,6 +11,19 @@
   // ========== Demo-Modus (für Tests, standardmäßig aus) [cite: 2026-02-25] ==========
   if (typeof window !== 'undefined') { window.DEMO_MODE = false; }
   if (typeof console !== 'undefined' && console.log) console.log('[script.js] LOADED');
+  // Launch-UX: Blockierende Alerts in nicht-blockierende Toasts umleiten.
+  if(typeof window !== 'undefined' && typeof window.alert === 'function'){
+    window.__nativeAlert = window.__nativeAlert || window.alert.bind(window);
+    window.alert = function(message){
+      try{
+        if(typeof showToast === 'function'){
+          showToast(String(message || 'Hinweis'), 3000);
+          return;
+        }
+      } catch(_e){}
+      try { window.__nativeAlert(String(message || 'Hinweis')); } catch(_e2){}
+    };
+  }
   /* Hoisting-Fix: Function Declarations sind sofort verfügbar – Zuweisung HIER statt am Ende [cite: Weisser-Screen-Fix 2026-03-11] */
   if(typeof startListingFlow === 'function'){
     window.startListingFlow = startListingFlow;
@@ -781,7 +794,7 @@
         <!-- Abholnummer: Aktiv = gelb #FFD700, Inaktiv = ausgegraut opacity 0.2 -->
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; opacity:${abholnummer ? '1' : '0.2'}; filter:${abholnummer ? 'none' : 'grayscale(100%)'}; transition:all 0.2s ease;">
           <div style="width:36px; height:36px; border-radius:50%; background:${abholnummer ? '#FFD700' : 'rgba(0,0,0,0.08)'}; color:${abholnummer ? '#1a1a1a' : '#999'}; display:flex; align-items:center; justify-content:center; border:1px solid ${abholnummer ? 'rgba(255,215,0,0.6)' : 'rgba(0,0,0,0.1)'};">
-            <i data-lucide="receipt" style="width:18px;height:18px;"></i>
+            <span style="font-size:16px; line-height:1;">🧾</span>
           </div>
           <div style="${styleText}">Abholnummer</div>
         </div>
@@ -936,7 +949,7 @@
     pillarsRow.style.cssText = 'display:flex; align-items:center; gap:8px; padding:6px 16px 8px; font-size:18px; line-height:1;';
     pillarsRow.innerHTML = [
       '<span class="pillar-icon' + (vorOrt ? '' : ' pillar-icon--dim') + '" title="Vor Ort">🍴</span>',
-      '<span class="pillar-icon pillar-abholnummer-icon' + (abholnummer ? '' : ' pillar-icon--dim') + '" title="Abholnummer"><i data-lucide="receipt" style="width:18px;height:18px;"></i></span>',
+      '<span class="pillar-icon pillar-abholnummer-icon' + (abholnummer ? '' : ' pillar-icon--dim') + '" title="Abholnummer">🧾</span>',
       '<span class="pillar-icon' + (mehrweg ? '' : ' pillar-icon--dim') + '" title="Mehrweg">🔄</span>',
     ].join('');
     card.appendChild(pillarsRow);
@@ -971,7 +984,7 @@
     ctaBtn.type = 'button';
     ctaBtn.className = 'btn btn-mittagsbox-cta';
     ctaBtn.style.cssText = 'width:auto; min-width:200px; min-height:48px; padding:0 24px; border-radius:14px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s, box-shadow 0.2s;';
-    ctaBtn.innerHTML = '<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>';
+    ctaBtn.innerHTML = '<i data-lucide="shopping-basket" style="width:18px;height:18px;"></i> <span>Zur Mittagsbox</span>';
     ctaBtn.onmouseover = () => { ctaBtn.style.setProperty('transform', 'scale(1.02)'); ctaBtn.style.boxShadow = '0 4px 12px rgba(255,215,0,0.4)'; };
     ctaBtn.onmouseout = () => { ctaBtn.style.setProperty('transform', 'scale(1)'); ctaBtn.style.boxShadow = 'none'; };
     ctaBtn.onclick = (e) => {
@@ -2870,7 +2883,7 @@
         var iconEl = document.createElement('div');
         iconEl.className = 'empty-state-icon';
         iconEl.setAttribute('aria-hidden', 'true');
-        iconEl.textContent = '🍱';
+        iconEl.innerHTML = '<i data-lucide="shopping-basket" style="width:34px;height:34px;"></i>';
         emptyWrap.appendChild(iconEl);
         var titleEl = document.createElement('h2');
         titleEl.className = 'empty-state-title';
@@ -3519,23 +3532,32 @@
           const offer = offers.find(o => o.id === offerId);
           if(offer){
             const data = normalizeOffer(offer);
-            const shareText = `Schau dir "${data.dish}" von ${data.providerName} auf MITTAGIO an! 🍽️`;
             const shareUrl = window.location.href.split('#')[0] + '#offer=' + offerId;
+            const shareText = `Heute bei ${data.providerName}: ${data.dish}\n👉 Jetzt ansehen:\n${shareUrl}`;
             
             if(navigator.share){
               navigator.share({
                 title: data.dish,
                 text: shareText,
                 url: shareUrl
-              }).catch(() => {
-                // Fallback: Kopiere URL in Zwischenablage
-                navigator.clipboard.writeText(shareUrl);
-                showToast('Link kopiert!', 2000);
+              }).catch((err) => {
+                if(err && err.name === 'AbortError') return;
+                // Fallback: gleiches Ziel-Menü wie sonst (WhatsApp/Instagram/Link)
+                if(typeof openShareSheet === 'function'){
+                  openShareSheet(data.dish || 'Gericht', shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+                } else {
+                  navigator.clipboard.writeText(shareUrl);
+                  showToast('Link kopiert!', 2000);
+                }
               });
             } else {
-              // Fallback: Kopiere URL in Zwischenablage
-              navigator.clipboard.writeText(shareUrl);
-              showToast('Link kopiert!', 2000);
+              // Fallback: gleiches Ziel-Menü wie sonst (WhatsApp/Instagram/Link)
+              if(typeof openShareSheet === 'function'){
+                openShareSheet(data.dish || 'Gericht', shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+              } else {
+                navigator.clipboard.writeText(shareUrl);
+                showToast('Link kopiert!', 2000);
+              }
             }
           }
         }
@@ -3680,7 +3702,7 @@
         <h2 style="color:#fff; font-size:36px; font-weight:900; margin:0 0 12px; letter-spacing:2px;">Lecker!</h2>
         <p style="color:rgba(255,255,255,0.8); font-size:16px; margin:0 0 24px; line-height:1.5;">${esc(data.dish || 'Gericht')} wurde zu deiner Mittagsbox hinzugefügt.</p>
         <div style="display:flex; gap:12px; justify-content:center;">
-          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zur Mittagsbox 🍱</button>
+          <button type="button" onclick="document.getElementById('matchOverlayTinder').remove(); showFav();" style="padding:14px 28px; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Zur Mittagsbox</button>
           <button type="button" onclick="document.getElementById('matchOverlayTinder').remove();" style="padding:14px 28px; background:rgba(255,255,255,0.15); color:#fff; font-weight:700; font-size:15px; border:none; border-radius:12px; cursor:pointer;">Weiter</button>
         </div>
       </div>
@@ -4575,7 +4597,7 @@
     const todayKey = isoDate(new Date());
     const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
     const uspOverlayHtml = abholnummer
-      ? `<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
+      ? `<span class="tgtg-usp-emoji" aria-hidden="true">🧾</span><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
       : `<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`;
     const feedbackTap = () => {
       try{
@@ -4610,7 +4632,7 @@
           <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn${isFavorited ? ' is-favorited' : ''}" aria-label="Favorit" title="Favorit" aria-pressed="${isFavorited ? 'true' : 'false'}"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;stroke:#e74c3c;' : 'color:#6b7280;stroke:#6b7280;'}"></i></button>
           <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
         </div>
-        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">${isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox 🍱'}</button>
+        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">${isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox'}</button>
       </div>
     `;
     
@@ -4925,7 +4947,7 @@
           orderBtn.style.setProperty('transform', 'translateY(0)');
           orderBtn.style.boxShadow = '0 4px 12px rgba(255,204,0,0.3)';
         };
-        orderBtn.innerHTML = `<span style="font-size:18px;line-height:1;">🍱</span> <span>Zur Mittagsbox</span>`;
+        orderBtn.innerHTML = `<i data-lucide="shopping-basket" style="width:18px;height:18px;"></i> <span>Zur Mittagsbox</span>`;
         orderBtn.disabled = !data.hasPickupCode;
         if(orderBtn.disabled){
           orderBtn.style.setProperty('opacity', '0.5');
@@ -5160,26 +5182,23 @@
     
     // Prüfe ob Gericht Abholnummer hat
     if(!data.hasPickupCode){
-      showToast('Dieses Gericht hat keine Abholnummer. Bitte wähle ein anderes Gericht.', 3000);
+      showToast('Dieses Gericht hat keine Abholnummer – bitte wähle ein anderes Gericht.', 3000);
       return;
     }
     
-    // Bestätigung
-    const confirmed = confirm(`Dieses Gericht für heute wählen?\n\n${esc(data.dish||'Gericht')}\n${euro(data.price)}\n\nNach der Zahlung erhältst du deine Abholnummer.`);
-    if(!confirmed) return;
-    
-    // Gericht hinzufügen (statt "Zur Mittagsbox" - verboten für Endkunden)
-    if(addToCart(o)){
-      showToast('Gericht hinzugefügt!', 2000);
-      updateHeaderBasket();
-      
-      // Zur Mittagsbox navigieren (dort kann der Nutzer dann zur Kasse gehen)
-      setTimeout(() => {
-        showCart();
-      }, 500);
-    } else {
-      showToast('Fehler beim Hinzufügen. Bitte erneut versuchen.', 3000);
-    }
+    confirmWithSheet(`Dieses Gericht für heute wählen?\n\n${data.dish||'Gericht'}\n${euro(data.price)}\n\nNach der Zahlung erhältst du deine Abholnummer.`, function(){
+      // Gericht hinzufügen (statt "Zur Mittagsbox" - verboten für Endkunden)
+      if(addToCart(o)){
+        showToast('Gericht hinzugefügt!', 2000);
+        updateHeaderBasket();
+        // Zur Mittagsbox navigieren (dort kann der Nutzer dann zur Kasse gehen)
+        setTimeout(() => {
+          showCart();
+        }, 500);
+      } else {
+        showToast('Fehler beim Hinzufügen – bitte versuche es erneut.', 3000);
+      }
+    });
   }
 
   // Heute-Fokus: Immer nur heute anzeigen (kein Day-Switcher mehr)
@@ -5326,10 +5345,10 @@
         favEmptyText.textContent = 'Markiere deine Favoriten und teile sie mit deinem Team. Gemeinsam entscheiden, schneller genießen!';
         favEmptySteps.innerHTML = '<li>❤️ Herz drücken</li><li>🔗 Link teilen</li><li>🗳️ Abstimmen</li>';
       } else {
-        if(favEmptyIcon) favEmptyIcon.textContent = '🍱';
+        if(favEmptyIcon) favEmptyIcon.innerHTML = '<i data-lucide="shopping-basket" style="width:26px;height:26px;"></i>';
         favEmptyTitle.textContent = 'Deine Favoriten warten auf dich';
         favEmptyText.textContent = 'Speichere Gerichte mit ❤️ und entscheide später in Ruhe, was in deine Mittagsbox kommt.';
-        favEmptySteps.innerHTML = '<li>❤️ Favorit markieren</li><li>📌 Später wiederfinden</li><li>🍱 Zur Mittagsbox legen</li>';
+        favEmptySteps.innerHTML = '<li>❤️ Favorit markieren</li><li>📌 Später wiederfinden</li><li><i data-lucide="shopping-basket" style="width:14px;height:14px;vertical-align:-2px;"></i> Zur Mittagsbox legen</li>';
       }
     }
     
@@ -5462,9 +5481,18 @@
       const url = payload.url || baseUrl;
       const successToast = payload.successToast || 'Geteilt';
       const copyToast = payload.copyToast || 'Link kopiert';
-      const errorToast = payload.errorToast || 'Teilen nicht moeglich';
+      const errorToast = payload.errorToast || 'Teilen nicht möglich';
+      const openTargetSheet = function(){
+        if(typeof openShareSheet === 'function'){
+          openShareSheet(title, text, url, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+          if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+          return true;
+        }
+        return false;
+      };
       const fallbackCopy = function(){
         try{
+          if(openTargetSheet()) return;
           if(navigator.clipboard && navigator.clipboard.writeText){
             navigator.clipboard.writeText(text).then(function(){
               if(typeof showToast === 'function') showToast(copyToast);
@@ -5486,10 +5514,10 @@
           })
           .catch(function(err){
             if(err && err.name === 'AbortError') return;
-            fallbackCopy();
+            if(!openTargetSheet()) fallbackCopy();
           });
       } else {
-        fallbackCopy();
+        if(!openTargetSheet()) fallbackCopy();
       }
     };
     const shareSingleSuggestionAction = () => {
@@ -5500,15 +5528,15 @@
           ? buildOfferShareUrl(firstDish)
           : (baseUrl + '#offer=' + firstDish.id);
         const singleText = firstHasAbholnummer
-          ? `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Mit Abholnummer geht es besonders schnell. ${singleUrl}`
-          : `Mein Vorschlag fuer heute: ${dishName} bei ${providerName}. Vielleicht ist das auch was fuer dich. ${singleUrl}`;
+          ? `Mein Mittags-Tipp: ${dishName} bei ${providerName}. Online vorbestellen und Abholnummer erhalten.\n👉 Jetzt ansehen:\n${singleUrl}`
+          : `Mein Mittags-Tipp: ${dishName} bei ${providerName}.\n👉 Jetzt ansehen:\n${singleUrl}`;
         shareWithFallback({
           title: `Vorschlag: ${dishName} | Mittagio`,
           text: singleText,
           url: singleUrl,
           successToast: 'Gericht geteilt',
           copyToast: 'Link kopiert',
-          errorToast: 'Teilen nicht moeglich'
+          errorToast: 'Teilen nicht möglich'
         });
         return;
       }
@@ -5526,24 +5554,24 @@
         let shareText;
         if(firstHasAbholnummer){
           shareText = dishPreview
-            ? `Schau dir meine Favoriten an: ${dishPreview}. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`
-            : `Schau dir meine Favoriten an. Bei ${providerName} geht es mit Abholnummer besonders schnell. ${favRoute}`;
+            ? `Meine Favoriten für heute: ${dishPreview}.\nBei ${providerName} geht es mit Abholnummer besonders schnell.\n👉 Jetzt ansehen:\n${favRoute}`
+            : `Meine Favoriten für heute.\nBei ${providerName} geht es mit Abholnummer besonders schnell.\n👉 Jetzt ansehen:\n${favRoute}`;
         } else {
           shareText = dishPreview
-            ? `Schau dir meine Favoriten an: ${dishPreview}. Vielleicht ist etwas fuer dich dabei. ${favRoute}`
-            : `Schau dir meine Favoriten an. Vielleicht ist etwas fuer dich dabei. ${favRoute}`;
+            ? `Meine Favoriten für heute: ${dishPreview}.\nVielleicht ist etwas für dich dabei.\n👉 Jetzt ansehen:\n${favRoute}`
+            : `Meine Favoriten für heute.\nVielleicht ist etwas für dich dabei.\n👉 Jetzt ansehen:\n${favRoute}`;
         }
-        const shareTitle = 'Schau dir meine Favoriten an | Mittagio';
+        const shareTitle = 'Meine Favoriten | Mittagio';
         shareWithFallback({
           title: shareTitle,
           text: shareText,
           url: favRoute,
           successToast: 'Alle Favoriten geteilt',
           copyToast: 'Link kopiert',
-          errorToast: 'Teilen nicht moeglich'
+          errorToast: 'Teilen nicht möglich'
         });
       } catch(e){
-        if(typeof showToast === 'function') showToast('Teilen nicht moeglich');
+        if(typeof showToast === 'function') showToast('Teilen nicht möglich');
       }
     };
     const btnFavTeamVote = document.getElementById('btnFavTeamVote');
@@ -5901,7 +5929,7 @@
     const usp = document.createElement('div');
     usp.className = 'fav-card-usp';
     if(abholnummer){
-      usp.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+      usp.innerHTML = '<span class="tgtg-usp-emoji" aria-hidden="true">🧾</span><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
     } else {
       usp.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
     }
@@ -6618,7 +6646,7 @@
       const walkTime = o.distanceKm != null ? Math.round(Number(o.distanceKm) * 12) : null;
       const walkLabel = walkTime != null ? (walkTime < 1 ? '< 1' : walkTime) + ' Min' : '– Min';
       if(orderingEnabled){
-        sUspOverlay.innerHTML = '<i data-lucide="receipt" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
+        sUspOverlay.innerHTML = '<span class="tgtg-usp-emoji" aria-hidden="true">🧾</span><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
       } else {
         sUspOverlay.innerHTML = '<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">' + walkLabel + '</span>';
       }
@@ -6686,7 +6714,7 @@
           badgeEl.style.border = '1px solid rgba(39,174,96,0.2)';
           badgeEl.innerHTML = `<img src="assets/icon-mehrweg.png" alt="Mehrweg" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"><span>${esc(badge.text)}</span>`;
         } else if(badge.class === 'code'){
-          badgeEl.innerHTML = `<img src="assets/icon-abholnummer.png" alt="Abholnummer" class="concept-icon" style="width:16px;height:16px; margin-right:4px;"> <span>${esc(badge.text)}</span>`;
+          badgeEl.innerHTML = `<span aria-hidden="true" style="font-size:14px;line-height:1;margin-right:4px;">🧾</span><span>${esc(badge.text)}</span>`;
         } else {
           badgeEl.innerHTML = `<i data-lucide="${badge.icon}" style="width:14px;height:14px;"></i> <span>${esc(badge.text)}</span>`;
         }
@@ -7368,6 +7396,17 @@
     // Prüfe ob wir in einer Customer-View sind
     if(currentView){
       const viewId = currentView.id;
+      const customerLegalViews = ['v-legal-impressum', 'v-legal-agb-kurz', 'v-legal-datenschutz', 'v-legal-faq', 'v-support', 'v-version'];
+      if(mode !== 'provider' && customerLegalViews.indexOf(viewId) !== -1){
+        const fromView = e && e.state && e.state.fromView ? e.state.fromView : '';
+        if(fromView && document.getElementById(fromView)){
+          showView(fromView);
+        } else {
+          showProfile();
+        }
+        e.preventDefault();
+        return;
+      }
       if(viewId === 'v-fav'){
         showDiscover();
         e.preventDefault();
@@ -8054,7 +8093,7 @@
         showToast('Inserat pausiert');
       }},
       {label: 'Löschen', action: () => {
-        if(confirm('Inserat wirklich löschen?')){
+        confirmWithSheet('Inserat wirklich löschen?', function(){
           const idx = offers.findIndex(o => o.id === offerId);
           if(idx >= 0){
             offers.splice(idx, 1);
@@ -8063,16 +8102,52 @@
             renderDiscover();
             showToast('Inserat gelöscht');
           }
-        }
+        });
       }}
     ];
     
-    // Simple prompt-based menu (später kann ein Sheet verwendet werden)
-    const choice = prompt(`Aktion für "${offer.dish || offer.title}":\n1. Bearbeiten\n2. Duplizieren\n3. Pausieren\n4. Löschen\n\nNummer eingeben:`);
-    const idx = parseInt(choice) - 1;
-    if(idx >= 0 && idx < actions.length){
-      actions[idx].action();
-    }
+    // Non-blocking Mini-Action-Sheet statt prompt.
+    var existingBd = document.getElementById('offerMoreMenuBd');
+    var existingSheet = document.getElementById('offerMoreMenuSheet');
+    if(existingBd && existingBd.parentNode) existingBd.parentNode.removeChild(existingBd);
+    if(existingSheet && existingSheet.parentNode) existingSheet.parentNode.removeChild(existingSheet);
+
+    var bd = document.createElement('div');
+    bd.id = 'offerMoreMenuBd';
+    bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:1200006;';
+    bd.onclick = function(){
+      try { if(bd.parentNode) bd.parentNode.removeChild(bd); } catch(_e){}
+      try { if(sheet.parentNode) sheet.parentNode.removeChild(sheet); } catch(_e){}
+    };
+
+    var sheet = document.createElement('div');
+    sheet.id = 'offerMoreMenuSheet';
+    sheet.style.cssText = 'position:fixed; left:16px; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); background:#fff; border-radius:16px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 12px 32px rgba(0,0,0,0.18); z-index:1200007; overflow:hidden;';
+    var title = document.createElement('div');
+    title.style.cssText = 'padding:14px 16px; font-size:14px; font-weight:800; color:#1a1a1a; border-bottom:1px solid #f1f3f5;';
+    title.textContent = 'Aktion für "' + (offer.dish || offer.title || 'Inserat') + '"';
+    sheet.appendChild(title);
+    actions.forEach(function(item){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.style.cssText = 'width:100%; min-height:48px; padding:0 16px; border:none; border-bottom:1px solid #f8fafc; background:#fff; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a; cursor:pointer;';
+      btn.textContent = item.label;
+      btn.onclick = function(){
+        try { if(bd.parentNode) bd.parentNode.removeChild(bd); } catch(_e){}
+        try { if(sheet.parentNode) sheet.parentNode.removeChild(sheet); } catch(_e){}
+        item.action();
+      };
+      sheet.appendChild(btn);
+    });
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.style.cssText = 'width:100%; min-height:48px; border:none; background:#f8fafc; text-align:center; font-size:14px; font-weight:700; color:#64748b; cursor:pointer;';
+    cancel.textContent = 'Abbrechen';
+    cancel.onclick = bd.onclick;
+    sheet.appendChild(cancel);
+
+    document.body.appendChild(bd);
+    document.body.appendChild(sheet);
   }
   
   // Toast helper
@@ -8093,6 +8168,53 @@
     setTimeout(() => {
       toast.style.setProperty('opacity', '0');
     }, 3000);
+  }
+  function confirmWithSheet(message, onConfirm, onCancel){
+    var oldBd = document.getElementById('confirmSheetBd');
+    var oldSheet = document.getElementById('confirmSheet');
+    try { if(oldBd && oldBd.parentNode) oldBd.parentNode.removeChild(oldBd); } catch(_e){}
+    try { if(oldSheet && oldSheet.parentNode) oldSheet.parentNode.removeChild(oldSheet); } catch(_e){}
+    var bd = document.createElement('div');
+    bd.id = 'confirmSheetBd';
+    bd.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.36); z-index:1200010;';
+    var sheet = document.createElement('div');
+    sheet.id = 'confirmSheet';
+    sheet.style.cssText = 'position:fixed; left:16px; right:16px; bottom:calc(16px + env(safe-area-inset-bottom, 0px)); background:#fff; border-radius:16px; border:1px solid rgba(0,0,0,0.08); box-shadow:0 14px 34px rgba(0,0,0,0.18); z-index:1200011; overflow:hidden;';
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:16px; font-size:14px; line-height:1.5; color:#1a1a1a; white-space:pre-wrap;';
+    body.textContent = String(message || 'Bist du sicher?');
+    sheet.appendChild(body);
+    var row = document.createElement('div');
+    row.style.cssText = 'display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 16px 16px;';
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.textContent = 'Abbrechen';
+    cancel.style.cssText = 'min-height:44px; border:none; border-radius:12px; background:#f1f5f9; color:#334155; font-weight:700; cursor:pointer;';
+    var ok = document.createElement('button');
+    ok.type = 'button';
+    ok.textContent = 'Bestätigen';
+    ok.style.cssText = 'min-height:44px; border:none; border-radius:12px; background:#FFD700; color:#1a1a1a; font-weight:800; cursor:pointer;';
+    row.appendChild(cancel);
+    row.appendChild(ok);
+    sheet.appendChild(row);
+    function close(){
+      try { if(bd.parentNode) bd.parentNode.removeChild(bd); } catch(_e){}
+      try { if(sheet.parentNode) sheet.parentNode.removeChild(sheet); } catch(_e){}
+    }
+    bd.onclick = function(){
+      close();
+      if(typeof onCancel === 'function') onCancel();
+    };
+    cancel.onclick = function(){
+      close();
+      if(typeof onCancel === 'function') onCancel();
+    };
+    ok.onclick = function(){
+      close();
+      if(typeof onConfirm === 'function') onConfirm();
+    };
+    document.body.appendChild(bd);
+    document.body.appendChild(sheet);
   }
   function readFooterBtnMetrics(el){
     if(!el) return null;
@@ -8339,31 +8461,48 @@
       try{ 
         await navigator.clipboard.writeText(url);
         if(typeof showToast === 'function') showToast('Link kopiert!');
-        else alert('Link kopiert!');
         return true;
       }catch{}
     }
-    prompt('Link kopieren:', url);
+    try{
+      if(typeof copyToClipboard === 'function'){
+        copyToClipboard(url);
+        if(typeof showToast === 'function') showToast('Link kopiert!');
+        return true;
+      }
+    } catch(_e){}
+    if(typeof showToast === 'function') showToast('Kopieren hat nicht geklappt – bitte erneut versuchen.');
     return false;
   }
   
   function shareViaWhatsApp(subject, body, url){
-    const text = `${subject}\n\n${body}\n\n👉 Jetzt anschauen:\n${url}`;
+    const bodyText = String(body || '');
+    const hasUrlAlready = !!url && bodyText.indexOf(url) !== -1;
+    const text = hasUrlAlready
+      ? `${subject}\n\n${bodyText}`
+      : `${subject}\n\n${bodyText}\n\n👉 Jetzt ansehen:\n${url}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(whatsappUrl, '_blank');
   }
   
   function shareViaInstagram(subject, body, url){
     // Instagram unterstützt keine direkten Share-Links, daher Link kopieren + Hinweis
-    const text = `${subject}\n\n${body}\n\n👉 Jetzt anschauen:\n${url}`;
+    const bodyText = String(body || '');
+    const hasUrlAlready = !!url && bodyText.indexOf(url) !== -1;
+    const text = hasUrlAlready
+      ? `${subject}\n\n${bodyText}`
+      : `${subject}\n\n${bodyText}\n\n👉 Jetzt ansehen:\n${url}`;
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Text kopiert! Füge ihn in deinen Instagram-Post ein.');
+        showToast('Instagram-Text kopiert – jetzt im Beitrag einfügen.');
+        try { window.open('https://www.instagram.com/', '_blank', 'noopener'); } catch(_e){}
       }).catch(() => {
-        prompt('Text für Instagram kopieren:', text);
+        if(typeof copyToClipboard === 'function') copyToClipboard(text);
+        if(typeof showToast === 'function') showToast('Instagram-Text kopiert – bitte im Beitrag einfügen.');
       });
     } else {
-      prompt('Text für Instagram kopieren:', text);
+      if(typeof copyToClipboard === 'function') copyToClipboard(text);
+      if(typeof showToast === 'function') showToast('Instagram-Text kopiert – bitte im Beitrag einfügen.');
     }
   }
 
@@ -8408,9 +8547,9 @@
     
     let shareText;
     if(hasAbholnummer){
-      shareText = `🚀 Lust auf was Richtiges? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n🍴 ${dishName} - ${price}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+      shareText = `Lust auf gutes Mittagessen?\n\n📍 ${providerName}\n🍴 ${dishName} · ${price}\n\nOnline vorbestellen, bezahlen und Abholnummer erhalten:\n👉 ${shareUrl}\n\n#mittagio #mittagessen #abholnummer`;
     } else {
-      shareText = `😋 Lust auf was Richtiges? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n🍴 ${dishName} - ${price}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
+      shareText = `Lust auf gutes Mittagessen?\n\n📍 ${providerName}\n🍴 ${dishName} · ${price}\n\nJetzt Angebot ansehen und vor Ort genießen:\n👉 ${shareUrl}\n\n#mittagio #mittagessen`;
     }
 
     // Anbieter: Share-Sheet mit WhatsApp, Instagram, Link öffnen
@@ -8424,7 +8563,7 @@
       return;
     }
 
-    // Kunde: Web Share API (wenn verfügbar) oder Link kopieren
+    // Kunde: Web Share API (wenn verfügbar), sonst Ziel-Menü statt Sofort-Copy
     if(navigator.share && useWebShare){
       navigator.share({
         title: dishName,
@@ -8434,14 +8573,14 @@
         showToast('Geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
-          copyToClipboard(shareText);
-          showToast('Link kopiert!');
+          openShareSheet(dishName, shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+          if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }
       });
       return;
     }
-    copyToClipboard(shareText);
-    showToast('Link kopiert!');
+    openShareSheet(dishName, shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+    if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
   }
   
   // Helper: Link in Zwischenablage kopieren
@@ -8486,13 +8625,15 @@
       }).then(() => {
         showToast('Geteilt!');
       }).catch((err) => {
+        if(err && err.name === 'AbortError') return;
+        const text = `Schlange stehen gespart! Hab mir gerade ${dishName} bei ${providerName} gesichert. 🍖📱 #mittagio`;
+        openShareSheet('Mein Mittagessen heute!', text, location.href, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+        if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       });
     } else {
-      // Fallback: Link kopieren
       const text = `Schlange stehen gespart! Hab mir gerade ${dishName} bei ${providerName} gesichert. 🍖📱 #mittagio ${location.href}`;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('Link kopiert!');
-      });
+      openShareSheet('Mein Mittagessen heute!', text, location.href, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
   
@@ -8509,9 +8650,9 @@
     
     let shareText;
     if(hasAbholnummer){
-      shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nSchnell sein lohnt sich – jetzt Abholnummer sichern & Warteschlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
+      shareText = `Heute bei ${providerName}: ${dishName} für ${price}.\n\nOnline vorbestellen, Abholnummer erhalten und entspannt abholen:\n👉 ${shareUrl}\n\n#mittagio #mittagessen #abholnummer`;
     } else {
-      shareText = `🔥 Heißer Tipp für heute: ${dishName}!\n\n📍 ${providerName}\n💰 Nur ${price}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #foodtip #leckeressen #heute`;
+      shareText = `Heute bei ${providerName}: ${dishName} für ${price}.\n\nJetzt online ansehen und vor Ort genießen:\n👉 ${shareUrl}\n\n#mittagio #mittagessen`;
     }
     
     if(navigator.share){
@@ -8523,14 +8664,13 @@
         showToast('Geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
-          copyToClipboard(shareText);
-          showToast('Link kopiert!');
+          openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+          if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }
       });
     } else {
-      // Fallback: Link kopieren
-      copyToClipboard(shareText);
-      showToast('Link kopiert!');
+      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
 
@@ -8645,7 +8785,7 @@
       const email = document.getElementById('loginModalEmail').value.trim();
       const pass = document.getElementById('loginModalPass').value.trim();
       if(!email || !pass){
-        alert('Bitte E-Mail und Passwort eingeben.');
+        showToast('Bitte E-Mail und Passwort eingeben.');
         return;
       }
       customer.loggedIn = true;
@@ -8679,20 +8819,20 @@
   if(locBtn){
     locBtn.innerHTML = iconMarkup('location');
     locBtn.onclick=()=>{
-      alert('Standort gesetzt. Du kannst jederzeit wechseln.');
+      showToast('Standort aktualisiert – du kannst ihn jederzeit ändern.');
     };
   }
   const startLocBtn = document.getElementById('btnStartLocationPin');
   if(startLocBtn){
     startLocBtn.innerHTML = iconMarkup('location');
     startLocBtn.onclick=()=>{
-      alert('Standort gesetzt. Du kannst jederzeit wechseln.');
+      showToast('Standort aktualisiert – du kannst ihn jederzeit ändern.');
     };
   }
   const startNearBtn = document.getElementById('btnStartNear');
   if(startNearBtn){
     startNearBtn.onclick=()=>{
-      alert('Zeige Angebote in deiner Nähe.');
+      showToast('Angebote in deiner Nähe werden geladen.');
       renderStart();
     };
   }
@@ -9524,7 +9664,7 @@
     const nameInput = document.getElementById('checkoutName');
     const name = nameInput ? nameInput.value.trim() : '';
     if(!name){
-      alert('Bitte gib deinen Namen für die Abholung ein.');
+      showToast('Bitte gib deinen Namen für die Abholung ein.');
       if(nameInput) nameInput.focus();
       checkoutPaymentInFlight = false;
       setCheckoutPaymentButtonState(false);
@@ -9576,7 +9716,7 @@
     // Pro Anbieter eine Order erstellen (eine Zahlung, mehrere Abholnummern)
     const ordersCreated = createOrdersFromCartByProvider(cart, 'CREATED');
     if(!ordersCreated || ordersCreated.length === 0){
-      alert('Fehler beim Erstellen der Bestellung.');
+      showToast('Bestellung konnte nicht vorbereitet werden – bitte versuche es erneut.');
       checkoutPaymentInFlight = false;
       setCheckoutPaymentButtonState(false);
       return;
@@ -9866,8 +10006,7 @@
         })
         .catch(function(err){
           console.error('Stripe Checkout:', err);
-          if (typeof showToast === 'function') showToast('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
-          else alert('Zahlung konnte nicht gestartet werden. ' + (err.message || ''));
+          if (typeof showToast === 'function') showToast('Zahlung konnte nicht gestartet werden – bitte versuche es erneut.');
           throw err;
         });
     }
@@ -9875,13 +10014,15 @@
     // Demo: Kein Stripe konfiguriert – Simuliere Checkout
     var sessionId = 'demo_session_' + cryptoId();
     orderIds.forEach(function(id){ updateOrder(id, { stripeCheckoutSessionId: sessionId }); });
-    if (confirm('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?')) {
-      handleCheckoutSuccess(sessionId, mainOrderId);
-      return Promise.resolve({ simulated: 'success' });
-    } else {
-      handleCheckoutCancel(mainOrderId);
-      return Promise.resolve({ simulated: 'cancel' });
-    }
+    return new Promise(function(resolve){
+      confirmWithSheet('Stripe Checkout würde jetzt geöffnet.\n\nGesamtbetrag: ' + euro(total) + '\n\nGastzahlung möglich (E-Mail nur für Zahlungsbeleg).\n\nDemo: Zahlung erfolgreich simulieren?', function(){
+        handleCheckoutSuccess(sessionId, mainOrderId);
+        resolve({ simulated: 'success' });
+      }, function(){
+        handleCheckoutCancel(mainOrderId);
+        resolve({ simulated: 'cancel' });
+      });
+    });
   }
   
   /**
@@ -9951,7 +10092,7 @@
     verifyStripeCheckoutSession(sessionId, orderId)
       .then(function(verification){
         if(!verification.verified){
-          if(typeof showToast === 'function') showToast('Zahlung noch nicht bestaetigt. Bitte erneut pruefen.');
+          if(typeof showToast === 'function') showToast('Zahlung ist noch nicht bestätigt – bitte erneut prüfen.');
           showCart();
           return;
         }
@@ -10632,14 +10773,18 @@
     const faqEl = document.getElementById('profileTopFaq');
     const faqSheet = document.getElementById('profileTopFaqSheet');
     const faqs = [
-      { q: 'Wie funktioniert die Abholnummer?', a: 'Deine Abholnummer ist dein digitaler Bon. Zeige sie einfach beim Anbieter vor Ort auf deinem Smartphone vor.', icon: 'receipt' },
+      { q: 'Wie funktioniert die Abholnummer?', a: 'Deine Abholnummer ist dein digitaler Bon. Zeige sie einfach beim Anbieter vor Ort auf deinem Smartphone vor.', emoji: '🧾' },
       { q: 'Was mache ich bei Problemen?', a: 'Wende dich bitte direkt an das Personal vor Ort. Deine Abholnummer ist dein Zahlungsbeleg.', icon: 'help-circle' },
       { q: 'Wo finde ich Mehrweg-Optionen?', a: 'Achte auf das 🔄-Icon beim Gericht. Wir bauen unser Mehrweg-Netzwerk stetig aus.', icon: 'refresh-cw' }
     ];
-    const faqHtml = faqs.map(f => `
+    const faqHtml = faqs.map(f => {
+      const iconHtml = f.emoji
+        ? `<span aria-hidden="true" style="font-size:16px; line-height:1;">${f.emoji}</span>`
+        : `<i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>`;
+      return `
       <div style="border-radius:14px; border:1px solid #f1f3f5; overflow:hidden;">
         <button onclick="toggleFaqAnswer(this);" style="width:100%; padding:14px; background:#f8f9fa; border:none; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left;">
-          <i data-lucide="${f.icon}" style="width:18px;height:18px;color:#64748b;"></i>
+          ${iconHtml}
           <span style="flex:1; font-size:14px; font-weight:700; color:#1a1a1a;">${f.q}</span>
           <i data-lucide="chevron-down" style="width:16px;height:16px;color:#cbd5e1;"></i>
         </button>
@@ -10647,7 +10792,8 @@
           ${f.a}
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     if(faqEl) faqEl.innerHTML = faqHtml;
     if(faqSheet) faqSheet.innerHTML = faqHtml;
 
@@ -10851,13 +10997,13 @@
     } else if(action === 'showImpressum'){
       showView(views.legalImpressum);
     } else if(action === 'logout'){
-      if(confirm('Möchtest du dich wirklich abmelden?')){
+      confirmWithSheet('Möchtest du dich wirklich abmelden?', function(){
         customer.loggedIn = false;
         customer.name = null;
         customer.email = null;
         save(LS.customer, customer);
         updateProfileView();
-      }
+      });
     }
   }
   
@@ -11223,9 +11369,9 @@
     
     // Check if user has made changes
     if(dishName || timeStart || timeEnd || onboardingDraftDish?.photoData){
-      if(confirm('Später weitermachen?\n\nDein Gericht ist noch nicht gespeichert.')){
+      confirmWithSheet('Später weitermachen?\n\nDein Gericht ist noch nicht gespeichert.', function(){
         showOnboardingEntry(!!onboardingDraftDish);
-      }
+      });
     } else {
       showOnboardingEntry(!!onboardingDraftDish);
     }
@@ -11241,7 +11387,7 @@
     const timeEnd = document.getElementById('onboardingPickupTimeEnd')?.value;
     
     if(!dishName || !dishPrice || !timeStart || !timeEnd || !dishDiet){
-      alert('Bitte fülle alle Pflichtfelder aus (Name, Preis, Kategorie, Zeit).');
+      showToast('Bitte ergänze Name, Preis, Kategorie und Abholzeit.');
       return;
     }
     
@@ -11313,7 +11459,7 @@
     const password = document.getElementById('onboardingPassword')?.value.trim();
     
     if(!email || !password || password.length < 8){
-      alert('Bitte gib eine gültige E-Mail und ein Passwort (mind. 8 Zeichen) ein.');
+      showToast('Bitte gib eine gültige E-Mail-Adresse und ein Passwort mit mindestens 8 Zeichen ein.');
       return;
     }
     
@@ -11381,7 +11527,7 @@
     const cityOrAddress = document.getElementById('onboardingCityOrAddress')?.value.trim();
     
     if(!businessName || !cityOrAddress){
-      alert('Bitte fülle alle Felder aus.');
+      showToast('Bitte ergänze Betriebsname und Adresse.');
       return;
     }
     
@@ -11911,9 +12057,9 @@
     // Fallback: Download-Link anbieten
     showToast('Küchenliste wird vorbereitet...');
     setTimeout(() => {
-      if(confirm('Küchenliste drucken oder als PDF speichern?')){
+      confirmWithSheet('Küchenliste drucken oder als PDF speichern?', function(){
         window.print();
-      }
+      });
     }, 500);
   }
   
@@ -11947,7 +12093,7 @@
     const messageEl = document.getElementById('supportMessage');
     const pickupRefEl = document.getElementById('supportPickupRef');
     if(!messageEl || !messageEl.value.trim()){ showToast('Bitte Nachricht eingeben.', 2000); return; }
-    showToast('Vielen Dank. Deine Nachricht wurde übermittelt. Wir melden uns in Kürze.', 4000);
+    showToast('Danke, deine Nachricht wurde übermittelt und wir melden uns in Kürze.', 4000);
     if(subjectEl) subjectEl.value = '';
     if(messageEl) messageEl.value = '';
     if(pickupRefEl) pickupRefEl.value = '';
@@ -12423,7 +12569,7 @@
       }
     } catch(err){
       console.error('Navigation error:', err, go);
-      alert('Navigation-Fehler: ' + err.message);
+      showToast('Navigation ist gerade nicht verfügbar – bitte versuche es erneut.');
     }
   }, true); // useCapture für frühere Event-Erfassung
 
@@ -13090,7 +13236,7 @@
     const btnQuickKill = document.getElementById('btnQuickKill');
     if(btnQuickKill){
       btnQuickKill.onclick = () => {
-        if(confirm('⚠️ NOT-AUS: Möchtest du wirklich ALLE aktiven Gerichte für heute schließen?\n\nDies kann nicht rückgängig gemacht werden.')){
+        confirmWithSheet('⚠️ NOT-AUS: Möchtest du wirklich ALLE aktiven Gerichte für heute schließen?\n\nDies kann nicht rückgängig gemacht werden.', function(){
           const todayKey = isoDate(new Date());
           let closedCount = 0;
           mineToday.forEach(o => {
@@ -13104,7 +13250,7 @@
           showToast(`✅ ${closedCount} Gericht${closedCount !== 1 ? 'e' : ''} geschlossen`);
           renderProviderHome();
           renderDiscover();
-        }
+        });
       };
     }
     
@@ -13114,14 +13260,14 @@
       if(!order) return;
       
       if(order.status === 'PICKED_UP' || order.status === 'COMPLETED'){
-        alert('Diese Bestellung wurde bereits abgeholt und kann nicht storniert werden.');
+        showToast('Diese Bestellung wurde bereits abgeholt und kann nicht storniert werden.');
         return;
       }
       
       const serviceFee = 0.89; // Servicegebühr bleibt
       const refundAmount = (order.total || 0) / 100 - serviceFee;
       
-      if(confirm(`Bestellung stornieren?\n\nErstattung: ${euro(refundAmount)}\nServicegebühr (0,89 €) wird einbehalten.\n\nFortfahren?`)){
+      confirmWithSheet(`Bestellung stornieren?\n\nErstattung: ${euro(refundAmount)}\nServicegebühr (0,89 €) wird einbehalten.\n\nFortfahren?`, function(){
         updateOrder(orderId, {
           status: 'CANCELLED',
           cancelledAt: Date.now(),
@@ -13147,7 +13293,7 @@
           renderProviderPickups();
           renderProviderHome();
         }
-      }
+      });
     };
     
     // Week Preview
@@ -14393,7 +14539,7 @@
     var pid = typeof providerId === 'function' ? providerId() : '';
     var profile = typeof normalizeProviderProfile === 'function' ? normalizeProviderProfile(provider.profile || {}) : {};
     if (profile.abholnummerEnabledByDefault === undefined || profile.abholnummerEnabledByDefault === null) {
-      if (typeof showToast === 'function') showToast('Gehe zu Profil → Abholnummer-Standard festlegen, dann kannst du Gerichte aktivieren.');
+      if (typeof showToast === 'function') showToast('Lege zuerst im Profil deinen Abholnummer-Standard fest, dann kannst du Gerichte aktivieren.');
       return;
     }
     var firstDate = draftKeysInKW[0];
@@ -14481,7 +14627,7 @@
     if(typeof renderProviderHome === 'function') renderProviderHome();
     try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([30, 100, 30]); }catch(e){}
     if(typeof triggerCookbookVictoryConfetti === 'function') triggerCookbookVictoryConfetti();
-    else if(typeof showToast === 'function') showToast('BÄM! Deine Woche ist live. Viel Erfolg!');
+    else if(typeof showToast === 'function') showToast('Deine Woche ist jetzt live – viel Erfolg!');
     setTimeout(function(){
       window.closeReviewAndBack(true);
       if(typeof showProviderHome === 'function') showProviderHome();
@@ -14870,10 +15016,12 @@
       var hasAny = false;
       keys.forEach(function(k){ if ((week[k] || []).filter(function(x){ return x.providerId === pid; }).length) hasAny = true; });
       if (!hasAny) { if (typeof showToast === 'function') showToast('Zuerst Gerichte in die Woche eintragen'); return; }
-      var name = (typeof prompt === 'function' ? prompt('Name der Vorlage:', 'Meine Woche') : null) || 'Meine Woche';
+      var dt = new Date();
+      var autoName = 'Woche ' + String(dt.getDate()).padStart(2, '0') + '.' + String(dt.getMonth() + 1).padStart(2, '0');
+      var name = autoName;
       if (!name.trim()) return;
       var id = typeof saveCurrentWeekAsTemplate === 'function' ? saveCurrentWeekAsTemplate(name.trim()) : null;
-      if (id && typeof showToast === 'function') showToast('Vorlage gespeichert');
+      if (id && typeof showToast === 'function') showToast('Vorlage gespeichert als "' + name + '"');
       if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
       var kd = document.getElementById('weekKebabDropdown');
       if (kd && typeof hide === 'function') hide(kd);
@@ -15204,7 +15352,7 @@
       save(LS.offers, offers);
       renderWeekPlan();
       if(typeof renderProviderHome === 'function') renderProviderHome();
-      if(typeof showToast === 'function') showToast('Alle ' + draftDays.length + ' Tage aktiviert. Zum Wochenplan.');
+      if(typeof showToast === 'function') showToast('Alle ' + draftDays.length + ' Tage sind aktiviert – zum Wochenplan.');
     });
   }
 
@@ -16263,10 +16411,10 @@
         `;
         card.onclick = () => {
           if(isDone){
-            if(confirm('Abholnummer wieder als „Offen“ markieren?')){
+            confirmWithSheet('Abholnummer wieder als „Offen“ markieren?', function(){
               updateOrder(p.orderId, { status: 'PAID', pickupStatus: undefined, completedAt: undefined });
               renderProviderPickups();
-            }
+            });
           } else {
             openPickupDetailSheet(p.orderId);
           }
@@ -16518,7 +16666,7 @@
       var subject = '[SUPPORT] - ' + betrieb + ' - ' + (thema || 'Anfrage');
       var mailto = 'mailto:support@mittagio.de?subject=' + encodeURIComponent(subject);
       window.location.href = mailto;
-      if(typeof showToast === 'function') showToast('Nachricht gesendet! Mike meldet sich garantiert innerhalb von 24h persönlich.');
+      if(typeof showToast === 'function') showToast('Nachricht gesendet – wir melden uns innerhalb von 24 Stunden persönlich.');
     }
     document.querySelectorAll('.provider-support-accordion-trigger').forEach(function(trigger){
       trigger.onclick = function(){
@@ -16549,7 +16697,7 @@
       openSupportMail('Anfrage');
     };
     var btnProviderDeleteAccount = document.getElementById('btnProviderDeleteAccount');
-    if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(typeof haptic === 'function') haptic(6); if(confirm('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) { showToast('Account-Löschung angefragt.'); } }; }
+    if(btnProviderDeleteAccount){ btnProviderDeleteAccount.onclick = function(){ if(typeof haptic === 'function') haptic(6); confirmWithSheet('Account wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.', function(){ showToast('Account-Löschung angefragt.'); }); }; }
     // TGTG-Style: Zeilen-Klicks (Account verwalten) [cite: 2026-02-18]
     document.querySelectorAll('.tgtg-row[data-tgtg]').forEach(function(row){
       row.onclick = function(){
@@ -17415,7 +17563,7 @@
     const sessionStatusEl = document.getElementById('providerSessionStatus');
     if(sessionStatusEl) sessionStatusEl.textContent = '1 aktive Sitzung';
     const btnChangePassword = document.getElementById('btnProviderChangePassword');
-    if(btnChangePassword){ btnChangePassword.onclick = (e) => { e.preventDefault(); showToast('Passwort ändern: In der App unter Account verfügbar.'); }; }
+    if(btnChangePassword){ btnChangePassword.onclick = (e) => { e.preventDefault(); showToast('Passwort ändern ist in der App unter Account verfügbar.'); }; }
     
     // Küchen-Zeiten: Automatischer Ausverkauf
     const autoSelloutTime = document.getElementById('providerAutoSelloutTime');
@@ -17531,9 +17679,9 @@
     const selectedDay = dayOverride || ((providerOffers.find(o => String(o.day || '') >= todayKey) || providerOffers[0] || {}).day || '');
     const dayOffers = selectedDay ? providerOffers.filter(o => String(o.day || '') === String(selectedDay)) : providerOffers;
     const teaser = dayOffers.slice(0, 3).map(o => `${o.dish || o.title || 'Gericht'} (${euro(o.price || 0)})`).join(', ');
-    const dayIntro = selectedDay ? `Hast du am ${fmtDayShort(selectedDay)} Mittag Zeit?` : 'Hast du diese Woche Mittag Zeit?';
+    const dayIntro = selectedDay ? `Schon einen Plan für ${fmtDayShort(selectedDay)}?` : 'Schon einen Plan für diese Woche?';
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerIdVal}`;
-    const shareText = `${dayIntro}\nBei ${providerName} gibt es z. B.: ${teaser || 'leckere Tagesgerichte'}.\n${providerAddress ? `📍 ${providerAddress}\n` : ''}\nSchau dir die Angebote an:\n👉 ${shareUrl}`;
+    const shareText = `${dayIntro}\nBei ${providerName} gibt es z. B.: ${teaser || 'leckere Tagesgerichte'}.\n${providerAddress ? `📍 ${providerAddress}\n` : ''}\nHier ansehen:\n👉 ${shareUrl}`;
     
     if(navigator.share){
       navigator.share({
@@ -17544,13 +17692,13 @@
         showToast('Anbieter geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
-          copyToClipboard(shareText);
-          showToast('Link kopiert!');
+          openShareSheet(`${providerName} vorschlagen`, shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+          if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }
       });
     } else {
-      copyToClipboard(shareText);
-      showToast('Link kopiert!');
+      openShareSheet(`${providerName} vorschlagen`, shareText, shareUrl, 'Wähle ein Ziel: WhatsApp, Instagram oder Link.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
   
@@ -17600,8 +17748,8 @@
     const todayRevenueEl = document.getElementById('billingTodayRevenue');
     const btnZahlungsmittel = document.getElementById('btnBillingZahlungsmittel');
     const btnBillingPortal = document.getElementById('btnProviderBillingPortal');
-    if(btnZahlungsmittel) btnZahlungsmittel.onclick = function(){ showToast('Zahlungsmittel ändern (Demo – später Stripe/Backend).'); };
-    if(btnBillingPortal) btnBillingPortal.onclick = function(){ if(typeof showToast === 'function') showToast('Stripe Dashboard (Demo – später Link zum Backend).'); };
+    if(btnZahlungsmittel) btnZahlungsmittel.onclick = function(){ showToast('Zahlungsmittel ändern ist aktuell in Vorbereitung.'); };
+    if(btnBillingPortal) btnBillingPortal.onclick = function(){ if(typeof showToast === 'function') showToast('Das Stripe-Dashboard wird in Kürze angebunden.'); };
     if(!listEl) return;
 
     const pid = typeof providerId === 'function' ? providerId() : '';
@@ -17660,7 +17808,7 @@
       btn.onclick = function(){
         try {
           var t = JSON.parse(btn.getAttribute('data-tx') || '{}');
-          if(typeof openReceiptPrint === 'function') openReceiptPrint(t); else showToast('Rechnung wird geöffnet – Speichern als PDF über Drucken.');
+          if(typeof openReceiptPrint === 'function') openReceiptPrint(t); else showToast('Rechnung wird geöffnet – du kannst sie anschließend als PDF speichern.');
         } catch(e){ showToast('Rechnung konnte nicht geladen werden.'); }
       };
     });
@@ -17900,12 +18048,12 @@
         }
         if(action === 'delete'){
           if(typeof haptic === 'function') haptic(6);
-          var ok = confirm('Anbieter "' + (target.name || '') + '" wirklich löschen?');
-          if(!ok) return;
-          var nextRows = dirRows.filter(function(r){ return String(r.id) !== String(id); });
-          persistDirectory(nextRows);
-          if(typeof showToast === 'function') showToast('Anbieter gelöscht');
-          renderAdmin();
+          confirmWithSheet('Anbieter "' + (target.name || '') + '" wirklich löschen?', function(){
+            var nextRows = dirRows.filter(function(r){ return String(r.id) !== String(id); });
+            persistDirectory(nextRows);
+            if(typeof showToast === 'function') showToast('Anbieter gelöscht');
+            renderAdmin();
+          });
         }
       };
     }
@@ -18243,6 +18391,8 @@
       var ae = document.activeElement;
       if(ae && typeof ae.blur === 'function') ae.blur();
     }catch(_e){}
+    var currentActiveView = document.querySelector('.view.active');
+    var fromViewId = currentActiveView && currentActiveView.id ? currentActiveView.id : null;
     // Separate Impressen und AGBs für Kunden und Anbieter
     const isProvider = mode === 'provider';
     const pageMap = {
@@ -18318,7 +18468,19 @@
         };
         const url = urlMap[page];
         if(url){
-          pushViewState({view: `provider-${page}`, mode: mode}, url);
+          pushViewState({view: `provider-${page}`, mode: mode, fromView: fromViewId}, url);
+        }
+      } else {
+        const customerHashMap = {
+          'impressum': '#/impressum',
+          'agb-kurz': '#/agb-kurz',
+          'datenschutz': '#/datenschutz',
+          'faq': '#/faq',
+          'support': '#/support'
+        };
+        const customerUrl = customerHashMap[page] || (location.pathname + (location.search || ''));
+        if(typeof pushViewState === 'function'){
+          pushViewState({view: viewId, mode: mode, fromView: fromViewId}, customerUrl);
         }
       }
     }
@@ -18558,15 +18720,20 @@
     var weekMsg = typeof generateWhatsAppShareMessage === 'function' ? generateWhatsAppShareMessage('week') : null;
     if(weekMsg){ openSharePreviewModal(weekMsg); return; }
     var shareText = hasAbholnummer
-      ? `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt für die Mittagsbox planen & Schlange überspringen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`
-      : `📅 Hunger für die ganze Woche geplant? Schau dir unseren neuen Wochenplan an!\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} - ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Leckereien!` : ''}\n\nJetzt online entdecken & entspannt genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagspause #lecker`;
+      ? `📅 Unser Wochenplan ist live.\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} · ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Gerichte.` : ''}\n\nWoche planen, vorbestellen und mit Abholnummer Zeit sparen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagessen`
+      : `📅 Unser Wochenplan ist live.\n\n📍 ${providerName}\n\n${weekOffers.slice(0, 5).map(o => `🍴 ${o.day}: ${o.dish} · ${euro(o.price)}`).join('\n')}${weekOffers.length > 5 ? `\n... und ${weekOffers.length - 5} weitere Gerichte.` : ''}\n\nJetzt online ansehen und vor Ort genießen:\n👉 ${shareUrl}\n\n#mittagio #wochenplan #mittagessen`;
     if(navigator.share){
-      navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).then(() => { try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(e){} showToast('Wochenplan geteilt!'); }).catch((err) => {
-        if(err.name !== 'AbortError'){ if(typeof copyToClipboard === 'function') copyToClipboard(shareText); showToast('Link kopiert!'); }
-      });
+      navigator.share({ title: shareTitle, text: shareText, url: shareUrl })
+        .then(() => { try { if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(15); } catch(e){} showToast('Wochenplan geteilt!'); })
+        .catch((err) => {
+          if(err.name !== 'AbortError'){
+            openShareSheet(shareTitle, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – teile deinen Wochenplan.');
+            if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+          }
+        });
     } else {
-      if(typeof copyToClipboard === 'function') copyToClipboard(shareText);
-      showToast('Link kopiert!');
+      openShareSheet(shareTitle, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – teile deinen Wochenplan.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
 
@@ -18672,7 +18839,7 @@
   }
   function sharePreviewSendWhatsApp(){
     if(_sharePreviewCurrentMessage){
-      window.open('whatsapp://send?text=' + encodeURIComponent(_sharePreviewCurrentMessage));
+      window.open('https://wa.me/?text=' + encodeURIComponent(_sharePreviewCurrentMessage), '_blank', 'noopener');
       closeSharePreviewModal();
       if(typeof showToast === 'function') showToast('WhatsApp geöffnet – Nachricht einfügen & senden!');
     }
@@ -18693,9 +18860,21 @@
     const hasAbholnummer = !!profile.abholnummerEnabledByDefault || mineToday.some(o => o.hasPickupCode);
     if(mineToday.length === 0){ showToast('Keine Gerichte für heute'); return; }
     const shareUrl = `${location.origin}${location.pathname}#provider/${providerId()}/today`;
-    let shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt Schlange überspringen & Abholnummer sichern:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
-    if(!hasAbholnummer) shareText = `🚀 Hunger? Schau mal, was wir heute Leckeres für dich haben!\n\n📍 ${providerName}\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} - ${euro(o.price || 0)}`).join('\n')}\n\nJetzt online entdecken & vorbeikommen:\n👉 ${shareUrl}\n\n#mittagio #lunch #heutebeius`;
-    if(navigator.share){ navigator.share({ title: `Heute bei ${providerName}`, text: shareText, url: shareUrl }).then(() => showToast('Tagesessen geteilt!')).catch((err) => { if(err.name !== 'AbortError'){ copyToClipboard(shareText); showToast('Link kopiert!'); } }); } else { copyToClipboard(shareText); showToast('Link kopiert!'); }
+    let shareText = `Heute bei ${providerName}:\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} · ${euro(o.price || 0)}`).join('\n')}\n\nOnline vorbestellen, Abholnummer erhalten und entspannt abholen:\n👉 ${shareUrl}\n\n#mittagio #mittagessen #abholnummer`;
+    if(!hasAbholnummer) shareText = `Heute bei ${providerName}:\n\n${mineToday.map(o => `🍴 ${o.dish || o.title || 'Gericht'} · ${euro(o.price || 0)}`).join('\n')}\n\nJetzt online ansehen und vor Ort genießen:\n👉 ${shareUrl}\n\n#mittagio #mittagessen`;
+    if(navigator.share){
+      navigator.share({ title: `Heute bei ${providerName}`, text: shareText, url: shareUrl })
+        .then(() => showToast('Tagesessen geteilt!'))
+        .catch((err) => {
+          if(err.name !== 'AbortError'){
+            openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+            if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+          }
+        });
+    } else {
+      openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+    }
   }
 
   // --- Cookbook ---
@@ -19758,7 +19937,7 @@
   function publishWeekEntry(dayKey, entry){
     const cb = cookbook.find(c => String(c.id) === String(entry.cookbookId));
     if(!cb){
-      alert('Gericht nicht gefunden.');
+      showToast('Dieses Gericht ist gerade nicht verfügbar.');
       return;
     }
 
@@ -19806,7 +19985,7 @@
     renderProviderPickups();
     renderDiscover();
     renderStart();
-    alert('Inserat veröffentlicht.');
+    showToast('Dein Inserat ist jetzt live.');
   }
 
   // --- Wizard engine (Provider profile / Listing / Cookbook / Week) ---
@@ -20656,7 +20835,7 @@
     // Legacy-Cleanup: Wochenplan = InseratCard mit Vorauswahl aus Kochbuch [cite: 2026-01-29]
     if(kind==='week'){
       const x = cookbook.find(c => String(c.id) === String(ctx.fromCookbookId));
-      if(!x){ if(typeof showToast==='function') showToast('Bitte erst ein Gericht im Kochbuch speichern.'); else alert('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
+      if(!x){ showToast('Bitte erst ein Gericht im Kochbuch speichern.'); return; }
       kind = 'listing';
       ctx.entryPoint = 'week';
       ctx.dishId = ctx.fromCookbookId;
@@ -20804,7 +20983,7 @@
     if(w.step >= total){
       saveProviderProfileFromWizard();
       closeWizard();
-      alert('Profil ist bereit.');
+      showToast('Dein Profil ist startklar.');
       return;
     }
 
@@ -22187,7 +22366,7 @@
         };
         toolDelete.onclick=function(){
           try{ if(navigator.vibrate) navigator.vibrate(10); }catch(e){}
-          if(window.confirm('Foto wirklich löschen?')){
+          confirmWithSheet('Foto wirklich löschen?', function(){
             w.data.photoData='';
             w.data.photoFilterPreset='none';
             if(typeof setPhotoObjectPosition==='function') setPhotoObjectPosition(50);
@@ -22195,7 +22374,7 @@
             saveDraft();
             closePhotoEditOverlay();
             if(typeof renderPhotoTile==='function') renderPhotoTile();
-          }
+          });
         };
         setActiveTool(activeTool);
         document.body.appendChild(ov);
@@ -22265,7 +22444,7 @@
           });
           var allergenRow=document.createElement('div'); allergenRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
           var btnFertigAll=document.createElement('button'); btnFertigAll.type='button'; btnFertigAll.className='inserat-fertig-kachel'; btnFertigAll.textContent='Fertig'; btnFertigAll.onclick=function(){ hapticLight(); closeHeaderSelection(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
-          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Als Standard f├╝r zuk├╝nftige Inserate gespeichert'); else alert('Als Standard gespeichert.'); };
+          var btnSaveDefault=document.createElement('button'); btnSaveDefault.type='button'; btnSaveDefault.textContent='Als Standard speichern'; btnSaveDefault.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveDefault.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; provider.profile.defaultAllergens=(w.data.allergens||[]).slice(); provider.profile.wantsAllergensByDefault=!!(w.data.allergens&&w.data.allergens.length); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Standard für zukünftige Inserate gespeichert.'); };
           allergenRow.appendChild(btnSaveDefault); allergenRow.appendChild(btnFertigAll); selectionOverlayInner.appendChild(allergenRow);
         } else if(type==='extras'){
           var defaultExtras = (profile.defaultExtras && profile.defaultExtras.length) ? profile.defaultExtras.slice() : [{ name:'Beilagensalat', price:2.5 }, { name:'Mayo', price:0.5 }, { name:'Ketchup', price:0.5 }, { name:'So├ƒe', price:1 }, { name:'Brot', price:1.5 }];
@@ -22288,7 +22467,7 @@
           extrasAddRow.appendChild(addNameInp); extrasAddRow.appendChild(addPriceInp); extrasAddRow.appendChild(btnAddExtra); selectionOverlayInner.appendChild(extrasAddRow);
           var extrasBtnRow=document.createElement('div'); extrasBtnRow.style.cssText='display:flex; flex-direction:column; gap:10px; padding:12px 0 0; margin-top:8px; border-top:1px solid rgba(0,0,0,0.06);';
           var btnFertigEx=document.createElement('button'); btnFertigEx.type='button'; btnFertigEx.className='inserat-fertig-kachel'; btnFertigEx.textContent='Fertig'; btnFertigEx.onclick=function(){ hapticLight(); closeHeaderSelection(); if(typeof updatePowerBarFromBox==='function') updatePowerBarFromBox(); };
-          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen ├╝bernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); else alert('Gespeichert.'); };
+          var btnSaveExtras=document.createElement('button'); btnSaveExtras.type='button'; btnSaveExtras.textContent='In Inserateinstellungen ├╝bernehmen'; btnSaveExtras.style.cssText='padding:10px 16px; border-radius:999px; border:2px solid #10b981; background:transparent; color:#059669; font-weight:700; cursor:pointer; font-size:13px;'; btnSaveExtras.onclick=function(){ hapticLight(); if(!provider.profile) provider.profile={}; if(!Array.isArray(provider.profile.defaultExtras)) provider.profile.defaultExtras=[]; (w.data.extras||[]).forEach(function(e){ if(!e||!e.name) return; var has=provider.profile.defaultExtras.some(function(d){ return d&&d.name===e.name; }); if(!has) provider.profile.defaultExtras.push({ name:e.name, price:Number(e.price)||0 }); }); if(typeof save==='function') save(LS.provider,provider); if(typeof showToast==='function') showToast('Extras in Inserateinstellungen gespeichert'); };
           extrasBtnRow.appendChild(btnSaveExtras); extrasBtnRow.appendChild(btnFertigEx); selectionOverlayInner.appendChild(extrasBtnRow);
         } else if(type==='time'){
           selectionOverlayInner.classList.add('selection-overlay-inner--time');
@@ -22904,13 +23083,12 @@
         addTile.onclick=function(){
           hapticLight();
           var t='';
-          try{ t=window.prompt('Weiteres Allergen oder Hinweis (wird bei den Gästen angezeigt):','')||''; }catch(e){ t=''; }
-          t=String(t).trim();
-          if(!t) return;
-          if(t.length>120){ if(typeof showToast==='function') showToast('Max. 120 Zeichen.'); return; }
+          if(typeof showToast === 'function') showToast('Bitte Hinweis direkt in der Beschreibung ergänzen.');
+          return;
+          if(t.length>120){ if(typeof showToast==='function') showToast('Maximal 120 Zeichen erlaubt.'); return; }
           w.data.allergensCustom=w.data.allergensCustom||[];
           if(w.data.allergensCustom.indexOf(t)>=0){ if(typeof showToast==='function') showToast('Bereits eingetragen.'); return; }
-          if(w.data.allergensCustom.length>=8){ if(typeof showToast==='function') showToast('Max. 8 eigene Hinweise.'); return; }
+          if(w.data.allergensCustom.length>=8){ if(typeof showToast==='function') showToast('Maximal 8 eigene Hinweise erlaubt.'); return; }
           w.data.allergensCustom.push(t);
           w.data.wantsAllergens=true;
           saveDraft();
@@ -23442,12 +23620,12 @@
             if(bulkDates.length>0){
               var useAbholnummer = !!usePickup;
               if(typeof executeBulkActivation==='function') executeBulkActivation(bulkDates,{useAbholnummer:useAbholnummer});
-              else if(typeof showToast==='function') showToast('Wochenaktivierung gerade nicht verfügbar. Bitte neu laden.');
+              else if(typeof showToast==='function') showToast('Wochenaktivierung ist gerade nicht verfügbar – bitte lade neu.');
               closeWizard(true);
               if(typeof showProviderWeek==='function') showProviderWeek();
               return;
             }
-            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Ups! Dein Gericht braucht noch ein Bild/Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); setStep2CtaBusy(false); return; }
+            if(!isPrimaryValid()){ if(typeof showToast==='function') showToast('Dein Gericht braucht noch ein Bild und einen Namen.'); if(typeof triggerValidationError==='function') triggerValidationError(this); setStep2CtaBusy(false); return; }
             var p = normalizeProviderProfile((provider && provider.profile) || {});
             var profileAddress = String(p.address || '').trim();
             var profileStreet = String(p.street || '').trim();
@@ -23470,12 +23648,12 @@
               showPublishFeeModal(o);
               setStep2CtaBusy(false);
             } else if(typeof showToast === 'function'){
-              showToast('Veröffentlichen gerade nicht verfügbar. Bitte Seite neu laden.');
+              showToast('Veröffentlichen ist gerade nicht verfügbar – bitte lade die Seite neu.');
               setStep2CtaBusy(false);
             }
           } catch(err){
             console.error('[Step2 publish click failed]', err);
-            if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen. Bitte Seite neu laden.');
+            if(typeof showToast === 'function') showToast('Veröffentlichen fehlgeschlagen – bitte lade die Seite neu.');
             setStep2CtaBusy(false);
           }
         };
@@ -24223,7 +24401,7 @@
     var link = (inseratSuccessCurrentOffer && typeof buildOfferShareUrl === 'function')
       ? buildOfferShareUrl(inseratSuccessCurrentOffer)
       : (location.origin + (location.pathname || ''));
-    var text = 'Frisch inseriert: ' + title + ' für ' + price + '€! Jetzt direkt ansehen und stressfrei abholen: ' + link;
+    var text = 'Neu im Angebot: ' + title + ' für ' + price + ' €.\nJetzt ansehen:\n' + link;
     window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   }
   if(typeof window !== 'undefined') window.shareOnWhatsApp = shareOnWhatsApp;
@@ -24235,7 +24413,7 @@
     var dishName = d.dish || d.title || 'Gericht';
     var price = typeof d.price === 'number' ? d.price.toFixed(2).replace('.', ',') + ' €' : (d.price || '0,00 €');
     var shareUrl = o && typeof buildOfferShareUrl === 'function' ? buildOfferShareUrl(o) : (location.origin + (location.pathname || ''));
-    var shareText = 'Schau mal, was ich gerade frisch inseriert habe: ' + dishName + ' für ' + price + '! Jetzt bestellen: ' + shareUrl;
+    var shareText = 'Neu im Angebot: ' + dishName + ' für ' + price + '.\nJetzt ansehen:\n' + shareUrl;
     try {
       var waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText);
       window.open(waUrl, '_blank', 'noopener');
@@ -24586,8 +24764,18 @@
         if (!shareText && typeof shareWeekPlan === 'function') { shareWeekPlan(); return; }
         var shareUrl = location.origin + (location.pathname || '').replace(/\/$/, '') + '#/plan/' + encodeURIComponent(providerId());
         if (navigator.share) {
-          navigator.share({ title: 'Mein Wochenplan', text: shareText, url: shareUrl }).then(function(){ if (typeof showToast === 'function') showToast('Geteilt!'); }).catch(function(err){ if (err.name !== 'AbortError' && typeof copyToClipboard === 'function') { copyToClipboard(shareText + '\n\n' + shareUrl); showToast('Link kopiert!'); } });
-        } else if (typeof copyToClipboard === 'function') { copyToClipboard(shareText + '\n\n' + shareUrl); if (typeof showToast === 'function') showToast('Link kopiert!'); }
+          navigator.share({ title: 'Mein Wochenplan', text: shareText, url: shareUrl })
+            .then(function(){ if (typeof showToast === 'function') showToast('Geteilt!'); })
+            .catch(function(err){
+              if (err.name !== 'AbortError') {
+                openShareSheet('Mein Wochenplan', shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – teile deine Woche.');
+                if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+              }
+            });
+        } else {
+          openShareSheet('Mein Wochenplan', shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – teile deine Woche.');
+          if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
+        }
       };
     }
     if (btnBack && !btnBack._weekSuccessBound) {
@@ -24611,7 +24799,7 @@
     lines.push('');
     lines.push('Sichere dir dein Essen und achte auf deine Abholnummer in der Bestätigung!');
     lines.push('');
-    lines.push('Jetzt vorbestellen unter: ' + (location.origin + (location.pathname || '').replace(/\/$/, '') + '#/plan/' + encodeURIComponent(pid)));
+    lines.push('Jetzt ansehen unter: ' + (location.origin + (location.pathname || '').replace(/\/$/, '') + '#/plan/' + encodeURIComponent(pid)));
     return lines.join('\n');
   }
 
@@ -25242,7 +25430,7 @@
       if(!order) return;
       // Code nur kopieren wenn PAID
       if(order.status !== 'PAID'){
-        alert('Abholnummer wird nach erfolgreicher Zahlung generiert.');
+        showToast('Die Abholnummer ist nach erfolgreicher Zahlung verfügbar.');
         return;
       }
       const code = order.pickupCode || order.code || '';
@@ -25298,7 +25486,7 @@
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
         window.open(mapsUrl, '_blank');
       } else {
-        alert('Adresse nicht verfügbar.');
+        showToast('Für diesen Anbieter ist noch keine Adresse hinterlegt.');
       }
     };
   }

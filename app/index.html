@@ -89,7 +89,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 </div>
 <!-- 9:16 Share-Template (1080×1920) für WhatsApp-Status – versteckt, wird von script.js befüllt [cite: 2026-02-18] -->
 <div id="shareTemplate916" class="share-template-916" style="position:fixed; left:-9999px; top:0; width:1080px; height:1920px; background:#fff; overflow:hidden; z-index:9999; box-sizing:border-box;"><!-- Inhalt dynamisch --></div>
-<div id="shareTemplate916Overlay" class="share-template-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; text-align:center; padding:24px;">Dein Status-Bild wird erstellt...</div>
+<div id="shareTemplate916Overlay" class="share-template-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; text-align:center; padding:24px;">Einen Moment – dein Status-Bild wird vorbereitet.</div>
 <div id="demoBadge" class="demo-badge" style="display:none;" title="Klick zum Umschalten" aria-label="Demo-Modus">Demo</div>
 <div class="app" id="app">
   <div class="topbar" id="topbar">
@@ -264,7 +264,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="billingTodayList" style="display:flex; flex-direction:column; gap:8px;">
           <!-- Heute verkaufte Abholnummern -->
         </div>
-        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Noch keine Umsätze heute.</div>
+        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Für heute sind noch keine Umsätze erfasst.</div>
       </div>
 
       <!-- Karte 3: Meine Abrechnungen -->
@@ -273,7 +273,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
           <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
-        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen vorhanden.</div>
+        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Sobald Umsätze vorliegen, findest du hier deine Abrechnungen.</div>
       </div>
     </section>
 
@@ -443,14 +443,14 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <!-- Empty State: Solo/Team dynamisch -->
         <div id="favEmptyState" class="fav-empty-social is-hidden" aria-hidden="true">
           <div class="fav-empty-social-icon-wrap">
-            <span id="favEmptyIcon" class="fav-empty-social-icon" aria-hidden="true">🍱</span>
+            <span id="favEmptyIcon" class="fav-empty-social-icon" aria-hidden="true"><i data-lucide="shopping-basket" style="width:26px;height:26px;"></i></span>
           </div>
           <h2 id="favEmptyTitle" class="ds-empty-title" style="max-width:320px;">Deine Favoriten warten auf dich</h2>
           <p id="favEmptyText" class="ds-body" style="line-height:1.6; margin-bottom:16px; max-width:340px;">Speichere Gerichte mit ❤️ und entscheide später in Ruhe, was in deine Mittagsbox kommt.</p>
           <ul id="favEmptySteps" class="fav-empty-social-list">
             <li>❤️ Favorit markieren</li>
             <li>📌 Später wiederfinden</li>
-            <li>🍱 Zur Mittagsbox legen</li>
+            <li><i data-lucide="shopping-basket" style="width:14px;height:14px;vertical-align:-2px;"></i> Zur Mittagsbox legen</li>
           </ul>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:300px; margin:8px auto 0; background:var(--brand); color:#1a1a1a; min-height:52px;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i>
@@ -557,12 +557,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <!-- Empty State (sichtbar nur wenn keine Bestellungen) -->
         <div id="ordersEmptyState" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:48px 20px; background:#f8f9fa; border-radius:24px; border:2px dashed #e2e8f0;">
           <div style="width:80px; height:80px; margin-bottom:20px; background:rgba(255,215,0,0.12); border-radius:24px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="receipt" style="width:36px; height:36px; color:#1a1a1a;"></i>
+            <i data-lucide="shopping-basket" style="width:36px; height:36px; color:#1a1a1a;"></i>
           </div>
           <p style="font-size:16px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Noch keine Bestellungen</p>
           <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 24px;">Sichere dir dein Mittagessen in der Mittagsbox.</p>
           <button class="btn-cust-primary" type="button" onclick="showView('v-cart');" style="max-width:260px;">
-            <i data-lucide="shopping-bag" style="width:18px;height:18px;"></i>
+            <i data-lucide="shopping-basket" style="width:18px;height:18px;"></i>
             <span>Zur Mittagsbox</span>
           </button>
         </div>
@@ -742,7 +742,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <h1 class="customer-header-title">Meins</h1>
           <div class="customer-header-actions">
             <button type="button" id="btnProfileHowItWorksHelp" class="customer-header-icon-btn" aria-label="Mittagio in 5 Schritten" onclick="if(typeof openProfileHowItWorksSheet==='function') openProfileHowItWorksSheet();">
-              <i data-lucide="circle-help" style="width:20px;height:20px;color:#1a1a1a;"></i>
+              <i data-lucide="help-circle" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
             <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--brand" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
@@ -757,10 +757,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div class="customer-main-wrap" style="padding-top:14px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:16px;">
         <!-- Quick Actions (2x2) -->
         <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
-          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800;">👤 Mein Account</button>
-          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showView('v-fav-providers')" style="min-height:96px; border-radius:18px; font-weight:800;">🏢 Meine Lieblingsanbieter</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="user" style="width:18px;height:18px;"></i><span>Mein Account</span></button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showView('v-fav-providers')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="heart" style="width:18px;height:18px;"></i><span>Meine Lieblingsanbieter</span></button>
           <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:96px; border-radius:18px; font-weight:800;">🥗 Mein Food Profil</button>
-          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showLegalPage('support')" style="min-height:96px; border-radius:18px; font-weight:800;">💬 Support</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="showLegalPage('support')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="help-circle" style="width:18px;height:18px;"></i><span>Support</span></button>
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
@@ -1379,7 +1379,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <!-- Empty States -->
         <div id="provPickupsEmpty" style="text-align:center; padding:80px 24px; display:none;">
           <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
-            <i data-lucide="receipt" style="width:40px; height:40px; color:#cbd5e1;"></i>
+            <span style="font-size:36px; line-height:1;">🧾</span>
           </div>
           <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Nummern</h3>
           <p style="color:#64748b; font-size:15px; line-height:1.5;">Sobald Kunden bestellen, erscheinen sie hier in Echtzeit.</p>
@@ -1661,12 +1661,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
               <span class="provider-glam-subtitle" id="providerBillingTileSubtitle">Transparenz &amp; Verdienst</span>
             </button>
             <button type="button" id="btnAccountMeinSupport" class="provider-glam-tile" aria-label="Support öffnen">
-              <span class="provider-glam-icon" aria-hidden="true">💬</span>
+              <span class="provider-glam-icon" aria-hidden="true"><i data-lucide="help-circle" style="width:20px;height:20px;"></i></span>
               <span class="provider-glam-title">Support</span>
               <span class="provider-glam-subtitle">Direkter Draht</span>
             </button>
             <button type="button" id="btnAccountFaqTile" class="provider-glam-tile" aria-label="FAQ öffnen">
-              <span class="provider-glam-icon" aria-hidden="true">💡</span>
+              <span class="provider-glam-icon" aria-hidden="true"><i data-lucide="help-circle" style="width:20px;height:20px;"></i></span>
               <span class="provider-glam-title">FAQ</span>
               <span class="provider-glam-subtitle">Was ist das?</span>
             </button>
@@ -1758,9 +1758,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="accountSupportModal" class="account-support-modal" style="display:none;" role="dialog" aria-label="Support">
           <div class="account-support-modal-inner">
             <h3 class="account-support-modal-title">Support</h3>
-            <button type="button" class="account-support-option" data-support="standort">📍 Problem mit Standort</button>
-            <button type="button" class="account-support-option" data-support="zahlung">💳 Zahlungsproblem</button>
-            <button type="button" class="account-support-option" data-support="whatsapp">💬 Direkt-Kontakt via WhatsApp</button>
+            <button type="button" class="account-support-option" data-support="standort"><i data-lucide="map-pin" style="width:16px;height:16px;margin-right:8px;"></i><span>Problem mit Standort</span></button>
+            <button type="button" class="account-support-option" data-support="zahlung"><i data-lucide="credit-card" style="width:16px;height:16px;margin-right:8px;"></i><span>Zahlungsproblem</span></button>
+            <button type="button" class="account-support-option" data-support="whatsapp"><i data-lucide="help-circle" style="width:16px;height:16px;margin-right:8px;"></i><span>Direkt-Kontakt via WhatsApp</span></button>
             <button type="button" class="account-support-close" aria-label="Schließen">Schließen</button>
           </div>
         </div>
@@ -1783,10 +1783,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
           <p class="tgtg-section-title">DEIN ACCOUNT</p>
           <div class="tgtg-list">
-            <button type="button" class="tgtg-row" data-tgtg="business"><span class="tgtg-icon">🏠</span><span class="tgtg-label">Betriebsdaten</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
-            <button type="button" class="tgtg-row" data-tgtg="service"><span class="tgtg-icon">⚙️</span><span class="tgtg-label">Inseratseinstellungen</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
-            <button type="button" class="tgtg-row" data-tgtg="payment"><span class="tgtg-icon">💳</span><span class="tgtg-label">Zahlungsmethoden</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
-            <button type="button" class="tgtg-row" id="btnTgtgBillingArchive"><span class="tgtg-icon">🧾</span><span class="tgtg-label">PDF-Archiv &amp; Belege</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="business"><i data-lucide="building" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Betriebsdaten</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="service"><i data-lucide="settings" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Inseratseinstellungen</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="payment"><i data-lucide="credit-card" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Zahlungsmethoden</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" id="btnTgtgBillingArchive"><i data-lucide="file-text" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">PDF-Archiv &amp; Belege</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
 
           <p class="tgtg-section-title">COMMUNITY</p>
@@ -1817,7 +1817,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="tgtg-list">
             <div class="tgtg-accordion" id="tgtgWasIstWasAccordion">
               <div class="tgtg-accordion-item">
-                <button type="button" class="tgtg-accordion-trigger" aria-expanded="false"><span class="tgtg-icon">❓</span><span class="tgtg-label">Was ist was?</span><i data-lucide="chevron-right" class="tgtg-accordion-chevron"></i></button>
+                <button type="button" class="tgtg-accordion-trigger" aria-expanded="false"><i data-lucide="help-circle" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Was ist was?</span><i data-lucide="chevron-right" class="tgtg-accordion-chevron"></i></button>
                 <div class="tgtg-accordion-content"><div class="tgtg-accordion-content-inner">
                   <div class="tgtg-accordion-body">
                     <p><strong>Abholnummer:</strong> Die Abholnummer ersetzt Warteschlangen – dein Gast zeigt sie dir, du siehst sofort, was bestellt ist. Die Gebühr von 0,89 € fällt nur je online vorbestelltem und bezahltem Vorgang an.</p>
@@ -1829,14 +1829,14 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
                 </div></div>
               </div>
             </div>
-            <button type="button" class="tgtg-row" data-tgtg="faq"><span class="tgtg-icon">🛠️</span><span class="tgtg-label">Hilfe bei einem Inserat</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <button type="button" class="tgtg-row" data-tgtg="faq"><i data-lucide="help-circle" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Hilfe bei einem Inserat</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
 
           <p class="tgtg-section-title">RECHTLICHES</p>
           <div class="tgtg-list">
-            <a href="#/agb-kurz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">📄</span><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
-            <a href="#/datenschutz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><span class="tgtg-icon">🛡️</span><span class="tgtg-label">Datenschutz</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
-            <button type="button" class="tgtg-row" id="btnProviderImpressum"><span class="tgtg-icon">⚖️</span><span class="tgtg-label">Impressum <small style="display:block;font-size:12px;font-weight:600;color:#64748b;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
+            <a href="#/agb-kurz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><i data-lucide="file-text" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">AGB</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <a href="#/datenschutz" class="tgtg-row" style="text-decoration:none; color:inherit; display:flex; box-sizing:border-box;"><i data-lucide="shield" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Datenschutz</span><i data-lucide="chevron-right" class="tgtg-chevron"></i></a>
+            <button type="button" class="tgtg-row" id="btnProviderImpressum"><i data-lucide="info" class="tgtg-icon" style="width:18px;height:18px;"></i><span class="tgtg-label">Impressum <small style="display:block;font-size:12px;font-weight:600;color:#64748b;">Mike Quach, Rudersberg</small></span><i data-lucide="chevron-right" class="tgtg-chevron"></i></button>
           </div>
           <div id="providerImpressumContent" style="display:none; margin:0 16px 16px; padding:16px; background:#fff; border-radius:12px; font-size:14px; color:#64748b; line-height:1.5;">Mike Quach, Langäcker 2, 73635 Rudersberg</div>
 
@@ -2040,12 +2040,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <!-- Quick-Access-Karten: Gestern + Aktueller Monat -->
             <div class="geld-quick-cards" id="geldQuickCards">
               <button type="button" id="geldQuickGestern" class="geld-quick-card" data-period="yesterday" aria-label="Beleg Gestern">
-                <span class="geld-quick-card-icon">📄</span>
+                <span class="geld-quick-card-icon"><i data-lucide="file-text" style="width:18px;height:18px;"></i></span>
                 <span class="geld-quick-card-label">Gestern</span>
                 <span class="geld-quick-card-hint">Beleg ausdrucken</span>
               </button>
               <button type="button" id="geldQuickMonat" class="geld-quick-card" data-period="currentMonth" aria-label="Aktueller Monat">
-                <span class="geld-quick-card-icon">📅</span>
+                <span class="geld-quick-card-icon"><i data-lucide="calendar" style="width:18px;height:18px;"></i></span>
                 <span class="geld-quick-card-label">Aktueller Monat</span>
                 <span class="geld-quick-card-hint">Monatsauszug</span>
               </button>
@@ -2469,81 +2469,37 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <h1 class="legal-page-title legal-page-title--tight">Datenschutzerklärung</h1>
         <p class="legal-page-subtitle legal-page-subtitle--tight">Hier findest du transparent, welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
         <div class="legal-content">
-          <div class="legal-accordion-group">
-            <details open class="legal-accordion-item">
-              <summary>1) Verantwortlicher</summary>
-              <div class="legal-accordion-body">
-                Mittagio.de<br>
-                Mike Quach<br>
-                Langäcker 2, 73635 Rudersberg<br>
-                Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
-              </div>
-            </details>
+          <p><strong>§ 1 Verantwortlicher</strong></p>
+          <p>
+            Mittagio.de<br>
+            Mike Quach<br>
+            Langäcker 2, 73635 Rudersberg<br>
+            Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
+          </p>
 
-            <details class="legal-accordion-item">
-              <summary>2) Zwecke und Rechtsgrundlagen</summary>
-              <div class="legal-accordion-body">
-                Wir verarbeiten personenbezogene Daten zur Bereitstellung der Plattform, zur Bestell- und Zahlungsabwicklung, zur Bereitstellung der Abholnummer,
-                zur Missbrauchsprävention und zur technischen Stabilität. Rechtsgrundlagen: Art. 6 Abs. 1 lit. b, lit. c und lit. f DSGVO.
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 2 Zwecke und Rechtsgrundlagen</strong></p>
+          <p>Wir verarbeiten personenbezogene Daten zur Bereitstellung der Plattform, zur Bestell- und Zahlungsabwicklung, zur Bereitstellung der Abholnummer, zur Missbrauchsprävention und zur technischen Stabilität. Rechtsgrundlagen: Art. 6 Abs. 1 lit. b, lit. c und lit. f DSGVO.</p>
 
-            <details class="legal-accordion-item">
-              <summary>3) Kategorien verarbeiteter Daten</summary>
-              <div class="legal-accordion-body">
-                Je nach Nutzung verarbeiten wir Kontaktdaten (z. B. E-Mail), Bestell-/Abholdaten (inkl. Abholnummer), Zahlungsstatusdaten,
-                technische Nutzungsdaten (z. B. Session-/Logdaten) sowie freiwillige Profilangaben (z. B. Ernährungseinstellungen).
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 3 Kategorien verarbeiteter Daten</strong></p>
+          <p>Je nach Nutzung verarbeiten wir Kontaktdaten (z. B. E-Mail), Bestell-/Abholdaten (inkl. Abholnummer), Zahlungsstatusdaten, technische Nutzungsdaten (z. B. Session-/Logdaten) sowie freiwillige Profilangaben (z. B. Ernährungseinstellungen).</p>
 
-            <details class="legal-accordion-item">
-              <summary>4) Empfänger</summary>
-              <div class="legal-accordion-body">
-                Daten werden nur an erforderliche Empfänger übermittelt, insbesondere an den jeweiligen Anbieter zur Bestellabwicklung und an
-                eingebundene Zahlungsdienstleister zur Zahlungsabwicklung. Keine Weitergabe zu Werbezwecken.
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 4 Empfänger</strong></p>
+          <p>Daten werden nur an erforderliche Empfänger übermittelt, insbesondere an den jeweiligen Anbieter zur Bestellabwicklung und an eingebundene Zahlungsdienstleister zur Zahlungsabwicklung. Keine Weitergabe zu Werbezwecken.</p>
 
-            <details class="legal-accordion-item">
-              <summary>5) Speicherdauer</summary>
-              <div class="legal-accordion-body">
-                Wir speichern Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.
-                Danach werden Daten gelöscht oder datenschutzkonform anonymisiert.
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 5 Speicherdauer</strong></p>
+          <p>Wir speichern Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen. Danach werden Daten gelöscht oder datenschutzkonform anonymisiert.</p>
 
-            <details class="legal-accordion-item">
-              <summary>6) Pflicht zur Bereitstellung</summary>
-              <div class="legal-accordion-body">
-                Bestimmte Daten sind für zentrale Funktionen (z. B. Bestellung, Zahlung, Abholung) erforderlich. Ohne diese Daten können einzelne Leistungen
-                nicht bereitgestellt werden.
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 6 Pflicht zur Bereitstellung</strong></p>
+          <p>Bestimmte Daten sind für zentrale Funktionen (z. B. Bestellung, Zahlung, Abholung) erforderlich. Ohne diese Daten können einzelne Leistungen nicht bereitgestellt werden.</p>
 
-            <details class="legal-accordion-item">
-              <summary>7) Drittlandübermittlung</summary>
-              <div class="legal-accordion-body">
-                Soweit Dienstleister außerhalb der EU/des EWR eingesetzt werden, erfolgt eine Übermittlung nur unter Beachtung der gesetzlichen Vorgaben
-                (z. B. Angemessenheitsbeschluss oder geeignete Garantien).
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 7 Drittlandübermittlung</strong></p>
+          <p>Soweit Dienstleister außerhalb der EU/des EWR eingesetzt werden, erfolgt eine Übermittlung nur unter Beachtung der gesetzlichen Vorgaben (z. B. Angemessenheitsbeschluss oder geeignete Garantien).</p>
 
-            <details class="legal-accordion-item">
-              <summary>8) Deine Rechte</summary>
-              <div class="legal-accordion-body">
-                Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch.
-                Zudem besteht ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde. Kontakt:
-                <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.
-              </div>
-            </details>
+          <p class="legal-clause"><strong>§ 8 Deine Rechte</strong></p>
+          <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch. Zudem besteht ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde. Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.</p>
 
-            <details class="legal-accordion-item">
-              <summary>9) Automatisierte Entscheidungen</summary>
-              <div class="legal-accordion-body">
-                Eine ausschließlich automatisierte Entscheidungsfindung im Sinne von Art. 22 DSGVO findet im Kundenbereich derzeit nicht statt.
-              </div>
-            </details>
-          </div>
+          <p class="legal-clause"><strong>§ 9 Automatisierte Entscheidungen</strong></p>
+          <p>Eine ausschließlich automatisierte Entscheidungsfindung im Sinne von Art. 22 DSGVO findet im Kundenbereich derzeit nicht statt.</p>
         </div>
         <div class="legal-footer-help legal-footer-help--plain">
           Kontakt: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
@@ -2553,44 +2509,39 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
     <!-- Datenschutz für Anbieter: einheitliche Rechtsseiten-Optik -->
     <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-datenschutz-provider">
+      <div class="provider-legal-header">
+        <button type="button" class="provider-legal-back-btn" onclick="goBackFromLegalPage()" aria-label="Zurück"><i data-lucide="chevron-left"></i></button>
+        <h1 class="provider-legal-title">Datenschutzerklärung (Anbieter)</h1>
+      </div>
+      <p class="legal-page-subtitle legal-page-subtitle--tight">Transparenz für deinen Business-Bereich: Welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
       <div class="panel legal-unified-panel">
-        <h1 class="legal-page-title">Datenschutzerklärung (Anbieter)</h1>
-        <p class="legal-page-subtitle">Transparenz für deinen Business-Bereich: Welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
-        <div class="legal-content-wrap">
-          <details open class="legal-accordion-item">
-            <summary>1) Verantwortlicher</summary>
-            <div class="legal-accordion-body">
-              Mittagio.de<br>
-              Mike Quach<br>
-              Langäcker 2, 73635 Rudersberg<br>
-              <strong>Business-Support:</strong> <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a><br>
-              Kunden-Hilfe: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
-            </div>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>2) Anbieter-Daten &amp; Zugang</summary>
-            <p class="legal-accordion-body">Für deinen Anbieter-Zugang speichern wir E-Mail, erforderliche Zugangsdaten und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>3) Sitzung &amp; Sicherheit</summary>
-            <p class="legal-accordion-body">Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>4) Bestell- &amp; Abholdaten</summary>
-            <p class="legal-accordion-body">Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>5) Zahlungsdienstleister</summary>
-            <p class="legal-accordion-body">Online-Zahlungen laufen über externe Anbieter (z. B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z. B. Kreditkartennummern).</p>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>6) Weitergabe</summary>
-            <p class="legal-accordion-body">Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
-          </details>
-          <details class="legal-accordion-item">
-            <summary>7) Deine Rechte</summary>
-            <p class="legal-accordion-body">Du hast insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.</p>
-          </details>
+        <div class="legal-content">
+          <p><strong>§ 1 Verantwortlicher</strong></p>
+          <p>
+            Mittagio.de<br>
+            Mike Quach<br>
+            Langäcker 2, 73635 Rudersberg<br>
+            <strong>Business-Support:</strong> <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a><br>
+            Kunden-Hilfe: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>
+          </p>
+
+          <p class="legal-clause"><strong>§ 2 Anbieter-Daten &amp; Zugang</strong></p>
+          <p>Für deinen Anbieter-Zugang speichern wir E-Mail, erforderliche Zugangsdaten und alle von dir angelegten Inhalte (Betrieb, Gerichte, Speisekarte). Diese Daten dienen ausschließlich der Bereitstellung der Plattform und der Abwicklung von Bestellungen.</p>
+
+          <p class="legal-clause"><strong>§ 3 Sitzung &amp; Sicherheit</strong></p>
+          <p>Pro Anbieter-Account ist nur eine aktive Sitzung erlaubt. Eine neue Anmeldung beendet andere Geräte – das schützt dein Konto vor Missbrauch.</p>
+
+          <p class="legal-clause"><strong>§ 4 Bestell- &amp; Abholdaten</strong></p>
+          <p>Bestellungen und Abholnummern werden zur Abwicklung und zum Nachweis gespeichert. Kundenbezogene Daten (z. B. Abholnummer, Name bei Bestellung) werden nur im erforderlichen Umfang und nicht für Werbezwecke genutzt.</p>
+
+          <p class="legal-clause"><strong>§ 5 Zahlungsdienstleister</strong></p>
+          <p>Online-Zahlungen laufen über externe Anbieter (z. B. Stripe). Wir speichern keine vollständigen Zahlungsdaten (z. B. Kreditkartennummern).</p>
+
+          <p class="legal-clause"><strong>§ 6 Weitergabe</strong></p>
+          <p>Daten werden nur an Zahlungsdienstleister und bei gesetzlicher Verpflichtung weitergegeben. Keine Weitergabe zu Werbezwecken.</p>
+
+          <p class="legal-clause"><strong>§ 7 Deine Rechte</strong></p>
+          <p>Du hast insbesondere Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung und Widerspruch. Anbieter-Anfragen bitte an <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a>.</p>
         </div>
         <div class="legal-footer-help">
           <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a> · Business-Bereich
@@ -3082,7 +3033,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             </button>
           </div>
           <button class="btn-cust-primary sheet-detail-cta sheet-detail-cta-sync" id="btnPrimaryCTA">
-            <span id="btnPrimaryCTAText">Zur Mittagsbox 🍱</span>
+            <span id="btnPrimaryCTAText">Zur Mittagsbox</span>
           </button>
         </div>
         <p id="sInfoHint" class="sheet-detail-info-hint is-hidden" aria-hidden="true"></p>
