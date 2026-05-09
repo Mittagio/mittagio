@@ -12114,83 +12114,136 @@
   if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
 
   function renderSupportQuickContext(){
-    var ordersWrap = document.getElementById('supportRecentOrders');
-    var codesWrap = document.getElementById('supportRecentCodes');
+    var selectEl = document.getElementById('supportRecentOrderSelect');
     var subjectEl = document.getElementById('supportSubject');
     var pickupRefEl = document.getElementById('supportPickupRef');
     var messageEl = document.getElementById('supportMessage');
-    if(!ordersWrap || !codesWrap) return;
+    var previewEl = document.getElementById('supportSelectionPreview');
+    var previewDishEl = document.getElementById('supportSelectionDish');
+    var previewDetailsEl = document.getElementById('supportSelectionDetails');
+    var previewOpenBtn = document.getElementById('supportSelectionOpenBtn');
+    function normalizeCode(order){
+      return String((order && (order.pickupCode || order.abholnummer || order.code)) || '').replace(/^#/, '').trim();
+    }
+    function compactText(raw, maxLen){
+      var txt = String(raw || '').trim();
+      if(!txt) return '';
+      if(txt.length <= maxLen) return txt;
+      return txt.slice(0, Math.max(8, maxLen - 1)).trim() + '…';
+    }
+    function updateSupportSubmitState(){
+      var submitBtn = document.getElementById('btnSupportSubmit');
+      if(!submitBtn || !subjectEl || !messageEl) return;
+      var hasSubject = !!String(subjectEl.value || '').trim();
+      var hasMessage = !!String(messageEl.value || '').trim();
+      submitBtn.disabled = !(hasSubject && hasMessage);
+      if(submitBtn.classList){
+        if(hasSubject && hasMessage) submitBtn.classList.add('is-ready');
+        else submitBtn.classList.remove('is-ready');
+      }
+    }
+    function renderSupportSelectionPreview(order){
+      if(!previewEl || !previewDishEl || !previewDetailsEl) return;
+      if(!order){
+        if(typeof hide === 'function') hide(previewEl);
+        return;
+      }
+      var code = normalizeCode(order);
+      var providerName = cleanProviderDisplayName(order.providerName || 'Anbieter');
+      var detailLine = providerName + ' · ' + (order.pickupDate || 'Heute');
+      if(code) detailLine += ' · #' + code;
+      previewDishEl.textContent = compactText(order.dishName || 'Bestellung', 44);
+      previewDetailsEl.textContent = compactText(detailLine, 62);
+      if(typeof show === 'function') show(previewEl, 'flex');
+      if(previewOpenBtn){
+        previewOpenBtn.disabled = !order.id;
+        if(!previewOpenBtn._supportOpenBound){
+          previewOpenBtn._supportOpenBound = true;
+          previewOpenBtn.addEventListener('click', function(){
+            var oid = window.__supportSelectedOrderId || '';
+            if(oid && typeof showOrderDetail === 'function') showOrderDetail(oid);
+          });
+        }
+      }
+    }
+    function shouldUpdateMessage(force){
+      if(force) return true;
+      if(!messageEl) return false;
+      var current = String(messageEl.value || '').trim();
+      if(!current) return true;
+      return current.indexOf('Bezug: ') === 0;
+    }
+    function applySupportOrderSelection(selectedOrder, forceMessageReset){
+      if(!selectedOrder) return;
+      var selectedCode = normalizeCode(selectedOrder);
+      var shouldAutoSubject = !subjectEl || !String(subjectEl.value || '').trim() || subjectEl.dataset.supportAuto === 'true';
+      var shouldAutoPickup = !pickupRefEl || !String(pickupRefEl.value || '').trim() || pickupRefEl.dataset.supportAuto === 'true';
+      window.__supportSelectedOrderId = String(selectedOrder.id || '');
+      if(subjectEl && shouldAutoSubject){
+        subjectEl.value = selectedCode ? 'abholnummer' : 'bestellung';
+        subjectEl.dataset.supportAuto = 'true';
+      }
+      if(pickupRefEl && shouldAutoPickup){
+        pickupRefEl.value = selectedCode || '';
+        pickupRefEl.dataset.supportAuto = 'true';
+      }
+      if(messageEl && shouldUpdateMessage(forceMessageReset)){
+        var msg = 'Bezug: ' + (selectedOrder.dishName || 'Bestellung') + ' am ' + (selectedOrder.pickupDate || '—');
+        if(selectedCode) msg += ' (Abholnummer #' + selectedCode + ')';
+        messageEl.value = msg + '\n\n';
+      }
+      renderSupportSelectionPreview(selectedOrder);
+      updateSupportSubmitState();
+    }
+    if(!selectEl) return;
     var recentOrders = (loadOrders() || []).slice().sort(function(a, b){
       return (b.createdAt || 0) - (a.createdAt || 0);
     }).slice(0, 6);
+    window.__supportRecentOrders = recentOrders;
+    selectEl.innerHTML = '<option value="">Bitte Bestellung wählen</option>';
     if(!recentOrders.length){
-      ordersWrap.innerHTML = '<p class="support-quick-empty">Noch keine Bestellungen vorhanden.</p>';
-      codesWrap.innerHTML = '';
+      selectEl.disabled = true;
+      renderSupportSelectionPreview(null);
+      updateSupportSubmitState();
       return;
     }
-    var uniqueCodes = [];
-    recentOrders.forEach(function(o){
-      var c = String(o.pickupCode || o.abholnummer || o.code || '').replace(/^#/, '').trim();
-      if(c && uniqueCodes.indexOf(c) === -1) uniqueCodes.push(c);
-    });
-    ordersWrap.innerHTML = recentOrders.map(function(o){
-      var name = esc(o.dishName || 'Bestellung');
+    selectEl.disabled = false;
+    selectEl.innerHTML += recentOrders.map(function(o){
+      var name = esc(compactText(o.dishName || 'Bestellung', 28));
       var dateStr = esc(o.pickupDate || '');
-      var providerName = esc(cleanProviderDisplayName(o.providerName || 'Anbieter'));
-      var code = String(o.pickupCode || o.abholnummer || o.code || '').replace(/^#/, '').trim();
+      var providerName = esc(compactText(cleanProviderDisplayName(o.providerName || 'Anbieter'), 20));
+      var code = normalizeCode(o);
       var codeLabel = code ? (' · #' + esc(code)) : '';
-      return '<div class="support-order-item" data-order-id="' + esc(o.id || '') + '">' +
-        '<span class="support-order-meta">' +
-          '<span class="support-order-name">' + name + '</span>' +
-          '<span class="support-order-sub">' + providerName + ' · ' + dateStr + codeLabel + '</span>' +
-        '</span>' +
-        '<button type="button" class="support-order-open" data-open-order="' + esc(o.id || '') + '">Öffnen</button>' +
-      '</div>';
+      return '<option value="' + esc(o.id || '') + '">' + name + ' · ' + providerName + ' · ' + dateStr + codeLabel + '</option>';
     }).join('');
-    if(uniqueCodes.length){
-      codesWrap.innerHTML = uniqueCodes.slice(0, 8).map(function(code){
-        return '<button type="button" class="support-code-pill" data-code="' + esc(code) + '">#' + esc(code) + '</button>';
-      }).join('');
-    } else {
-      codesWrap.innerHTML = '';
-    }
     var lastSelectedId = window.__supportSelectedOrderId || '';
-    ordersWrap.querySelectorAll('.support-order-item').forEach(function(btn){
-      if(lastSelectedId && btn.getAttribute('data-order-id') === lastSelectedId) btn.classList.add('is-selected');
-      btn.onclick = function(e){
-        if(e && e.target && e.target.closest && e.target.closest('.support-order-open')) return;
-        var oid = btn.getAttribute('data-order-id') || '';
-        window.__supportSelectedOrderId = oid;
-        ordersWrap.querySelectorAll('.support-order-item').forEach(function(el){ el.classList.remove('is-selected'); });
-        btn.classList.add('is-selected');
-        var selectedOrder = recentOrders.find(function(o){ return String(o.id || '') === oid; });
-        if(!selectedOrder) return;
-        var selectedCode = String(selectedOrder.pickupCode || selectedOrder.abholnummer || selectedOrder.code || '').replace(/^#/, '').trim();
-        if(subjectEl){
-          subjectEl.value = selectedCode ? 'abholnummer' : 'bestellung';
-        }
-        if(pickupRefEl) pickupRefEl.value = selectedCode || '';
-        if(messageEl && !messageEl.value.trim()){
-          var msg = 'Bezug: ' + (selectedOrder.dishName || 'Bestellung') + ' am ' + (selectedOrder.pickupDate || '—');
-          if(selectedCode) msg += ' (Abholnummer #' + selectedCode + ')';
-          messageEl.value = msg + '\n\n';
-        }
-      };
-    });
-    ordersWrap.querySelectorAll('.support-order-open').forEach(function(openBtn){
-      openBtn.onclick = function(e){
-        if(e && e.stopPropagation) e.stopPropagation();
-        var oid = openBtn.getAttribute('data-open-order') || '';
-        if(typeof showOrderDetail === 'function' && oid) showOrderDetail(oid);
-      };
-    });
-    codesWrap.querySelectorAll('.support-code-pill').forEach(function(btn){
-      btn.onclick = function(){
-        var code = btn.getAttribute('data-code') || '';
-        if(pickupRefEl) pickupRefEl.value = code;
-        if(subjectEl) subjectEl.value = 'abholnummer';
-      };
-    });
+    var selectedExists = !!recentOrders.find(function(o){ return String(o.id || '') === lastSelectedId; });
+    if(!selectedExists && recentOrders.length){
+      applySupportOrderSelection(recentOrders[0], false);
+      lastSelectedId = window.__supportSelectedOrderId || '';
+    }
+    if(lastSelectedId){
+      selectEl.value = lastSelectedId;
+    }
+    if(subjectEl && !subjectEl._supportSmartBound){
+      subjectEl._supportSmartBound = true;
+      subjectEl.addEventListener('change', function(){ subjectEl.dataset.supportAuto = 'false'; updateSupportSubmitState(); });
+    }
+    if(pickupRefEl && !pickupRefEl._supportSmartBound){
+      pickupRefEl._supportSmartBound = true;
+      pickupRefEl.addEventListener('input', function(){ pickupRefEl.dataset.supportAuto = 'false'; });
+    }
+    if(messageEl && !messageEl._supportSmartBound){
+      messageEl._supportSmartBound = true;
+      messageEl.addEventListener('input', updateSupportSubmitState);
+    }
+    selectEl.onchange = function(){
+      var oid = String(selectEl.value || '');
+      if(!oid) return;
+      var selectedOrder = recentOrders.find(function(o){ return String(o.id || '') === oid; });
+      applySupportOrderSelection(selectedOrder, false);
+    };
+    updateSupportSubmitState();
   }
 
   // Support-Formular (Kunden): Delegation für Lazy-Mount-Szenarien
@@ -12207,6 +12260,9 @@
     if(subjectEl) subjectEl.value = '';
     if(messageEl) messageEl.value = '';
     if(pickupRefEl) pickupRefEl.value = '';
+    if(subjectEl) subjectEl.dataset.supportAuto = 'false';
+    if(pickupRefEl) pickupRefEl.dataset.supportAuto = 'false';
+    renderSupportQuickContext();
   }
   const supportForm = document.getElementById('supportForm');
   if(supportForm) supportForm.addEventListener('submit', handleSupportFormSubmit);
@@ -14417,6 +14473,8 @@
     var bodyEl = document.body;
     var providerWeekView = document.getElementById('v-provider-week');
     var activeCustomerView = document.querySelector('.customer-view.active');
+    var activeCustomerLegalView = document.querySelector('#v-support.view.active, #v-legal-impressum.view.active, #v-legal-agb-kurz.view.active, #v-legal-datenschutz.view.active, #v-legal-faq.view.active, #v-version.view.active');
+    var isCustomerContext = !!(activeCustomerView || activeCustomerLegalView);
     var providerWeekVisible = false;
     if(providerWeekView){
       providerWeekVisible = providerWeekView.classList.contains('active') && !providerWeekView.classList.contains('is-hidden');
@@ -14434,7 +14492,7 @@
       !bodyEl.classList.contains('wizard-inserat-open')
     );
     if(bodyEl){
-      if(activeCustomerView){
+      if(isCustomerContext){
         bodyEl.classList.remove('provider-mode');
         bodyEl.classList.remove('provider-week-active');
         bodyEl.classList.remove('week-footer-visible');
@@ -14444,7 +14502,7 @@
       }
       bodyEl.classList.toggle('week-footer-force-hidden', !isProviderWeekActive);
     }
-    if(activeCustomerView){
+    if(isCustomerContext){
       var providerNavWrap = document.getElementById('providerNavWrap');
       var providerNav = document.getElementById('providerNav');
       var customerNav = document.getElementById('customerNav');
@@ -18528,6 +18586,24 @@
     const viewId = pageMap[page];
     if(viewId){
       showView(viewId);
+      var isCustomerLegalTarget = !isProvider && customerLegalViews.indexOf(viewId) !== -1;
+      if(isCustomerLegalTarget){
+        try{
+          var weekFooterEl = document.getElementById('weekViewFooter');
+          if(weekFooterEl){
+            weekFooterEl.classList.add('week-footer-hidden');
+            weekFooterEl.style.setProperty('display', 'none', 'important');
+            weekFooterEl.style.setProperty('visibility', 'hidden', 'important');
+            weekFooterEl.style.setProperty('pointer-events', 'none', 'important');
+          }
+          if(document.body){
+            document.body.classList.remove('provider-mode');
+            document.body.classList.remove('provider-week-active');
+            document.body.classList.remove('week-footer-visible');
+            document.body.classList.add('week-footer-force-hidden');
+          }
+        }catch(_e){}
+      }
       const viewEl = document.getElementById(viewId);
       const appEl = document.getElementById('app');
       const mainEl = document.querySelector('#app > main');
@@ -18571,7 +18647,32 @@
       setTimeout(lockLegalTop, 180);
       setTimeout(lockLegalTop, 360);
       if(viewId === 'v-support' && typeof renderSupportQuickContext === 'function'){
-        setTimeout(function(){ renderSupportQuickContext(); }, 40);
+        var applySupportScrollFix = function(){
+          try{
+            var supportView = document.getElementById('v-support');
+            if(!supportView) return;
+            var navEl = document.getElementById('customerNav');
+            var navHeight = navEl ? Math.max(64, Math.round(navEl.getBoundingClientRect().height || navEl.offsetHeight || 64)) : 78;
+            var viewportHeight = Math.max(320, Math.round(window.innerHeight || document.documentElement.clientHeight || 0));
+            var targetHeight = Math.max(320, viewportHeight - navHeight);
+            supportView.style.setProperty('height', targetHeight + 'px', 'important');
+            supportView.style.setProperty('max-height', targetHeight + 'px', 'important');
+            supportView.style.setProperty('overflow-y', 'auto', 'important');
+            supportView.style.setProperty('overflow-x', 'hidden', 'important');
+            supportView.style.setProperty('-webkit-overflow-scrolling', 'touch');
+            var panel = supportView.querySelector('.legal-unified-panel');
+            if(panel){
+              panel.style.setProperty('overflow', 'visible');
+              panel.style.setProperty('padding-bottom', 'calc(var(--customer-nav-total-height, calc(78px + env(safe-area-inset-bottom, 0px))) + 24px)');
+            }
+          } catch(_e){}
+        };
+        setTimeout(function(){
+          renderSupportQuickContext();
+          applySupportScrollFix();
+          requestAnimationFrame(applySupportScrollFix);
+          setTimeout(applySupportScrollFix, 120);
+        }, 40);
       }
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
       if(viewId === 'v-legal-faq' && isProvider){

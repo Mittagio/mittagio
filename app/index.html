@@ -2348,11 +2348,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <!-- Kontaktformular -->
         <div class="legal-divider-block">
           <h2 class="legal-section-title legal-section-title--plain legal-section-title--mb16">Nachricht senden</h2>
-          <div id="supportQuickContext" class="support-quick-context">
-            <p class="support-quick-title">Letzte Bestellungen & Abholnummern</p>
-            <div id="supportRecentOrders" class="support-order-list"></div>
-            <div id="supportRecentCodes" class="support-code-pills"></div>
-          </div>
           <form id="supportForm" class="support-form">
             <label>Betreff</label>
             <select id="supportSubject" required>
@@ -2363,6 +2358,20 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
               <option value="technisch">Technischer Fehler</option>
               <option value="sonstiges">Sonstiges</option>
             </select>
+            <div id="supportQuickContext" class="support-quick-context">
+              <p class="support-quick-title">Letzte Bestellungen & Abholnummern</p>
+              <label for="supportRecentOrderSelect" class="support-quick-label">Bestellung auswählen</label>
+              <select id="supportRecentOrderSelect" class="support-order-select">
+                <option value="">Bitte Bestellung wählen</option>
+              </select>
+              <div id="supportSelectionPreview" class="support-selection-preview is-hidden" aria-hidden="true">
+                <div class="support-selection-meta">
+                  <p id="supportSelectionDish" class="support-selection-dish">Bestellung</p>
+                  <p id="supportSelectionDetails" class="support-selection-details">Anbieter · Datum · #Abholnummer</p>
+                </div>
+                <button type="button" id="supportSelectionOpenBtn" class="support-selection-open">Bestellung öffnen</button>
+              </div>
+            </div>
             <label>Abholnummer (optional)</label>
             <input type="text" id="supportPickupRef" placeholder="z.B. A1">
             <label>Nachricht</label>
