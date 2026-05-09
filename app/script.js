@@ -1066,6 +1066,7 @@
     const packed = Array.from(dishFavs);
     save(LS.dishFavs, packed);
     localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+    updateFavoritesNavBadge();
     if(typeof renderFavorites === 'function') renderFavorites();
     if(typeof renderDiscover === 'function' && activeViewId !== 'v-discover') renderDiscover();
   }
@@ -1153,6 +1154,33 @@
   const legacyFavs = load(LS.favs, []);
   let providerFavs = new Set(load(LS.providerFavs, legacyFavs));
   let dishFavs = new Set(load(LS.dishFavs, []));
+  function getFavoritesBadgeCount(){
+    var dishCount = (dishFavs && typeof dishFavs.size === 'number') ? dishFavs.size : 0;
+    var providerCount = (providerFavs && typeof providerFavs.size === 'number') ? providerFavs.size : 0;
+    if(dishCount > 0 || providerCount > 0) return dishCount + providerCount;
+    // Fallback: falls ein anderer Flow Storage aktualisiert hat und Sets noch nicht synchron sind
+    try{
+      var dishRaw = load(LS.dishFavs, []);
+      var providerRaw = load(LS.providerFavs, load(LS.favs, []));
+      var dishFromStore = Array.isArray(dishRaw) ? dishRaw.length : 0;
+      var providerFromStore = Array.isArray(providerRaw) ? providerRaw.length : 0;
+      return dishFromStore + providerFromStore;
+    } catch(_e){
+      return 0;
+    }
+  }
+  function updateFavoritesNavBadge(){
+    var badge = document.getElementById('bottomNavFavBadge');
+    if(!badge) return;
+    var total = getFavoritesBadgeCount();
+    if(total > 0){
+      badge.textContent = total > 99 ? '99+' : String(total);
+      badge.setAttribute('aria-label', total + ' Favoriten');
+      if(typeof show === 'function') show(badge, 'flex');
+    } else {
+      if(typeof hide === 'function') hide(badge);
+    }
+  }
   function normalizeDishFavoritesStore(){
     try{
       const modern = load(LS.dishFavs, []);
@@ -1177,6 +1205,7 @@
     }
   }
   normalizeDishFavoritesStore();
+  updateFavoritesNavBadge();
   /** In-Memory-`offers` mit localStorage (und async Seed nach CSV-Load) abgleichen – sonst leere Favoriten trotz gespeicherter IDs. */
   function syncOffersFromStorage(){
     try{
@@ -5080,6 +5109,7 @@
     save(LS.providerFavs, arr);
     // keep legacy key for compatibility
     save(LS.favs, arr);
+    updateFavoritesNavBadge();
     renderDiscover();
     renderStart();
     renderFavorites();
@@ -5110,6 +5140,7 @@
     const packed = Array.from(dishFavs);
     save(LS.dishFavs, packed);
     localStorage.setItem('mittagio_favorites', JSON.stringify(packed));
+    updateFavoritesNavBadge();
     renderDiscover();
     renderStart();
     renderFavorites();
@@ -5280,6 +5311,7 @@
   function renderFavorites(){
     syncOffersFromStorage();
     normalizeDishFavoritesStore();
+    updateFavoritesNavBadge();
     const favoritesMode = getFavoritesMode();
     const provGrid=document.getElementById('favProviders');
     const provEmpty=document.getElementById('emptyFavProviders');
@@ -7398,10 +7430,12 @@
       const viewId = currentView.id;
       const customerLegalViews = ['v-legal-impressum', 'v-legal-agb-kurz', 'v-legal-datenschutz', 'v-legal-faq', 'v-support', 'v-version'];
       if(mode !== 'provider' && customerLegalViews.indexOf(viewId) !== -1){
-        const fromView = e && e.state && e.state.fromView ? e.state.fromView : '';
+        const fromView = (e && e.state && e.state.fromView) ? e.state.fromView : (window.__customerLegalFromView || '');
         if(fromView && document.getElementById(fromView)){
+          window.__customerLegalFromView = '';
           showView(fromView);
         } else {
+          window.__customerLegalFromView = '';
           showProfile();
         }
         e.preventDefault();
@@ -8555,10 +8589,10 @@
     // Anbieter: Share-Sheet mit WhatsApp, Instagram, Link öffnen
     if(typeof getMode === 'function' && getMode() === 'provider'){
       const titleEl = document.getElementById('shareSheetTitle');
-      if(titleEl) titleEl.textContent = 'Teile es mit deinen Kunden';
+      if(titleEl) titleEl.textContent = 'Teile dieses Gericht';
       const subtitleEl = document.getElementById('shareSheetSubtitle');
-      if(subtitleEl) subtitleEl.textContent = 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.';
-      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      if(subtitleEl) subtitleEl.textContent = 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.';
+      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
       return;
     }
@@ -8664,12 +8698,12 @@
         showToast('Geteilt!');
       }).catch((err) => {
         if(err.name !== 'AbortError'){
-          openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+          openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.');
           if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
         }
       });
     } else {
-      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      openShareSheet(dishName, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
@@ -10630,55 +10664,42 @@
   }
 
   function updateProfileView(){
-    var pwaTipEl = document.getElementById('profilePwaTip');
-    if(pwaTipEl){
-      if(localStorage.getItem('mittagio_pwa_tip_dismissed') === 'true') hide(pwaTipEl);
-      else show(pwaTipEl);
-    }
-    var btnDismissPwa = document.getElementById('btnDismissPwaTip');
-    if(btnDismissPwa && !btnDismissPwa._pwaBound){ btnDismissPwa._pwaBound = true; btnDismissPwa.onclick = function(){ try { localStorage.setItem('mittagio_pwa_tip_dismissed', 'true'); } catch(e) {} var el = document.getElementById('profilePwaTip'); if(el) hide(el); }; }
-    const isLoggedIn = customer.loggedIn;
-    const firstName = customer.name ? customer.name.split(' ')[0] : '';
-    const fullName = customer.name || 'Gast';
-    
-    const initials = fullName.split(' ').map(n => n[0]?.toUpperCase() || '').join('').slice(0, 2) || '?';
-    
-    // Header-Card (Identität)
-    const headerCard = document.getElementById('profileHeaderCard');
-    if(headerCard){
-      if(isLoggedIn){
-        headerCard.innerHTML = `
-          <div style="width:64px; height:64px; border-radius:20px; background:linear-gradient(135deg,#FDE047 0%,#FACC15 100%); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:900; color:#1a1a1a; box-shadow:0 8px 24px rgba(250,204,21,0.32); flex-shrink:0;">
-            ${initials}
-          </div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-weight:950; font-size:21px; color:#0f172a; letter-spacing:-0.02em; line-height:1.2;">Hallo ${esc(firstName || 'Kunde')} 👋</div>
-            <div style="font-size:13px; font-weight:700; color:#64748b; margin-top:4px;">Dein Konto ist aktiv</div>
-            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:#ecfdf5; border:1px solid #bbf7d0; color:#166534; font-size:11px; font-weight:800;">🟢 Bereit für Vorbestellungen</div>
-          </div>
-        `;
-        // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
-        const emailDisp = document.getElementById('profileDisplayEmail');
-        if(emailDisp) emailDisp.textContent = customer.email || '-';
-        const emailSheet = document.getElementById('profileDisplayEmailSheet');
-        if(emailSheet) emailSheet.textContent = customer.email || '-';
+    var isStandaloneApp = false;
+    try{
+      isStandaloneApp = !!((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true);
+    } catch(_e){}
+    var profilePwaActionBtn = document.getElementById('btnProfilePwaInstall');
+    var profilePwaActionLabel = document.getElementById('profilePwaActionLabel');
+    var pwaSheetTitle = document.getElementById('pwaSheetTitle');
+    var pwaSheetLead = document.getElementById('pwaSheetLead');
+    var pwaSheetSteps = document.getElementById('pwaSheetSteps');
+    var pwaSheetInstallBtn = document.getElementById('pwaSheetInstallBtn');
+    if(profilePwaActionBtn && profilePwaActionLabel && pwaSheetTitle && pwaSheetLead && pwaSheetSteps && pwaSheetInstallBtn){
+      if(isStandaloneApp){
+        show(profilePwaActionBtn);
+        profilePwaActionLabel.textContent = 'App-Tipps';
+        pwaSheetTitle.textContent = 'App-Tipps';
+        pwaSheetLead.textContent = 'Mittagio ist bereits auf deinem Startbildschirm installiert.';
+        pwaSheetSteps.innerHTML = '<strong>Tipp:</strong> Du kannst die App wie gewohnt nutzen und bei Bedarf direkt aus dem Browser neu installieren.';
+        hide(pwaSheetInstallBtn);
       } else {
-        headerCard.innerHTML = `
-          <div style="flex:1; display:flex; align-items:center; gap:10px; min-width:0;">
-            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#fff7cc 0%,#fde68a 100%); border:1px solid rgba(250,204,21,0.45); display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0;">✨</div>
-            <div style="min-width:0;">
-              <div style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#f8fafc; border:1px solid #e2e8f0; color:#475569; font-size:11px; font-weight:800;">🚀 Startklar in 30 Sekunden</div>
-            </div>
-          </div>
-          <div style="margin-top:0;">
-            <button class="btn-cust-primary" type="button" id="btnProfileCreateAccount" style="height:48px; min-width:136px; font-size:15px; padding:0 18px;">
-              Jetzt Profil anlegen
-            </button>
-          </div>
-        `;
-        const btn = document.getElementById('btnProfileCreateAccount');
-        if(btn) btn.onclick = () => { openProfileCreateSheet(); };
+        show(profilePwaActionBtn);
+        profilePwaActionLabel.textContent = 'App herunterladen';
+        pwaSheetTitle.textContent = 'App herunterladen';
+        pwaSheetLead.textContent = 'Lade Mittagio als App herunter – dann startest du es wie eine App vom Startbildschirm.';
+        pwaSheetSteps.innerHTML = '<strong>So geht’s:</strong> Im Browser auf <strong>Teilen</strong> (oder Menü ⋮) tippen → <strong>„Zum Startbildschirm hinzufügen“</strong> wählen. Auf manchen Geräten erscheint der Hinweis auch automatisch.';
+        show(pwaSheetInstallBtn);
       }
+    }
+    // E-Mail in "Meine Daten" und im Zahnrad-Sheet anzeigen
+    const emailDisp = document.getElementById('profileDisplayEmail');
+    if(emailDisp) emailDisp.textContent = customer.email || '-';
+    const emailSheet = document.getElementById('profileDisplayEmailSheet');
+    if(emailSheet) emailSheet.textContent = customer.email || '-';
+    const btnProfileLogout = document.getElementById('btnProfileLogout');
+    if(btnProfileLogout){
+      if(customer && customer.loggedIn) show(btnProfileLogout);
+      else hide(btnProfileLogout);
     }
     
     const allOrders = loadOrders();
@@ -10690,7 +10711,7 @@
     }
     const ordersCard = document.getElementById('profileOrdersCard');
     if(ordersCard){
-      ordersCard.style.marginTop = '0';
+      ordersCard.style.marginTop = '32px';
     }
 
     // Historie (letzte 2)
@@ -10715,6 +10736,14 @@
           </div>
         `).join('');
       }
+    }
+    const btnAllOrders = document.getElementById('btnProfileShowAllOrders');
+    if(btnAllOrders && !btnAllOrders._boundOpenOrders){
+      btnAllOrders._boundOpenOrders = true;
+      btnAllOrders.onclick = function(){
+        if(typeof showOrders === 'function') showOrders();
+        else if(typeof showView === 'function') showView((window.views && window.views.orders) ? window.views.orders : 'v-orders');
+      };
     }
 
     // Deine Lieblinge (Anbieter) – Hauptseite + Sheet
@@ -10832,7 +10861,7 @@
     const bd = document.getElementById('profileSettingsSheetBd');
     const sheet = document.getElementById('profileSettingsSheet');
     const scrollEl = document.getElementById('profileSettingsSheetScroll');
-    const sections = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
+    const sections = ['profileSettingsSheetData', 'profileSettingsSheetDiet'];
     if(bd){ show(bd); bd.style.setProperty('opacity', '1'); }
     if(sheet) show(sheet);
     sections.forEach(function(id){
@@ -10894,7 +10923,7 @@
     window.closeProfileHowItWorksSheet = closeProfileHowItWorksSheet;
   }
   function openProfileSettingsSection(sectionId){
-    const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet', 'profileSettingsSheetFavs', 'profileSettingsSheetFaq'];
+    const valid = ['profileSettingsSheetData', 'profileSettingsSheetDiet'];
     if(valid.indexOf(sectionId) < 0) return;
     openProfileSettingsSheet();
     valid.forEach(function(id){
@@ -12084,6 +12113,86 @@
   const btnProfileDatenschutz = document.getElementById('btnProfileDatenschutz');
   if(btnProfileDatenschutz) btnProfileDatenschutz.onclick=(e)=>{ e.preventDefault(); showLegalPage('datenschutz'); };
 
+  function renderSupportQuickContext(){
+    var ordersWrap = document.getElementById('supportRecentOrders');
+    var codesWrap = document.getElementById('supportRecentCodes');
+    var subjectEl = document.getElementById('supportSubject');
+    var pickupRefEl = document.getElementById('supportPickupRef');
+    var messageEl = document.getElementById('supportMessage');
+    if(!ordersWrap || !codesWrap) return;
+    var recentOrders = (loadOrders() || []).slice().sort(function(a, b){
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    }).slice(0, 6);
+    if(!recentOrders.length){
+      ordersWrap.innerHTML = '<p class="support-quick-empty">Noch keine Bestellungen vorhanden.</p>';
+      codesWrap.innerHTML = '';
+      return;
+    }
+    var uniqueCodes = [];
+    recentOrders.forEach(function(o){
+      var c = String(o.pickupCode || o.abholnummer || o.code || '').replace(/^#/, '').trim();
+      if(c && uniqueCodes.indexOf(c) === -1) uniqueCodes.push(c);
+    });
+    ordersWrap.innerHTML = recentOrders.map(function(o){
+      var name = esc(o.dishName || 'Bestellung');
+      var dateStr = esc(o.pickupDate || '');
+      var providerName = esc(cleanProviderDisplayName(o.providerName || 'Anbieter'));
+      var code = String(o.pickupCode || o.abholnummer || o.code || '').replace(/^#/, '').trim();
+      var codeLabel = code ? (' · #' + esc(code)) : '';
+      return '<div class="support-order-item" data-order-id="' + esc(o.id || '') + '">' +
+        '<span class="support-order-meta">' +
+          '<span class="support-order-name">' + name + '</span>' +
+          '<span class="support-order-sub">' + providerName + ' · ' + dateStr + codeLabel + '</span>' +
+        '</span>' +
+        '<button type="button" class="support-order-open" data-open-order="' + esc(o.id || '') + '">Öffnen</button>' +
+      '</div>';
+    }).join('');
+    if(uniqueCodes.length){
+      codesWrap.innerHTML = uniqueCodes.slice(0, 8).map(function(code){
+        return '<button type="button" class="support-code-pill" data-code="' + esc(code) + '">#' + esc(code) + '</button>';
+      }).join('');
+    } else {
+      codesWrap.innerHTML = '';
+    }
+    var lastSelectedId = window.__supportSelectedOrderId || '';
+    ordersWrap.querySelectorAll('.support-order-item').forEach(function(btn){
+      if(lastSelectedId && btn.getAttribute('data-order-id') === lastSelectedId) btn.classList.add('is-selected');
+      btn.onclick = function(e){
+        if(e && e.target && e.target.closest && e.target.closest('.support-order-open')) return;
+        var oid = btn.getAttribute('data-order-id') || '';
+        window.__supportSelectedOrderId = oid;
+        ordersWrap.querySelectorAll('.support-order-item').forEach(function(el){ el.classList.remove('is-selected'); });
+        btn.classList.add('is-selected');
+        var selectedOrder = recentOrders.find(function(o){ return String(o.id || '') === oid; });
+        if(!selectedOrder) return;
+        var selectedCode = String(selectedOrder.pickupCode || selectedOrder.abholnummer || selectedOrder.code || '').replace(/^#/, '').trim();
+        if(subjectEl){
+          subjectEl.value = selectedCode ? 'abholnummer' : 'bestellung';
+        }
+        if(pickupRefEl) pickupRefEl.value = selectedCode || '';
+        if(messageEl && !messageEl.value.trim()){
+          var msg = 'Bezug: ' + (selectedOrder.dishName || 'Bestellung') + ' am ' + (selectedOrder.pickupDate || '—');
+          if(selectedCode) msg += ' (Abholnummer #' + selectedCode + ')';
+          messageEl.value = msg + '\n\n';
+        }
+      };
+    });
+    ordersWrap.querySelectorAll('.support-order-open').forEach(function(openBtn){
+      openBtn.onclick = function(e){
+        if(e && e.stopPropagation) e.stopPropagation();
+        var oid = openBtn.getAttribute('data-open-order') || '';
+        if(typeof showOrderDetail === 'function' && oid) showOrderDetail(oid);
+      };
+    });
+    codesWrap.querySelectorAll('.support-code-pill').forEach(function(btn){
+      btn.onclick = function(){
+        var code = btn.getAttribute('data-code') || '';
+        if(pickupRefEl) pickupRefEl.value = code;
+        if(subjectEl) subjectEl.value = 'abholnummer';
+      };
+    });
+  }
+
   // Support-Formular (Kunden): Delegation für Lazy-Mount-Szenarien
   function handleSupportFormSubmit(e){
     e.preventDefault();
@@ -12092,6 +12201,7 @@
     const subjectEl = document.getElementById('supportSubject');
     const messageEl = document.getElementById('supportMessage');
     const pickupRefEl = document.getElementById('supportPickupRef');
+    if(!subjectEl || !String(subjectEl.value || '').trim()){ showToast('Bitte Betreff wählen.', 2000); if(subjectEl && typeof subjectEl.focus === 'function') subjectEl.focus(); return; }
     if(!messageEl || !messageEl.value.trim()){ showToast('Bitte Nachricht eingeben.', 2000); return; }
     showToast('Danke, deine Nachricht wurde übermittelt und wir melden uns in Kürze.', 4000);
     if(subjectEl) subjectEl.value = '';
@@ -12100,6 +12210,7 @@
   }
   const supportForm = document.getElementById('supportForm');
   if(supportForm) supportForm.addEventListener('submit', handleSupportFormSubmit);
+  renderSupportQuickContext();
   document.addEventListener('submit', function(e){
     var target = e.target;
     if(target && target.id === 'supportForm') handleSupportFormSubmit(e);
@@ -18393,6 +18504,13 @@
     }catch(_e){}
     var currentActiveView = document.querySelector('.view.active');
     var fromViewId = currentActiveView && currentActiveView.id ? currentActiveView.id : null;
+    var customerLegalViews = ['v-legal-impressum', 'v-legal-agb-kurz', 'v-legal-datenschutz', 'v-legal-faq', 'v-support', 'v-version'];
+    if(customerLegalViews.indexOf(fromViewId) !== -1 && window.__customerLegalFromView){
+      fromViewId = window.__customerLegalFromView;
+    }
+    if(fromViewId && customerLegalViews.indexOf(fromViewId) === -1){
+      window.__customerLegalFromView = fromViewId;
+    }
     // Separate Impressen und AGBs für Kunden und Anbieter
     const isProvider = mode === 'provider';
     const pageMap = {
@@ -18452,6 +18570,9 @@
       setTimeout(lockLegalTop, 60);
       setTimeout(lockLegalTop, 180);
       setTimeout(lockLegalTop, 360);
+      if(viewId === 'v-support' && typeof renderSupportQuickContext === 'function'){
+        setTimeout(function(){ renderSupportQuickContext(); }, 40);
+      }
       // Wenn FAQ, auf Anbieter-Tab wechseln wenn Provider-Modus
       if(viewId === 'v-legal-faq' && isProvider){
         setTimeout(() => switchFaqTab('provider'), 100);
@@ -18867,12 +18988,12 @@
         .then(() => showToast('Tagesessen geteilt!'))
         .catch((err) => {
           if(err.name !== 'AbortError'){
-            openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+            openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.');
             if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
           }
         });
     } else {
-      openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.');
+      openShareSheet(`Heute bei ${providerName}`, shareText, shareUrl, 'Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.');
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }

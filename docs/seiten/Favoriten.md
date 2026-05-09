@@ -76,3 +76,10 @@ Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
 - `Favoriten` ist im Kundenmodus wieder zuverlässig vertikal scrollbar (kein globaler Overflow-Lock mehr auf App-Ebene).
 - Pull-to-Refresh ist für `v-fav` aktiv: Runterziehen im Content-Bereich triggert ein erneutes `renderFavorites()`.
 - Nach dem Refresh wird ein kurzes visuelles Feedback über Toast ausgegeben.
+
+## Update: Bottom-Nav Favoriten-Badge (05.05.2026)
+
+- Der Tab `Favoriten` in der Kunden-Bottom-Nav hat jetzt einen Zähler-Badge (`#bottomNavFavBadge`).
+- Der Badge aktualisiert sich direkt beim Hinzufügen/Entfernen von Favoriten.
+- Gezählt werden **Gerichtsfavoriten + Lieblingsanbieter**.
+- Bei `0` Favoriten ist der Badge ausgeblendet.

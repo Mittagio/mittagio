@@ -46,3 +46,8 @@ Die Detailansicht folgt exakt der visuellen Sprache der Discovery-Kachel (Market
 - In der Zeile mit der Uhrzeit werden keine zusätzlichen Icons mehr angezeigt.
 - `Allergene` ist typografisch leichter (nicht fett/keine aggressive Uppercase-Wirkung).
 - Der Platzhalter-Strich (`–`) hinter `Allergene` wurde entfernt, wenn keine Kürzel vorliegen.
+
+## Update: Share-Wording (Kunde)
+
+- Das Share-Sheet im Kundenfluss verwendet neutrale, kontaktorientierte Texte.
+- Kein `Teile es mit deinen Kunden` mehr; stattdessen Formulierungen wie `Teile es mit Freunden`/`Kontakten`.

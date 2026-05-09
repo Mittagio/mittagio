@@ -403,3 +403,8 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 - `Entdecken` unterstützt jetzt Pull-to-Refresh direkt per Runterziehen im Haupt-Scrollbereich.
 - Umsetzung erfolgt über den vorhandenen PTR-Mechanismus in `app/script.js` (`setupPullToRefresh`), jetzt zusätzlich für Customer-Views gebunden.
 - Bei erfolgreichem Trigger wird `renderDiscover()` neu ausgeführt und ein kurzes Aktualisieren-Feedback angezeigt.
+
+## Update: Share-Sprache (Kunde)
+
+- Share-Texte auf der Kundenseite sind kontaktorientiert formuliert (`Freunde`/`Kontakte`).
+- Formulierungen mit `deine Kunden` wurden im Customer-Share entfernt.

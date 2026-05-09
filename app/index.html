@@ -741,13 +741,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div class="customer-header-row">
           <h1 class="customer-header-title">Meins</h1>
           <div class="customer-header-actions">
-            <button type="button" id="btnProfileHowItWorksHelp" class="customer-header-icon-btn" aria-label="Mittagio in 5 Schritten" onclick="if(typeof openProfileHowItWorksSheet==='function') openProfileHowItWorksSheet();">
+            <button type="button" id="btnProfileHowItWorksHelp" class="customer-header-icon-btn customer-header-icon-btn--subtle" aria-label="Mittagio in 5 Schritten" onclick="if(typeof openProfileHowItWorksSheet==='function') openProfileHowItWorksSheet();">
               <i data-lucide="help-circle" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
-            <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--brand" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
+            <button type="button" id="btnProfileProviderPortal" class="customer-header-icon-btn customer-header-icon-btn--subtle" aria-label="Zum Anbieter-Portal" onclick="if(window.showProviderLoginModal) window.showProviderLoginModal();">
               <i data-lucide="building" style="width:20px;height:20px;color:#1a1a1a;pointer-events:none;"></i>
             </button>
-            <button type="button" id="btnProfileSettings" class="customer-header-icon-btn" aria-label="Einstellungen" onclick="openProfileSettingsSheet()">
+            <button type="button" id="btnProfileSettings" class="customer-header-icon-btn customer-header-icon-btn--subtle" aria-label="Einstellungen" onclick="openProfileSettingsSheet()">
               <i data-lucide="settings" style="width:20px;height:20px;color:#1a1a1a;"></i>
             </button>
           </div>
@@ -756,20 +756,20 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
       <div class="customer-main-wrap" style="padding-top:14px; padding-left:16px; padding-right:16px; display:flex; flex-direction:column; gap:16px;">
         <!-- Quick Actions (2x2) -->
-        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
-          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="user" style="width:18px;height:18px;"></i><span>Mein Account</span></button>
+        <div id="profileQuickActions" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:24px;">
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetData')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="user" style="width:18px;height:18px;"></i><span>Meine Daten</span></button>
           <button type="button" class="cust-chip profile-quick-action-tile" onclick="showView('v-fav-providers')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="heart" style="width:18px;height:18px;"></i><span>Meine Lieblingsanbieter</span></button>
-          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:96px; border-radius:18px; font-weight:800;">🥗 Mein Food Profil</button>
+          <button type="button" class="cust-chip profile-quick-action-tile" onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="utensils" style="width:18px;height:18px;"></i><span>Mein Food Profil</span></button>
           <button type="button" class="cust-chip profile-quick-action-tile" onclick="showLegalPage('support')" style="min-height:96px; border-radius:18px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; gap:8px;"><i data-lucide="help-circle" style="width:18px;height:18px;"></i><span>Support</span></button>
         </div>
 
         <!-- Meine Bestellungen / Food-Historie (immer sichtbar) -->
-        <div class="cust-card" id="profileOrdersCard" style="padding:18px; margin-bottom:0; border:1px solid #eef2f7; border-radius:18px; box-shadow:0 10px 24px rgba(15,23,42,0.05);">
-          <h3 style="margin:0 0 12px; font-size:16px; font-weight:900; color:#1a1a1a;">Bestellungen</h3>
+        <div class="cust-card" id="profileOrdersCard" style="padding:18px; margin-top:0; margin-bottom:0; border:1px solid #eef2f7; border-radius:18px; box-shadow:0 10px 24px rgba(15,23,42,0.05);">
+          <h3 style="margin:0 0 12px; font-size:16px; font-weight:900; color:#1a1a1a;">Meine Bestellungen</h3>
           <div id="profileOrderHistoryList" style="display:flex; flex-direction:column; gap:8px;">
             <!-- Dynamisch befüllt -->
           </div>
-          <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:44px; font-size:14px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:12px;">Alle Bestellungen anzeigen</button>
+          <button class="btn ghost" id="btnProfileShowAllOrders" style="width:100%; margin-top:12px; height:44px; font-size:14px; font-weight:700; color:#64748b; border:1px solid #f1f3f5; border-radius:12px;">Alle Bestellungen</button>
         </div>
 
         <!-- Versteckte Bereiche für Zahnrad-Menü (Inhalt wird in Sheet geduplt / per ID referenziert) -->
@@ -817,46 +817,28 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p style="font-size:13px; color:#64748b; margin-bottom:12px;">Bevorzugt anzeigen</p>
           <div id="profileDietCheckboxesSheet" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
-        <div id="profileSettingsSheetFavs" style="display:none; padding:12px 0;">
-          <div id="profileFavProvidersListSheet" style="display:flex; flex-direction:column; gap:8px;"></div>
-        </div>
-        <div id="profileSettingsSheetFaq" style="display:none; padding:12px 0;">
-          <div id="profileTopFaqSheet" style="display:flex; flex-direction:column; gap:12px;"></div>
-          <button onclick="closeProfileSettingsSheet(); showLegalPage('support');" style="width:100%; margin-top:12px; height:48px; background:#f1f3f5; border:none; border-radius:12px; color:#64748b; font-size:14px; font-weight:700; cursor:pointer;">Weitere Fragen (Support)</button>
-        </div>
         <div style="display:flex; flex-direction:column; gap:4px;">
-          <button onclick="toggleProfileSettingsSection('profileSettingsSheetData')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+          <button onclick="openProfileSettingsSection('profileSettingsSheetData')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <i data-lucide="user" style="width:20px;height:20px;color:#64748b;"></i><span>Meine Daten</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetData" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
           </button>
-          <button onclick="toggleProfileSettingsSection('profileSettingsSheetDiet')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+          <button onclick="openProfileSettingsSection('profileSettingsSheetDiet')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
             <i data-lucide="utensils" style="width:20px;height:20px;color:#64748b;"></i><span>Mein Food-Profil</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetDiet" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
           </button>
-          <button onclick="toggleProfileSettingsSection('profileSettingsSheetFavs')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="heart" style="width:20px;height:20px;color:#ef4444;"></i><span>Meine Lieblingsanbieter</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFavs" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
+          <button id="btnProfilePwaInstall" onclick="closeProfileSettingsSheet(); (window.openProfilePwaTipSheet||function(){})();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
+            <i data-lucide="smartphone" style="width:20px;height:20px;color:#64748b;"></i><span id="profilePwaActionLabel">App herunterladen</span>
           </button>
-          <button onclick="toggleProfileSettingsSection('profileSettingsSheetFaq')" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="help-circle" style="width:20px;height:20px;color:#64748b;"></i><span>FAQ & Support</span><i data-lucide="chevron-down" class="profile-sheet-chevron" data-section="profileSettingsSheetFaq" style="width:18px;height:18px;color:#cbd5e1;margin-left:auto;"></i>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); showLegalPage('impressum');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="info" style="width:20px;height:20px;color:#64748b;"></i><span>Impressum</span>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); showLegalPage('agb-kurz');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="file-text" style="width:20px;height:20px;color:#64748b;"></i><span>AGB</span>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); showLegalPage('datenschutz');" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <i data-lucide="shield" style="width:20px;height:20px;color:#64748b;"></i><span>Datenschutz</span>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); (window.openProfilePwaTipSheet||function(){})();" style="width:100%; padding:16px 20px; background:#f8f9fa; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <span style="font-size:20px;">📱</span><span>App herunterladen</span>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); (window.showProviderLoginModal||function(){})();" style="width:100%; padding:16px 20px; background:rgba(255,215,0,0.2); border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#1a1a1a;">
-            <span style="font-size:20px;">🏢</span><span>Zum Anbieter-Portal</span>
-          </button>
-          <button onclick="closeProfileSettingsSheet(); handleSupportAction('logout');" style="width:100%; padding:16px 20px; background:#fef2f2; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#b91c1c;">
+          <button id="btnProfileLogout" onclick="closeProfileSettingsSheet(); handleSupportAction('logout');" style="width:100%; padding:16px 20px; background:#fef2f2; border:none; border-radius:14px; display:flex; align-items:center; gap:12px; cursor:pointer; text-align:left; font-size:15px; font-weight:700; color:#b91c1c;">
             <i data-lucide="log-out" style="width:20px;height:20px;"></i><span>Abmelden</span>
           </button>
         </div>
-        <p style="text-align:center; font-size:11px; color:#cbd5e1; font-weight:700; margin-top:20px;">mittagio • made with ❤️ in Rudersberg</p>
+        <div class="profile-settings-legal-footer" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; width:100%; margin:14px auto 0; text-align:center;">
+          <button type="button" class="profile-settings-legal-link" onclick="closeProfileSettingsSheet(); showLegalPage('agb-kurz');" style="border:none; background:transparent; color:#94a3b8; font-size:12px; font-weight:600; letter-spacing:0.01em; padding:8px 2px;">AGB</button>
+          <span class="profile-settings-legal-sep" aria-hidden="true">•</span>
+          <button type="button" class="profile-settings-legal-link" onclick="closeProfileSettingsSheet(); showLegalPage('datenschutz');" style="border:none; background:transparent; color:#94a3b8; font-size:12px; font-weight:600; letter-spacing:0.01em; padding:8px 2px;">Datenschutz</button>
+          <span class="profile-settings-legal-sep" aria-hidden="true">•</span>
+          <button type="button" class="profile-settings-legal-link" onclick="closeProfileSettingsSheet(); showLegalPage('impressum');" style="border:none; background:transparent; color:#94a3b8; font-size:12px; font-weight:600; letter-spacing:0.01em; padding:8px 2px;">Impressum</button>
+        </div>
+        <p style="text-align:center; font-size:11px; color:#cbd5e1; font-weight:700; margin-top:20px;">mittagio • made with ❤️ in Deutschland</p>
       </div>
     </div>
     <div id="profileHowItWorksSheetBd" class="backdrop is-hidden" aria-hidden="true"></div>
@@ -2103,7 +2085,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </p>
         </div>
         <div style="margin-top:24px; padding-top:16px; border-top:1px solid #eee; text-align:center; font-size:13px; color:#94a3b8;">
-          mittagio • made with ❤️ in Rudersberg
+          mittagio • made with ❤️ in Deutschland
         </div>
       </div>
     </section>
@@ -2170,7 +2152,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <p>Kunden-Hilfe: <a href="mailto:info@mittagio.de" class="legal-mail-link">info@mittagio.de</a></p>
         </div>
         <div class="legal-footer-note legal-footer-note--divider">
-          mittagio • made with ❤️ in Rudersberg
+          mittagio • made with ❤️ in Deutschland
         </div>
       </div>
     </section>
@@ -2332,7 +2314,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         </div>
         
         <div class="legal-footer-help">
-          Weitere Fragen? Nutze den Button „Weitere Fragen &amp; Hilfe“ in deinem Profil (Meins).
+          Weitere Fragen? Öffne in deinem Profil (Meins) den Bereich „Support“.
         </div>
       </div>
     </section>
@@ -2340,27 +2322,25 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- Support-Seite (Kunden): erweiterte FAQs + Kontaktformular, keine E-Mail im UI -->
     <section class="view content-padding-bottom-compact legal-unified-page" id="v-support">
       <div class="panel legal-unified-panel">
-        <h1 class="legal-page-title">Support &amp; Hilfe</h1>
-        <p class="legal-page-subtitle">Schnelle Hilfe zu Bestellung, Abholnummer, Zahlung und Profil.</p>
+        <h1 class="legal-page-title">Support</h1>
 
         <!-- Erweiterte Kunden-FAQs (Zahlung, Stornierung, Account) -->
         <div class="legal-block">
-          <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" class="faq-highlight-card faq-highlight-card--support">
-            <span class="faq-highlight-icon">🧾</span>
-            <span class="faq-highlight-title faq-highlight-title--support">So funktioniert die Abholnummer (5 Schritte)</span>
-            <i data-lucide="chevron-right" class="faq-highlight-chevron faq-highlight-chevron--support"></i>
-          </button>
           <h2 class="legal-section-title legal-section-title--plain">Häufige Fragen</h2>
           <details class="legal-accordion-item">
             <summary>Wie bezahle ich mein Essen?</summary>
             <p class="legal-accordion-body">Die Bezahlung erfolgt digital über die Plattform. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
           </details>
           <details class="legal-accordion-item">
-            <summary>Kann ich eine Bestellung stornieren?</summary>
-            <p class="legal-accordion-body">Ob und bis wann eine Stornierung möglich ist, richtet sich nach Angebot, Anbieterbedingungen und gesetzlichen Vorgaben.</p>
+            <summary>Wie funktioniert die Abholnummer?</summary>
+            <p class="legal-accordion-body">Nach deiner Bestellung erhältst du eine Abholnummer. Diese zeigst du bei der Abholung vor, damit deine Bestellung direkt zugeordnet werden kann.</p>
           </details>
           <details class="legal-accordion-item">
-            <summary>Wo finde ich meine Bestellungen / Account?</summary>
+            <summary>Kann ich eine Bestellung stornieren?</summary>
+            <p class="legal-accordion-body">Nein. Bestellungen werden nach Abschluss sofort verarbeitet. Eine Stornierung ist nicht möglich.</p>
+          </details>
+          <details class="legal-accordion-item">
+            <summary>Wo finde ich meine Bestellungen?</summary>
             <p class="legal-accordion-body">Unter „Meins“ findest du dein Profil. Bestellungen und Belege siehst du dort, sobald du ein Profil angelegt hast.</p>
           </details>
         </div>
@@ -2368,6 +2348,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <!-- Kontaktformular -->
         <div class="legal-divider-block">
           <h2 class="legal-section-title legal-section-title--plain legal-section-title--mb16">Nachricht senden</h2>
+          <div id="supportQuickContext" class="support-quick-context">
+            <p class="support-quick-title">Letzte Bestellungen & Abholnummern</p>
+            <div id="supportRecentOrders" class="support-order-list"></div>
+            <div id="supportRecentCodes" class="support-code-pills"></div>
+          </div>
           <form id="supportForm" class="support-form">
             <label>Betreff</label>
             <select id="supportSubject" required>
@@ -2386,7 +2371,6 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </form>
         </div>
 
-        <div class="legal-footer-note">made with ❤️ by Mittagio.de</div>
       </div>
     </section>
 
@@ -2646,6 +2630,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <button class="navbtn" data-go="fav">
       <i data-lucide="heart"></i>
       <span>Favoriten</span>
+      <span id="bottomNavFavBadge" style="position:absolute; top:4px; right:4px; background:#ef4444; color:#fff; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
     </button>
     <button class="navbtn" data-go="cart" id="bottomNavBasketBtn">
       <i data-lucide="shopping-basket"></i>
@@ -3303,24 +3288,24 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
   <div class="sheet-body" style="padding:28px 24px;">
     <div style="text-align:center; margin-bottom:20px;">
       <div style="width:56px; height:56px; margin:0 auto 16px; background:rgba(255,215,0,0.25); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px;">📱</div>
-      <h3 style="margin:0 0 8px; font-size:20px; font-weight:900; color:#1a1a1a;">App herunterladen</h3>
-      <p style="margin:0 0 12px; font-size:15px; color:#64748b; line-height:1.55;">Lade Mittagio als App herunter – dann startest du es wie eine App vom Startbildschirm.</p>
-      <p style="margin:0; font-size:14px; color:#64748b; line-height:1.5;"><strong>So geht’s:</strong> Im Browser auf <strong>Teilen</strong> (oder Menü ⋮) tippen → <strong>„Zum Startbildschirm hinzufügen“</strong> wählen. Auf manchen Geräten erscheint der Hinweis auch automatisch.</p>
+      <h3 id="pwaSheetTitle" style="margin:0 0 8px; font-size:20px; font-weight:900; color:#1a1a1a;">App herunterladen</h3>
+      <p id="pwaSheetLead" style="margin:0 0 12px; font-size:15px; color:#64748b; line-height:1.55;">Lade Mittagio als App herunter – dann startest du es wie eine App vom Startbildschirm.</p>
+      <p id="pwaSheetSteps" style="margin:0; font-size:14px; color:#64748b; line-height:1.5;"><strong>So geht’s:</strong> Im Browser auf <strong>Teilen</strong> (oder Menü ⋮) tippen → <strong>„Zum Startbildschirm hinzufügen“</strong> wählen. Auf manchen Geräten erscheint der Hinweis auch automatisch.</p>
     </div>
     <button type="button" id="pwaSheetInstallBtn" style="width:100%; min-height:52px; border-radius:14px; font-size:16px; font-weight:800; border:none; background:var(--brand,#FFD700); color:#1a1a1a; cursor:pointer; margin-bottom:10px;">Zum Startbildschirm hinzufügen</button>
     <button type="button" onclick="closePwaStartScreenSheet()" class="btn ghost" style="width:100%; min-height:48px; font-size:15px; font-weight:700; color:#64748b;">Schließen</button>
   </div>
 </div>
 
-<!-- Share sheet: Teile es mit deinen Kunden – WhatsApp, Instagram, Link -->
+<!-- Share sheet: Teile es mit Freunden – WhatsApp, Instagram, Link -->
 <div class="backdrop" id="shareBd" onclick="closeShareSheet()"></div>
 <div class="sheet" id="shareSheet">
   <div class="handle"></div>
   <div class="sheet-body">
     <div class="panel">
-      <div style="font-weight:900; font-size:18px;" id="shareSheetTitle">Teile es mit deinen Kunden</div>
+      <div style="font-weight:900; font-size:18px;" id="shareSheetTitle">Teile es mit Freunden</div>
       <div class="hint" id="shareSheetSubtitle" style="margin-top:4px;">
-        Per WhatsApp, Instagram oder Link – deine Kunden finden das Gericht sofort.
+        Per WhatsApp, Instagram oder Link - teile das Gericht direkt mit deinen Kontakten.
       </div>
     </div>
     <div class="answers" style="margin-top:16px;">
