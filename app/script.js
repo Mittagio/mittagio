@@ -2916,11 +2916,11 @@
         emptyWrap.appendChild(iconEl);
         var titleEl = document.createElement('h2');
         titleEl.className = 'empty-state-title';
-        titleEl.textContent = 'Noch nichts in deiner N\u00e4he';
+        titleEl.textContent = 'Heute nichts in der N\u00e4he';
         emptyWrap.appendChild(titleEl);
         var textEl = document.createElement('p');
         textEl.className = 'empty-state-text';
-        textEl.textContent = 'Erweitere deinen Suchradius oder schau sp\u00e4ter nochmal vorbei.';
+        textEl.textContent = 'Standort anpassen oder sp\u00e4ter nochmal schauen.';
         emptyWrap.appendChild(textEl);
         var btnRadius = document.createElement('button');
         btnRadius.type = 'button';
@@ -3160,6 +3160,16 @@
       save(LS.discoverView, newMode);
     };
   }
+  document.addEventListener('click', function(e){
+    if(e.target.closest('.discover-smart-more-wrap')) return;
+    document.querySelectorAll('#discoverOffers .discover-smart-menu.is-open').forEach(function(menu){
+      menu.classList.remove('is-open');
+      menu.setAttribute('aria-hidden', 'true');
+      var wrap = menu.closest('.discover-smart-more-wrap');
+      var btn = wrap && wrap.querySelector('.discover-smart-more');
+      if(btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }, true);
   function setupPillsDragScroll(el){
     if(!el) return;
     var down = false, startX = 0, scrollLeft = 0;
@@ -4600,34 +4610,26 @@
     return card;
   }
   
-  // TGTG-Airbnb: Flaches List-Item (Bild + Text + 1px Divider) [cite: 2026-02-20]
+  // Discover: Premium Smart-Card (minimal sichtbar, Sekundäraktionen im Menü)
   function createDiscoverListCard(o){
     const data = normalizeOffer(o);
-    const card = document.createElement('div');
-    card.className = 'tgtg-list-item';
+    const card = document.createElement('article');
+    card.className = 'discover-smart-card tgtg-list-item';
     
     const imgSrc = data.imageUrl || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=70';
     const offerProvider = offers.find(p => p.providerId === data.providerId);
-    const vorOrt = !!(offerProvider && offerProvider.dineInPossible !== false);
     const abholnummer = !!(offerProvider && offerProvider.orderingEnabled !== false && (data.hasPickupCode || offerProvider.hasPickupCode));
-    const mehrweg = !!(offerProvider && offerProvider.reuse && offerProvider.reuse.enabled);
     const isFavorited = typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id));
-    let walkingMin = '';
-    let carMin = '';
     let distanceLabel = '';
     if(data.distanceKm != null){
-      walkingMin = Math.round(Number(data.distanceKm) * 12) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 12));
-      carMin = Math.round(Number(data.distanceKm) * 1.5) < 1 ? '< 1' : String(Math.round(Number(data.distanceKm) * 1.5));
       var dist = Number(data.distanceKm);
       distanceLabel = dist < 1 ? '< 1 km' : (String(dist.toFixed(1)).replace('.', ',') + ' km');
     }
+    const placeCity = esc(String(data.providerCity || (offerProvider && offerProvider.city) || '').trim());
+    const placeLine = [distanceLabel, placeCity].filter(Boolean).join(' · ');
+    const pickupWindow = esc(String(data.pickupWindow || (offerProvider && offerProvider.mealWindow) || '').trim() || '–');
     const dishName = esc(data.dish || 'Gericht');
     const providerName = esc(cleanProviderDisplayName(data.providerName));
-    const todayKey = isoDate(new Date());
-    const isFutureOffer = !!(data.day && String(data.day) > todayKey && data.active !== false);
-    const uspOverlayHtml = abholnummer
-      ? `<span class="tgtg-usp-emoji" aria-hidden="true">🧾</span><span class="tgtg-usp-label">Abholnummer</span><span class="tgtg-usp-sep" aria-hidden="true">·</span><i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`
-      : `<i data-lucide="clock" class="tgtg-usp-lucide" aria-hidden="true"></i><span class="tgtg-usp-time">${walkingMin || '–'} Min</span>`;
     const feedbackTap = () => {
       try{
         if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
@@ -4635,46 +4637,75 @@
         else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10);
       } catch(_e){}
     };
+    const closeDiscoverCardMenus = function(except){
+      document.querySelectorAll('#discoverOffers .discover-smart-menu.is-open').forEach(function(menu){
+        if(except && menu === except) return;
+        menu.classList.remove('is-open');
+        menu.setAttribute('aria-hidden', 'true');
+      });
+    };
     
     card.innerHTML = `
-      <div class="tgtg-list-item-img-wrap">
+      <div class="discover-smart-card-media">
         <img src="${esc(imgSrc)}" alt="${dishName}" loading="lazy" />
-        <div class="tgtg-usp-overlay ${abholnummer ? 'is-active' : ''}">
-          ${uspOverlayHtml}
-        </div>
       </div>
-      <div class="tgtg-list-item-content">
-        <div class="tgtg-list-item-head-row">
-          <h3 class="tgtg-list-item-title">${dishName}</h3>
-          <span class="tgtg-list-item-price">${euro(data.price)}</span>
+      <div class="discover-smart-card-body">
+        <h3 class="discover-smart-card-title">${dishName}</h3>
+        <p class="discover-smart-card-provider">${providerName}</p>
+        <div class="discover-smart-card-meta">
+          <span class="discover-smart-card-price">${euro(data.price)}</span>
+          <span class="discover-smart-card-pickup"><i data-lucide="clock" aria-hidden="true"></i>${pickupWindow}</span>
+          ${placeLine ? `<span class="discover-smart-card-place"><i data-lucide="map-pin" aria-hidden="true"></i>${esc(placeLine)}</span>` : ''}
         </div>
-        <button type="button" class="tgtg-list-item-provider-link" aria-label="Anbieter ansehen">
-          <span class="tgtg-list-item-provider">${providerName}</span>
-        </button>
-        <p class="tgtg-list-item-facts">
-          ${distanceLabel ? `📍 ${distanceLabel}` : ''} ${carMin ? ` · 🚗 ${carMin} Min` : ''}
-          ${mehrweg ? ' · ♻️ Mehrweg' : ''} ${vorOrt ? ' · 🍽️ Vor Ort' : ''}
-        </p>
-      </div>
-      <div class="tgtg-list-item-action-bar dish-card-actions">
-        <div class="tgtg-actions-left">
-          <button type="button" class="tgtg-btn-floating action-btn-fav action-icon-btn${isFavorited ? ' is-favorited' : ''}" aria-label="Favorit" title="Favorit" aria-pressed="${isFavorited ? 'true' : 'false'}"><i data-lucide="heart" style="width:14px;height:14px;${isFavorited ? 'fill:#e74c3c;color:#e74c3c;stroke:#e74c3c;' : 'color:#6b7280;stroke:#6b7280;'}"></i></button>
-          <button type="button" class="tgtg-btn-floating action-btn-share action-icon-btn" aria-label="Teilen" title="Teilen"><i data-lucide="share-2" style="width:14px;height:14px;color:#6b7280;"></i></button>
+        <div class="discover-smart-card-actions">
+          <button type="button" class="btn-cust-primary discover-smart-cta dish-card-cta">Abholen</button>
+          <div class="discover-smart-more-wrap">
+            <button type="button" class="discover-smart-more" aria-label="Weitere Aktionen" aria-expanded="false" aria-haspopup="true">⋯</button>
+            <div class="discover-smart-menu" role="menu" aria-hidden="true">
+              <button type="button" class="discover-smart-menu-item action-btn-fav${isFavorited ? ' is-favorited' : ''}" role="menuitem" aria-pressed="${isFavorited ? 'true' : 'false'}">Favorit</button>
+              <button type="button" class="discover-smart-menu-item action-btn-share" role="menuitem">Teilen</button>
+              <button type="button" class="discover-smart-menu-item action-btn-details" role="menuitem">Details</button>
+              <button type="button" class="discover-smart-menu-item action-btn-provider" role="menuitem">Anbieter</button>
+            </div>
+          </div>
         </div>
-        <button type="button" class="btn-cust-primary dish-card-cta btn-in-meine-box">${isFutureOffer ? 'Jetzt vorbestellen!' : 'Zur Mittagsbox'}</button>
       </div>
     `;
     
-    const imgEl = card.querySelector('.tgtg-list-item-img-wrap img');
+    const imgEl = card.querySelector('.discover-smart-card-media img');
     if(imgEl){ imgEl.onload = function(){ imgEl.classList.add('img-loaded'); }; if(imgEl.complete) imgEl.classList.add('img-loaded'); }
     
-    const shareBtn = card.querySelector('.action-btn-share');
-    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); feedbackTap(); shareOffer(data); };
-    const providerBtn = card.querySelector('.tgtg-list-item-provider-link');
-    if(providerBtn){
-      providerBtn.onclick = function(e){
+    const moreBtn = card.querySelector('.discover-smart-more');
+    const menuEl = card.querySelector('.discover-smart-menu');
+    if(moreBtn && menuEl){
+      moreBtn.onclick = function(e){
         e.stopPropagation();
         e.preventDefault();
+        feedbackTap();
+        var open = menuEl.classList.contains('is-open');
+        closeDiscoverCardMenus(menuEl);
+        if(!open){
+          menuEl.classList.add('is-open');
+          menuEl.setAttribute('aria-hidden', 'false');
+          moreBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          menuEl.classList.remove('is-open');
+          menuEl.setAttribute('aria-hidden', 'true');
+          moreBtn.setAttribute('aria-expanded', 'false');
+        }
+      };
+    }
+    
+    const shareBtn = card.querySelector('.action-btn-share');
+    if(shareBtn) shareBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); closeDiscoverCardMenus(); feedbackTap(); shareOffer(data); };
+    const detailsBtn = card.querySelector('.action-btn-details');
+    if(detailsBtn) detailsBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); closeDiscoverCardMenus(); feedbackTap(); openOffer(data.id); };
+    const providerMenuBtn = card.querySelector('.action-btn-provider');
+    if(providerMenuBtn){
+      providerMenuBtn.onclick = function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        closeDiscoverCardMenus();
         feedbackTap();
         if(data.providerId) showProviderProfilePublic(data.providerId);
       };
@@ -4682,23 +4713,28 @@
     const favBtn = card.querySelector('.action-btn-fav');
     if(favBtn){
       favBtn.onclick = function(e){
-        e.stopPropagation(); e.preventDefault();
+        e.stopPropagation();
+        e.preventDefault();
         feedbackTap();
         toggleFavorite(data.id, favBtn);
+        favBtn.classList.toggle('is-favorited', typeof dishFavs !== 'undefined' && dishFavs.has(String(data.id)));
+        favBtn.setAttribute('aria-pressed', favBtn.classList.contains('is-favorited') ? 'true' : 'false');
         if(typeof lucide !== 'undefined') lucide.createIcons();
-        favBtn.classList.add('heart-just-clicked');
-        setTimeout(function(){ favBtn.classList.remove('heart-just-clicked'); }, 460);
       };
     }
     
     const ctaBtn = card.querySelector('.dish-card-cta');
     if(ctaBtn){
-      if(!abholnummer){ ctaBtn.style.background = '#e5e5e5'; ctaBtn.style.color = '#888'; ctaBtn.disabled = true; ctaBtn.onclick = function(e){ e.stopPropagation(); showToast('Keine Abholnummer – nur ansehen.', 2000); }; }
-      else {
+      if(!abholnummer){
+        ctaBtn.classList.add('discover-smart-cta--disabled');
+        ctaBtn.disabled = true;
+        ctaBtn.onclick = function(e){ e.stopPropagation(); showToast('Keine Abholnummer – nur ansehen.', 2000); };
+      } else {
         ctaBtn.onclick = function(e){
-          e.stopPropagation(); e.preventDefault();
+          e.stopPropagation();
+          e.preventDefault();
           feedbackTap();
-          const thumb = card.querySelector('.tgtg-list-item-img-wrap img');
+          const thumb = card.querySelector('.discover-smart-card-media img');
           flyThumbnailToMittagsbox(thumb, function(){
             if(!addToCart(o)){ showToast('Fehler beim Hinzufügen.', 2000); return; }
             triggerHapticFeedback([20]);
@@ -4711,7 +4747,7 @@
     }
     
     card.onclick = function(e){
-      if(e.target.closest('.tgtg-actions-left') || e.target.closest('.dish-card-cta') || e.target.closest('.tgtg-list-item-provider-link')) return;
+      if(e.target.closest('.discover-smart-card-actions') || e.target.closest('.discover-smart-menu')) return;
       openOffer(data.id);
     };
     
@@ -8670,6 +8706,7 @@
       if(typeof lucide !== 'undefined') setTimeout(function(){ lucide.createIcons(); }, 50);
     }
   }
+  window.shareOrderConfirmation = shareOrderConfirmation;
   
   // Web Share API für Anbieter (Heute teilen)
   function shareProviderOffer(offer){
@@ -9388,7 +9425,7 @@
     btn.disabled = !!isBusy;
     btn.classList.toggle('is-faded', !!isBusy);
     btn.style.cursor = isBusy ? 'not-allowed' : 'pointer';
-    if(label) label.textContent = isBusy ? 'Zahlung wird gestartet...' : 'JETZT BEZAHLEN';
+    if(label) label.textContent = isBusy ? 'Zahlung wird gestartet...' : 'Jetzt bezahlen';
   }
   /* showCheckout → js/ui-navigation.js */
   function renderCheckout(total){
@@ -10301,63 +10338,77 @@
    * AbholBestätigung: Success-View nach Zahlung (Abholnummer, Zeit, Modus, Verpackung).
    * @param {Order|Order[]} orderOrOrders - eine Bestellung oder Array (mehrere Anbieter)
    */
+  function formatPickupPassTime(order){
+    if(!order) return '–';
+    var w = order.pickupWindow || order.pickupTime || order.abholzeit || order.etaTime || '';
+    w = String(w).trim();
+    if(!w) return '–';
+    if(/uhr/i.test(w) || /\d{1,2}:\d{2}\s*[–-]/.test(w)) return w;
+    return w + ' Uhr';
+  }
+  function restartPickupPassEnterAnimation(el){
+    if(!el) return;
+    el.classList.remove('pickup-pass-card--enter');
+    void el.offsetWidth;
+    el.classList.add('pickup-pass-card--enter');
+  }
   function showOrderSuccess(orderOrOrders){
     const orders = Array.isArray(orderOrOrders) ? orderOrOrders : [orderOrOrders];
     if(orders.length === 0){ showDiscover(); return; }
     const order = orders[0];
     const code = order.pickupCode || order.abholnummer || order.code || '–';
-    const codeStr = String(code);
-    const zeit = order.pickupTime || order.abholzeit || order.etaTime || '–';
-    const zeitDisplay = (zeit.indexOf('Uhr') >= 0 ? zeit : zeit + ' Uhr').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const modus = order.verzehrmodus || 'mitnehmen';
-    const verpackung = order.verpackung || null;
-    const isMitnehmen = modus === 'mitnehmen';
+    const codeStr = String(code).replace(/^#/, '');
     
     const singleBlock = document.getElementById('orderSuccessSingleBlock');
     const multiBlock = document.getElementById('orderSuccessMultiBlock');
     const abholnummerEl = document.getElementById('orderSuccessAbholnummer');
     const zeitEl = document.getElementById('orderSuccessZeit');
+    const dishEl = document.getElementById('orderSuccessDish');
+    const providerEl = document.getElementById('orderSuccessProvider');
     const modusEl = document.getElementById('orderSuccessModus');
     const verpackungWrap = document.getElementById('orderSuccessVerpackung');
     const btnDone = document.getElementById('btnOrderSuccessDone');
-    const thumbEl = document.getElementById('orderSuccessThumb');
-    const thumbWrap = document.getElementById('orderSuccessThumbWrap');
+    const btnShare = document.getElementById('btnOrderSuccessShare');
+    const passCard = document.getElementById('orderSuccessPassCard');
     
     if(orders.length > 1){
       if(singleBlock) hide(singleBlock);
       if(multiBlock){
-        show(multiBlock);
+        multiBlock.classList.remove('is-hidden');
+        multiBlock.removeAttribute('aria-hidden');
         multiBlock.innerHTML = orders.map(function(o){
-          const c = o.pickupCode || o.abholnummer || o.code || '–';
-          const name = (o.providerName || 'Anbieter').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return '<div style="text-align:center; padding:20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:16px; border:2px solid rgba(255,215,0,0.4); margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:#64748b; margin-bottom:6px;">Bei ' + name + '</div><div style="display:inline-flex; align-items:center; gap:8px;"><span style="font-size:1.5rem;">🧾</span><span style="font-family:ui-monospace,monospace; font-size:28px; font-weight:900; letter-spacing:0.1em; color:#1a1a1a;">' + (c + '').replace(/^#/, '').replace(/</g, '&lt;') + '</span></div></div>';
+          const c = String(o.pickupCode || o.abholnummer || o.code || '–').replace(/^#/, '');
+          const name = esc(o.providerName || 'Anbieter');
+          const dish = esc(o.dishName || 'Gericht');
+          const t = esc(formatPickupPassTime(o));
+          return '<div class="pickup-pass-multi-item"><div class="pickup-pass-code pickup-pass-code--multi">' + esc(c) + '</div><p class="pickup-pass-meta-value">' + dish + '</p><p class="pickup-pass-meta-value pickup-pass-meta-value--muted">' + name + ' · ' + t + '</p></div>';
         }).join('');
       }
+      if(dishEl) dishEl.textContent = orders.length + ' Bestellungen';
+      if(providerEl) providerEl.textContent = orders.map(function(o){ return o.providerName || 'Anbieter'; }).filter(function(n, i, a){ return a.indexOf(n) === i; }).join(', ');
+      if(zeitEl) zeitEl.textContent = formatPickupPassTime(order);
     } else {
       if(singleBlock) show(singleBlock);
-      if(multiBlock) hide(multiBlock);
-      if(abholnummerEl) abholnummerEl.textContent = codeStr.replace(/^#/, '');
+      if(multiBlock){
+        multiBlock.classList.add('is-hidden');
+        multiBlock.setAttribute('aria-hidden', 'true');
+        multiBlock.innerHTML = '';
+      }
+      if(abholnummerEl) abholnummerEl.textContent = codeStr;
+      if(dishEl) dishEl.textContent = order.dishName || 'Gericht';
+      if(providerEl) providerEl.textContent = order.providerName || 'Anbieter';
+      if(zeitEl) zeitEl.textContent = formatPickupPassTime(order);
     }
-    if(zeitEl) zeitEl.innerHTML = '<span style="font-size:18px;">🕒</span> Abholbereit um ' + zeitDisplay;
-    if(modusEl){
-      if(modus === 'vor_ort') modusEl.innerHTML = '<span style="font-size:18px;">🍴</span> Vor Ort essen';
-      else modusEl.innerHTML = '<span style="font-size:18px;">🔄</span> Mitnehmen';
-    }
-    if(verpackungWrap){
-      if(isMitnehmen && verpackung){
-        show(verpackungWrap, 'flex');
-        if(verpackung === 'eigener_behaeltner') verpackungWrap.innerHTML = '<span style="font-size:18px;">🥡</span> Eigener Behälter';
-        else if(verpackung === 'gemischt') verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Verpackung gemischt';
-        else verpackungWrap.innerHTML = '<span style="font-size:18px;">🔄</span> Mehrweg-System';
-      } else hide(verpackungWrap);
-    }
-    if(thumbEl && thumbWrap){
-      var offer = offers && offers.find(function(o){ return o.id === order.dishId || o.id === order.offerId; });
-      var imgUrl = (offer && normalizeOffer(offer).imageUrl) || 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=70';
-      thumbEl.src = imgUrl;
-      thumbEl.onerror = function(){ hide(thumbEl); };
-    }
+    if(modusEl) modusEl.textContent = order.verzehrmodus || '';
+    if(verpackungWrap) hide(verpackungWrap);
     if(btnDone) btnDone.onclick = function(){ showDiscover(); };
+    if(btnShare){
+      btnShare.onclick = function(){
+        if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10]);
+        shareOrderConfirmation(order);
+      };
+    }
+    restartPickupPassEnterAnimation(passCard);
     if(typeof lucide !== 'undefined') lucide.createIcons();
     showView(views.orderSuccess);
     setCustomerNavActive('cart');
@@ -21518,8 +21569,9 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor inserat-quick-flow';
       box.setAttribute('data-inserat-card','true');
+      if(wizardRoot) wizardRoot.classList.add('inserat-quick-flow');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header mastercard-header';
@@ -21700,9 +21752,9 @@
         if(popoverCloseBtn) popoverCloseBtn.onclick = function(){ closeInfoPopover(); };
         function getStep2PublishLabel(isPickupEnabled){
           if(isWeekPlannerContext){
-            return isPickupEnabled ? 'Woche stressfrei aktivieren' : 'Woche für 4,99 € aktivieren';
+            return isPickupEnabled ? 'Woche veröffentlichen' : 'Woche veröffentlichen';
           }
-          return isPickupEnabled ? 'Küche entlasten für 0,00 €' : 'Jetzt für 4,99 € inserieren';
+          return 'Veröffentlichen';
         }
         function updateTileUI(){
           var bestBadge = tilePickup.querySelector('.step2-badge-best');
@@ -22033,6 +22085,7 @@
       async function handleSelectedPhotoFile(f){
         if(!f) return;
         if(typeof triggerHapticFeedback==='function') triggerHapticFeedback([5]);
+        if(typeof updateQuickStepsUI==='function') setTimeout(updateQuickStepsUI, 0);
         var objectUrl=URL.createObjectURL(f);
         if(imgEl){ imgEl.src=objectUrl; show(imgEl); setPhotoObjectPosition(50); setPhotoObjectPanX(50); applyMainImageObjectPosition(); }
         var plc=photoTile.querySelector('.inserat-photo-placeholder-center'); if(plc) plc.remove();
@@ -22763,7 +22816,7 @@
       fixedHeader.style.cssText='position:fixed; top:0; left:0; right:0; width:100%; min-height:44px; height:auto; padding-top:env(safe-area-inset-top, 0px); background:#fff; z-index:1000002; border-bottom:1px solid transparent; display:flex; align-items:center; justify-content:center; margin:0; padding-right:0; padding-left:0; padding-bottom:0; box-sizing:border-box; transition:border-color 0.2s ease, background 0.2s ease;';
       var headerTitle=document.createElement('span');
       headerTitle.className='header-title';
-      headerTitle.textContent='Dein Gericht';
+      headerTitle.textContent='Tagesessen';
       headerTitle.style.cssText='font-size:16px; font-weight:600; color:#222222; margin:0; pointer-events:none; opacity:1; transition:opacity 0.2s ease-out;';
       fixedHeader.appendChild(headerTitle);
       fixedHeader.appendChild(closeX);
@@ -22789,7 +22842,7 @@
       inputDish.rows=1;
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
       inputDish.value=w.data.dish||'';
-      inputDish.placeholder='Was bietest du heute an?';
+      inputDish.placeholder='Gerichtname';
       inputDish.autocomplete='off';
       inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-size:28px; font-weight:800; font-style:normal; box-sizing:border-box; border:none; border-bottom:1px solid #ebebeb; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:10px; resize:none; overflow:hidden; min-height:44px; text-align:center;';
       function adjustTitleFontSize(){
@@ -22814,8 +22867,88 @@
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
-      contentSheet.appendChild(floatingBadges); /* Pills DIREKT unter Bild (eBay-homogen) */
-      contentSheet.appendChild(stepName); /* Name folgt ERST DANACH */
+      var quickStepsBar=document.createElement('div');
+      quickStepsBar.className='inserat-quick-steps';
+      quickStepsBar.setAttribute('aria-label','Schritte');
+      ['Foto','Name','Preis','Abholzeit'].forEach(function(label, idx){
+        var stepEl=document.createElement('span');
+        stepEl.className='inserat-quick-step';
+        stepEl.setAttribute('data-quick-step', String(idx + 1));
+        stepEl.textContent=label;
+        quickStepsBar.appendChild(stepEl);
+      });
+      function updateQuickStepsUI(){
+        if(!quickStepsBar) return;
+        var hasPhoto=!!(w.data.photoData && !String(w.data.photoData).includes('svg+xml'));
+        var hasDish=!!(w.data.dish && String(w.data.dish).trim().length>=2);
+        var hasPrice=Number(w.data.price)>0;
+        var hasTime=!!(w.data.pickupWindow && String(w.data.pickupWindow).trim());
+        var done=[hasPhoto,hasDish,hasPrice,hasTime];
+        quickStepsBar.querySelectorAll('.inserat-quick-step').forEach(function(el,i){
+          el.classList.toggle('is-done',!!done[i]);
+          var isCurrent=!done[i] && (i===0 || done[i-1]);
+          el.classList.toggle('is-current',isCurrent);
+        });
+      }
+      contentSheet.appendChild(quickStepsBar);
+      contentSheet.appendChild(stepName);
+
+      var quickPickupSection=document.createElement('div');
+      quickPickupSection.className='inserat-quick-pickup';
+      quickPickupSection.innerHTML='<label class="inserat-quick-pickup-label">Abholzeit</label>';
+      var quickPickupRow=document.createElement('div');
+      quickPickupRow.className='inserat-quick-pickup-row';
+      var quickPwParts=(w.data.pickupWindow||profileWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
+      var quickTStart=(quickPwParts[0]||'11:30').trim();
+      var quickTEnd=(quickPwParts[1]||'14:00').trim();
+      if(quickTStart.length===4) quickTStart='0'+quickTStart;
+      if(quickTEnd.length===4) quickTEnd='0'+quickTEnd;
+      var quickInpStart=document.createElement('input');
+      quickInpStart.type='time';
+      quickInpStart.className='inserat-quick-pickup-input';
+      quickInpStart.value=quickTStart;
+      var quickInpEnd=document.createElement('input');
+      quickInpEnd.type='time';
+      quickInpEnd.className='inserat-quick-pickup-input';
+      quickInpEnd.value=quickTEnd;
+      function syncQuickPickup(){
+        w.data.pickupWindow=quickInpStart.value+' – '+quickInpEnd.value;
+        saveDraft();
+        if(tileTime && tileTime.querySelector('.tile-label')) tileTime.querySelector('.tile-label').textContent=w.data.pickupWindow;
+        updateQuickStepsUI();
+      }
+      quickInpStart.onchange=function(){ hapticLight(); syncQuickPickup(); };
+      quickInpEnd.onchange=function(){ hapticLight(); syncQuickPickup(); };
+      var quickPickupDash=document.createElement('span');
+      quickPickupDash.className='inserat-quick-pickup-dash';
+      quickPickupDash.textContent='–';
+      quickPickupRow.appendChild(quickInpStart);
+      quickPickupRow.appendChild(quickPickupDash);
+      quickPickupRow.appendChild(quickInpEnd);
+      quickPickupSection.appendChild(quickPickupRow);
+      contentSheet.appendChild(quickPickupSection);
+
+      var moreOptionsPanel=document.createElement('div');
+      moreOptionsPanel.className='inserat-more-options is-hidden';
+      moreOptionsPanel.setAttribute('aria-hidden','true');
+      var btnMoreOptions=document.createElement('button');
+      btnMoreOptions.type='button';
+      btnMoreOptions.className='inserat-more-options-toggle';
+      btnMoreOptions.setAttribute('aria-expanded','false');
+      btnMoreOptions.textContent='Weitere Optionen';
+      btnMoreOptions.onclick=function(){
+        hapticLight();
+        var open=moreOptionsPanel.classList.contains('is-hidden');
+        if(open){
+          moreOptionsPanel.classList.remove('is-hidden');
+          moreOptionsPanel.removeAttribute('aria-hidden');
+          btnMoreOptions.setAttribute('aria-expanded','true');
+        } else {
+          moreOptionsPanel.classList.add('is-hidden');
+          moreOptionsPanel.setAttribute('aria-hidden','true');
+          btnMoreOptions.setAttribute('aria-expanded','false');
+        }
+      };
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
@@ -22833,8 +22966,8 @@
       descWrap.appendChild(descriptionTextarea);
       /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
 
-      /* pillGroup entfernt – floatingBadges übernimmt Kategorie-Auswahl komplett */
-      contentSheet.appendChild(descWrap);
+      moreOptionsPanel.appendChild(floatingBadges);
+      moreOptionsPanel.appendChild(descWrap);
 
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
@@ -23515,14 +23648,22 @@
         if(typeof checkMastercardValidation==='function') checkMastercardValidation();
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
       }
-      /* Reihenfolge im Cockpit-Body: Titel → Desc → InfoSection(ServiceGrid) → Preis */
       infoSection.appendChild(powerBar);
-      contentSheet.appendChild(infoSection);
-      /* Kategorie-Pills entfernt – Auswahl erfolgt über Floating Badges im Foto [cite: 2026-03-10] */
-      /* Preis: groß (32px), zentriert, letzte Ebene vor Footer */
+      moreOptionsPanel.appendChild(infoSection);
+      var btnSaveInMore=document.createElement('button');
+      btnSaveInMore.type='button';
+      btnSaveInMore.className='inserat-more-options-save';
+      btnSaveInMore.textContent='Im Kochbuch speichern';
+      btnSaveInMore.onclick=function(){
+        var link=document.getElementById('btnSpeichernKochbuch');
+        if(link) link.click();
+      };
+      moreOptionsPanel.appendChild(btnSaveInMore);
       priceSection.className='inserat-cockpit-price '+priceSection.className;
-      priceSection.style.marginTop='0'; /* Normaler Flow, kein auto mehr */
+      priceSection.style.marginTop='0';
       contentSheet.appendChild(priceSection);
+      contentSheet.appendChild(btnMoreOptions);
+      contentSheet.appendChild(moreOptionsPanel);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       quickAdjustBackdrop.onclick=closeQuickAdjust;
       document.body.appendChild(quickAdjustBackdrop);
@@ -23574,8 +23715,10 @@
         }
       });
       function checkMastercardValidation(){
+        if(typeof updateQuickStepsUI==='function') updateQuickStepsUI();
         if (typeof updateWizardFooter === 'function') updateWizardFooter();
       }
+      updateQuickStepsUI();
       function triggerValidationError(btn){
         try{ if(window.userHasInteracted && navigator.vibrate) navigator.vibrate([50,50,50]); }catch(e){}
         var name=(w.data.dish||'').trim();
@@ -23682,7 +23825,7 @@
       var primaryValid = isPrimaryValid();
       function updateHeaderTitleByStep(step){
         if(!headerTitle) return;
-        headerTitle.textContent = step === 2 ? 'Dein Gericht' : 'Dein Gericht';
+        headerTitle.textContent = step === 2 ? 'Veröffentlichen' : 'Tagesessen';
       }
       function routeAfterSave(){
         var normalized = normalizeWizardEntryPoint(entryPoint);

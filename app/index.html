@@ -116,7 +116,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
-    <section class="view customer-view active" id="v-discover">
+    <section class="view customer-view active discover-smart-app" id="v-discover">
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
         <!-- Zeile 1: Minimalist – Standort links, Logo mittig, Kalender rechts [cite: 2026-02-20 Schritt 1.4] -->
@@ -181,8 +181,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         </div>
       </header>
 
-      <!-- Listenansicht ("Speisekarte") + Karten-Container (Overlay) – S25 Safe-Area -->
+      <!-- Listenansicht – Smart-App (ruhig, wenig Text) -->
       <main class="discover-main" style="position:relative;">
+        <div class="discover-hero" aria-labelledby="discoverHeroTitle">
+          <h1 id="discoverHeroTitle" class="discover-hero-title">Heute in deiner Nähe</h1>
+          <p class="discover-hero-sub">Frische Tagesessen zum Abholen.</p>
+        </div>
         <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; padding:0 0 8px;">
           <!-- Dynamisch befüllt -->
         </div>
@@ -214,11 +218,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <!-- Leerer Feed (Empty State): kein weißer Schirm – freundliche Ansage + Standort ändern -->
         <div id="discoverEmpty" style="display:none; text-align:center; padding:48px 24px 60px;">
-          <div style="width:160px; height:160px; margin:0 auto 24px; border-radius:24px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); background:#f8f9fa;">
-            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&amp;fit=crop&amp;w=400&amp;q=80" alt="" style="width:100%; height:100%; object-fit:cover;" loading="lazy" />
-          </div>
-          <h2 class="ds-empty-title" style="max-width:320px; margin-left:auto; margin-right:auto;">Hunger?</h2>
-          <p class="ds-body" style="line-height:1.6; margin-bottom:28px; max-width:320px; margin-left:auto; margin-right:auto;">Momentan gibt es keine aktiven Angebote in deiner Nähe. Schau später nochmal vorbei oder ändere deinen Standort.</p>
+          <h2 class="ds-empty-title discover-empty-title">Heute nichts in der Nähe</h2>
+          <p class="ds-body discover-empty-text">Standort anpassen oder später nochmal schauen.</p>
           <button class="btn-cust-primary" type="button" onclick="openDiscoverLocationSearch();" style="width:100%; max-width:280px; margin:0 auto;">
             <i data-lucide="map-pin" style="width:20px;height:20px;"></i>
             <span>Standort ändern</span>
@@ -623,15 +624,16 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
-    <section class="view customer-view" id="v-checkout">
-      <header class="cust-header-sticky">
+    <section class="view customer-view checkout-smart-app" id="v-checkout">
+      <header class="cust-header-sticky checkout-smart-header">
         <div class="customer-header-row">
-          <h1 class="customer-header-title">Bestellübersicht</h1>
+          <h1 class="customer-header-title">Checkout</h1>
         </div>
+        <p class="checkout-smart-sub">Kurz bestätigen – danach erhältst du deinen Abholcode.</p>
       </header>
       <div class="customer-main-wrap checkout-main-wrap">
         <div class="cust-card checkout-card">
-          <div id="checkoutSummary" class="checkout-summary-card">
+          <div id="checkoutSummary" class="checkout-summary-card checkout-summary-card--hero">
             <!-- Wird dynamisch befüllt -->
           </div>
 
@@ -675,22 +677,21 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <label class="checkout-label">E-Mail</label>
             <input type="email" id="checkoutEmail" placeholder="email@beispiel.de" class="checkout-input" />
           </div>
-          <p class="hint checkout-guest-note">Kein Account nötig: Du kannst direkt bestellen. Optional kannst du danach ein Profil anlegen, um Abholnummern und Belege wiederzufinden.</p>
+          <p class="hint checkout-guest-note checkout-smart-muted">Gastbestellung – kein Konto nötig.</p>
 
-          <div class="checkout-block">
-            <div id="checkoutPaymentMethods" class="checkout-payment-methods">
-              <button class="btn is-hidden" type="button" id="btnApplePay" aria-hidden="true">
-                <span style="font-size:20px;">🍎</span> Apple Pay
-              </button>
-              <button class="btn is-hidden" type="button" id="btnGooglePay" aria-hidden="true">
-                <span style="font-size:20px;">G</span> Google Pay
-              </button>
-              <button class="btn-cust-primary" type="button" id="btnStandardPayment">
-                <i data-lucide="credit-card"></i> <span>JETZT BEZAHLEN</span>
-              </button>
-            </div>
-          </div>
-
+        </div>
+      </div>
+      <div class="checkout-sticky-pay" id="checkoutStickyPay">
+        <div id="checkoutPaymentMethods" class="checkout-payment-methods">
+          <button class="btn is-hidden" type="button" id="btnApplePay" aria-hidden="true">
+            <span style="font-size:20px;">🍎</span> Apple Pay
+          </button>
+          <button class="btn is-hidden" type="button" id="btnGooglePay" aria-hidden="true">
+            <span style="font-size:20px;">G</span> Google Pay
+          </button>
+          <button class="btn-cust-primary checkout-pay-btn" type="button" id="btnStandardPayment">
+            <i data-lucide="credit-card"></i> <span>Jetzt bezahlen</span>
+          </button>
         </div>
       </div>
     </section>
@@ -698,40 +699,40 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <!-- CUSTOMER: Pickup Code (Dynamisch generiert) -->
     <div id="pickupCodeContainer"></div>
 
-    <!-- CUSTOMER: Erfolgs-Ansicht nach "JETZT BEZAHLEN" – Abholnummer im Fokus, clean, keine Schiefertafel -->
-    <section class="view customer-view content-padding-bottom-compact" id="v-order-success" style="display:none; padding:24px 16px; min-height:100vh; background:#f8fafc;">
-      <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
-        <!-- Status-Badge: Zahlung erfolgreich -->
-        <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;">
-          <span style="width:24px; height:24px; border-radius:50%; background:#22c55e; display:inline-flex; align-items:center; justify-content:center;"><i data-lucide="check" style="width:14px;height:14px;color:#fff;stroke-width:3;"></i></span>
-          <span style="font-size:14px; font-weight:700; color:#22c55e;">Zahlung erfolgreich</span>
-        </div>
-        <!-- Hero: Abholnummer extrem groß im gelben Container [cite: 2026-01-27] -->
-        <div id="orderSuccessSingleBlock" style="text-align:center; padding:28px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 100%); border-radius:20px; border:2px solid rgba(255,215,0,0.4); margin-bottom:24px; box-shadow:0 4px 20px rgba(255,215,0,0.15);">
-          <div class="ds-meta" style="font-size:14px; margin-bottom:8px;">Deine Abholnummer für den Tresen</div>
-          <div style="display:inline-flex; align-items:center; justify-content:center; gap:12px;">
-            <span class="ds-abholnummer-emoji">🧾</span>
-            <div id="orderSuccessAbholnummer">A1</div>
+    <!-- CUSTOMER: Abholpass nach Checkout – Code im Fokus (Boarding-Pass-Look) -->
+    <section class="view customer-view pickup-pass-screen content-padding-bottom-compact" id="v-order-success">
+      <div class="pickup-pass-page">
+        <div id="orderSuccessPassCard" class="pickup-pass-card pickup-pass-card--enter">
+          <p class="pickup-pass-kicker">Abholcode</p>
+          <div id="orderSuccessSingleBlock" class="pickup-pass-code-block">
+            <div id="orderSuccessAbholnummer" class="pickup-pass-code" aria-live="polite">A27</div>
           </div>
-        </div>
-        <div id="orderSuccessMultiBlock" style="display:none; margin-bottom:24px;"></div>
-        <!-- Visuelle Quittung: Thumbnail + Abhol-Details [cite: 2026-01-29] -->
-        <div id="orderSuccessDetailsCard" style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); margin-bottom:20px;">
-          <div style="display:flex; gap:16px; align-items:center;">
-            <div id="orderSuccessThumbWrap" style="width:80px; height:80px; border-radius:14px; overflow:hidden; flex-shrink:0; background:#f1f3f5;">
-              <img id="orderSuccessThumb" alt="" style="width:100%; height:100%; object-fit:cover;" />
+          <div id="orderSuccessMultiBlock" class="pickup-pass-multi is-hidden" aria-hidden="true"></div>
+          <p class="pickup-pass-hint">Code beim Abholen zeigen</p>
+          <div class="pickup-pass-meta">
+            <div class="pickup-pass-meta-row">
+              <span class="pickup-pass-meta-label">Gericht</span>
+              <span id="orderSuccessDish" class="pickup-pass-meta-value">–</span>
             </div>
-            <div style="flex:1; min-width:0;">
-              <div id="orderSuccessZeit" style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; color:#1a1a1a; margin-bottom:6px;"><span style="font-size:18px;">🕒</span> Abholbereit um 12:15 Uhr</div>
-              <div id="orderSuccessModus" style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#64748b;"><span style="font-size:18px;">🍴</span> Vor Ort essen</div>
-              <div id="orderSuccessVerpackung" style="display:none; align-items:center; gap:8px; font-size:14px; font-weight:600; color:#64748b; margin-top:4px;"><span style="font-size:18px;">🔄</span> Mehrweg-System</div>
+            <div class="pickup-pass-meta-row">
+              <span class="pickup-pass-meta-label">Anbieter</span>
+              <span id="orderSuccessProvider" class="pickup-pass-meta-value">–</span>
+            </div>
+            <div class="pickup-pass-meta-row">
+              <span class="pickup-pass-meta-label">Abholzeit</span>
+              <span id="orderSuccessZeit" class="pickup-pass-meta-value">–</span>
             </div>
           </div>
         </div>
-        <!-- Handlungsaufforderung [cite: 2026-01-26] -->
-        <p style="text-align:center; font-size:15px; font-weight:600; color:#475569; margin:0 0 24px; line-height:1.5;">Zeige diese Nummer einfach beim Abholen vor.</p>
-        <!-- Ein Button: Zurück/Erledigt -->
-        <button type="button" id="btnOrderSuccessDone" style="width:100%; min-height:52px; padding:0 20px; border-radius:16px; border:none; background:#FFD700; color:#1a1a1a; font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 0 0 #d1b600;">Zurück zur Übersicht</button>
+        <div id="orderSuccessDetailsCard" class="pickup-pass-legacy is-hidden" aria-hidden="true">
+          <div id="orderSuccessThumbWrap"><img id="orderSuccessThumb" alt="" /></div>
+          <div id="orderSuccessModus"></div>
+          <div id="orderSuccessVerpackung"></div>
+        </div>
+        <div class="pickup-pass-actions">
+          <button type="button" id="btnOrderSuccessDone" class="btn-cust-primary pickup-pass-btn-primary">Zurück zu Entdecken</button>
+          <button type="button" id="btnOrderSuccessShare" class="pickup-pass-btn-secondary">Teilen</button>
+        </div>
       </div>
     </section>
 
@@ -2636,20 +2637,20 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <i data-lucide="search"></i>
       <span>Entdecken</span>
     </button>
-    <button class="navbtn" data-go="fav">
-      <i data-lucide="heart"></i>
-      <span>Favoriten</span>
-      <span id="bottomNavFavBadge" style="position:absolute; top:4px; right:4px; background:#ef4444; color:#fff; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
-    </button>
     <button class="navbtn" data-go="cart" id="bottomNavBasketBtn">
       <i data-lucide="shopping-basket"></i>
-      <span>Mittagsbox</span>
+      <span>Box</span>
       <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
+    </button>
+    <button class="navbtn" data-go="orders">
+      <i data-lucide="receipt"></i>
+      <span>Abholcodes</span>
     </button>
     <button class="navbtn" data-go="profile">
       <i data-lucide="user"></i>
-      <span>Meins</span>
+      <span>Profil</span>
     </button>
+    <span id="bottomNavFavBadge" class="is-hidden" aria-hidden="true" style="display:none;"></span>
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
@@ -3086,34 +3087,41 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
 <!-- Abholnummer (bildschirmfüllend) -->
 <div class="backdrop" id="codeBd" onclick="closeCodeSheet()"></div>
-<div class="quick-abholnummer" id="codeSheet">
+<div class="quick-abholnummer pickup-pass-sheet" id="codeSheet">
   <button class="quick-abholnummer-close" onclick="closeCodeSheet()" aria-label="Schließen">
     <i data-lucide="x"></i>
   </button>
   <div class="quick-abholnummer-content">
-    <div class="quick-abholnummer-header">
+    <div class="pickup-pass-card pickup-pass-card--sheet pickup-pass-card--enter" id="codeSheetPassCard">
+      <p class="pickup-pass-kicker">Abholcode</p>
+      <div class="quick-abholnummer-code pickup-pass-code-wrap">
+        <div class="quick-abholnummer-code-value pickup-pass-code" id="codeText">A27</div>
+      </div>
+      <p class="pickup-pass-hint">Code beim Abholen zeigen</p>
+      <div class="pickup-pass-meta pickup-pass-meta--sheet">
+        <div class="pickup-pass-meta-row">
+          <span class="pickup-pass-meta-label">Gericht</span>
+          <span class="quick-abholnummer-detail-value pickup-pass-meta-value" id="codeSummary">–</span>
+        </div>
+        <div class="pickup-pass-meta-row">
+          <span class="pickup-pass-meta-label">Anbieter</span>
+          <span class="quick-abholnummer-provider pickup-pass-meta-value" id="codeProvider">Anbieter</span>
+        </div>
+        <div class="pickup-pass-meta-row">
+          <span class="pickup-pass-meta-label">Abholzeit</span>
+          <span class="quick-abholnummer-detail-value pickup-pass-meta-value" id="codePickupTime">–</span>
+        </div>
+      </div>
+    </div>
+    <div class="pickup-pass-sheet-legacy is-hidden" aria-hidden="true">
       <div class="quick-abholnummer-logo" id="codeProviderLogo"></div>
-      <div class="quick-abholnummer-provider" id="codeProvider">Anbieter</div>
-      <div class="quick-abholnummer-time" id="codePickupWindow">Essenszeit: –</div>
-    </div>
-    <div class="quick-abholnummer-code">
-      <div class="quick-abholnummer-code-label">Abholnummer</div>
-      <div class="quick-abholnummer-code-value" id="codeText">A1</div>
-    </div>
-    <div class="quick-abholnummer-details">
-      <div class="quick-abholnummer-detail-item">
-        <div class="quick-abholnummer-detail-label">Gericht</div>
-        <div class="quick-abholnummer-detail-value" id="codeSummary">–</div>
-      </div>
-      <div class="quick-abholnummer-detail-item">
-        <div class="quick-abholnummer-detail-label">Abholzeit</div>
-        <div class="quick-abholnummer-detail-value" id="codePickupTime">offen</div>
+      <div class="quick-abholnummer-time" id="codePickupWindow"></div>
+      <div class="quick-abholnummer-status" id="codeStatus"></div>
+      <div class="quick-abholnummer-actions">
+        <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
       </div>
     </div>
-    <div class="quick-abholnummer-status" id="codeStatus">Status: offen</div>
-    <div class="quick-abholnummer-actions">
-      <button class="btn" type="button" id="btnToggleOrderStatus">Als abgeholt markieren</button>
-    </div>
+    <button type="button" id="btnCodeSheetShare" class="pickup-pass-btn-secondary pickup-pass-sheet-share">Teilen</button>
   </div>
 </div>
 

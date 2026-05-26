@@ -631,6 +631,7 @@
     if(!order) return;
     const code = order.pickupCode || order.code || '';
     window.activeOrderId = order.id;
+    window.currentPickupOrderId = order.id;
     const codeTextEl = document.getElementById('codeText');
     const codeProviderEl = document.getElementById('codeProvider');
     const codeSummaryEl = document.getElementById('codeSummary');
@@ -640,11 +641,17 @@
     const btnToggle = document.getElementById('btnToggleOrderStatus');
     const isPickedUp = order.status === 'PICKED_UP' || order.status === 'abgeholt';
     var offers = window.offers || [];
-    if(codeTextEl) codeTextEl.textContent = code || '–';
+    var pickupTimeLabel = '';
+    if(order.pickupWindow) pickupTimeLabel = String(order.pickupWindow);
+    else if(order.pickupTime || order.abholzeit || order.etaTime){
+      var pt = order.pickupTime || order.abholzeit || order.etaTime;
+      pickupTimeLabel = /uhr/i.test(String(pt)) ? String(pt) : String(pt) + ' Uhr';
+    } else pickupTimeLabel = '–';
+    if(codeTextEl) codeTextEl.textContent = String(code || '–').replace(/^#/, '');
     if(codeProviderEl) codeProviderEl.textContent = order.providerName || 'Anbieter';
     if(codeSummaryEl) codeSummaryEl.textContent = order.dishName || order.summary || '–';
-    if(codePickupWindowEl) codePickupWindowEl.textContent = order.pickupWindow ? 'Essenszeit: ' + order.pickupWindow : 'Essenszeit: –';
-    if(codePickupTimeEl) codePickupTimeEl.textContent = order.pickupTime || 'offen';
+    if(codePickupWindowEl) codePickupWindowEl.textContent = order.pickupWindow ? 'Essenszeit: ' + order.pickupWindow : '';
+    if(codePickupTimeEl) codePickupTimeEl.textContent = pickupTimeLabel;
     if(codeStatusEl) codeStatusEl.textContent = isPickedUp ? 'Status: abgeholt' : 'Status: offen';
     if(btnToggle) btnToggle.textContent = isPickedUp ? 'Als offen markieren' : 'Als abgeholt markieren';
     const logoEl = document.getElementById('codeProviderLogo');
@@ -652,6 +659,19 @@
       const offer = offers.length ? offers.find(o => o.providerName === order.providerName) : null;
       if(offer && offer.providerLogo) logoEl.innerHTML = '<img src="' + (offer.providerLogo || '') + '" alt="Logo" />';
       else logoEl.innerHTML = '';
+    }
+    const passCard = document.getElementById('codeSheetPassCard');
+    if(passCard){
+      passCard.classList.remove('pickup-pass-card--enter');
+      void passCard.offsetWidth;
+      passCard.classList.add('pickup-pass-card--enter');
+    }
+    const btnShare = document.getElementById('btnCodeSheetShare');
+    if(btnShare){
+      btnShare.onclick = function(){
+        if(typeof window.shareOrderConfirmation === 'function') window.shareOrderConfirmation(order);
+        else if(typeof shareOrderConfirmation === 'function') shareOrderConfirmation(order);
+      };
     }
     document.getElementById('codeBd').classList.add('active');
     document.getElementById('codeSheet').classList.add('active');
