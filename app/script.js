@@ -10409,8 +10409,6 @@
       };
     }
     restartPickupPassEnterAnimation(passCard);
-    if(typeof triggerHapticFeedback === 'function') triggerHapticFeedback([10, 20, 10]);
-    else if(typeof vibrate === 'function') vibrate(12);
     if(typeof lucide !== 'undefined') lucide.createIcons();
     showView(views.orderSuccess);
     setCustomerNavActive('cart');
@@ -21571,9 +21569,9 @@
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor inserat-quick-flow inserat-applite';
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor inserat-quick-flow';
       box.setAttribute('data-inserat-card','true');
-      if(wizardRoot) wizardRoot.classList.add('inserat-quick-flow','inserat-applite');
+      if(wizardRoot) wizardRoot.classList.add('inserat-quick-flow');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header mastercard-header';
@@ -21655,11 +21653,11 @@
         ));
         var step2Kicker=document.createElement('div');
         step2Kicker.className='step2-review-kicker';
-        step2Kicker.textContent=isWeekPlannerContext ? 'Woche' : 'Live';
+        step2Kicker.textContent=isWeekPlannerContext ? 'Wochenplan' : 'Dein Inserat';
         step2Wrap.appendChild(step2Kicker);
         var step2Header=document.createElement('h3');
         step2Header.className='step2-review-title step2-review-title--money';
-        step2Header.textContent=isWeekPlannerContext ? 'Modell' : 'Veröffentlichen';
+        step2Header.textContent=isWeekPlannerContext ? 'So planst du diese Woche live' : 'So gehst du heute live';
         step2Header.style.cssText='margin:0; padding:4px 20px 8px; font-size:22px; font-weight:900; color:#111827;';
         step2Wrap.appendChild(step2Header);
         var stampCard=document.createElement('div');
@@ -21669,8 +21667,7 @@
         step2Wrap.appendChild(stampCard);
         var optionsLabel=document.createElement('div');
         optionsLabel.className='step2-options-label';
-        optionsLabel.textContent='';
-        optionsLabel.setAttribute('aria-hidden','true');
+        optionsLabel.textContent=isWeekPlannerContext ? 'Wähle dein Wochenplan-Modell' : 'Wähle dein Modell';
         step2Wrap.appendChild(optionsLabel);
         var tilesWrap=document.createElement('div');
         tilesWrap.className='step2-floating-tiles';
@@ -21678,17 +21675,21 @@
         var weekDaysCount = (Array.isArray(w.ctx && w.ctx.bulkDraftDates) && w.ctx.bulkDraftDates.length > 0) ? w.ctx.bulkDraftDates.length : (isWeekPlannerContext ? 1 : 0);
         var weekFixkosten = weekDaysCount > 0 ? weekDaysCount * 4.99 : 4.99;
         var weekFixkostenText = (typeof euro === 'function') ? euro(weekFixkosten) : weekFixkosten.toFixed(2).replace('.',',') + ' €';
-        var standardTileTitle = isWeekPlannerContext ? 'Woche fix' : 'Nur Inserat';
+        var standardTileTitle = isWeekPlannerContext ? 'Wochenplan Standard' : 'Standard-Inserat';
+        var standardTileSub = isWeekPlannerContext ? 'Diese Woche wird als Standard-Inserat aktiviert.' : 'Dein Gericht wird veröffentlicht.';
+        var pickupTileSub = isWeekPlannerContext ? 'Mit Abholnummer je Gericht (0,89 € pro Vorgang)' : 'Inklusive Abholnummer (0,89 € pro Vorgang)';
+        var standardTileImpact = isWeekPlannerContext ? ('Fixkosten: ' + weekFixkostenText + ' für ' + weekDaysCount + ' Tag' + (weekDaysCount === 1 ? '' : 'e')) : 'Fixkosten: 4,99 € einmalig';
+        var pickupTileImpact = 'Kosten nur bei Verkauf: 0,89 € je Abholnummer';
         var tileStandard=document.createElement('button');
         tileStandard.type='button';
         tileStandard.className='step2-choice-tile service-tile-card';
         tileStandard.setAttribute('data-tile','standard');
-        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">'+esc(standardTileTitle)+'</div><div class="step2-choice-price tile-price">4,99 €</div></div>';
+        tileStandard.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><div class="step2-choice-row"><div class="step2-choice-head">'+esc(standardTileTitle)+'</div><div class="step2-choice-price tile-price">4,99 €</div></div><div class="step2-choice-sub">'+esc(standardTileSub)+'</div><div class="step2-choice-impact">'+esc(standardTileImpact)+'</div>';
         var tilePickup=document.createElement('button');
         tilePickup.type='button';
         tilePickup.className='step2-choice-tile service-tile-card has-recommendation';
         tilePickup.setAttribute('data-tile','pickup');
-        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">Top</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Mit Abholnummer</div><button type="button" class="step2-info-btn" aria-label="Info Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div>';
+        tilePickup.innerHTML='<span class="step2-choice-check" aria-hidden="true">✓</span><span class="step2-badge-best badge-bestseller badge-recommendation">EMPFEHLUNG</span><div class="step2-choice-row"><div class="step2-choice-head-wrap"><div class="step2-choice-head step2-feature-title">Stressfrei-Autopilot 🚀</div><button type="button" class="step2-info-btn" aria-label="Info zu Abholnummer" title="Info">ⓘ</button></div><div class="step2-choice-price tile-price step2-feature-price">0,00 €</div></div><div class="step2-choice-sub">'+esc(pickupTileSub)+'</div><div class="step2-choice-impact">'+esc(pickupTileImpact)+'</div><div class="step2-feature-pills"><span class="step2-feature-pill">Kontaktlose Bezahlung</span><span class="step2-feature-pill">Planbarkeit</span><span class="step2-feature-pill">Weniger Chaos</span></div>';
         tilesWrap.appendChild(tileStandard);
         tilesWrap.appendChild(tilePickup);
         step2Wrap.appendChild(tilesWrap);
@@ -21712,7 +21713,7 @@
         popoverBackdrop.id = 'popover-backdrop';
         var infoPopover = document.createElement('div');
         infoPopover.id = 'info-popover';
-        infoPopover.innerHTML = '<button type="button" class="step2-popover-close" aria-label="Schließen">×</button><h4 class="step2-popover-title">Abholnummer</h4><div class="step2-popover-body">Gäste zahlen online. Du scannst nur die Abholnummer – 0,89 € pro Vorgang.</div>';
+        infoPopover.innerHTML = '<button type="button" class="step2-popover-close" aria-label="Schließen">×</button><h4 class="step2-popover-title">So funktioniert der Stressfrei-Modus 🛡️</h4><div class="step2-popover-body">1. Sicherer Verkauf: Kunden zahlen vorab online – kein Risiko bei Nicht-Abholung.<br>2. Schnelle Übergabe: Du scannst nur die Abholnummer – fertig.<br>3. Automatische Abrechnung: Kein Hantieren mit Bargeld oder Wechselgeld.<br><br>Du konzentrierst dich aufs Kochen, wir erledigen den Rest.</div>';
         document.body.appendChild(popoverBackdrop);
         document.body.appendChild(infoPopover);
         function openInfoPopover() {
@@ -21842,7 +21843,7 @@
         step3Content.className='inserat-step3-content';
         var successHeader=document.createElement('h2');
         successHeader.className='step3-success-title';
-        successHeader.textContent='Live 🚀';
+        successHeader.textContent='Glückwunsch! Dein Inserat ist live! 🚀';
         step3Content.appendChild(successHeader);
         var liveStatusCard=document.createElement('div');
         liveStatusCard.className='live-status-card';
@@ -21859,7 +21860,7 @@
         waShareBtn.type='button';
         waShareBtn.className='step3-whatsapp-btn';
         waShareBtn.id='step3WhatsAppShare';
-        waShareBtn.innerHTML='Teilen';
+        waShareBtn.innerHTML='Auf WhatsApp teilen 🟢';
         waShareBtn.onclick=function(){ hapticLight(); if(typeof triggerLiveSharing==='function') triggerLiveSharing(); };
         step3Content.appendChild(waShareBtn);
         step3Pane.appendChild(step3Content);
@@ -21872,12 +21873,12 @@
         btnNewListing.type='button';
         btnNewListing.className='step3-new-listing-btn';
         btnNewListing.id='step3NewListing';
-        btnNewListing.textContent='Neu';
+        btnNewListing.textContent='Neues Inserat erstellen';
         var btnOverview=document.createElement('button');
         btnOverview.type='button';
         btnOverview.className='step3-overview-link';
         btnOverview.id='step3OverviewLink';
-        btnOverview.textContent='Dashboard';
+        btnOverview.textContent='Zur Übersicht';
         step3Footer.appendChild(btnNewListing);
         step3Footer.appendChild(btnOverview);
         step3Footer.classList.add('inserat-step1-nav');
@@ -21998,7 +21999,7 @@
         var placeholderCenter=document.createElement('div');
         placeholderCenter.className='inserat-photo-placeholder-center';
         placeholderCenter.style.cssText='position:absolute; inset:0; pointer-events:none;';
-        placeholderCenter.innerHTML='<button type="button" class="inserat-photo-empty-upload-btn">📷 Foto</button>';
+        placeholderCenter.innerHTML='<button type="button" class="inserat-photo-empty-upload-btn">Foto hinzufügen</button>';
         var emptyUploadBtn=placeholderCenter.querySelector('.inserat-photo-empty-upload-btn');
         if(emptyUploadBtn){
           emptyUploadBtn.onclick=function(e){
@@ -22841,7 +22842,7 @@
       inputDish.rows=1;
       inputDish.className='ghost-input inserat-detail-style-title magnet-input inserat-gericht-name-extra input-giant-name inserat-name-textarea';
       inputDish.value=w.data.dish||'';
-      inputDish.placeholder='Name';
+      inputDish.placeholder='Gerichtname';
       inputDish.autocomplete='off';
       inputDish.style.cssText='flex:1; color:#1a1a1a; font-family:system-ui,-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif; font-size:28px; font-weight:800; font-style:normal; box-sizing:border-box; border:none; border-bottom:1px solid #ebebeb; background:transparent; outline:none; padding-right:32px; padding-top:4px; padding-bottom:10px; resize:none; overflow:hidden; min-height:44px; text-align:center;';
       function adjustTitleFontSize(){
@@ -22869,11 +22870,10 @@
       var quickStepsBar=document.createElement('div');
       quickStepsBar.className='inserat-quick-steps';
       quickStepsBar.setAttribute('aria-label','Schritte');
-      ['📷','🍽','€','🕒'].forEach(function(label, idx){
+      ['Foto','Name','Preis','Abholzeit'].forEach(function(label, idx){
         var stepEl=document.createElement('span');
         stepEl.className='inserat-quick-step';
         stepEl.setAttribute('data-quick-step', String(idx + 1));
-        stepEl.setAttribute('aria-label',['Foto','Name','Preis','Abholzeit'][idx]);
         stepEl.textContent=label;
         quickStepsBar.appendChild(stepEl);
       });
@@ -22895,7 +22895,7 @@
 
       var quickPickupSection=document.createElement('div');
       quickPickupSection.className='inserat-quick-pickup';
-      quickPickupSection.innerHTML='<label class="inserat-quick-pickup-label">Zeit</label>';
+      quickPickupSection.innerHTML='<label class="inserat-quick-pickup-label">Abholzeit</label>';
       var quickPickupRow=document.createElement('div');
       quickPickupRow.className='inserat-quick-pickup-row';
       var quickPwParts=(w.data.pickupWindow||profileWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
@@ -22935,7 +22935,7 @@
       btnMoreOptions.type='button';
       btnMoreOptions.className='inserat-more-options-toggle';
       btnMoreOptions.setAttribute('aria-expanded','false');
-      btnMoreOptions.textContent='Mehr';
+      btnMoreOptions.textContent='Weitere Optionen';
       btnMoreOptions.onclick=function(){
         hapticLight();
         var open=moreOptionsPanel.classList.contains('is-hidden');
@@ -22957,7 +22957,7 @@
       var descriptionTextarea=document.createElement('textarea');
       descriptionTextarea.id='gerichtDesc';
       descriptionTextarea.className='input-description';
-      descriptionTextarea.placeholder='Beschreibung (optional)';
+      descriptionTextarea.placeholder='Zutaten oder Besonderheiten...';
       descriptionTextarea.value=w.data.description||'';
       descriptionTextarea.style.cssText='width:100%; border:none; font-size:14px; color:#64748b; resize:none; padding:4px 0 2px 0; margin:0; text-align:center; background:transparent; outline:none; box-sizing:border-box; min-height:36px; max-height:96px; overflow-y:auto;';
       descriptionTextarea.oninput=function(){ w.data.description=descriptionTextarea.value; saveDraft(); };
@@ -23653,7 +23653,7 @@
       var btnSaveInMore=document.createElement('button');
       btnSaveInMore.type='button';
       btnSaveInMore.className='inserat-more-options-save';
-      btnSaveInMore.textContent='Kochbuch';
+      btnSaveInMore.textContent='Im Kochbuch speichern';
       btnSaveInMore.onclick=function(){
         var link=document.getElementById('btnSpeichernKochbuch');
         if(link) link.click();
@@ -26270,26 +26270,9 @@
   if(typeof window !== 'undefined'){ window.RESTORE_SCROLL_KEY = RESTORE_SCROLL_KEY; window.getScrollElForView = getScrollElForView; }
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
-  function resetTransientOverlaysOnBoot(){
-    var overlaySheetIds = ['wizard', 'favShareChoiceSheet', 'saveSuccessSheet', 'inseratSuccessSheet', 'quickPostSheet', 'publishFeeSheet', 'abholnummerExplainSheet', 'createFlowSheet'];
-    var overlayBdIds = ['wbd', 'favShareChoiceBd', 'saveSuccessSheetBd', 'inseratSuccessBd', 'quickPostBd', 'publishFeeBd', 'abholnummerExplainBd', 'createFlowBd'];
-    overlaySheetIds.forEach(function(id){
-      var el = document.getElementById(id);
-      if(el) el.classList.remove('active');
-    });
-    overlayBdIds.forEach(function(id){
-      var el = document.getElementById(id);
-      if(el) el.classList.remove('active');
-    });
-    if(document.body){
-      document.body.classList.remove('wizard-inserat-open', 'vendor-area', 'create-flow-open');
-    }
-  }
-
   function initApp(){
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
-    resetTransientOverlaysOnBoot();
     // Reload-Policy: App startet immer im Kundenmodus auf Discover.
     mode = 'customer';
     try {

@@ -666,8 +666,6 @@
       void passCard.offsetWidth;
       passCard.classList.add('pickup-pass-card--enter');
     }
-    if(typeof window.triggerHapticFeedback === 'function') window.triggerHapticFeedback([10]);
-    else if(typeof window.vibrate === 'function') window.vibrate(10);
     const btnShare = document.getElementById('btnCodeSheetShare');
     if(btnShare){
       btnShare.onclick = function(){

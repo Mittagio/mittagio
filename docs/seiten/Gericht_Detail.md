@@ -1,7 +1,7 @@
 # Gericht-Detail
 
 **Sheet** (Tap auf Discovery-Kachel) · Kundenseite  
-**Stand:** 26.05.2026
+**Stand:** 08.04.2026
 
 ---
 
@@ -51,10 +51,3 @@ Die Detailansicht folgt exakt der visuellen Sprache der Discovery-Kachel (Market
 
 - Das Share-Sheet im Kundenfluss verwendet neutrale, kontaktorientierte Texte.
 - Kein `Teile es mit deinen Kunden` mehr; stattdessen Formulierungen wie `Teile es mit Freunden`/`Kontakten`.
-
-## Phase 7 – Applike Gericht-Detail (26.05.2026)
-
-- **Scope:** Nur UI auf `#sheet` (Gericht-Detail-Sheet); `openOffer`/CTA-Logik unverändert.
-- **Klassen:** `phase7-applite sheet-detail-phase7` am Sheet.
-- **Copy:** Header „Gericht“, Anbieter-Hint „Anbieter“, Extras-Hint „Extras optional · Preis live“, Distanz-Meta gekürzt.
-- **Layout:** Hero 20px Radius, CTA/Footer-Icons min. 52–56px, stärkere Typo beim Titel.

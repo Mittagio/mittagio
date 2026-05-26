@@ -32,8 +32,3 @@ Eigene Seite nur für favorisierte Anbieter, getrennt von den Gericht-Favoriten.
 - Kunden-Header ist sticky/shrink wie bei `Favoriten`, `Mittagsbox`, `Meins`
 - Zurück-Button oben rechts führt zurück zu `Meins`
 - Änderungen an Anbieter-Favoriten werden live übernommen (Discover, Favoriten, Lieblingsanbieter-Seite, Profil)
-
-## Update: Phase 2 Relaunch (26.05.2026)
-
-- Karten- und Empty-State-Oberflaechen sind auf den neuen Premium-Customer-Standard angehoben.
-- Die Seite ist dadurch visuell deckungsgleich mit den uebrigen Customer-Screens, ohne Verhaltensaenderung.

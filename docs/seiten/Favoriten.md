@@ -83,9 +83,3 @@ Wenn keine Favoriten vorhanden sind, ist der Text vom Modus abhängig:
 - Der Badge aktualisiert sich direkt beim Hinzufügen/Entfernen von Favoriten.
 - Gezählt werden **Gerichtsfavoriten + Lieblingsanbieter**.
 - Bei `0` Favoriten ist der Badge ausgeblendet.
-
-## Update: Phase 2 Relaunch (26.05.2026)
-
-- Favoriten-Karten und Empty-States sind als einheitliche Premium-Cards mit staerkerer visueller Hierarchie umgesetzt.
-- Grid-Abstaende und Kartentiefe wurden harmonisiert, damit die Seite ruhiger und app-like wirkt.
-- Die Seite verwendet denselben Surface-Look wie Mittagsbox, Checkout und Meins.

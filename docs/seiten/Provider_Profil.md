@@ -108,9 +108,3 @@ Anbieter-Profil: Betriebsdaten, Einstellungen, Rechtliches, Support, Abmelden.
 - Resttexte im Anbieterbereich wurden auf denselben Sprachstandard gebracht (`v-legal-agb-onboarding`, Support-FAQ-Accordion, Legacy-FAQ-Block `provFaqBox`).
 - Preis- und Abrechnungslogik ist nun in allen Anbieter-Texten konsistent (kein Mischbild aus Alt- und Neulogik).
 - Übergreifende Formulierungen wurden auf klare, sachliche Aussagen reduziert; doppelte oder widersprüchliche Aussagen wurden entfernt.
-
-## Phase 6 – Applike Profil (26.05.2026)
-
-- **Scope:** Nur Optik auf `#v-provider-profile`; Einstellungen, KPIs und Profil-Logik unverändert.
-- **Klassen:** `phase6-applite`.
-- **Layout:** Mein-Betrieb-Kachel, Säulen und Settings-Zeilen mit 18px Radius, min. 56px Touch-Höhe.

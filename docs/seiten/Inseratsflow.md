@@ -1,7 +1,7 @@
 # Inseratsflow
 
 **Sheet-ID:** `#wizard` (kind=listing) · Anbieterseite  
-**Stand:** 26.05.2026
+**Stand:** 18.03.2026
 
 ---
 
@@ -211,11 +211,3 @@ Visuelle Zielvorgabe (nur Optik, Schritte und Inhalt unverändert):
 - **Step2 Kachelgröße nachjustiert:** Die untere Empfehlungs-Kachel ist wieder größer (`min-height` erhöht), die Standard-Kachel ebenfalls leicht angehoben, damit die Hierarchie auf Mobile klarer bleibt.
 - **Step2 CTA Trigger-Hardening:** Der Publish-CTA nutzt jetzt einen deduplizierten `click`+`touchend`-Handler mit Guard (`300ms`), damit Tap-Eingaben auf mobilen Geräten zuverlässig auslösen und nicht durch Event-Kollisionen verloren gehen.
 - **Step2 Adress-Guard Sync (31.03.2026):** Die Adressprüfung im `Küche entlasten`-Handler akzeptiert jetzt auch ein gefülltes kombiniertes Profilfeld `address` (nicht nur `street/zip/city`). Dadurch blockiert der CTA nicht mehr fälschlich, wenn die Adresse in „Meine Daten“ als ein Feld gepflegt wurde.
-
-## Update: Phase 4 Applike-UI (26.05.2026)
-
-- **Nur Optik/Text:** Validierung, `selectPricing`, Publish und Speichern-Logik bleiben unverändert.
-- **Schritt 1:** Fortschritt als Icon-Leiste (📷 🍽 € 🕒), kürzere Labels (`Name`, `Zeit`, `Mehr`, `Kochbuch`), weniger Preis-Hilfetexte.
-- **Schritt 2:** Kacheln kompakt (`Nur Inserat` / `Mit Abholnummer`), ohne lange Subtexte, Bullets und Vergleichszeilen.
-- **Schritt 3:** Kurztexte (`Live`, `Teilen`, `Neu`, `Dashboard`).
-- **CSS-Klasse:** `inserat-applite` auf `#wizard[data-flow="listing"]` und InseratCard-Container.
