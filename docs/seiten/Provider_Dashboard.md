@@ -1,7 +1,7 @@
 # Provider Dashboard (Meine Küche)
 
 **View-ID:** `v-provider-home` · Anbieterseite  
-**Stand:** 14.02.2026
+**Stand:** 26.05.2026
 
 ---
 
@@ -178,3 +178,11 @@ Zentrale Anbieter-Startseite: Tagesumsatz, Bestellungen, Tagesessen, Wochenvorsc
 - Ursache: Beim Wechsel in Customer-Views wurden auf `#providerNavWrap` Inline-Styles mit `pointer-events: none` gesetzt; beim Rückwechsel in den Anbieterkontext blieben diese Rest-Styles teilweise bestehen.
 - Fix in `app/script.js` (`syncWeekFooterVisibility()`): Im Nicht-Customer-Zweig werden die betroffenen Inline-Styles (`display`, `visibility`, `pointer-events`) auf `#providerNavWrap` wieder entfernt; zusätzlich werden für `#providerNav` und `#customerNav` die temporären Inline-Sichtbarkeitswerte zurückgesetzt.
 - Ergebnis: Die Bottom-Navigation folgt wieder ausschließlich dem regulären Provider-State und ist in `Dashboard`, `Abholnummern`, `Wochenplan`, `Kochbuch` und `Profil` erneut zuverlässig klickbar.
+
+## Phase 5 – Applike Dashboard (UI/UX Relaunch, 26.05.2026)
+
+- **Scope:** Nur Optik und Microcopy auf `#v-provider-home`; keine Logik- oder Nav-Änderungen.
+- **Klassen:** `phase5-applite` auf der Section; Styles in `app/style.css` (Block „Phase 5“).
+- **Copy:** Kürzere Banner- und Empty-State-Texte, „Heute“, „Inserieren · 4,99 €“, kompakter Wochenplan-CTA.
+- **Layout:** KPI-Karten und Tagesessen-Karten mit größeren Touch-Zielen, weicheren Schatten, 16–20px Radius (S25).
+- **Funktion:** FAB, Renner, Blitz, Wochenplan-Links unverändert; Provider-Bottom-Nav bleibt 5 Tabs in fester Reihenfolge.

@@ -1,7 +1,7 @@
 # Support
 
 **View-ID:** `v-support` · Gemeinsam  
-**Stand:** 05.05.2026 (abends)
+**Stand:** 26.05.2026
 
 ---
 
@@ -77,3 +77,10 @@ Support-Seite für Kunden mit reduziertem, klaren Aufbau.
 
 - Beim Oeffnen von `Support`/Kunden-Rechtsseiten setzt `showLegalPage(...)` den `weekViewFooter` zusaetzlich per Inline-Style auf `display:none !important`.
 - Gleichzeitig werden `provider-mode`, `provider-week-active` und `week-footer-visible` im Body entfernt, damit die Leiste nicht mehr in den Kundenfluss hineinleakt.
+
+## Phase 5 – Applike Support (UI/UX Relaunch, 26.05.2026)
+
+- **Scope:** Nur UI auf `#v-support`; Submit- und FAQ-Routing unverändert.
+- **Klassen:** `phase5-applite` auf der View; Formular-Styles im Phase-5-Block in `app/style.css`.
+- **Copy:** Kürzere Labels („FAQ“, „Kontakt“, „Senden“), kompaktere Select-Optionen, weniger Hilfstext.
+- **Layout:** Große Touch-Felder (min. 60px), Karten-Surface, ruhiger Abstand; keine Tabellen-Optik.

@@ -132,3 +132,9 @@
 - Der Settings-Eintrag `App herunterladen` nutzt ebenfalls ein Lucide-Icon (`smartphone`) statt Emoji.
 - Die Rechtslinks `AGB · Datenschutz · Impressum` sind im Footer als zentrierter Inline-Block (`fit-content`) mittig ausgerichtet.
 - Die Footer-Zentrierung der Rechtslinks wird zusätzlich direkt am Markup erzwungen (`display:flex; justify-content:center; width:100%`), damit es auf mobilen Browsern zuverlässig mittig bleibt.
+
+## Update: Phase 2 Relaunch (26.05.2026)
+
+- Quick-Action-Tiles und Bestellkarte sind visuell auf denselben Premium-Card-Standard wie Favoriten/Mittagsbox gebracht.
+- Vertikale Rhythmen zwischen Kachelblock und Bestellungen wurden nachgezogen, um den Screen ruhiger zu machen.
+- Header- und Funktionslogik bleiben unveraendert; es handelt sich um ein reines UI-Finish.

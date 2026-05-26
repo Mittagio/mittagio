@@ -84,3 +84,10 @@ Admin-Dashboard: KPIs, Inserats-Feed, Buchhaltung, CSV-Export und Pflege-Entry f
 - **Login-Precheck:** Im Anbieter-Login wird sofort angezeigt, ob die eingegebene E-Mail freigeschaltet ist.
 - **Login-Button-Lock:** `Einloggen` bleibt deaktiviert, bis die E-Mail in der Anbieterbasis freigeschaltet ist.
 - **Testpasswort:** Für freigeschaltete Testanbieter gilt Passwort `admin` (Demo-Account bleibt separat).
+
+## Phase 7 – Applike Admin (26.05.2026)
+
+- **Scope:** Nur Optik und Microcopy auf `#v-admin`; KPI-/CSV-/Freischaltungs-Logik unverändert (Buchhaltungs-Tabelle bleibt).
+- **Klassen:** `phase7-applite`.
+- **Copy:** Titel „Admin“, kürzere Intro-Zeile, kompaktere Aktions-Buttons und Checkliste.
+- **Layout:** KPI- und Anbieter-Karten mit 18px Radius, Touch-Buttons min. 48px, Preview-Liste als Kartenzeilen.

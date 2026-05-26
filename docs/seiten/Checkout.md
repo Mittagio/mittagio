@@ -55,3 +55,14 @@ Kasse: Name, Abholzeit, Zahlung (Stripe/Demo). Abholnummer-Option 0,89 €.
 
 - Kein Account nötig (Gast)
 - Nach Zahlung → Abholnummer-Ansicht
+
+## Feinschliff R2 (26.05.2026)
+
+- Subtitle: „danach deine Abholnummer“ (kein „Abholcode“).
+- Typo/Spacing am `checkout-smart-sub` harmonisiert.
+
+## Update: Phase 2 Relaunch (26.05.2026)
+
+- Checkout-Card und Eingabefelder wurden auf den gemeinsamen Premium-Surface umgestellt.
+- Sticky-Payment-Bereich nutzt jetzt denselben Glas-Layer-Stil wie die restliche Customer-Navigation.
+- Keine Logikaenderung im Payment-Flow; nur UI-Harmonisierung (Card, Inputs, Abstaende).

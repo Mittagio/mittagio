@@ -116,7 +116,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Discover - App-like UX (Final Spec) -->
-    <section class="view customer-view active discover-smart-app" id="v-discover">
+    <section class="view customer-view active discover-smart-app phase2-customer" id="v-discover">
       <!-- Modern Sticky Header: Standort links, MITTAGIO weiß zentriert, Filter darunter sticky -->
       <header class="cust-header-sticky discover-header-sticky">
         <!-- Zeile 1: Minimalist – Standort links, Logo mittig, Kalender rechts [cite: 2026-02-20 Schritt 1.4] -->
@@ -185,7 +185,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <main class="discover-main" style="position:relative;">
         <div class="discover-hero" aria-labelledby="discoverHeroTitle">
           <h1 id="discoverHeroTitle" class="discover-hero-title">Heute in deiner Nähe</h1>
-          <p class="discover-hero-sub">Frische Tagesessen zum Abholen.</p>
+          <p class="discover-hero-sub">Frisch · zum Abholen</p>
         </div>
         <div id="discoverOffers" class="discover-offers-list" style="display:flex; flex-direction:column; padding:0 0 8px;">
           <!-- Dynamisch befüllt -->
@@ -235,9 +235,9 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Provider-Billing: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-provider-billing" style="min-height:100vh; padding:20px;">
+    <section class="view content-padding-bottom-compact phase6-applite" id="v-provider-billing" style="min-height:100vh; padding:20px;">
       <div class="provider-header-bar">
-        <h1>Finanzen & Abrechnung</h1>
+        <h1>Finanzen</h1>
         <button id="btnBillingBack" class="btn-back" type="button">
           <i data-lucide="chevron-left" style="width:24px; height:24px;"></i> Zurück
         </button>
@@ -265,7 +265,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="billingTodayList" style="display:flex; flex-direction:column; gap:8px;">
           <!-- Heute verkaufte Abholnummern -->
         </div>
-        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Für heute sind noch keine Umsätze erfasst.</div>
+        <div id="billingTodayEmpty" class="hint" style="color:#64748b; text-align:center; padding:16px 0; display:none;">Heute noch keine Umsätze.</div>
       </div>
 
       <!-- Karte 3: Meine Abrechnungen -->
@@ -274,21 +274,21 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div id="billingList" style="display:flex; flex-direction:column; gap:0;">
           <!-- Zeilen: Datum, Posten, Betrag, PDF-Icon – wird von renderBilling befüllt -->
         </div>
-        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Sobald Umsätze vorliegen, findest du hier deine Abrechnungen.</div>
+        <div id="billingListEmpty" class="hint" style="color:#64748b; text-align:center; padding:32px 16px; display:none;">Noch keine Abrechnungen.</div>
       </div>
     </section>
 
     <!-- Admin-Dashboard: /admin – Clean, modern, KPIs, Inserats-Feed, Buchhaltung, CSV-Export -->
-    <section class="view content-padding-bottom-compact" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
+    <section class="view content-padding-bottom-compact phase7-applite" id="v-admin" style="min-height:100vh; padding:20px; background:#f8f7f2;">
       <div style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <h1 class="ds-h1" style="margin:0;">Admin Dashboard</h1>
+          <h1 class="ds-h1" style="margin:0;">Admin</h1>
           <a href="#" onclick="location.hash=''; showDiscover(); return false;" style="display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:700; color:#64748b; text-decoration:none;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</a>
         </div>
-        <p style="margin:0 0 20px; color:#64748b; font-size:14px;">Zentrale Verwaltung für Anbieter-Freischaltung, Aktivität und Umsatzentwicklung.</p>
+        <p style="margin:0 0 20px; color:#64748b; font-size:14px;">Freischaltung, Umsatz, Live-Inserate.</p>
         <div class="admin-rollout-progress-card" aria-label="Freischaltungsfortschritt">
           <div class="admin-rollout-progress-head">
-            <h2>Freischaltungsfortschritt</h2>
+            <h2>Freischaltung</h2>
             <span id="adminRolloutProgressLabel">0 / 0 · 0%</span>
           </div>
           <div class="admin-rollout-progress-track">
@@ -302,11 +302,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <div id="adminKpiUmsatz" style="font-size:28px; font-weight:900; color:#16a34a;">0,00 €</div>
           </div>
           <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Aktive Inserate</div>
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Inserate</div>
             <div id="adminKpiInserate" style="font-size:28px; font-weight:900; color:#1a1a1a;">0</div>
           </div>
           <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
-            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Abholnummern gebucht</div>
+            <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:4px;">Abholnummer</div>
             <div id="adminKpiAbholnummern" style="font-size:28px; font-weight:900; color:#3b82f6;">0</div>
           </div>
           <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04);">
@@ -338,19 +338,19 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <p id="adminProviderBaseSource" class="admin-provider-base-source">Quelle: wird geladen ...</p>
           <div class="admin-provider-base-actions">
-            <button type="button" id="adminBtnProviderBaseRefresh" class="admin-provider-base-refresh-btn">Anbieterbasis neu laden</button>
-            <button type="button" id="adminBtnMassTestRun" class="admin-provider-base-refresh-btn">Batch-Testlauf starten</button>
+            <button type="button" id="adminBtnProviderBaseRefresh" class="admin-provider-base-refresh-btn">Neu laden</button>
+            <button type="button" id="adminBtnMassTestRun" class="admin-provider-base-refresh-btn">Batch-Test</button>
             <button type="button" id="adminBtnProviderBaseAdd" class="admin-provider-base-secondary-btn">Neuer Anbieter</button>
-            <button type="button" id="adminBtnProviderBaseCsvExport" class="admin-provider-base-secondary-btn">Anbieter-CSV exportieren</button>
-            <button type="button" id="adminBtnProviderOpenCsvExport" class="admin-provider-base-secondary-btn">Nur offene Freischaltungen exportieren</button>
+            <button type="button" id="adminBtnProviderBaseCsvExport" class="admin-provider-base-secondary-btn">CSV Anbieter</button>
+            <button type="button" id="adminBtnProviderOpenCsvExport" class="admin-provider-base-secondary-btn">CSV offen</button>
           </div>
           <div class="admin-provider-base-checklist" aria-label="Freischalten und Zugangsdaten senden">
-            <p class="admin-provider-base-checklist-title">Freischalten &amp; Zugangsdaten senden</p>
+            <p class="admin-provider-base-checklist-title">Freischalten</p>
             <ol class="admin-provider-base-checklist-list">
-              <li>Anbieter in der Liste suchen oder neu anlegen.</li>
-              <li><code>Login E-Mail</code> im Datensatz setzen und speichern.</li>
-              <li>Kurzer Test: Login mit E-Mail zeigt grünen Freischalt-Status.</li>
-              <li>Zugangsdaten an Anbieter senden (E-Mail + Passwortweg).</li>
+              <li>Anbieter suchen oder anlegen.</li>
+              <li>Login-E-Mail setzen und speichern.</li>
+              <li>Login testen (grün = frei).</li>
+              <li>Zugangsdaten senden.</li>
             </ol>
           </div>
           <div class="admin-provider-base-filters">
@@ -430,7 +430,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Favorites – Fokus auf HEUTE, 2x2 Grid, Pull-to-Reveal -->
-    <section class="view customer-view" id="v-fav">
+    <section class="view customer-view phase2-customer" id="v-fav">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
           <h1 class="customer-header-title">Deine Favoriten</h1>
@@ -519,10 +519,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </div>
 
     <!-- CUSTOMER: Lieblingsanbieter -->
-    <section class="view customer-view" id="v-fav-providers">
+    <section class="view customer-view phase2-customer" id="v-fav-providers">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
-          <h1 class="customer-header-title">Meine Lieblingsanbieter</h1>
+          <h1 class="customer-header-title">Lieblingsanbieter</h1>
           <div class="customer-header-actions"></div>
         </div>
       </header>
@@ -531,8 +531,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="fav-empty-social-icon-wrap">
             <span class="fav-empty-social-icon" aria-hidden="true">🏢</span>
           </div>
-          <h2 class="ds-empty-title" style="max-width:320px;">Noch keine Lieblingsanbieter</h2>
-          <p class="ds-body" style="line-height:1.6; margin-bottom:16px; max-width:340px;">Markiere Anbieter mit ❤️ auf den Karten. Hier findest du sie gesammelt wieder.</p>
+          <h2 class="ds-empty-title" style="max-width:320px;">Noch leer</h2>
+          <p class="ds-body" style="line-height:1.6; margin-bottom:16px; max-width:340px;">Anbieter mit ❤️ speichern – sie erscheinen hier.</p>
           <button class="btn-cust-primary" type="button" onclick="showDiscover();" style="width:100%; max-width:300px; margin:8px auto 0; background:var(--brand); color:#1a1a1a; min-height:52px;">
             <i data-lucide="compass" style="width:20px;height:20px;"></i>
             <span>Anbieter entdecken</span>
@@ -543,12 +543,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Orders (Applike: Sticky Header + Karten wie v-fav/v-cart) -->
-    <section class="view customer-view" id="v-orders">
+    <section class="view customer-view phase2-customer" id="v-orders">
       <header class="cust-header-sticky">
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <div>
-            <h1>Aktive Abholnummern</h1>
-            <p style="font-size:13px; font-weight:600; color:#64748b; margin:4px 0 0;">Deine Bestellungen im Überblick</p>
+            <h1 class="customer-header-title">Abholnummern</h1>
+            <p style="font-size:13px; font-weight:600; color:#64748b; margin:4px 0 0;">Deine Bestellungen</p>
           </div>
         </div>
       </header>
@@ -560,8 +560,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div style="width:80px; height:80px; margin-bottom:20px; background:rgba(255,215,0,0.12); border-radius:24px; display:flex; align-items:center; justify-content:center;">
             <i data-lucide="shopping-basket" style="width:36px; height:36px; color:#1a1a1a;"></i>
           </div>
-          <p style="font-size:16px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Noch keine Bestellungen</p>
-          <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 24px;">Sichere dir dein Mittagessen in der Mittagsbox.</p>
+          <p style="font-size:16px; font-weight:700; color:#1a1a1a; margin:0 0 8px;">Noch leer</p>
+          <p style="font-size:14px; color:#64748b; line-height:1.5; margin:0 0 24px;">Gerichte zuerst in die Mittagsbox legen.</p>
           <button class="btn-cust-primary" type="button" onclick="showView('v-cart');" style="max-width:260px;">
             <i data-lucide="shopping-basket" style="width:18px;height:18px;"></i>
             <span>Zur Mittagsbox</span>
@@ -572,7 +572,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Cart -->
-    <section class="view customer-view" id="v-cart">
+    <section class="view customer-view phase2-customer" id="v-cart">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
           <div class="customer-header-leading">
@@ -588,7 +588,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div class="mittagsbox-abholnummer-hero" style="text-align:center; padding:24px 20px; background:linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.06) 100%); border-radius:20px; border:1px solid rgba(255,215,0,0.25); margin-bottom:20px;">
             <div style="display:inline-flex; align-items:center; gap:12px;">
               <span class="mittagsbox-session-dot" style="width:10px; height:10px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.3);"></span>
-              <span class="ds-meta" style="text-transform:uppercase; letter-spacing:0.05em;">Aktive Abholnummer</span>
+              <span class="ds-meta" style="text-transform:uppercase; letter-spacing:0.05em;">Aktiv</span>
             </div>
             <div id="cartActiveAbholnummerDisplay">A1</div>
             <div class="ds-body" style="font-size:13px; font-weight:600;">Abholnummer</div>
@@ -598,7 +598,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         
         <!-- Warenkorb Items (leer oder Vor-Checkout-Liste) -->
         <div class="cust-card" id="cartMainCard" style="padding:16px;">
-          <div id="cartBox" class="hint" style="text-align:center; padding:40px 0;">Deine Mittagsbox ist noch leer. Such dir was Leckeres aus.</div>
+          <div id="cartBox" class="hint cart-box-empty" style="text-align:center; padding:40px 0;">Mittagsbox leer – Gericht aus Entdecken wählen.</div>
           
           <!-- Verzehrart -->
           <div id="cartVerzehrart" style="margin-top:20px; padding-top:20px; border-top:1px solid #f1f3f5; display:none;">
@@ -624,12 +624,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
     
     <!-- CUSTOMER: One-Page Checkout (Checkout-Turbo) -->
-    <section class="view customer-view checkout-smart-app" id="v-checkout">
+    <section class="view customer-view checkout-smart-app phase2-customer" id="v-checkout">
       <header class="cust-header-sticky checkout-smart-header">
         <div class="customer-header-row">
           <h1 class="customer-header-title">Checkout</h1>
         </div>
-        <p class="checkout-smart-sub">Kurz bestätigen – danach erhältst du deinen Abholcode.</p>
+        <p class="checkout-smart-sub">Kurz bestätigen – danach deine Abholnummer.</p>
       </header>
       <div class="customer-main-wrap checkout-main-wrap">
         <div class="cust-card checkout-card">
@@ -700,15 +700,18 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div id="pickupCodeContainer"></div>
 
     <!-- CUSTOMER: Abholpass nach Checkout – Code im Fokus (Boarding-Pass-Look) -->
-    <section class="view customer-view pickup-pass-screen content-padding-bottom-compact" id="v-order-success">
+    <section class="view customer-view pickup-pass-screen pickup-pass-phase3 content-padding-bottom-compact phase2-customer" id="v-order-success">
       <div class="pickup-pass-page">
-        <div id="orderSuccessPassCard" class="pickup-pass-card pickup-pass-card--enter">
-          <p class="pickup-pass-kicker">Abholcode</p>
-          <div id="orderSuccessSingleBlock" class="pickup-pass-code-block">
-            <div id="orderSuccessAbholnummer" class="pickup-pass-code" aria-live="polite">A27</div>
+          <p class="pickup-pass-success-badge" aria-hidden="true">Bezahlt · abholbereit</p>
+        <div id="orderSuccessPassCard" class="pickup-pass-card pickup-pass-card--ticket pickup-pass-card--enter">
+          <p class="pickup-pass-kicker">Abholnummer</p>
+          <div class="pickup-pass-code-stage">
+            <div id="orderSuccessSingleBlock" class="pickup-pass-code-block">
+              <div id="orderSuccessAbholnummer" class="pickup-pass-code pickup-pass-code--hero" aria-live="polite">A27</div>
+            </div>
+            <div id="orderSuccessMultiBlock" class="pickup-pass-multi is-hidden" aria-hidden="true"></div>
           </div>
-          <div id="orderSuccessMultiBlock" class="pickup-pass-multi is-hidden" aria-hidden="true"></div>
-          <p class="pickup-pass-hint">Code beim Abholen zeigen</p>
+          <p class="pickup-pass-hint">Am Tresen zeigen</p>
           <div class="pickup-pass-meta">
             <div class="pickup-pass-meta-row">
               <span class="pickup-pass-meta-label">Gericht</span>
@@ -737,7 +740,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- CUSTOMER: Profile "Meins" – App-like: Abholnummer groß oben, dann Historie, Rest im Zahnrad-Menü -->
-    <section class="view customer-view" id="v-profile">
+    <section class="view customer-view phase2-customer" id="v-profile">
       <header class="cust-header-sticky">
         <div class="customer-header-row">
           <h1 class="customer-header-title">Meins</h1>
@@ -858,7 +861,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </div>
 
-    <section class="view customer-view" id="v-provider-detail-public">
+    <section class="view customer-view phase6-applite phase6-customer-public" id="v-provider-detail-public">
       <header class="cust-header-sticky">
         <div class="pub-prov-header-row" style="display:flex; align-items:center; gap:10px; padding:14px 16px;">
           <div class="pub-prov-header-id" style="flex:1; min-width:0;">
@@ -881,7 +884,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <!-- Tagesessen Sektion -->
           <div>
             <h3 class="pub-prov-section-title" style="display:flex; align-items:center; gap:8px;">
-              <span>Tagesessen heute</span>
+              <span>Heute</span>
               <span style="padding:3px 10px; background:var(--brand); border-radius:8px; font-size:11px; color:#1a1a1a; font-weight:800;">LIVE</span>
             </h3>
             <div id="pubProvTodayCats" class="pub-prov-cats"></div>
@@ -902,24 +905,24 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- PROVIDER: Login-Seite -->
-    <section class="view" id="v-provider-login">
+    <section class="view phase7-applite" id="v-provider-login">
       <div class="panel">
-        <h3>Anbieter-Login</h3>
-        <div class="hint">Melde dich als Gastronom an</div>
+        <h3>Login</h3>
+        <div class="hint">Als Gastronom anmelden</div>
         <input class="field" id="provEmail" type="email" placeholder="E-Mail-Adresse" autocomplete="email" style="margin-top:12px;" />
         <div style="height:10px"></div>
         <input class="field" id="provPass" type="password" placeholder="Passwort" autocomplete="current-password" />
         <button class="btn" type="button" id="btnProvLogin" style="margin-top:16px; background:#6b7280; color:#fff; border:none; transition:all 0.2s ease;" onmouseover="this.style.background='#4b5563';" onmouseout="this.style.background='#6b7280';">Einloggen</button>
         <button class="btn secondary btn-back" type="button" id="btnProvBack" style="margin-top:8px;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i> Zurück</button>
         <details class="hint" style="margin-top:16px; padding:12px; background:rgba(0,0,0,0.04); border-radius:12px; font-size:13px;">
-          <summary style="cursor:pointer; font-weight:600; color:#64748b;">Hilfe? Demo-Zugang</summary>
-          <p style="margin:8px 0 0; color:#64748b; line-height:1.5;">Zum Testen: Beliebige E-Mail und Passwort eingeben → Einloggen. (Später: Anmeldung per Firebase.)</p>
+          <summary style="cursor:pointer; font-weight:600; color:#64748b;">Demo-Zugang</summary>
+          <p style="margin:8px 0 0; color:#64748b; line-height:1.5;">Test: beliebige E-Mail + Passwort → Einloggen.</p>
         </details>
       </div>
     </section>
 
     <!-- PROVIDER: Onboarding (ALT, deaktiviert zugunsten Unified Flow) -->
-    <section class="view" id="v-provider-onboarding">
+    <section class="view phase7-applite" id="v-provider-onboarding">
       <!-- Schritt 1: Betriebsname -->
       <div class="panel onboarding-step" data-step="1">
         <div class="onboarding-header">
@@ -1047,13 +1050,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- PROVIDER: Onboarding Entry – Speed-Einstieg (unter 30 Sekunden zum Live-Inserat) -->
-    <section class="view" id="v-provider-onboarding-entry" style="background:var(--provider-bg); min-height:100vh; padding:20px; display:flex; align-items:center; justify-content:center;">
+    <section class="view phase7-applite" id="v-provider-onboarding-entry" style="background:var(--provider-bg); min-height:100vh; padding:20px; display:flex; align-items:center; justify-content:center;">
       <div class="panel" id="onboardingEntryPanel" style="padding:32px 24px; max-width:440px; width:100%; background:#fff; border-radius:28px; box-shadow:0 12px 40px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.04);">
         <div style="width:64px; height:64px; background:var(--brand); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; box-shadow:0 8px 20px rgba(255,215,0,0.3);">
           <i data-lucide="zap" style="width:32px; height:32px; color:#1a1a1a;"></i>
         </div>
-        <h1 style="font-size:26px; font-weight:950; margin-bottom:12px; line-height:1.2; color:#1a1a1a; text-align:center; letter-spacing:-0.03em;">Sofort verkaufen.<br>Ohne Abo & Vertrag.</h1>
-        <p style="font-size:15px; color:#64748b; margin-bottom:28px; text-align:center; line-height:1.5;">Einmalig 4,99 € pro Inserat – unabhängig von der Portionsmenge.</p>
+        <h1 style="font-size:26px; font-weight:950; margin-bottom:12px; line-height:1.2; color:#1a1a1a; text-align:center; letter-spacing:-0.03em;">Sofort verkaufen</h1>
+        <p style="font-size:15px; color:#64748b; margin-bottom:28px; text-align:center; line-height:1.5;">4,99 € pro Inserat · ohne Abo</p>
         
         <div style="margin-bottom:24px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Was bietest du heute an?</label>
@@ -1075,15 +1078,15 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         </button>
         
         <p style="margin-top:24px; font-size:13px; color:#94a3b8; text-align:center; line-height:1.4;">
-          <i data-lucide="clock" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> In unter 30 Sekunden live.
+          <i data-lucide="clock" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> In unter 30 Sek. live
         </p>
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-onboarding-first-dish">
+    <section class="view onboarding-view phase7-applite" id="v-provider-onboarding-first-dish">
       <div class="panel">
-        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Erstes Gericht anlegen</h2>
-        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Was bietest du heute an? Basis-Infos genügen.</p>
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Erstes Gericht</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Name, Preis, Kategorie – fertig.</p>
         
         <div style="margin-bottom:20px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Gerichtname *</label>
@@ -1155,10 +1158,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-onboarding-signup">
+    <section class="view onboarding-view phase7-applite" id="v-provider-onboarding-signup">
       <div class="panel">
-        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Speichern & weitermachen</h2>
-        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Erstelle ein kostenloses Konto, um dein Inserat zu sichern.</p>
+        <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Konto sichern</h2>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Kostenlos – Inserat bleibt gespeichert.</p>
         
         <div style="margin-bottom:20px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">E-Mail *</label>
@@ -1172,7 +1175,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         
         <div style="margin-top:auto; padding:16px; background:#f8f7f2; border-radius:16px; font-size:13px; color:#64748b; line-height:1.5; border:1px solid rgba(0,0,0,0.03);">
           <i data-lucide="shield-check" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px;color:#1a1a1a;"></i>
-          Inseratsgebühr fällt erst bei Veröffentlichung an. Keine versteckten Kosten.
+          Gebühr erst bei Veröffentlichung. Keine versteckten Kosten.
         </div>
       </div>
 
@@ -1182,10 +1185,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-onboarding-business">
+    <section class="view onboarding-view phase7-applite" id="v-provider-onboarding-business">
       <div class="panel">
         <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Dein Betrieb</h2>
-        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Fast fertig! Nur noch ein paar Details zu deinem Standort.</p>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">Name und Standort – später feiner einstellbar.</p>
         
         <div style="margin-bottom:20px;">
           <label style="display:block; font-size:13px; font-weight:700; color:#9ca3af; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.03em;">Betriebsname *</label>
@@ -1199,7 +1202,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         
         <div class="hint" style="font-size:14px; margin-bottom:24px; color:#64748b; line-height:1.5; padding:16px; background:white; border-radius:16px; border:1px solid #eee;">
           <i data-lucide="info" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:8px;color:var(--brand);"></i>
-          Diese Angaben kannst du später in deinem Profil jederzeit verfeinern.
+          Später im Profil anpassbar.
         </div>
       </div>
 
@@ -1209,10 +1212,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-onboarding-preview">
+    <section class="view onboarding-view phase7-applite" id="v-provider-onboarding-preview">
       <div class="panel">
         <h2 style="font-size:24px; font-weight:900; margin-bottom:8px; letter-spacing:-0.02em;">Vorschau</h2>
-        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">So erscheint dein Gericht für Kunden in der App.</p>
+        <p style="font-size:15px; color:#64748b; margin-bottom:24px;">So sehen Kunden dein Gericht.</p>
         
         <div style="margin-bottom:24px; padding:14px 16px; background:#f0f9ff; border-radius:16px; border:1px solid #bae6fd; display:flex; align-items:center; gap:12px;">
           <i data-lucide="eye" style="width:20px;height:20px;color:#0ea5e9;"></i>
@@ -1231,7 +1234,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- PROVIDER APP - Dashboard 2.1: 4 schwebende Kästen (App-like) -->
-    <section class="view prov-dashboard-stolz" id="v-provider-home">
+    <section class="view prov-dashboard-stolz phase5-applite" id="v-provider-home">
       <div id="dashboard-container" class="dashboard-floating-wrap">
         <!-- KASTEN 1: Dashboard Header (dynamic-header: Montserrat 900, kein Icon) [cite: 2026-02-18] -->
         <header class="dashboard-kasten dashboard-kasten-header sticky-header prov-header prov-header-stolz prov-page-header dynamic-header system-header" id="providerDashboardHeader">
@@ -1256,11 +1259,11 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         <div class="dashboard-kasten dashboard-kasten-kpis sticky-sub-bar" id="dashboardKpisBlock">
           <div class="prov-stats-stolz dashboard-kpi-row dashboard-kpi-grid">
             <div id="kpiTagesessen" role="button" tabindex="0" class="dashboard-kpi-cell" onclick="document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('providerActiveListingsSection')?.scrollIntoView({behavior:'smooth'});}" title="Tagesessen">
-              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Aktive Essen</p>
+              <p id="kpiLabelTagesessen" class="kpi-label" style="margin:0 0 2px;">Essen</p>
               <p id="dashboardTagesessenCount" style="margin:0;">0</p>
             </div>
-            <div id="kpiBestellungen" role="button" tabindex="0" class="dashboard-kpi-cell" onclick="if(typeof showProviderPickups==='function') showProviderPickups();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); if(typeof showProviderPickups==='function') showProviderPickups();}" title="Abholnummern heute">
-              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholnummern</p>
+            <div id="kpiBestellungen" role="button" tabindex="0" class="dashboard-kpi-cell" onclick="if(typeof showProviderPickups==='function') showProviderPickups();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); if(typeof showProviderPickups==='function') showProviderPickups();}" title="Abholnummer heute">
+              <p id="kpiLabelAbholungen" class="kpi-label" style="margin:0 0 2px;">Abholnummer</p>
               <p id="dashboardAbholungenCount" style="margin:0;">0</p>
             </div>
             <div id="kpiUmsatz" role="button" tabindex="0" class="dashboard-kpi-cell dashboard-kpi-cell--wide" onclick="if(typeof showProviderBilling==='function') showProviderBilling();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); if(typeof showProviderBilling==='function') showProviderBilling();}" title="Tagesumsatz">
@@ -1272,14 +1275,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <!-- Last-Call-Banner: 60 Min vor Abholende [cite: S25 2026-02-23] -->
         <div id="dashboardLastCallBanner" style="display:none; margin:0 16px 12px; padding:14px 16px; background:linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius:12px; border:1px solid rgba(245,158,11,0.3); box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <p style="margin:0; font-size:14px; font-weight:800; color:#92400e;">Feierabend in Sicht! 🕒 Jetzt Power-Sales nutzen?</p>
-          <p style="margin:4px 0 0; font-size:12px; color:#b45309;">Wische nach rechts auf ein Gericht für Rabatt & „Letzte Portionen“.</p>
+          <p style="margin:0; font-size:14px; font-weight:800; color:#92400e;">Feierabend bald – Last-Call?</p>
         </div>
         <!-- KASTEN 3: Aktive Angebote heute -->
         <div class="dashboard-kasten dashboard-kasten-angebote" id="providerActiveListingsSectionWrap">
           <div id="providerActiveListingsSection">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-              <h3 class="provider-week-title" style="margin:0;">Aktive Angebote heute</h3>
+              <h3 class="provider-week-title" style="margin:0;">Heute</h3>
               <button type="button" id="btnProviderShareToday" title="Heutige Angebote teilen" aria-label="Angebote teilen" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:#1a1a1a; cursor:pointer;">
                 <i data-lucide="share-2" style="width:20px; height:20px;"></i>
               </button>
@@ -1287,13 +1289,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <div id="providerActiveListingsEmptyCard" class="empty-state-container provider-empty-state" style="display:none; margin-top:12px;">
               <div class="empty-state-inner">
                 <div class="empty-state-icon" aria-hidden="true">🥘</div>
-                <h2 class="empty-state-title">Noch kein Angebot für heute?</h2>
-                <p class="empty-state-text">Erstelle in weniger als 30 Sekunden dein erstes Inserat und erreiche Kunden in deiner Nähe.</p>
-                <button type="button" class="btn-primary-large" id="btnProviderFirstDishToday" role="button" tabindex="0" aria-label="Jetzt für 4,99 € inserieren">Jetzt für 4,99 € inserieren</button>
+                <h2 class="empty-state-title">Noch leer</h2>
+                <p class="empty-state-text">Inserat in unter 30 Sekunden.</p>
+                <button type="button" class="btn-primary-large" id="btnProviderFirstDishToday" role="button" tabindex="0" aria-label="Jetzt für 4,99 € inserieren">Inserieren · 4,99 €</button>
                 <div class="empty-state-pricing-hint">
-                  <span>Inserat: 4,99 €</span>
-                  <span class="divider">|</span>
-                  <span>Abholnummer: +0,89 €</span>
+                  <span>4,99 €</span>
+                  <span class="divider">·</span>
+                  <span>+0,89 € Abholnummer</span>
                 </div>
               </div>
             </div>
@@ -1317,7 +1319,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           </div>
           <div class="provider-week-footer" style="display:flex; flex-direction:column; gap:10px;">
             <button type="button" id="btnProviderWeekFooter" style="width:100%; min-height:48px; border-radius:26px; border:2px solid #e5e7eb; background:#fff; color:#1a1a1a; font-size:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:transform 0.1s, box-shadow 0.15s;" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); document.getElementById('btnProviderWeekFooter').click();}">
-              <span>Zum Wochenplan</span>
+              <span>Wochenplan</span>
               <i data-lucide="chevron-right" style="width:20px; height:20px;"></i>
             </button>
             <button type="button" id="btnProviderShareWeekPlan" title="Wochenplan teilen" style="display:none; width:100%; min-height:44px; border-radius:22px; border:2px solid #e5e7eb; background:#fff; color:#64748b; font-size:14px; font-weight:700; cursor:pointer; align-items:center; justify-content:center; gap:8px;">
@@ -1333,12 +1335,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-pickups">
+    <section class="view onboarding-view phase6-applite" id="v-provider-pickups">
       <div class="pickups-floating-wrap" id="pickupsFloatingWrap">
         <header class="prov-page-header sticky-header dynamic-header system-header" id="v-provider-pickups-header">
           <div class="prov-page-header-row">
             <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="pickups" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-              <h1 class="prov-page-header-title system-header-title">Abholnummern</h1>
+              <h1 class="prov-page-header-title system-header-title">Abholnummer</h1>
             </div>
             <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center;">
               <button type="button" id="btnPickupsHeaderCookbook" title="Kochbuch" aria-label="Kochbuch" style="background:rgba(0,0,0,0.06); border:none; min-width:44px; min-height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;">📖</button>
@@ -1364,8 +1366,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div style="width:80px; height:80px; background:rgba(0,0,0,0.03); border-radius:50%; margin:0 auto 20px; display:flex; align-items:center; justify-content:center;">
             <span style="font-size:36px; line-height:1;">🧾</span>
           </div>
-          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch keine Nummern</h3>
-          <p style="color:#64748b; font-size:15px; line-height:1.5;">Sobald Kunden bestellen, erscheinen sie hier in Echtzeit.</p>
+          <h3 style="font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:8px;">Noch leer</h3>
+          <p style="color:#64748b; font-size:15px; line-height:1.5;">Bestellungen erscheinen hier live.</p>
         </div>
         
         <!-- Pickup Grid (Theken-Grid) -->
@@ -1381,12 +1383,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view onboarding-view" id="v-provider-week">
+    <section class="view onboarding-view phase6-applite" id="v-provider-week">
       <!-- Wochenplan Header-Navigation -->
       <header id="v-provider-week-header" class="header-navigation provider-mode week-header-compact week-header-minimal prov-page-header dynamic-header system-header">
         <div class="header-main-row prov-page-header-row week-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="week" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
-            <div class="header-title prov-page-header-title system-header-title" id="weekHeaderTitleText">Mittagio Wochenplan</div>
+            <div class="header-title prov-page-header-title system-header-title" id="weekHeaderTitleText">Wochenplan</div>
           </div>
           <div class="prov-page-header-actions prov-header-toolbar" style="display:flex; gap:8px; align-items:center; position:relative;">
             <button type="button" id="btnWeekPreviewClose" class="week-preview-close-btn" style="display:none; min-height:44px; padding:0 16px; border-radius:12px; border:none; background:rgba(0,0,0,0.08); font-size:14px; font-weight:700; color:#1a1a1a; cursor:pointer;">Schließen</button>
@@ -1416,7 +1418,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
               <div class="placeholder-card"></div>
               <div class="placeholder-card"></div>
             </div>
-            <p class="empty-state-launchpad-hint">Tippe hier, um deine Woche zu füllen</p>
+            <p class="empty-state-launchpad-hint">Tippen zum Füllen</p>
           </div>
           <div class="kw-board-swipe-inner" id="kwBoardSwipeInner">
             <div class="kw-grid" id="kwGrid"></div>
@@ -1431,7 +1433,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div id="kwSelectorSheet" class="kw-smart-time-sheet" style="position:fixed; left:0; right:0; bottom:0; top:0; height:100vh; height:100dvh; border-radius:0; background:#fff; z-index:10101; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
       <div class="kw-smart-time-sheet-handle"></div>
       <div class="kw-smart-time-sheet-header">
-        <h3 class="kw-smart-time-sheet-title">Kalenderwoche wählen</h3>
+        <h3 class="kw-smart-time-sheet-title">KW wählen</h3>
         <div id="kwSmartDateRange" class="kw-smart-date-range"></div>
         <div id="kwSmartHolidays" class="kw-smart-holidays"></div>
       </div>
@@ -1442,7 +1444,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div class="backdrop" id="weekMagicSheetBd" style="display:none; z-index:10102;" onclick="closeWeekMagicSheet()"></div>
     <div id="weekMagicSheet" class="week-magic-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; border-radius:20px 20px 0 0; background:rgba(255,255,255,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 -8px 32px rgba(0,0,0,0.1); z-index:10103; display:none; flex-direction:column; overflow:hidden; padding-bottom:max(24px, env(safe-area-inset-bottom));">
       <div class="week-magic-sheet-handle"></div>
-      <h3 class="week-magic-sheet-title">Ideen für deine Woche</h3>
+      <h3 class="week-magic-sheet-title">Wochen-Ideen</h3>
       <div id="weekMagicSheetList" class="week-magic-sheet-list"></div>
     </div>
 
@@ -1450,7 +1452,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     <div class="backdrop" id="weekTemplatesBd" style="display:none; z-index:10104;" onclick="if(typeof closeWeekTemplatesSheet==='function') closeWeekTemplatesSheet();"></div>
     <div id="weekTemplatesSheet" class="week-templates-sheet sheet" style="position:fixed; left:0; right:0; bottom:0; max-height:70vh; border-radius:24px 24px 0 0; background:rgba(255,255,255,0.92); backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px); box-shadow:0 -8px 32px rgba(0,0,0,0.12); z-index:10105; display:none; flex-direction:column; overflow:hidden;">
       <div class="week-templates-sheet-handle" style="width:40px; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; margin:12px auto 8px;"></div>
-      <h3 style="margin:0 20px 12px; font-size:18px; font-weight:800; color:#0f172a;">Woche aus Vorlage füllen</h3>
+      <h3 style="margin:0 20px 12px; font-size:18px; font-weight:800; color:#0f172a;">Vorlage</h3>
       <div id="weekTemplatesList" style="flex:1; overflow-y:auto; padding:0 20px 24px; display:flex; flex-direction:column; gap:10px;"></div>
     </div>
     <div class="backdrop is-hidden" id="weekTemplatePreviewBd" style="z-index:10106;" onclick="if(typeof closeWeekTemplatePreview==='function') closeWeekTemplatePreview();"></div>
@@ -1462,12 +1464,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </div>
 
     <!-- Kochbuch: MASTER-SPEC MagazinKochbuch – nur Titel + Pills, Magazin-Karte, Bar BEARBEITEN | WOCHENPLAN | AUSWÄHLEN -->
-    <section class="view" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
+    <section class="view phase6-applite" id="v-provider-cookbook" style="background:linear-gradient(180deg, rgba(254,243,199,0.2) 0%, #F5F5F7 30%);">
       <header class="prov-page-header dynamic-header system-header cookbook-header-sticky" id="v-provider-cookbook-header">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="cookbook" style="flex:1; min-width:0;" role="button" tabindex="0" aria-label="Zum Seitenanfang">
             <div id="cookbookTitleWrap" style="display:flex; align-items:center; gap:12px; min-width:0;">
-              <h1 class="prov-page-header-title system-header-title" id="cookbookHeaderTitle">Mein Kochbuch</h1>
+              <h1 class="prov-page-header-title system-header-title" id="cookbookHeaderTitle">Kochbuch</h1>
             </div>
             <div id="cookbookSearchWrap" style="display:none; flex:1; min-width:0;">
               <input type="text" id="cookbookSearchInput" placeholder="Gericht suchen…" style="width:100%; height:40px; border-radius:12px; border:2px solid #e2e8f0; padding:0 14px; font-size:14px; font-weight:500; outline:none; box-sizing:border-box;" />
@@ -1493,14 +1495,14 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <div id="cookbookEmpty" class="mt-state-empty" style="display:none;" role="status" aria-live="polite">
           <div class="mt-state-empty-icon">📖</div>
-          <h2 class="mt-state-empty-title">Dein Kochbuch ist noch leer</h2>
-          <p class="mt-state-empty-desc">Entdecke 200 Klassiker im Mittagio-Archiv oder lege dein erstes Gericht an.</p>
+          <h2 class="mt-state-empty-title">Noch leer</h2>
+          <p class="mt-state-empty-desc">200 Klassiker laden oder erstes Gericht anlegen.</p>
           <div class="mt-state-empty-actions">
             <button class="btn-primary mt-state-empty-btn mt-state-empty-btn-primary" id="btnCookbookEmptyImport" type="button">
-              Jetzt 200 Gerichte gratis laden
+              200 Gerichte laden
             </button>
             <button class="btn-primary mt-state-empty-btn mt-state-empty-btn-secondary" id="btnCookbookEmptyAdd" type="button">
-              Jetzt erstes Gericht inserieren
+              Erstes Gericht anlegen
             </button>
           </div>
         </div>
@@ -1591,7 +1593,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </div>
 
     <!-- Provider-Profil "Meins" – Single-Page: Mein Betrieb-Karte, 2x2 KPIs, 4-Säulen-Grid [cite: 2026-02-18, 2026-02-25] -->
-    <section class="view onboarding-view" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
+    <section class="view onboarding-view phase6-applite" id="v-provider-profile" style="display:flex; flex-direction:column; min-height:0;">
       <header class="prov-page-header dynamic-header system-header" id="v-provider-profile-header" aria-label="Profil">
         <div class="prov-page-header-row">
           <div class="prov-page-header-left prov-header-reset-trigger" data-reset-view="profile" role="button" tabindex="0" aria-label="Zum Seitenanfang">
@@ -2070,7 +2072,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- STATISCHE RECHTSTEXTE-SEITEN: KUNDEN -->
-    <section class="view" id="v-legal-impressum">
+    <section class="view phase5-applite legal-applite-page" id="v-legal-impressum">
       <div class="panel">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px;">
@@ -2092,7 +2094,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Impressum für Anbieter: einheitlich helles Layout -->
-    <section class="view content-padding-bottom-compact" id="v-legal-impressum-provider" style="min-height:100vh; padding:20px;">
+    <section class="view content-padding-bottom-compact phase5-applite legal-applite-page" id="v-legal-impressum-provider" style="min-height:100vh; padding:20px;">
       <div class="panel" style="padding:20px; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.06);">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px; color:#1a1a1a;">Impressum</h1>
         <div style="line-height:1.8; font-size:15px; color:#334155;">
@@ -2114,10 +2116,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- AGB für Kunden -->
-    <section class="view" id="v-legal-agb-kurz">
+    <section class="view phase5-applite legal-applite-page" id="v-legal-agb-kurz">
       <div class="panel">
-        <h1 class="legal-page-title legal-page-title--tight">AGB (Kunden)</h1>
-        <p class="legal-page-subtitle legal-page-subtitle--tight">Kurz und klar: Der Vertrag über Speisen entsteht zwischen dir und dem Anbieter. Mittagio ist die Vermittlungsplattform.</p>
+        <h1 class="legal-page-title legal-page-title--tight">AGB</h1>
+        <p class="legal-page-subtitle legal-page-subtitle--tight">Vertrag mit dem Anbieter · Mittagio vermittelt.</p>
         <div class="legal-content">
           <p><strong>§ 1 Geltungsbereich</strong></p>
           <p>Diese AGB gelten für die Nutzung der Mittagio-Plattform durch Kundinnen und Kunden. Anbieter von Speisen handeln eigenständig und in eigener Verantwortung.</p>
@@ -2159,12 +2161,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- AGB für Anbieter: einheitliche Rechtsseiten-Optik -->
-    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-agb-provider">
+    <section class="view content-padding-bottom-compact legal-unified-page phase5-applite legal-applite-page" id="v-legal-agb-provider">
       <div class="provider-legal-header">
         <button type="button" class="provider-legal-back-btn" onclick="goBackFromLegalPage()" aria-label="Zurück"><i data-lucide="chevron-left"></i></button>
         <h1 class="provider-legal-title">AGB (Anbieter)</h1>
       </div>
-      <p class="legal-page-subtitle legal-page-subtitle--tight">Tippe auf eine Zeile, um den rechtlichen Text zu öffnen.</p>
+      <p class="legal-page-subtitle legal-page-subtitle--tight">Zeile antippen.</p>
       <div id="agbProviderAccordion" class="legal-accordion-group legal-accordion-group--wide">
         <details class="agb-provider-item legal-accordion-item legal-accordion-item--wide">
           <summary><span class="legal-paragraph-id">§ 1</span> Geltungsbereich &amp; Plattformmodell</summary>
@@ -2231,7 +2233,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- FAQ mit Reitern (Kunden & Anbieter) -->
-    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-faq">
+    <section class="view content-padding-bottom-compact legal-unified-page phase5-applite legal-applite-page" id="v-legal-faq">
       <div class="panel legal-unified-panel">
         <h1 class="legal-page-title legal-page-title--faq">FAQ</h1>
         
@@ -2250,8 +2252,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <button type="button" onclick="typeof openAbholnummerExplainSheet==='function'&&openAbholnummerExplainSheet()" class="faq-highlight-card">
             <span class="faq-highlight-icon">🧾</span>
             <div class="faq-highlight-content">
-              <div class="faq-highlight-title">So funktioniert die Abholnummer</div>
-              <div class="faq-highlight-subtitle">5 kurze Schritte – mit Bildern</div>
+              <div class="faq-highlight-title">Abholnummer</div>
+              <div class="faq-highlight-subtitle">5 Schritte</div>
             </div>
             <i data-lucide="chevron-right" class="faq-highlight-chevron"></i>
           </button>
@@ -2315,19 +2317,19 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
         </div>
         
         <div class="legal-footer-help">
-          Weitere Fragen? Öffne in deinem Profil (Meins) den Bereich „Support“.
+          Mehr Hilfe unter Profil → Support.
         </div>
       </div>
     </section>
 
     <!-- Support-Seite (Kunden): erweiterte FAQs + Kontaktformular, keine E-Mail im UI -->
-    <section class="view content-padding-bottom-compact legal-unified-page" id="v-support">
+    <section class="view content-padding-bottom-compact legal-unified-page phase5-applite legal-applite-page" id="v-support">
       <div class="panel legal-unified-panel">
         <h1 class="legal-page-title">Support</h1>
 
         <!-- Erweiterte Kunden-FAQs (Zahlung, Stornierung, Account) -->
         <div class="legal-block">
-          <h2 class="legal-section-title legal-section-title--plain">Häufige Fragen</h2>
+          <h2 class="legal-section-title legal-section-title--plain">FAQ</h2>
           <details class="legal-accordion-item">
             <summary>Wie bezahle ich mein Essen?</summary>
             <p class="legal-accordion-body">Die Bezahlung erfolgt digital über die Plattform. Nach erfolgreicher Zahlung erhältst du deine Abholnummer.</p>
@@ -2348,36 +2350,36 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <!-- Kontaktformular -->
         <div class="legal-divider-block">
-          <h2 class="legal-section-title legal-section-title--plain legal-section-title--mb16">Nachricht senden</h2>
+          <h2 class="legal-section-title legal-section-title--plain legal-section-title--mb16">Kontakt</h2>
           <form id="supportForm" class="support-form">
             <label>Betreff</label>
             <select id="supportSubject" required>
-              <option value="">Bitte wählen</option>
-              <option value="bestellung">Frage zu meiner Bestellung</option>
-              <option value="abholnummer">Problem mit Abholnummer</option>
-              <option value="lob">Lob &amp; Kritik</option>
-              <option value="technisch">Technischer Fehler</option>
+              <option value="">Wählen</option>
+              <option value="bestellung">Bestellung</option>
+              <option value="abholnummer">Abholnummer</option>
+              <option value="lob">Feedback</option>
+              <option value="technisch">Technik</option>
               <option value="sonstiges">Sonstiges</option>
             </select>
             <div id="supportQuickContext" class="support-quick-context">
-              <p class="support-quick-title">Letzte Bestellungen & Abholnummern</p>
-              <label for="supportRecentOrderSelect" class="support-quick-label">Bestellung auswählen</label>
+              <p class="support-quick-title">Letzte Bestellung</p>
+              <label for="supportRecentOrderSelect" class="support-quick-label">Bestellung</label>
               <select id="supportRecentOrderSelect" class="support-order-select">
-                <option value="">Bitte Bestellung wählen</option>
+                <option value="">Wählen</option>
               </select>
               <div id="supportSelectionPreview" class="support-selection-preview is-hidden" aria-hidden="true">
                 <div class="support-selection-meta">
                   <p id="supportSelectionDish" class="support-selection-dish">Bestellung</p>
                   <p id="supportSelectionDetails" class="support-selection-details">Anbieter · Datum · #Abholnummer</p>
                 </div>
-                <button type="button" id="supportSelectionOpenBtn" class="support-selection-open">Bestellung öffnen</button>
+                <button type="button" id="supportSelectionOpenBtn" class="support-selection-open">Öffnen</button>
               </div>
             </div>
-            <label>Abholnummer (optional)</label>
+            <label>Abholnummer</label>
             <input type="text" id="supportPickupRef" placeholder="z.B. A1">
             <label>Nachricht</label>
-            <textarea id="supportMessage" required rows="4" placeholder="Deine Nachricht…"></textarea>
-            <button type="submit" class="btn support-submit" id="btnSupportSubmit">Nachricht senden</button>
+            <textarea id="supportMessage" required rows="4" placeholder="Kurz beschreiben…"></textarea>
+            <button type="submit" class="btn support-submit" id="btnSupportSubmit">Senden</button>
           </form>
         </div>
 
@@ -2385,10 +2387,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Anbieter-FAQ: einheitliche Rechtsseiten-Optik -->
-    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-faq-provider">
+    <section class="view content-padding-bottom-compact legal-unified-page phase5-applite legal-applite-page" id="v-legal-faq-provider">
       <div class="panel legal-unified-panel">
-        <h1 class="legal-page-title">FAQ für Anbieter</h1>
-        <p class="legal-page-subtitle">Kurz, klar und praxisnah: Antworten für deinen Küchenalltag mit Mittagio.</p>
+        <h1 class="legal-page-title">FAQ</h1>
+        <p class="legal-page-subtitle">Anbieter · Küche &amp; Kosten</p>
         <div class="legal-content-wrap">
           <details class="legal-accordion-item">
             <summary>Wie funktioniert der Küchenmodus?</summary>
@@ -2417,7 +2419,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Anbieter Infoseite Inseratsflow: Hero + 5 Kern-Funktionen -->
-    <section class="view content-padding-bottom-compact inserat-info-page" id="v-legal-inserat-info-provider">
+    <section class="view content-padding-bottom-compact inserat-info-page phase5-applite legal-applite-page" id="v-legal-inserat-info-provider">
       <div class="panel inserat-info-panel">
         <h1 class="inserat-info-hero-title">Inserieren in unter 30 Sekunden</h1>
         <p class="inserat-info-hero-sub">Erreiche hungrige Gäste direkt in deiner Umgebung – ohne Bindung, ohne Risiko.</p>
@@ -2458,10 +2460,10 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       </div>
     </section>
 
-    <section class="view" id="v-legal-datenschutz">
+    <section class="view phase5-applite legal-applite-page" id="v-legal-datenschutz">
       <div class="panel">
-        <h1 class="legal-page-title legal-page-title--tight">Datenschutzerklärung</h1>
-        <p class="legal-page-subtitle legal-page-subtitle--tight">Hier findest du transparent, welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
+        <h1 class="legal-page-title legal-page-title--tight">Datenschutz</h1>
+        <p class="legal-page-subtitle legal-page-subtitle--tight">Welche Daten · welche Rechte.</p>
         <div class="legal-content">
           <p><strong>§ 1 Verantwortlicher</strong></p>
           <p>
@@ -2502,12 +2504,12 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Datenschutz für Anbieter: einheitliche Rechtsseiten-Optik -->
-    <section class="view content-padding-bottom-compact legal-unified-page" id="v-legal-datenschutz-provider">
+    <section class="view content-padding-bottom-compact legal-unified-page phase5-applite legal-applite-page" id="v-legal-datenschutz-provider">
       <div class="provider-legal-header">
         <button type="button" class="provider-legal-back-btn" onclick="goBackFromLegalPage()" aria-label="Zurück"><i data-lucide="chevron-left"></i></button>
-        <h1 class="provider-legal-title">Datenschutzerklärung (Anbieter)</h1>
+        <h1 class="provider-legal-title">Datenschutz</h1>
       </div>
-      <p class="legal-page-subtitle legal-page-subtitle--tight">Transparenz für deinen Business-Bereich: Welche Daten wir wofür verarbeiten und welche Rechte du hast.</p>
+      <p class="legal-page-subtitle legal-page-subtitle--tight">Daten &amp; Rechte · Anbieter.</p>
       <div class="panel legal-unified-panel">
         <div class="legal-content">
           <p><strong>§ 1 Verantwortlicher</strong></p>
@@ -2544,17 +2546,17 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
     </section>
 
     <!-- Versionsseite (Link im Footer: v1.0.x) -->
-    <section class="view content-padding-bottom-compact" id="v-version" style="background:#F7F6F0; min-height:100vh; padding:20px;">
+    <section class="view content-padding-bottom-compact phase6-applite" id="v-version" style="background:#F7F6F0; min-height:100vh; padding:20px;">
       <div class="panel" style="width:100%; max-width:100%; margin:0; padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); box-sizing:border-box;">
         <h1 style="font-size:24px; font-weight:900; margin-bottom:20px;">Version</h1>
-        <p style="font-size:16px; color:#555; margin-bottom:16px;">Aktuelle App-Version: <strong>v1.0.0</strong></p>
-        <p style="font-size:14px; color:#666; line-height:1.6;">Changelog und technische Details findest du hier. Bei Fragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
+        <p style="font-size:16px; color:#555; margin-bottom:16px;">App <strong>v1.0.0</strong></p>
+        <p style="font-size:14px; color:#666; line-height:1.6;">Fragen: <a href="mailto:info@mittagio.de" style="color:var(--brand);">info@mittagio.de</a></p>
       </div>
     </section>
 
-    <section class="view" id="v-legal-agb-onboarding">
+    <section class="view phase7-applite legal-applite-page" id="v-legal-agb-onboarding">
       <div class="panel">
-        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB (Anbieter)</h2>
+        <h2 style="font-size:20px; font-weight:900; margin-bottom:16px;">AGB Anbieter</h2>
         <div style="line-height:1.7; font-size:14px; max-height:60vh; overflow-y:auto;">
           <p><strong>Mittagio ist Plattform, nicht Verkäufer</strong></p>
           <p>Mittagio vermittelt Mittagsangebote lokaler Anbieter. Vertragspartner bei Bestellungen ist ausschließlich der jeweilige Anbieter.</p>
@@ -2631,39 +2633,39 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
   <!-- Floating Action Button (FAB) für Modus-Wechsel -->
 
 
-  <!-- CUSTOMER bottom nav - Mittagio-Bar (4 Buttons, eckig, 25px padding S25) -->
-  <nav class="bottom-nav bottom-nav-pure" id="customerNav">
-    <button class="navbtn active" data-go="discover">
-      <i data-lucide="search"></i>
-      <span>Entdecken</span>
+  <!-- CUSTOMER bottom nav – Premium Tab Bar -->
+  <nav class="bottom-nav bottom-nav-pure ui-nav-premium" id="customerNav" role="navigation" aria-label="Hauptnavigation">
+    <button class="navbtn ui-nav-item active" type="button" data-go="discover">
+      <i data-lucide="search" aria-hidden="true"></i>
+      <span class="ui-nav-label">Entdecken</span>
     </button>
-    <button class="navbtn" data-go="fav">
-      <i data-lucide="heart"></i>
-      <span>Favoriten</span>
-      <span id="bottomNavFavBadge" style="position:absolute; top:4px; right:4px; background:#ef4444; color:#fff; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
+    <button class="navbtn ui-nav-item" type="button" data-go="fav">
+      <i data-lucide="heart" aria-hidden="true"></i>
+      <span class="ui-nav-label">Favoriten</span>
+      <span id="bottomNavFavBadge" class="ui-nav-badge ui-nav-badge--fav" aria-hidden="true">0</span>
     </button>
-    <button class="navbtn" data-go="cart" id="bottomNavBasketBtn">
-      <i data-lucide="shopping-basket"></i>
-      <span>Mittagsbox</span>
-      <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
+    <button class="navbtn ui-nav-item" type="button" data-go="cart" id="bottomNavBasketBtn">
+      <i data-lucide="shopping-basket" aria-hidden="true"></i>
+      <span class="ui-nav-label">Mittagsbox</span>
+      <span id="bottomNavBasketBadge" class="ui-nav-badge ui-nav-badge--cart" aria-hidden="true">0</span>
     </button>
-    <button class="navbtn" data-go="profile">
-      <i data-lucide="user"></i>
-      <span>Profil</span>
+    <button class="navbtn ui-nav-item" type="button" data-go="profile">
+      <i data-lucide="user" aria-hidden="true"></i>
+      <span class="ui-nav-label">Profil</span>
     </button>
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
-  <div id="providerNavWrap" class="provider-nav-wrap-pill">
+  <div id="providerNavWrap" class="provider-nav-wrap-pill ui-nav-premium-provider">
     <div id="providerNavBackRow">
       <button type="button" id="btnProviderNavBack" class="btn-back" aria-label="Zurück"><i data-lucide="chevron-left"></i> Zurück</button>
     </div>
-    <nav class="bottom bottom-nav provider-nav-light provider-nav-pill" id="providerNav">
-      <button class="navbtn active" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label">Dashboard</span></button>
-      <button class="navbtn" data-pgo="provider-pickups" title="Abholnummern"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label">Abholnummern</span></button>
-      <button class="navbtn" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label">Wochenplan</span></button>
-      <button class="navbtn" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label">Kochbuch</span></button>
-      <button class="navbtn" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label">Profil</span></button>
+    <nav class="bottom bottom-nav provider-nav-light provider-nav-pill ui-nav-premium" id="providerNav" role="navigation" aria-label="Anbieter-Navigation">
+      <button class="navbtn ui-nav-item active" type="button" data-pgo="provider-home" title="Dashboard"><div class="ico" data-icon="layoutDashboard" data-icon-only="1"></div><span class="provider-nav-label ui-nav-label">Dashboard</span></button>
+      <button class="navbtn ui-nav-item" type="button" data-pgo="provider-pickups" title="Abholnummer"><div class="ico" data-icon="receipt" data-icon-only="1"></div><span class="provider-nav-label ui-nav-label">Abholnummer</span></button>
+      <button class="navbtn ui-nav-item" type="button" data-pgo="provider-week" title="Wochenplan"><div class="ico" data-icon="calendar" data-icon-only="1"></div><span class="provider-nav-label ui-nav-label">Wochenplan</span></button>
+      <button class="navbtn ui-nav-item" type="button" data-pgo="provider-cookbook" title="Kochbuch"><div class="ico" data-icon="bookOpen" data-icon-only="1"></div><span class="provider-nav-label ui-nav-label">Kochbuch</span></button>
+      <button class="navbtn ui-nav-item" type="button" data-pgo="provider-profile" title="Profil"><div class="ico" data-icon="user" data-icon-only="1"></div><span class="provider-nav-label ui-nav-label">Profil</span></button>
     </nav>
   </div>
 </div>
@@ -2880,8 +2882,8 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <div class="inserat-success-checkmark" style="width:80px; height:80px; margin:0 auto 16px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(16,185,129,0.25);">
         <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
-      <h1 id="inseratSuccessCheckmarkTitle" style="margin:0 0 6px; font-size:22px; font-weight:950; color:#0f172a; letter-spacing:-0.03em;">Geschafft! Deine Abholnummern sind scharfgeschaltet.</h1>
-      <p id="inseratSuccessCheckmarkSub" style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Hungrige Gäste können dein Gericht jetzt finden.</p>
+      <h1 id="inseratSuccessCheckmarkTitle" style="margin:0 0 6px; font-size:22px; font-weight:950; color:#0f172a; letter-spacing:-0.03em;">Live – du bist online</h1>
+      <p id="inseratSuccessCheckmarkSub" style="margin:0; font-size:14px; color:#64748b; font-weight:500;">Gäste finden dein Gericht jetzt.</p>
     </div>
 
     <!-- 2. Live Preview (Kompakt-Card mit 3 Säulen) -->
@@ -2948,13 +2950,13 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
   <!-- Offer sheet: Discovery-Sync Detailansicht -->
   <div class="backdrop" id="bd" onclick="closeSheet()"></div>
-  <div class="sheet sheet-detail-gericht" id="sheet">
+  <div class="sheet sheet-detail-gericht phase7-applite sheet-detail-phase7" id="sheet">
     <div class="handle"></div>
     <div class="sheet-header sheet-detail-header">
       <button type="button" onclick="closeSheet()" aria-label="Schließen" class="sheet-detail-close-btn">
         <i data-lucide="chevron-down" style="width:24px;height:24px;color:#1a1a1a;"></i>
       </button>
-      <div class="sheet-detail-header-title">Details</div>
+      <div class="sheet-detail-header-title">Gericht</div>
       <div class="sheet-detail-header-spacer" aria-hidden="true"></div>
     </div>
 
@@ -2986,7 +2988,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
         <button id="sProviderNameBtn" type="button" class="sheet-detail-provider-btn">
           <span id="sProviderName" class="sheet-detail-provider-text">Anbieter</span>
-          <span class="sheet-detail-provider-hint"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i><span>Alle Gerichte</span></span>
+          <span class="sheet-detail-provider-hint"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i><span>Anbieter</span></span>
         </button>
 
         <div id="sDistanceInfo" class="sheet-detail-logistics is-hidden" aria-hidden="true"></div>
@@ -3012,7 +3014,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
             <span>Extras</span>
           </div>
           <div id="sExtrasOptions" class="sheet-detail-extras-options"></div>
-          <p id="sExtrasHint" class="sheet-detail-extras-hint is-hidden" aria-hidden="true">Wähle optional Extras. Der Preis wird live aktualisiert.</p>
+          <p id="sExtrasHint" class="sheet-detail-extras-hint is-hidden" aria-hidden="true">Extras optional · Preis live</p>
           <span id="sExtras" class="is-hidden" aria-hidden="true"></span>
         </div>
       </div>
@@ -3056,7 +3058,7 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
           <div id="detailDistanceDrive" class="detail-distance-value">ca. – Min</div>
         </button>
       </div>
-      <p id="detailDistanceMeta" class="detail-distance-meta">Ca.-Werte auf Basis der Distanz. Live-Routing folgt mit Google API.</p>
+      <p id="detailDistanceMeta" class="detail-distance-meta">Ca.-Werte · Live-Routing folgt</p>
       <button type="button" id="btnDetailDistanceRoute" class="btn-cust-primary detail-distance-route-btn">
         Route starten
       </button>
@@ -3087,17 +3089,19 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
 
 <!-- Abholnummer (bildschirmfüllend) -->
 <div class="backdrop" id="codeBd" onclick="closeCodeSheet()"></div>
-<div class="quick-abholnummer pickup-pass-sheet" id="codeSheet">
+<div class="quick-abholnummer pickup-pass-sheet pickup-pass-phase3" id="codeSheet">
   <button class="quick-abholnummer-close" onclick="closeCodeSheet()" aria-label="Schließen">
     <i data-lucide="x"></i>
   </button>
   <div class="quick-abholnummer-content">
-    <div class="pickup-pass-card pickup-pass-card--sheet pickup-pass-card--enter" id="codeSheetPassCard">
-      <p class="pickup-pass-kicker">Abholcode</p>
-      <div class="quick-abholnummer-code pickup-pass-code-wrap">
-        <div class="quick-abholnummer-code-value pickup-pass-code" id="codeText">A27</div>
+    <div class="pickup-pass-card pickup-pass-card--sheet pickup-pass-card--ticket pickup-pass-card--enter" id="codeSheetPassCard">
+      <p class="pickup-pass-kicker">Abholnummer</p>
+      <div class="pickup-pass-code-stage pickup-pass-code-stage--sheet">
+        <div class="quick-abholnummer-code pickup-pass-code-wrap">
+          <div class="quick-abholnummer-code-value pickup-pass-code pickup-pass-code--hero" id="codeText">A27</div>
+        </div>
       </div>
-      <p class="pickup-pass-hint">Code beim Abholen zeigen</p>
+      <p class="pickup-pass-hint">Am Tresen zeigen</p>
       <div class="pickup-pass-meta pickup-pass-meta--sheet">
         <div class="pickup-pass-meta-row">
           <span class="pickup-pass-meta-label">Gericht</span>

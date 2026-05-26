@@ -1,7 +1,7 @@
 # Rechtliches
 
 **View-IDs:** `v-legal-impressum`, `v-legal-agb-*`, `v-legal-faq`, `v-legal-datenschutz` (Kunde + Provider)  
-**Stand:** 22.04.2026
+**Stand:** 26.05.2026
 
 ---
 
@@ -198,3 +198,11 @@ Eine ausschließlich automatisierte Entscheidungsfindung im Sinne von Art. 22 DS
 - Bezeichnungen exakt: **AGB**, **Impressum**, **Datenschutz**
 - Kundentexte und Anbietertexte sauber trennen
 - Terminologie in der Kunden-UI: **Abholnummer** (kein Ticket/Code)
+
+## Phase 5 – Applike Legal (UI/UX Relaunch, 26.05.2026)
+
+- **Scope:** Nur Darstellung und Kurztitel; Rechtstext-Inhalt und Accordion-Logik unverändert.
+- **Klassen:** `phase5-applite legal-applite-page` auf Kunden- und Anbieter-Legal-Views (u. a. FAQ, AGB, Impressum, Datenschutz inkl. Provider-Varianten).
+- **Copy:** Kürzere Seitentitel und Subtitles (z. B. „Datenschutz“ statt langer Einleitungssätze).
+- **Layout:** Accordion-Zeilen höher und klarer trennbar, einheitliche Panel-Rundung; Scroll bleibt pro View.
+- **Views ergänzt:** `v-legal-datenschutz`, `v-legal-datenschutz-provider`, `v-legal-impressum-provider` mit Phase-5-Klassen.

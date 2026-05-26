@@ -408,3 +408,20 @@ Startseite fuer Kunden: Angebote in der Naehe entdecken, nach Standort/Kategorie
 
 - Share-Texte auf der Kundenseite sind kontaktorientiert formuliert (`Freunde`/`Kontakte`).
 - Formulierungen mit `deine Kunden` wurden im Customer-Share entfernt.
+
+## Relaunch Feinschliff R2 (26.05.2026)
+
+- `#v-discover` zusätzlich `phase2-customer` – gleicher Surface-Hintergrund wie Favoriten/Mittagsbox.
+- Hero-Subtext bleibt kurz („Frisch · zum Abholen“).
+
+## Relaunch Feinschliff (26.05.2026)
+
+- **CSS:** Doppelte Relaunch-Blöcke in `app/style.css` bereinigt; gemeinsame Tokens (`--applite-*`) und vollständiger **Phase-2-Customer**-Block ergänzt.
+- **Copy:** Einheitliche Terminologie **Abholnummer** (Bottom-Nav, KPI, Pickups-Header); kürzere Hero-, Bestell- und Abholpass-Texte.
+- **UI:** Customer-Header, Karten und Empty States über alle `phase2-customer`-Views harmonisiert.
+
+## Update: Phase 2 Relaunch (26.05.2026)
+
+- Die Bottom-Navigation laeuft jetzt im Premium-Floating-Look (`ui-nav-premium`) mit konsistenten Active-States und Badge-Design.
+- Discover bleibt inhaltlich reduziert (Bild, Titel, Preis, CTA), visuell aber klar an den neuen Customer-Surface-Look gekoppelt.
+- Header und Content-Spacing sind mit den uebrigen Customer-Screens harmonisiert, damit der Wechsel zwischen Tabs ruhiger wirkt.

@@ -47,3 +47,10 @@ Diese Seite ist der Ort für **weitere Gerichte des Anbieters** (nicht die Geric
 
 - `Gericht_Detail.md` bleibt fokussiert auf **ein Gericht**.
 - Multi-Gerichte-Ansichten gehören in die Anbieter-Detailseite.
+
+## Phase 6 – Applike Anbieter-Detail (Kunde, 26.05.2026)
+
+- **Scope:** Nur UI auf `#v-provider-detail-public`; Angebots- und Nav-Logik unverändert.
+- **Klassen:** `phase6-applite phase6-customer-public`.
+- **Copy:** Sektion „Heute“ statt „Tagesessen heute“.
+- **Layout:** Offer-Karten 18px Radius, Header-Aktionen min. 48px Touch.
