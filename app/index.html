@@ -2637,20 +2637,20 @@ window.forceOpenMastercard = window.forceOpenMastercard || function(ctx){
       <i data-lucide="search"></i>
       <span>Entdecken</span>
     </button>
+    <button class="navbtn" data-go="fav">
+      <i data-lucide="heart"></i>
+      <span>Favoriten</span>
+      <span id="bottomNavFavBadge" style="position:absolute; top:4px; right:4px; background:#ef4444; color:#fff; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
+    </button>
     <button class="navbtn" data-go="cart" id="bottomNavBasketBtn">
       <i data-lucide="shopping-basket"></i>
-      <span>Box</span>
+      <span>Mittagsbox</span>
       <span id="bottomNavBasketBadge" style="position:absolute; top:4px; right:4px; background:#FFD700; color:#1a1a1a; font-size:10px; font-weight:900; width:16px; height:16px; border-radius:50%; display:none; align-items:center; justify-content:center; border:2px solid #fff;">0</span>
-    </button>
-    <button class="navbtn" data-go="orders">
-      <i data-lucide="receipt"></i>
-      <span>Abholcodes</span>
     </button>
     <button class="navbtn" data-go="profile">
       <i data-lucide="user"></i>
       <span>Profil</span>
     </button>
-    <span id="bottomNavFavBadge" class="is-hidden" aria-hidden="true" style="display:none;"></span>
   </nav>
 
     <!-- PROVIDER bottom nav: fixer Zurück-Button darüber, heller Tab-Bar (App-Style) -->
