@@ -287,7 +287,8 @@
     #app .view.active[id^="v-provider-"]{ display:block !important; }
     #app .view.active#v-provider-week{ display:flex !important; }
     .backdrop:not(.active){ display:none !important; opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
-    .sheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    .sheet:not(.active){ display:none !important; visibility:hidden !important; pointer-events:none !important; }
+    .sheet.active{ display:flex; flex-direction:column; visibility:visible !important; pointer-events:auto !important; }
 
     html, body {
       width: 100%;
@@ -1557,7 +1558,8 @@
     #publishFeeSheet:not(.active),
     #inseratSuccessSheet:not(.active),
     #saveSuccessSheet:not(.active),
-    #abholnummerExplainSheet:not(.active){ visibility:hidden !important; pointer-events:none !important; }
+    #abholnummerExplainSheet:not(.active),
+    #favShareChoiceSheet:not(.active){ display:none !important; visibility:hidden !important; pointer-events:none !important; }
     .sheet{
       position:fixed; left:0; right:0; bottom:-120%; z-index:2001;
       background:#fff; border-radius:22px 22px 0 0;
@@ -1571,7 +1573,10 @@
     .sheet.active{bottom:0}
     #publishFeeSheet.active,
     #saveSuccessSheet.active,
-    #abholnummerExplainSheet.active{ bottom:0 !important; visibility:visible !important; }
+    #abholnummerExplainSheet.active,
+    #inseratSuccessSheet.active,
+    #quickPostSheet.active,
+    #favShareChoiceSheet.active{ bottom:0 !important; display:flex !important; flex-direction:column; visibility:visible !important; pointer-events:auto !important; }
     #publishFeeBd{
       background: rgba(0,0,0,0.45) !important;
       backdrop-filter: blur(5px) !important;
@@ -2298,7 +2303,7 @@
     body.cookbook-from-dashboard.provider-cookbook-active #providerNavWrap { display: none !important; }
     body.wizard-inserat-open { overflow: hidden !important; overscroll-behavior: none !important; }
     /* Force-Open: InseratCard sichtbar erzwingen [cite: 2026-02-28, Final-Fix 2026-03-01, Schwarzer Screen Fix 2026-03-02] */
-    body.wizard-inserat-open #wizard {
+    body.wizard-inserat-open #wizard.active {
       display: flex !important;
       flex-direction: column !important;
       visibility: visible !important;
@@ -2320,7 +2325,7 @@
     body.wizard-inserat-open #wizard .wizard-scroll,
     body.wizard-inserat-open #wizard #wContent { background: #ffffff !important; }
     /* Backdrop HINTER Wizard – elementFromPoint traf sonst #wbd (schwarzer Screen) [cite: Schwarzer Screen Fix 2026-03-02] */
-    body.wizard-inserat-open #wbd {
+    body.wizard-inserat-open #wbd.active {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
@@ -2346,7 +2351,7 @@
       display: flex !important;
       visibility: visible !important;
     }
-    body.wizard-inserat-open #wContent {
+    body.wizard-inserat-open #wizard.active #wContent {
       display: flex !important;
       flex-direction: column !important;
       opacity: 1 !important;
@@ -2399,7 +2404,12 @@
     .kw-day-card.sparkle-arrival::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%); transform: scale(0); animation: flashImpact 0.7s ease-out forwards; pointer-events: none; z-index: 10; }
     @keyframes flashImpact { 0% { transform: scale(0); opacity: 1; } 40% { opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
     /* Inseratflow: High-End Glassmorphism (Master) – backdrop-blur-2xl, bg-white/70, border-white/40, shadow-2xl */
-    #wizard.sheet--kitchen{
+    #wizard.sheet--kitchen:not(.active){
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+    #wizard.sheet--kitchen.active{
       background:var(--provider-bg, #F5F5F7) !important;
       backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
       border-radius:28px 28px 0 0;
@@ -13993,7 +14003,7 @@
 }
 
 /* V47 VISUAL FORCE [cite: 2026-03-04] */
-body.wizard-inserat-open #wizard {
+body.wizard-inserat-open #wizard.active {
   display: flex !important;
   z-index: 99999 !important;
   visibility: visible !important;
@@ -14094,7 +14104,10 @@ body:not(.provider-mode) #v-support > .panel{
 }
 
 /* V49: CONTENT VISIBILITY FIX [cite: 2026-03-04] */
-#wContent, .wizard-sheet-body {
+#wizard.sheet--kitchen.active #wContent,
+#wizard.sheet--kitchen.active .wizard-sheet-body,
+body.wizard-inserat-open #wizard.active #wContent,
+body.wizard-inserat-open #wizard.active .wizard-sheet-body {
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
@@ -14125,7 +14138,7 @@ html, body {
   padding: 0 !important;
 }
 
-body.wizard-inserat-open #wizard {
+body.wizard-inserat-open #wizard.active {
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -14136,7 +14149,7 @@ body.wizard-inserat-open #wizard {
   inset: 0 !important;
 }
 
-body.wizard-inserat-open #wbd {
+body.wizard-inserat-open #wbd.active {
   display: block !important;
   z-index: 999999 !important;
   background: rgba(0,0,0,0.5) !important;
@@ -14147,7 +14160,7 @@ body.wizard-inserat-open #wbd {
   transition: none !important;
 }
 
-body.wizard-inserat-open #wizard {
+body.wizard-inserat-open #wizard.active {
   display: flex !important;
   background: #ffffff !important;
 }
@@ -18782,8 +18795,6 @@ body:not(.provider-mode) #customerNav:not(.ui-nav-premium){
   align-items: center !important;
   justify-content: space-around !important;
 }
-body:not(.provider-mode) #customerNav:not(.ui-nav-premium) .navbtn{
-
 body:not(.provider-mode) #customerNav:not(.ui-nav-premium) .navbtn i,
 body:not(.provider-mode) #customerNav:not(.ui-nav-premium) .navbtn svg{
   width: 22px !important;

@@ -26270,9 +26270,26 @@
   if(typeof window !== 'undefined'){ window.RESTORE_SCROLL_KEY = RESTORE_SCROLL_KEY; window.getScrollElForView = getScrollElForView; }
   
   // Initialisierung: erst nach allen Scripts (ui-navigation mit setMode etc.)
+  function resetTransientOverlaysOnBoot(){
+    var overlaySheetIds = ['wizard', 'favShareChoiceSheet', 'saveSuccessSheet', 'inseratSuccessSheet', 'quickPostSheet', 'publishFeeSheet', 'abholnummerExplainSheet', 'createFlowSheet'];
+    var overlayBdIds = ['wbd', 'favShareChoiceBd', 'saveSuccessSheetBd', 'inseratSuccessBd', 'quickPostBd', 'publishFeeBd', 'abholnummerExplainBd', 'createFlowBd'];
+    overlaySheetIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.remove('active');
+    });
+    overlayBdIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.remove('active');
+    });
+    if(document.body){
+      document.body.classList.remove('wizard-inserat-open', 'vendor-area', 'create-flow-open');
+    }
+  }
+
   function initApp(){
     if(typeof console !== 'undefined' && console.log) console.log('App wird initialisiert...');
     document.body.style.visibility = 'visible'; /* Init-Gate: sofort sichtbar, kein weißer Bildschirm */
+    resetTransientOverlaysOnBoot();
     // Reload-Policy: App startet immer im Kundenmodus auf Discover.
     mode = 'customer';
     try {
