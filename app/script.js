@@ -20581,7 +20581,7 @@
     const wizard = document.getElementById('wizard');
     var wbd = document.getElementById('wbd');
     if (wbd) wbd.classList.remove('active');
-    if(wizard){ wizard.classList.remove('active','inserat-step2-active','inserat-step3-active'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
+    if(wizard){ wizard.classList.remove('active','inserat-step2-active','inserat-step3-active','inserat-quick-flow','inserat-applite'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
     document.body.classList.remove('wizard-inserat-open', 'vendor-area');
     document.body.style.overflow = 'auto';
     document.body.style.overscrollBehavior = 'auto';
@@ -20640,7 +20640,7 @@
     var wbd = document.getElementById('wbd');
     if(wbd) wbd.classList.remove('active');
     var wizard = document.getElementById('wizard');
-    if(wizard){ wizard.classList.remove('active','inserat-step2-active','inserat-step3-active'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
+    if(wizard){ wizard.classList.remove('active','inserat-step2-active','inserat-step3-active','inserat-quick-flow','inserat-applite'); wizard.removeAttribute('data-flow'); wizard.style.cssText = ''; }
     document.querySelectorAll('.modal-backdrop').forEach(function(el){ if(el && el.parentNode) el.remove(); });
     var f1Body = document.getElementById('mastercard-footer-step1'); if(f1Body && f1Body.parentNode) f1Body.remove();
     var f2Body = document.getElementById('mastercard-footer-step2'); if(f2Body && f2Body.parentNode) f2Body.remove();
@@ -21564,14 +21564,15 @@
     // S25 InseratCard ÔÇô strikt 5 Ebenen, als .inserat-bottom-sheet gerendert [cite: BAUARBEITER]
     {
       setWizardQuestion('', '');
+      var wizardRoot = document.getElementById('wizard');
       const sheet = document.createElement('div');
       sheet.className = 'inserat-card-sheet';
       sheet.setAttribute('data-inserat-card', 'true');
       sheet.style.cssText = 'padding:0; overflow:visible; display:flex; flex-direction:column; min-height:0; border-radius:0; background:transparent;';
       const box = document.createElement('div');
-      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor inserat-quick-flow';
+      box.className='liquid-master-panel mastercard-container scout-master-card vendor-area glass-express-step0 inserat-universal-mask inserat-master-flow liquid-panel listing-glass-panel s25-floating-panel inserat-card inserat-airbnb-refactor';
       box.setAttribute('data-inserat-card','true');
-      if(wizardRoot) wizardRoot.classList.add('inserat-quick-flow');
+      if(wizardRoot) wizardRoot.classList.remove('inserat-quick-flow','inserat-applite');
       box.style.cssText='padding:0; overflow:hidden; display:flex; flex-direction:column; min-height:0;';
       var collapsingHeader=document.createElement('div');
       collapsingHeader.className='inserat-collapsing-header mastercard-header';
@@ -21584,7 +21585,6 @@
       const hapticLight = ()=>{ try { if(typeof haptic==='function') haptic(10); else if(window.userHasInteracted && navigator.vibrate) navigator.vibrate(10); } catch(e){} };
       var entryPoint = normalizeWizardEntryPoint((w.ctx && w.ctx.entryPoint) || 'newListing');
       if(w && w.ctx) w.ctx.entryPoint = entryPoint;
-      var wizardRoot = document.getElementById('wizard');
       if(wizardRoot){
         wizardRoot.classList.remove('inserat-step2-active','inserat-step3-active');
       }
@@ -22867,88 +22867,7 @@
       nameInputWrap.appendChild(inputDish);
       nameInputWrap.appendChild(btnClearName);
       stepName.appendChild(nameInputWrap);
-      var quickStepsBar=document.createElement('div');
-      quickStepsBar.className='inserat-quick-steps';
-      quickStepsBar.setAttribute('aria-label','Schritte');
-      ['Foto','Name','Preis','Abholzeit'].forEach(function(label, idx){
-        var stepEl=document.createElement('span');
-        stepEl.className='inserat-quick-step';
-        stepEl.setAttribute('data-quick-step', String(idx + 1));
-        stepEl.textContent=label;
-        quickStepsBar.appendChild(stepEl);
-      });
-      function updateQuickStepsUI(){
-        if(!quickStepsBar) return;
-        var hasPhoto=!!(w.data.photoData && !String(w.data.photoData).includes('svg+xml'));
-        var hasDish=!!(w.data.dish && String(w.data.dish).trim().length>=2);
-        var hasPrice=Number(w.data.price)>0;
-        var hasTime=!!(w.data.pickupWindow && String(w.data.pickupWindow).trim());
-        var done=[hasPhoto,hasDish,hasPrice,hasTime];
-        quickStepsBar.querySelectorAll('.inserat-quick-step').forEach(function(el,i){
-          el.classList.toggle('is-done',!!done[i]);
-          var isCurrent=!done[i] && (i===0 || done[i-1]);
-          el.classList.toggle('is-current',isCurrent);
-        });
-      }
-      contentSheet.appendChild(quickStepsBar);
-      contentSheet.appendChild(stepName);
-
-      var quickPickupSection=document.createElement('div');
-      quickPickupSection.className='inserat-quick-pickup';
-      quickPickupSection.innerHTML='<label class="inserat-quick-pickup-label">Abholzeit</label>';
-      var quickPickupRow=document.createElement('div');
-      quickPickupRow.className='inserat-quick-pickup-row';
-      var quickPwParts=(w.data.pickupWindow||profileWindow||'11:30 – 14:00').split(/\s*[–\-]\s*/);
-      var quickTStart=(quickPwParts[0]||'11:30').trim();
-      var quickTEnd=(quickPwParts[1]||'14:00').trim();
-      if(quickTStart.length===4) quickTStart='0'+quickTStart;
-      if(quickTEnd.length===4) quickTEnd='0'+quickTEnd;
-      var quickInpStart=document.createElement('input');
-      quickInpStart.type='time';
-      quickInpStart.className='inserat-quick-pickup-input';
-      quickInpStart.value=quickTStart;
-      var quickInpEnd=document.createElement('input');
-      quickInpEnd.type='time';
-      quickInpEnd.className='inserat-quick-pickup-input';
-      quickInpEnd.value=quickTEnd;
-      function syncQuickPickup(){
-        w.data.pickupWindow=quickInpStart.value+' – '+quickInpEnd.value;
-        saveDraft();
-        if(tileTime && tileTime.querySelector('.tile-label')) tileTime.querySelector('.tile-label').textContent=w.data.pickupWindow;
-        updateQuickStepsUI();
-      }
-      quickInpStart.onchange=function(){ hapticLight(); syncQuickPickup(); };
-      quickInpEnd.onchange=function(){ hapticLight(); syncQuickPickup(); };
-      var quickPickupDash=document.createElement('span');
-      quickPickupDash.className='inserat-quick-pickup-dash';
-      quickPickupDash.textContent='–';
-      quickPickupRow.appendChild(quickInpStart);
-      quickPickupRow.appendChild(quickPickupDash);
-      quickPickupRow.appendChild(quickInpEnd);
-      quickPickupSection.appendChild(quickPickupRow);
-      contentSheet.appendChild(quickPickupSection);
-
-      var moreOptionsPanel=document.createElement('div');
-      moreOptionsPanel.className='inserat-more-options is-hidden';
-      moreOptionsPanel.setAttribute('aria-hidden','true');
-      var btnMoreOptions=document.createElement('button');
-      btnMoreOptions.type='button';
-      btnMoreOptions.className='inserat-more-options-toggle';
-      btnMoreOptions.setAttribute('aria-expanded','false');
-      btnMoreOptions.textContent='Weitere Optionen';
-      btnMoreOptions.onclick=function(){
-        hapticLight();
-        var open=moreOptionsPanel.classList.contains('is-hidden');
-        if(open){
-          moreOptionsPanel.classList.remove('is-hidden');
-          moreOptionsPanel.removeAttribute('aria-hidden');
-          btnMoreOptions.setAttribute('aria-expanded','true');
-        } else {
-          moreOptionsPanel.classList.add('is-hidden');
-          moreOptionsPanel.setAttribute('aria-hidden','true');
-          btnMoreOptions.setAttribute('aria-expanded','false');
-        }
-      };
+      function updateQuickStepsUI(){ /* Quick-Flow entfernt – Layout wie vor Relaunch */ }
 
       // ========== 3. Beschreibung + Hilfe-Zeile [cite: REFACTOR 2026-02-23] ==========
       var descWrap=document.createElement('div');
@@ -22964,10 +22883,10 @@
       descriptionTextarea.onfocus=function(){ setTimeout(function(){ try{ scrollInputAboveKeyboard(descriptionTextarea); }catch(_e){} }, 120); };
       descriptionTextarea.onblur=function(){ dismissKeyboard(); };
       descWrap.appendChild(descriptionTextarea);
-      /* descWrap wird NACH pillGroup angehängt – Reihenfolge: Name → Pills → Beschreibung [cite: PURGE 2026-03-12] */
-
-      moreOptionsPanel.appendChild(floatingBadges);
-      moreOptionsPanel.appendChild(descWrap);
+      /* Layout vor Relaunch: Name → Kategorie-Pills → Beschreibung → Service-Grid → Preis */
+      contentSheet.appendChild(stepName);
+      contentSheet.appendChild(floatingBadges);
+      contentSheet.appendChild(descWrap);
 
       // ========== 5. Preis – eBay Look (klarer Fokus) ==========
       var priceSection=document.createElement('div');
@@ -23649,21 +23568,10 @@
         if(updateStep2ContextZoneRef) updateStep2ContextZoneRef();
       }
       infoSection.appendChild(powerBar);
-      moreOptionsPanel.appendChild(infoSection);
-      var btnSaveInMore=document.createElement('button');
-      btnSaveInMore.type='button';
-      btnSaveInMore.className='inserat-more-options-save';
-      btnSaveInMore.textContent='Im Kochbuch speichern';
-      btnSaveInMore.onclick=function(){
-        var link=document.getElementById('btnSpeichernKochbuch');
-        if(link) link.click();
-      };
-      moreOptionsPanel.appendChild(btnSaveInMore);
+      contentSheet.appendChild(infoSection);
       priceSection.className='inserat-cockpit-price '+priceSection.className;
       priceSection.style.marginTop='0';
       contentSheet.appendChild(priceSection);
-      contentSheet.appendChild(btnMoreOptions);
-      contentSheet.appendChild(moreOptionsPanel);
       /* Extra-Button entfernt [cite: RADIKALER COMPACT 2026-02-23] – nur ➕ in PowerBar öffnet Quick-Adjust */
       quickAdjustBackdrop.onclick=closeQuickAdjust;
       document.body.appendChild(quickAdjustBackdrop);

@@ -18391,6 +18391,9 @@ body:not(.provider-mode) #v-checkout.checkout-smart-app .checkout-payment-method
 }
 
 /* --- Provider Inserat: Quick-Flow (Sprint 3) --- */
+#wizard[data-flow="listing"] .inserat-quick-steps{
+  display:none !important;
+}
 #wizard[data-flow="listing"].inserat-quick-flow .inserat-quick-steps{
   display:flex;
   align-items:center;
